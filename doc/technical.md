@@ -63,7 +63,7 @@ worker/source.ts 导出 CarriageJourneyAuthority 与 handleApi。部署器合同
 
 每个owner最多100个旅程；列表按更新时间排列。events游标每页最多100条，先验证旅程归属；位置checkpoint不推进剧情版本/游标。无上传/导入旧存档接口，也无客户端覆盖head接口。章节结局继续从权威事实计算，不另建可写结局快照。
 
-新增8项测试使用本机SQLite模拟Durable Object同步SQL接口：两条结局路线、事件/回执/库存与重开，owner隔离，enrollment语言冲突，注入事件写入故障回滚，异步准备竞争，过时位置、关闭的生产边界与令牌清理，以及真实DO适配器入口。尚未在Cloudflare实际DO中验收，不能把这些测试标为云端已上线。前端正式bootstrap、身份方案确认、云端canary、备份恢复与同commit双部署仍待完成。
+新增8项测试使用本机SQLite模拟Durable Object同步SQL接口：两条结局路线、事件/回执/库存与重开，owner隔离，enrollment语言冲突，注入事件写入故障回滚，异步准备竞争，过时位置、关闭的生产边界与令牌清理，以及真实DO适配器入口。本节初次实现时仅有本机预检；2026-09-10 后续完成实际Cloudflare DO、前端bootstrap和双部署，具体证据见 doc/cloud-release.md；备份恢复仍待完成。
 
 ### 统一客户端与云端HTTP预览
 
@@ -73,7 +73,7 @@ src/cloud-session.ts 生成独立32字节capability并用30秒HTTP期限；不�
 
 build:preflight / preview:preflight生成dist-preflight并在127.0.0.1:5220提供真实HTTP与SQLite模拟DO入口。server/preflight-plugin.ts仅用于显式cloud-preflight模式，拒绝非loopback主机；数据库位于内存，服务停止会清空测试旅程。此模式必须使用独立测试来源，不上传已有数据；不是生产Durable Object。普通build和Pages不加载该插件。build:local保留原本机研究构建；build:pages保留独立旧版预览。
 
-新增9项客户端测试覆盖丢失动作/enrollment及新旅程回执、旧版本恢复、未确认操作阻止重开、旧旅程pending不篡改当前旅程、损坏日志隔离、凭据独立与服务故障不回退、部署模式选择。已用CUA从HTTP预览开柜和领取保险丝，重新打开页面后库存保险丝×1，柜子已取走状态保持。完整跨设备恢复与正式DO验收仍未完成。
+新增9项客户端测试覆盖丢失动作/enrollment及新旅程回执、旧版本恢复、未确认操作阻止重开、旧旅程pending不篡改当前旅程、损坏日志隔离、凭据独立与服务故障不回退、部署模式选择。已用CUA从HTTP预览开柜和领取保险丝，重新打开页面后库存保险丝×1，柜子已取走状态保持。随后正式DO验收已完成；完整跨设备恢复仍未实现。
 
 ### 云端发布验证
 
