@@ -2,6 +2,7 @@ import {initialStory,type Locale} from '../src/story'
 import {MAP_VERSION,safePosition,currentScene} from '../src/contract'
 import {LabError,prepareAction,validateAction,type Head,type Narrator} from '../src/journey-runtime'
 import {upgradeHead} from './head-migration'
+import {exportJourney} from './journey-backup'
 export interface AuthorityStorage{
  all<T>(sql:string,...bindings:any[]):T[]
  run(sql:string,...bindings:any[]):void
@@ -18,6 +19,7 @@ export class ProductionAuthority{
   db.run('CREATE TABLE IF NOT EXISTS receipts(owner TEXT NOT NULL, action TEXT NOT NULL, digest TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner,action))')
   db.run('CREATE TABLE IF NOT EXISTS journal(session TEXT NOT NULL, cursor INTEGER NOT NULL, action TEXT NOT NULL, kind TEXT NOT NULL, event TEXT NOT NULL, PRIMARY KEY(session,cursor))')
  }
+ backup(owner:string,id:string){return exportJourney(this.db,owner,id)}
  private row(owner:string,id:string){const row=this.db.all<Row>('SELECT data,cursor FROM journeys WHERE owner=? AND id=?',owner,id)[0];if(!row)throw new LabError('SESSION_NOT_FOUND',404);return row}
  private write(owner:string,h:Head,cursor:number){this.db.run('UPDATE journeys SET data=?,cursor=?,updated=? WHERE owner=? AND id=?',JSON.stringify(h),cursor,Date.now(),owner,h.id)}
  get(owner:string,id:string){return this.db.transaction(()=>{const row=this.row(owner,id),head=upgradeHead(JSON.parse(row.data));if(JSON.stringify(head)!==row.data)this.write(owner,head,row.cursor);return head})}

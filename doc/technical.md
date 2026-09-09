@@ -78,3 +78,7 @@ build:preflight / preview:preflight生成dist-preflight并在127.0.0.1:5220提�
 ### 云端发布验证
 
 `scripts/check-cloud.ts <HTTPS主站URL> --allow-new-test-journeys` 只创建合成新旅程；随机凭据只在进程内，输出不含凭据或存档正文。脚本验收两路线、重复动作、冲突、隔离、事件与重开。实际执行结果以 doc/cloud-release.md 和本机排除的 _qa/cloud-trial-canary.json 为准；上述历史预检记录不等于线上证据。
+
+### 私有旅程备份
+
+server/journey-backup.ts 维护完整备份格式与跨表一致性检查；ProductionAuthority.backup 和 Worker GET sessions/:id/backup 用原owner边界导出。scripts/restore-journey-backup.ts 仅离线恢复到新SQLite文件，未新增HTTP存档导入；完整范围、8MiB/10000事件限制及PITR未验收边界见 doc/backup-recovery.md。

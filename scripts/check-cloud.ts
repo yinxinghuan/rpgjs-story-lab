@@ -3,6 +3,9 @@ import assert from 'node:assert/strict'
 import {randomBytes,randomUUID} from 'node:crypto'
 import {approachPoints} from '../src/scene-layout'
 import {currentScene,type EntityId} from '../src/contract'
+import {DatabaseSync} from 'node:sqlite'
+import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
+import {restoreJourneyToEmptyDatabase} from '../server/journey-backup'
 import type {Head} from '../src/journey-runtime'
 const base=process.argv[2]
 if(!base||!process.argv.includes('--allow-new-test-journeys'))throw Error('Pass the exact HTTPS game URL and --allow-new-test-journeys; writes isolated synthetic journeys.')
@@ -45,8 +48,20 @@ for(const route of ['radio','lights']){
  assert.equal(events.length,steps.length)
  assert.deepEqual(events.map((e:any)=>e.cursor),Array.from({length:steps.length},(_,i)=>i+1))
  assert.deepEqual((await call('/sessions/'+h.id+'/events?after='+steps.length)).events,[])
- endings.push({route,actions:steps.length,version:h.version,scene:currentScene(h.save),rescueSent:true})
+ const backup=await call('/sessions/'+h.id+'/backup')
+ await call('/sessions/'+h.id+'/backup',undefined,other,404)
+ await call('/sessions/'+h.id+'/backup',{},owner,405)
+ const raw=new DatabaseSync(':memory:')
+ const db:AuthorityStorage={all:(q,...b)=>raw.prepare(q).all(...b) as any,run:(q,...b)=>{raw.prepare(q).run(...b)},transaction:work=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
+ const restored=new ProductionAuthority(db,async()=>{throw Error('NO_MODEL_DURING_RESTORE')})
+ const restore=await restoreJourneyToEmptyDatabase(db,backup)
+ const backupOwner=backup.payload.journey.owner
+ assert.deepEqual(restored.get(backupOwner,h.id),h)
+ const previous=backup.payload.receipts[1],action=JSON.parse(previous.digest).body
+ assert.deepEqual(await restored.action(backupOwner,h.id,action),JSON.parse(previous.response))
+ assert.deepEqual(restored.get(backupOwner,h.id),h);raw.close()
+ endings.push({backupRestored:restore.events===steps.length,route,actions:steps.length,version:h.version,scene:currentScene(h.save),rescueSent:true})
 }
 assert.equal((await call('/sessions')).sessions.length,2)
 assert.deepEqual((await call('/sessions',undefined,other)).sessions,[])
-console.log(JSON.stringify({at:new Date().toISOString(),base:url.href,health,calls,endings,checks:['enrollment-replay','enrollment-conflict','action-replay','action-id-conflict','stale-version','stale-position','owner-isolation','event-cursors','head-reopen','two-endings','consumed-inventory'],result:'pass'},null,2))
+console.log(JSON.stringify({at:new Date().toISOString(),base:url.href,health,calls,endings,checks:['enrollment-replay','enrollment-conflict','action-replay','action-id-conflict','stale-version','stale-position','owner-isolation','event-cursors','head-reopen','two-endings','consumed-inventory','cloud-backup-to-fresh-sqlite','restored-receipt-replay','no-http-import'],result:'pass'},null,2))

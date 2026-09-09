@@ -44,8 +44,9 @@ export class CarriageJourneyAuthority{
   const url=new URL(request.url),path=url.pathname.slice('/api/lab'.length)
   if(path==='/sessions'&&request.method==='GET')return json({sessions:this.authority.directory(owner)})
   if(path==='/sessions'&&request.method==='POST'){const b=await body(request);return json(this.authority.create(owner,b.enrollment_id,b.locale==='en'?'en':'zh'))}
-  const m=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events))?$/);if(!m)throw new LabError('NOT_FOUND',404)
+  const m=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|backup))?$/);if(!m)throw new LabError('NOT_FOUND',404)
   if(request.method==='GET'&&!m[2])return json(this.authority.get(owner,m[1]))
+  if(request.method==='GET'&&m[2]==='backup')return json(await this.authority.backup(owner,m[1]))
   if(request.method==='GET'&&m[2]==='events')return json({events:this.authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
   if(request.method==='POST'&&m[2]==='actions')return json(await this.authority.action(owner,m[1],await body(request)))
   if(request.method==='POST'&&m[2]==='position')return json(this.authority.checkpoint(owner,m[1],await body(request)))
