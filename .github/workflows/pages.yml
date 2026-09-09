@@ -20,6 +20,7 @@ jobs:
           node-version: 22.22.2
           cache: npm
       - run: npm ci
+      - run: npm run build:worker
       - run: npm test
       - run: npm run build:pages
       - run: test -s dist-pages/THIRD_PARTY_NOTICES.txt && test -s dist-pages/index.html

@@ -1,0 +1,4 @@
+{
+  "bindings": [{"type":"durable_object_namespace","name":"CARRIAGE_JOURNEYS","class_name":"CarriageJourneyAuthority"}],
+  "migrations": {"new_tag":"carriage-story-v1","new_sqlite_classes":["CarriageJourneyAuthority"]}
+}

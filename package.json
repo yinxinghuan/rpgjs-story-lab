@@ -12,12 +12,13 @@
     "export:world": "node --import tsx scripts/export-world.ts",
     "preview:iphone": "CARRIAGE_LAB_DB=.data/iphone-test.sqlite vite preview --host 127.0.0.1 --port 5201 --strictPort",
     "build:pages": "tsc --noEmit && vite build --mode pages --outDir dist-pages",
-    "preview:pages": "vite preview --mode pages --outDir dist-pages --host 127.0.0.1 --port 5202 --strictPort"
+    "preview:pages": "vite preview --mode pages --outDir dist-pages --host 127.0.0.1 --port 5202 --strictPort",
+    "build:worker": "node scripts/build-worker.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "description": "Carriage 07 \u2014 RPG-JS spatial narrative experiment",
+  "description": "Carriage 07 — RPG-JS spatial narrative experiment",
   "devDependencies": {
     "@canvasengine/compiler": "2.2.0",
     "@resvg/resvg-js": "2.6.2",
@@ -25,6 +26,7 @@
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-vue": "^6.0.8",
+    "esbuild": "0.28.2",
     "fake-indexeddb": "^6.2.5",
     "path-browserify": "^1.0.1",
     "playwright": "1.58.2",

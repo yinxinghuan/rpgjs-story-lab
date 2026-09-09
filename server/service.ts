@@ -1,15 +1,12 @@
+import {upgradeHead} from './head-migration'
 import { DatabaseSync } from 'node:sqlite'
 import { createHash, randomUUID } from 'node:crypto'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { initialStory, runRule, upgradePowerFacts, tr, type StorySave, type Locale } from '../src/story'
-import { validActionTarget, safePosition, entities, MAP_VERSION, currentScene, type Position, type EntityId } from '../src/contract'
+import { initialStory, type Locale } from '../src/story'
+import { safePosition, MAP_VERSION, currentScene } from '../src/contract'
 import { propose } from './model'
-import { portalArrivals } from '../src/scene-layout'
-import { cartridge,journeyObjective } from '../src/story'
-import {upgradeAttendantFacts} from '../src/attendant'
-import {upgradeContactFacts} from '../src/contacts'
 import { GAME_ID } from '../src/game-id'
 
 import {prepareAction,LabError,type Head} from '../src/journey-runtime'
@@ -23,7 +20,7 @@ export class Service {
  CREATE TABLE IF NOT EXISTS events(session TEXT,version INTEGER,action TEXT,kind TEXT, PRIMARY KEY(session,version));`)}
  create(owner:string,enrollment:string,locale:Locale){const old=this.db.prepare('SELECT data FROM sessions WHERE owner=? AND enrollment=?').get(owner,enrollment) as any;if(old)return this.get(owner,(JSON.parse(old.data) as Head).id);
  const h:Head={id:randomUUID(),version:0,save:initialStory(locale),position:safePosition(null),mapVersion:MAP_VERSION};this.db.prepare('INSERT INTO sessions VALUES(?,?,?,?)').run(h.id,owner,enrollment,JSON.stringify(h));return h}
- get(owner:string,id:string){const row=this.db.prepare('SELECT data FROM sessions WHERE owner=? AND id=?').get(owner,id) as any;if(!row)throw new LabError('SESSION_NOT_FOUND',404);const h=JSON.parse(row.data) as Head;if(h.mapVersion!==MAP_VERSION){for(const node of cartridge(h.save.locale).initialMap??[])if(!h.save.map.some(m=>m.id===node.id))h.save.map.push({...node,current:false});for(const key of ['supply_open','battery_taken','record_read','battery_installed','rescue_sent'])h.save.facts[key]??=false;h.position=safePosition(['carriage-ortho-1','carriage-ortho-2','carriage-narrow-1','train-scenes-1'].includes(h.mapVersion)?h.position:null,currentScene(h.save));h.mapVersion=MAP_VERSION;if(h.save.facts.finished)h.save.objective=journeyObjective(h.save);this.write(owner,h)}if(upgradePowerFacts(h.save)){if(h.save.facts.finished&&!h.save.facts.rescue_sent)h.save.objective=journeyObjective(h.save);this.write(owner,h)}if(upgradeContactFacts(h.save))this.write(owner,h);if(upgradeAttendantFacts(h.save))this.write(owner,h);return h}
+ get(owner:string,id:string){const row=this.db.prepare('SELECT data FROM sessions WHERE owner=? AND id=?').get(owner,id) as any;if(!row)throw new LabError('SESSION_NOT_FOUND',404);const original=JSON.parse(row.data) as Head;const h=upgradeHead(original);if(JSON.stringify(h)!==row.data)this.write(owner,h);return h}
  checkpoint(owner:string,id:string,position:unknown,sceneId='carriage',expectedVersion?:number){this.db.exec('BEGIN IMMEDIATE');try{const h=this.get(owner,id);if(sceneId!==currentScene(h.save)||expectedVersion!==undefined&&expectedVersion!==h.version)throw new LabError('STALE_POSITION',409);h.position=safePosition(position,currentScene(h.save));this.write(owner,h);this.db.exec('COMMIT');return h.position}catch(e){this.db.exec('ROLLBACK');throw e}}
  write(owner:string,h:Head){this.db.prepare('UPDATE sessions SET data=? WHERE owner=? AND id=?').run(JSON.stringify(h),owner,h.id)}
  replay(owner:string,id:string,digest:string){const r=this.db.prepare('SELECT hash,response FROM actions WHERE owner=? AND id=?').get(owner,id) as any;if(!r)return null;if(r.hash!==digest)throw new LabError('ACTION_ID_CONFLICT',409);return JSON.parse(r.response)}

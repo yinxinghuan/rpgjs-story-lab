@@ -41,7 +41,7 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 主角使用 `stride-0/1/2` 静态姿态纹理，由碰撞处理后的累计实际行走距离选择，每55世界像素完成 `0→1→2→1` 周期。不使用独立定时的walk动画推进主角脚步；图集仍保留通用walk供其他消费者使用。路径在同一次更新中用完110×dt的移动预算，可连续跨越多个4像素节点，不再在节点处插入stand或免费吸附2像素。逐步扫描最多1世界像素，碰墙不累计虚假步幅；停止、到达、暂停与恢复位置时归零步态。dt仍上限40ms，严重掉帧时位移和步态一起减慢，不追赶后台积累时间。
 
-步态回归覆盖30/60/120fps、不规则帧间隔、转角、到达、薄墙、慢速摇杆及真实客厢路径。49项测试通过；桌面和390×844、320×568浏览器视口已检查真实renderer行走帧序列。视口测试不代表iPhone真机性能验收，仍需用户在Safari复测。
+步态回归覆盖30/60/120fps、不规则帧间隔、转角、到达、薄墙、慢速摇杆及真实客厢路径。57项测试通过；桌面和390×844、320×568浏览器视口已检查真实renderer行走帧序列。视口测试不代表iPhone真机性能验收，仍需用户在Safari复测。
 
 ### 平台外访问
 
@@ -54,3 +54,13 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 复用移动时，将distance-motion.ts接到目标游戏自己的主循环与完整hitbox检查；通过createDistancePoseSelector配置目标素材步幅和静态姿态名。110/55参数只属于本样本。独立工具包使用另一套72单位/秒、24单位步幅的合成空间验证，并有不同步幅及错误参数检查；复制模块不等于自动获得目标引擎集成、主题素材或真机性能保证。
 
 用户已授权继续推进完整游戏和正式部署；当前已公开的仍是Pages手机测试版。生产接入和双部署另行验收，不自动上传个人存档。自动化测试不替代新人理解或iPhone真机帧率验收。
+
+### 云端权威存储预备实现（未启用）
+
+server/production-authority.ts 通过同步 SQL 接口保存 journeys / journal / receipts，复用 journey-runtime 的同一剧情规则。head-migration.ts 同时供本机SQLite与云端预备实现使用，保留旧剧情和行囊。一次动作的head、事件游标和回执在同一 transactionSync 中提交；模型/异步准备在事务外，返回后重查版本。请求用排序后的JSON绑定语义相同的字段，不因JSON键顺序不同失去幂等。
+
+worker/source.ts 导出 CarriageJourneyAuthority 与 handleApi。部署器合同见 worker/bindings.json；npm run build:worker 生成 worker/index.js，不能把普通 npm run build 当成Worker已重建。当前 PRODUCTION_WRITES_ENABLED=false，旅程路由503，health明确未启用，不访问已有本地存档。预备的令牌模式为32字节随机 capability，边界只向DO传SHA256 owner；不是已验证的平台账号身份。尚未获准启用该身份模式，不部署生产写入；当前Narrator固定本地规则，不向模型发送旅程。
+
+每个owner最多100个旅程；列表按更新时间排列。events游标每页最多100条，先验证旅程归属；位置checkpoint不推进剧情版本/游标。无上传/导入旧存档接口，也无客户端覆盖head接口。章节结局继续从权威事实计算，不另建可写结局快照。
+
+新增8项测试使用本机SQLite模拟Durable Object同步SQL接口：两条结局路线、事件/回执/库存与重开，owner隔离，enrollment语言冲突，注入事件写入故障回滚，异步准备竞争，过时位置、关闭的生产边界与令牌清理，以及真实DO适配器入口。尚未在Cloudflare实际DO中验收，不能把这些测试标为云端已上线。前端正式bootstrap、身份方案确认、云端canary、备份恢复与同commit双部署仍待完成。
