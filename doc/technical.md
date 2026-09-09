@@ -41,7 +41,7 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 主角使用 `stride-0/1/2` 静态姿态纹理，由碰撞处理后的累计实际行走距离选择，每55世界像素完成 `0→1→2→1` 周期。不使用独立定时的walk动画推进主角脚步；图集仍保留通用walk供其他消费者使用。路径在同一次更新中用完110×dt的移动预算，可连续跨越多个4像素节点，不再在节点处插入stand或免费吸附2像素。逐步扫描最多1世界像素，碰墙不累计虚假步幅；停止、到达、暂停与恢复位置时归零步态。dt仍上限40ms，严重掉帧时位移和步态一起减慢，不追赶后台积累时间。
 
-步态回归覆盖30/60/120fps、不规则帧间隔、转角、到达、薄墙、慢速摇杆及真实客厢路径。57项测试通过；桌面和390×844、320×568浏览器视口已检查真实renderer行走帧序列。视口测试不代表iPhone真机性能验收，仍需用户在Safari复测。
+步态回归覆盖30/60/120fps、不规则帧间隔、转角、到达、薄墙、慢速摇杆及真实客厢路径。66项测试通过；桌面和390×844、320×568浏览器视口已检查真实renderer行走帧序列。视口测试不代表iPhone真机性能验收，仍需用户在Safari复测。
 
 ### 平台外访问
 
@@ -64,3 +64,13 @@ worker/source.ts 导出 CarriageJourneyAuthority 与 handleApi。部署器合同
 每个owner最多100个旅程；列表按更新时间排列。events游标每页最多100条，先验证旅程归属；位置checkpoint不推进剧情版本/游标。无上传/导入旧存档接口，也无客户端覆盖head接口。章节结局继续从权威事实计算，不另建可写结局快照。
 
 新增8项测试使用本机SQLite模拟Durable Object同步SQL接口：两条结局路线、事件/回执/库存与重开，owner隔离，enrollment语言冲突，注入事件写入故障回滚，异步准备竞争，过时位置、关闭的生产边界与令牌清理，以及真实DO适配器入口。尚未在Cloudflare实际DO中验收，不能把这些测试标为云端已上线。前端正式bootstrap、身份方案确认、云端canary、备份恢复与同commit双部署仍待完成。
+
+### 统一客户端与云端HTTP预览
+
+src/session-client.ts 统一处理已有两种运行方式及准备中的云端方式：按action ID分键记录pending，原pending迁移、损坏日志隔离、按当前session恢复。动作回执后读最新head，过期结果返回recovered，不重放旧台词/成功音；确定拒绝清理该请求，未知结果保持原ID。尚有未确认操作时禁止开始新旅程。enrollment-request记录原ID和locale，丢失响应后不能随语言切换改变原请求。
+
+src/cloud-session.ts 生成独立32字节capability并用30秒HTTP期限；不读取Pages或本机owner。云端模式要求Web Locks，不能因浏览器缺少锁或服务不可用而切换本地写入。src/runtime-selection.ts根据显式构建模式、部署主机和story_runtime=legacy选择运行方式，当前发布构建仍为pages。准备中的cloud同一前端bundle在自托管进入服务，在Pages显示主站与旧存档入口，只有显式story_runtime=legacy才打开浏览器版；设置中提供旧Pages入口。不同origin的浏览器数据不能自动读取，不承诺跨设备同步。
+
+build:preflight / preview:preflight生成dist-preflight并在127.0.0.1:5220提供真实HTTP与SQLite模拟DO入口。server/preflight-plugin.ts仅用于显式cloud-preflight模式，拒绝非loopback主机；数据库位于内存，服务停止会清空测试旅程。此模式必须使用独立测试来源，不上传已有数据；不是生产Durable Object。普通build和Pages不加载该插件。
+
+新增9项客户端测试覆盖丢失动作/enrollment及新旅程回执、旧版本恢复、未确认操作阻止重开、旧旅程pending不篡改当前旅程、损坏日志隔离、凭据独立与服务故障不回退、部署模式选择。已用CUA从HTTP预览开柜和领取保险丝，重新打开页面后库存保险丝×1，柜子已取走状态保持。完整跨设备恢复与正式DO验收仍未完成。
