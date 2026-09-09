@@ -8,7 +8,8 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 - src/main.tsx / style.css：移动、镜头、HUD、特写、菜单与双语文案。
 - src/space.ts / space-bridge.ts：真实RPG-JS renderer、移动与碰撞桥接。
-- src/walking-motion.ts：按距离驱动步态、路径移动预算与逐像素碰撞扫描。
+- src/walking-motion.ts：本游戏步速、步幅与姿态名配置。
+- src/vendor/space-motion/distance-motion.ts：独立的距离步态、路径移动预算与逐像素碰撞模块，与空间叙事工作流v1.8工具包同源；无引擎、DOM、存储或场景依赖。
 - src/scene-layout.ts：三场景尺寸、碰撞物、接近点和连接落点。
 - src/story.ts、contract.ts、contacts.ts、attendant.ts：规则、实体许可、人物介绍与记忆。
 - src/journey-runtime.ts：两种存储共享的动作校验、规则执行和转场结果。
@@ -49,5 +50,7 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 ## 4. 扩展点
 
 玩法规则改story.ts；新增实体同步scene-layout、contract、人物介绍及图集准入。视角和素材改art-catalog/sprite-config/世界图集，但须保留碰撞与状态对应。更换存储通过client-session的显式模式入口，继续复用journey-runtime。在线AI、云存档、动态资产和多人版本需另行部署正式服务，本测试版不宣称具备这些能力。
+
+复用移动时，将distance-motion.ts接到目标游戏自己的主循环与完整hitbox检查；通过createDistancePoseSelector配置目标素材步幅和静态姿态名。110/55参数只属于本样本。独立工具包使用另一套72单位/秒、24单位步幅的合成空间验证，并有不同步幅及错误参数检查；复制模块不等于自动获得目标引擎集成、主题素材或真机性能保证。
 
 本次授权仅GitHub Pages手机测试发布，不上架平台、不运行正式双部署，也不上传个人存档。自动化测试不替代新人理解或iPhone真机帧率验收。
