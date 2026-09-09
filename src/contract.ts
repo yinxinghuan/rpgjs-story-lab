@@ -1,0 +1,72 @@
+import {stationaryAdviceIssues} from './narration-guards'
+import {attendantReply,knowsAttendant} from './attendant'
+import {objectiveCopy} from './ui-copy'
+import {DISPATCHER,dispatcherName,dispatcherReply,dispatcherReports,knowsDispatcher,radioContactAvailable} from './contacts'
+import { scenes, attendantFoot, sceneObstacles, type SceneId } from './scene-layout'
+import { linResponse, tr, type Locale, type StorySave } from './story'
+export const MAP_VERSION='train-scenes-2'
+export const WIDTH=384, HEIGHT=576
+export type Position={x:number;y:number}
+export const entities={
+ 'zhou-yu':{scene:'baggage',...attendantFoot,label:['乘务员','Attendant'],states:['waiting','known'],actions:['meet-attendant','talk-attendant']},
+ cabinet:{scene:'carriage',x:158,y:132,label:['检修柜','Service cabinet'],states:['closed','open','empty'],actions:['open-cabinet','take-fuse']},
+ panel:{scene:'carriage',x:222,y:132,label:['配电箱','Circuit panel'],states:['broken','repaired','emergency','beacon'],actions:['repair','set-beacon']},
+ lin:{scene:'carriage',x:222,y:184,label:['修理工','Mechanic'],states:['waiting','known'],actions:['meet-lin']},
+ exit:{scene:'carriage',x:192,y:80,label:['车厢出口','Carriage exit'],states:['locked','open'],actions:['leave','go-baggage']},
+ supply:{scene:'baggage',x:158,y:164,label:['器材柜','Supply cabinet'],states:['closed','open','empty'],actions:['open-supply','take-battery']},
+ record:{scene:'baggage',x:222,y:228,label:['调度记录','Dispatch record'],states:['unread','read'],actions:['read-record']},
+ forward:{scene:'baggage',x:192,y:80,label:['驾驶室通道','Passage to cab'],states:['open'],actions:['enter-cab']},
+ back:{scene:'baggage',x:192,y:496,label:['返回客厢','Return to carriage'],states:['open'],actions:['back-carriage']},
+ radio:{scene:'cab',x:192,y:268,label:['调度电台','Dispatch radio'],states:['unpowered','powered','routed-lights','routed-radio','acknowledged','connected'],actions:['install-battery','route-lights','route-radio','call-yard','send-signal','meet-dispatch','ask-dispatch','brief-dispatch']},
+ cabBack:{scene:'cab',x:192,y:496,label:['返回行李车','Return to baggage car'],states:['open'],actions:['back-baggage']},
+} as const
+export type EntityId=keyof typeof entities
+export function currentScene(s:StorySave):SceneId {const id=s.map.find(m=>m.current)?.id;return id==='baggage'||id==='cab'?id:'carriage'}
+export function sceneEntities(scene:SceneId):EntityId[]{return (Object.keys(entities) as EntityId[]).filter(id=>entities[id].scene===scene)}
+export const SPAWN:Position={...scenes.carriage.spawn}
+export function states(s:StorySave):Record<EntityId,string>{return {'zhou-yu':s.facts.attendant_introduced?'known':'waiting',cabinet:s.facts.fuse_taken?'empty':s.facts.cabinet_open?'open':'closed',panel:s.facts.beacon_set?'beacon':s.facts.power_radio?'emergency':s.facts.repaired?'repaired':'broken',lin:s.facts.introduced?'known':'waiting',exit:s.facts.repaired?'open':'locked',supply:s.facts.battery_taken?'empty':s.facts.supply_open?'open':'closed',record:s.facts.record_read?'read':'unread',forward:'open',back:'open',radio:s.facts.rescue_sent?'connected':s.facts.signal_acknowledged?'acknowledged':s.facts.power_chosen?(s.facts.power_radio?'routed-radio':'routed-lights'):s.facts.battery_installed?'powered':'unpowered',cabBack:'open'}}
+export const obstacles=sceneObstacles('carriage')
+export function walkable(p:Position,scene:SceneId='carriage'){const r=scenes[scene].interior;return Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=r.x&&p.x+9<=r.x+r.w&&p.y>=r.y&&p.y+15<=r.y+r.h&&!sceneObstacles(scene).some(o=>p.x+9>o.x&&p.x<o.x+o.w&&p.y+15>o.y&&p.y<o.y+o.h)}
+export function safePosition(value:unknown,scene:SceneId='carriage'):Position {const p=value as Position;return p&&walkable(p,scene)?{x:p.x,y:p.y}:{...scenes[scene].spawn}}
+export function nearest(p:Position,scene:SceneId='carriage'):EntityId|null{return sceneEntities(scene).map(id=>({id,d:Math.hypot(p.x-entities[id].x,p.y-entities[id].y)})).sort((a,b)=>a.d-b.d).find(v=>v.d<55)?.id??null}
+export const actionTarget:Record<string,EntityId>=Object.fromEntries((Object.keys(entities) as EntityId[]).flatMap(id=>entities[id].actions.map(action=>[action,id])))
+export function validActionTarget(action:string,target:string,p:Position,scene:SceneId='carriage'){return actionTarget[action]===target&&Object.hasOwn(entities,target)&&entities[target as EntityId].scene===scene&&walkable(p,scene)&&Math.hypot(p.x-entities[target as EntityId].x,p.y-entities[target as EntityId].y)<70}
+export function nextAction(s:StorySave,id:EntityId){if(id==='zhou-yu')return s.facts.attendant_introduced?'talk-attendant':'meet-attendant';if(id==='panel'&&s.facts.signal_acknowledged&&!s.facts.rescue_sent)return 'set-beacon';if(id==='cabinet')return s.facts.cabinet_open?'take-fuse':'open-cabinet';if(id==='exit')return s.facts.finished?'go-baggage':'leave';if(id==='supply')return s.facts.supply_open?'take-battery':'open-supply';if(id==='radio')return s.facts.battery_installed?'send-signal':'install-battery';return entities[id].actions[0]}
+export function actionLabel(action:string,locale:Locale){const a:Record<string,[string,string]>={'meet-attendant':['与乘务员交谈','Meet the attendant'],'talk-attendant':['再聊聊','Talk again'],'open-cabinet':['打开检修柜','Open cabinet'],'take-fuse':['拿起保险丝','Take fuse'],'meet-lin':['与修理工交谈','Meet the mechanic'],repair:['安装保险丝','Fit the fuse'],leave:['前往行李车','Enter baggage car'],'go-baggage':['前往行李车','Enter baggage car'],'open-supply':['打开器材柜','Open supply cabinet'],'take-battery':['取出电池','Take battery'],'read-record':['阅读调度记录','Read dispatch record'],'enter-cab':['进入驾驶室','Enter driving cab'],'back-carriage':['返回客厢','Return to carriage'],'back-baggage':['返回行李车','Return to baggage car'],'install-battery':['安装电台电池','Install radio battery'],'send-signal':['选择频道','Choose channel'],'call-yard':['呼叫调车频道','Call yard channel'],'route-lights':['保持客厢照明','Keep carriage lights'],'route-radio':['集中供电给电台','Prioritize radio'],'set-beacon':['设置引导灯','Set guide light'],'meet-dispatch':['接听调度','Answer dispatch'],'ask-dispatch':['询问接应','Ask about rescue'],'brief-dispatch':['告知车内情况','Report carriage situation']};return a[action]?.[locale==='zh'?0:1]??action}
+export function sceneContract(s:StorySave,target:EntityId){const scene=currentScene(s),layout=scenes[scene];return {location:layout.label[1],sceneId:scene,target,nextStep:objectiveCopy(s,s.locale)[1],advice:target==='zhou-yu'?{role:'Stationary adviser in the baggage car. She may talk and point; only the player opens cabinets, collects items, installs batteries or travels.',sources:[{entityId:'supply',fact:s.facts.battery_taken?'The spare battery has already been collected.':'The spare radio battery is inside the supply cabinet.'},{entityId:'record',fact:s.facts.record_read?'The read dispatch record identifies emergency channel 3 and unattended yard channel 1.':'For the attended night channel, read the dispatch record. The radio has no written channel instructions.'}]}:null,conversation:{speakerId:target==='radio'&&radioContactAvailable(s)?DISPATCHER:['lin','zhou-yu'].includes(target)?target:null,reports:target==='radio'&&radioContactAvailable(s)?dispatcherReports(s):[],policy:'Only these reports are recorded conversation memory. Current input and world facts are not prior reports. No additional personal history is supplied.'},contacts:target==='radio'&&radioContactAvailable(s)?[{id:DISPATCHER,name:dispatcherName(s.locale),state:'on-radio',medium:'radio voice only; not physically present; appearance unknown',briefed:Boolean(s.facts.dispatcher_briefed),reports:dispatcherReports(s)}]:[],scenery:{projection:'orthogonal 2D JRPG; parallel walls',furniture:layout.furniture.map(f=>({kind:f.art,interactive:false})),outside:'rainy railway outside the vehicle; not walkable'},power:{chosen:Boolean(s.facts.power_chosen),route:s.facts.power_chosen?(s.facts.power_radio?'radio':'lights'):null,acknowledged:Boolean(s.facts.signal_acknowledged),guideLight:Boolean(s.facts.beacon_set),rescueComplete:Boolean(s.facts.rescue_sent),sceneLight:scene==='carriage'?(s.facts.power_radio?'emergency':s.facts.repaired?'full':'dim'):'unchanged',rule:'routes can change only before acknowledgment; lights route needs carriage guide light after acknowledgment'},entities:sceneEntities(scene).map(id=>({id,appearance:id==='zhou-yu'?'teal uniform; cream scarf; dark hair in a bun; no name before introduction':id==='lin'?'grey work jacket; no name before introduction':entities[id].label[1],state:states(s)[id],knownName:id==='zhou-yu'&&knowsAttendant(s)?'Zhou Yu':id==='lin'&&s.facts.introduced?'Lin':undefined})),knownClues:s.facts.record_read?['emergency dispatch channel 3; yard channel 1 is unattended']:[],inventory:s.inventory.map(i=>({id:i.id,count:i.count})),allowedActions:entities[target].actions,prohibitions:['no new entities, rooms or visible states','no remote interaction with another scene','do not change clothing or identity','no rewards, movement, consumption or repair in dialogue','no names of unrevealed characters']}}
+export type Proposal={kind:'action'|'dialogue'|'unsupported';entityIds:string[];actionId?:string;claims:Array<{entityId:string;state:string}>;text:string}
+export function validateProposal(raw:unknown,s:StorySave,target:EntityId):string[]{
+ const p=raw as Proposal;const issues:string[]=[];const contactHere=target==='radio'&&radioContactAvailable(s)
+ if(p&&typeof p==='object'&&!Array.isArray(p.claims))return ['MISSING_CLAIMS: include claims array, use [] for dialogue without physical assertions']
+ if(!p||!['action','dialogue','unsupported'].includes(p.kind)||!Array.isArray(p.entityIds)||!Array.isArray(p.claims)||typeof p.text!=='string'||p.text.length>700)return ['INVALID_PROPOSAL']
+ if(p.entityIds.some(id=>!Object.hasOwn(entities,id)&&!(id===DISPATCHER&&contactHere)))issues.push('UNKNOWN_ENTITY')
+ if(p.entityIds.some(id=>Object.hasOwn(entities,id)&&entities[id as EntityId].scene!==currentScene(s)))issues.push('OFF_SCENE_ENTITY')
+ if(p.claims.some(c=>!c||(c.entityId===DISPATCHER?(!contactHere||c.state!=='on-radio'):!Object.hasOwn(entities,c.entityId)||entities[c.entityId as EntityId].scene!==currentScene(s)||states(s)[c.entityId as EntityId]!==c.state)))issues.push('STATE_MISMATCH')
+ if(p.kind==='action'&&(!p.actionId||actionTarget[p.actionId]!==target))issues.push('UNSUPPORTED_ACTION')
+ if(p.kind!=='action'&&p.actionId)issues.push('HIDDEN_ACTION')
+ if(!s.facts.introduced&&/\bLin\b|(?:我叫|叫我|小|老)林|林[说轻抬]/i.test(p.text))issues.push('UNREVEALED_NAME')
+ if(/周雨|\bZhou Yu\b/i.test(p.text)&&!knowsAttendant(s))issues.push('UNREVEALED_ATTENDANT')
+ if(/许岚|\bXu Lan\b/i.test(p.text)&&!knowsDispatcher(s))issues.push('UNREVEALED_CONTACT')
+ if(p.entityIds.includes(DISPATCHER)&&!contactHere)issues.push('CONTACT_UNAVAILABLE')
+ if(/(?:许岚|Xu Lan).{0,25}(?:走进|站在|坐在|穿着|w(?:alk|ear)|stands?|sits?)/i.test(p.text))issues.push('CONTACT_NOT_PHYSICAL')
+ if(target==='zhou-yu')issues.push(...stationaryAdviceIssues(p.text))
+ if(/admitted source|authoritative (?:scene|state)|allowedActions|entityIds|准入来源|权威状态|场景合同|没有权限|not authorized|lack permission/i.test(p.text))issues.push('IMPLEMENTATION_LANGUAGE')
+ if(/红[色衣]|red (?:jacket|coat)|柜子.*(?:倒下|变成)|cabinet.*(?:falls|turns into)/i.test(p.text))issues.push('APPEARANCE_MISMATCH')
+ return issues
+}
+export function localReply(input:string,s:StorySave,target:EntityId):Proposal {
+ const locale=s.locale
+ let actionId:string|undefined
+ // Conservative explicit commitments only. Unknown and negated inputs never execute.
+ const direct:Record<string,string[]>={'open-cabinet':['打开柜子','打开检修柜','open cabinet','open the cabinet'],'take-fuse':['拿起保险丝','取出保险丝','take fuse','take the fuse'],repair:['安装保险丝','修复配电箱','fit the fuse','repair the panel'],'meet-lin':['与修理工交谈','talk to mechanic','meet the mechanic'],leave:['走向出口','go to the exit'],'open-supply':['打开器材柜','open supply cabinet'],'take-battery':['拿起电池','take battery'],'read-record':['阅读调度记录','read dispatch record'],'install-battery':['安装电池','install battery'],'send-signal':['发送求援信号','send distress signal'],'route-lights':['保持客厢照明','keep carriage lights'],'route-radio':['集中供电给电台','prioritize radio'],'set-beacon':['设置引导灯','set guide light'],'meet-dispatch':['接听调度','answer dispatch'],'ask-dispatch':['询问接应','ask about rescue'],'brief-dispatch':['告知车内情况','report carriage situation']}
+ const normalized=input.trim().toLowerCase().replace(/[。.!！]$/,'')
+ for(const [id,phrases] of Object.entries(direct))if(phrases.includes(normalized)&&actionTarget[id]===target)actionId=id
+ const unavailable=/(砸|推倒|龙|怪兽|跳窗|破墙|burn|smash|dragon|topple|teleport|give me|送我|给我.*(?:99|百))/i.test(input)
+ const text=unavailable?tr(locale,'这里没有能安全完成这个动作的条件。你可以查看眼前的物件，或者换一个办法。','There is no safe way to do that here. You can inspect what is in front of you, or try another approach.'):
+ target==='radio'&&radioContactAvailable(s)?dispatcherReply(s):
+ target==='zhou-yu'?knowsAttendant(s)?attendantReply(s):tr(locale,'青衣乘务员抬起头，等你走近。','The attendant in teal looks up and waits for you to approach.'):
+ target==='lin'&&s.facts.introduced&&(s.facts.power_chosen||s.facts.rescue_sent)?linResponse(s,locale):
+ target==='lin'?tr(locale,s.facts.introduced?'林看看配电箱：“我会留在这儿。你慢慢来，先把眼前的线路弄清楚。”':'灰衣修理工朝配电箱点点头，等你走近。',s.facts.introduced?'Lin glances at the panel. “I’ll stay here. Take your time; let’s understand the circuit first.”':'The mechanic in grey nods toward the panel and waits for you to approach.'):
+ tr(locale,'你看了看眼前的物件。它的状态没有改变；可以用下方的明确动作继续。','You examine the object. Nothing has changed; you can use the specific action below to continue.')
+ return {kind:actionId?'action':unavailable?'unsupported':'dialogue',entityIds:target==='radio'&&radioContactAvailable(s)&&!unavailable&&!actionId?[target,DISPATCHER]:[target],actionId,claims:target==='radio'&&radioContactAvailable(s)&&!unavailable&&!actionId?[{entityId:target,state:states(s)[target]},{entityId:DISPATCHER,state:'on-radio'}]:[{entityId:target,state:states(s)[target]}],text}
+}

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.story-engine/
+.data/
+.env*
+!.env.example
+
+dist-pages/
+# Local evidence may contain play-session identifiers; keep only authored tests.
+_qa/*
+!_qa/*.test.ts
+!_qa/README.md
+deliverables/
+.DS_Store
+.local-docs/
+__pycache__/
+*.pyc
