@@ -82,3 +82,7 @@ build:preflight / preview:preflight生成dist-preflight并在127.0.0.1:5220提�
 ### 私有旅程备份
 
 server/journey-backup.ts 维护完整备份格式与跨表一致性检查；ProductionAuthority.backup 和 Worker GET sessions/:id/backup 用原owner边界导出。scripts/restore-journey-backup.ts 仅离线恢复到新SQLite文件，未新增HTTP存档导入；完整范围、8MiB/10000事件限制及PITR未验收边界见 doc/backup-recovery.md。
+
+### 平台目录登记
+
+正式封面为 public/poster.png，meta.json引用/poster.png；来源与1024/160两级审查见doc/poster-provenance.json。src/game-id.ts保留服务端可用的GAME_ID/getGameApiBase，同时在浏览器启动时写入同一UUID；index.html的storage adapter加载标记和声明补齐。既有存储前缀和数据库名不变。未运行会覆盖整个game-id.ts的旧全量同步器，以免移除同UUID API合同；用针对两项目的UUID验证及全目录存储审计验证实际结果。

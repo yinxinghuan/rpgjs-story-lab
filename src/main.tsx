@@ -1,3 +1,4 @@
+import './game-id'
 import {getGameApiBase} from './game-id'
 import {isBrowserEdition,isCloudEdition,isMirrorEdition} from './runtime-mode'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
