@@ -8,17 +8,18 @@ import { SPAWN, walkable, safePosition, type Position } from './contract'
 import { scenes,sceneIds,type SceneId } from './scene-layout'
 import { findPath } from './pathfinding'
 import { heroSheet,mechanicSheet,attendantSheet } from './sprite-config'
+import { WALK_SPEED, STRIDE_DISTANCE, walkingPose, moveWithCollision, advanceRoute } from './walking-motion'
 let client:RpgClientEngine|undefined,player:RpgPlayer|undefined
 let activeScene:SceneId='carriage',changing=false,loadedScene:SceneId|null=null,joinedScene:SceneId|null=null
 let loadedMap:{events:()=>Record<string,unknown>}|null=null
 const sceneWaiters=new Set<()=>void>()
 function waitForScene(scene:SceneId){if(loadedScene===scene&&joinedScene===scene)return Promise.resolve();return new Promise<void>((resolve,reject)=>{const timer=setTimeout(()=>{sceneWaiters.delete(check);reject(new Error('MAP_TRANSFER_TIMEOUT'))},12000);const check=()=>{if(loadedScene===scene&&joinedScene===scene){clearTimeout(timer);sceneWaiters.delete(check);resolve()}};sceneWaiters.add(check)})}
-let paused=true,stick={x:0,y:0},pos={...SPAWN},last=0,frame=0,wasMoving=false
+let paused=true,stick={x:0,y:0},pos={...SPAWN},last=0,frame=0,strideDistance=0
 let route:Position[]=[],arrive:(()=>void)|undefined
 const keys=new Set<string>()
 function cancelRoute(){route=[];arrive=undefined;reportDestination(null)}
 function project(){const sprite=client?.getCurrentPlayer();if(sprite&&player){if(sprite.x()!==pos.x)sprite.x.set(pos.x);if(sprite.y()!==pos.y)sprite.y.set(pos.y);if(sprite.direction()!==player.direction())sprite.direction.set(player.direction());sprite.animationFixed=true;if(sprite.animationName()!==player.animationName())sprite.animationName.set(player.animationName())}}
-function stand(){wasMoving=false;if(player)player.animationName.set('stand');project()}
+function stand(){strideDistance=0;if(player&&player.animationName()!=='stand')player.animationName.set('stand');project()}
 const down=(e:KeyboardEvent)=>{if(!(e.target as HTMLElement)?.matches('input,textarea,select')){const key=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(key)){keys.add(key);cancelRoute();e.preventDefault()}}}
 const up=(e:KeyboardEvent)=>keys.delete(e.key.toLowerCase())
 window.addEventListener('keydown',down);window.addEventListener('keyup',up)
@@ -45,10 +46,26 @@ function tick(time:number){
  if(player&&!paused&&!changing){
   let x=stick.x+(keys.has('arrowright')||keys.has('d')?1:0)-(keys.has('arrowleft')||keys.has('a')?1:0)
   let y=stick.y+(keys.has('arrowdown')||keys.has('s')?1:0)-(keys.has('arrowup')||keys.has('w')?1:0)
-  if(!x&&!y&&route.length){const next=route[0],dx=next.x-pos.x,dy=next.y-pos.y,dist=Math.hypot(dx,dy);if(dist<2){pos={...next};void player.teleport(pos);player.syncChanges();reportPosition(pos);route.shift();if(!route.length){const fn=arrive;arrive=undefined;reportDestination(null);stand();fn?.()}}else{x=dx/dist;y=dy/dist;const max=dist/(110*dt);if(max<1){x*=max;y*=max}}}
   const len=Math.hypot(x,y);if(len>1){x/=len;y/=len}
-  const moving=Boolean(x||y);if(moving!==wasMoving){player.animationName.set(moving?'walk':'stand');wasMoving=moving}
-  if(moving){const nx={x:pos.x+x*110*dt,y:pos.y};if(walkable(nx,activeScene))pos=nx;const ny={x:pos.x,y:pos.y+y*110*dt};if(walkable(ny,activeScene))pos=ny;void player.teleport(pos);player.direction.set(Math.abs(x)>Math.abs(y)?(x>0?Direction.Right:Direction.Left):(y>0?Direction.Down:Direction.Up));player.syncChanges();reportPosition(pos)}
+  let distance=0,finished=false
+  const canWalk=(p:Position)=>walkable(p,activeScene)
+  if(!x&&!y&&route.length){
+   const result=advanceRoute(pos,route,WALK_SPEED*dt,canWalk)
+   pos=result.position;distance=result.distance;x=result.direction.x;y=result.direction.y
+   route.splice(0,result.consumed);finished=result.arrived
+   if(result.blocked)cancelRoute()
+  }else if(x||y){
+   const result=moveWithCollision(pos,{x:x*WALK_SPEED*dt,y:y*WALK_SPEED*dt},canWalk)
+   x=result.position.x-pos.x;y=result.position.y-pos.y;pos=result.position;distance=result.distance
+  }
+  if(distance>1e-7){
+   strideDistance=(strideDistance+distance)%STRIDE_DISTANCE
+   const pose=walkingPose(strideDistance)
+   if(player.animationName()!==pose)player.animationName.set(pose)
+   player.direction.set(Math.abs(x)>Math.abs(y)?(x>0?Direction.Right:Direction.Left):(y>0?Direction.Down:Direction.Up))
+   void player.teleport(pos);player.syncChanges();reportPosition(pos)
+  }else stand()
+  if(finished){const fn=arrive;arrive=undefined;reportDestination(null);stand();fn?.()}
  }
  project();frame=requestAnimationFrame(tick)
 }
