@@ -1,6 +1,7 @@
+import type {ObjectProjection} from './world-objects'
 import type {SceneId} from './scene-layout'
 import type { Position } from './contract'
-export type SpaceRuntime={position:()=>Position;renderedPosition:()=>Position|null;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(paused:boolean)=>void;restore:(p:Position,scene?:SceneId)=>Promise<void>;scene:()=>SceneId;renderedScene:()=>SceneId|null;renderedEvents:()=>string[];destroy:()=>void}
+export type SpaceRuntime={position:()=>Position;renderedPosition:()=>Position|null;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(paused:boolean)=>void;restore:(p:Position,scene?:SceneId)=>Promise<void>;scene:()=>SceneId;renderedScene:()=>SceneId|null;renderedEvents:()=>string[];setObjects:(scene:SceneId,objects:ObjectProjection[])=>void;destroy:()=>void}
 let runtime:SpaceRuntime|null=null
 const listeners=new Set<(p:Position)=>void>()
 export function bindSpace(value:SpaceRuntime){runtime=value;window.dispatchEvent(new CustomEvent('space-ready',{detail:value}))}

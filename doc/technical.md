@@ -1,4 +1,4 @@
-# 技术文档 · GitHub Pages 手机测试版
+# 技术文档 · 车厢云端试运行与浏览器镜像
 
 ## 1. 技术栈
 
@@ -19,15 +19,17 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 - src/vendor/story：冻结叙事内核，来源版本见ENGINE_SOURCE.json。
 - public/art、public/map、public/spritesheets：场景、独立状态图与角色图集。
 - _qa/*.test.ts：剧情、场景、身份、幂等和浏览器持久化测试。
-- .github/workflows/pages.yml：构建、测试并发布dist-pages。
+- .github/workflows/pages.yml：构建、测试并发布同一 cloud 模式 dist，Pages 入口提供主站和显式旧版浏览器旅程。
 
 ## 3. 核心模块
 
-### 两种显式运行方式
+### 显式运行方式
+
+`npm run build` 为 cloud 模式，输出 dist 并构建 Worker；主站使用唯一 UUID API 与 Durable Object SQLite。Pages 分发相同前端，但无法提供同源 Worker，显示主站入口及 `?story_runtime=legacy` 浏览器旧旅程入口。
 
 `npm run build:pages` 使用mode=pages、base='./'，输出dist-pages；默认通过BrowserJourney运行预设剧情，不请求本机或平台的旅程API。设置隐藏在线模型选项，即便内部传入live，浏览器叙事处理仍只调用localReply。部署后不依赖电脑或同一网络。资源加载需要网络，未实现离线PWA。
 
-`npm run build` / `npm run dev`保留本地Node/SQLite研究模式，请求 `/<GAME_ID>/api/lab`，默认数据库`.data/story.sqlite`，可用CARRIAGE_LAB_DB指定独立测试文件。此服务没有随Pages部署。两种模式有不同客户端key前缀，不迁移旧电脑存档。
+`npm run build:local` / `npm run dev`保留本地Node/SQLite研究模式，请求 `/<GAME_ID>/api/lab`，默认数据库`.data/story.sqlite`，可用CARRIAGE_LAB_DB指定独立测试文件。此服务没有随Pages部署。各模式有不同客户端key前缀，不迁移旧电脑存档。
 
 ### 状态与恢复
 
@@ -41,19 +43,27 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 主角使用 `stride-0/1/2` 静态姿态纹理，由碰撞处理后的累计实际行走距离选择，每55世界像素完成 `0→1→2→1` 周期。不使用独立定时的walk动画推进主角脚步；图集仍保留通用walk供其他消费者使用。路径在同一次更新中用完110×dt的移动预算，可连续跨越多个4像素节点，不再在节点处插入stand或免费吸附2像素。逐步扫描最多1世界像素，碰墙不累计虚假步幅；停止、到达、暂停与恢复位置时归零步态。dt仍上限40ms，严重掉帧时位移和步态一起减慢，不追赶后台积累时间。
 
-步态回归覆盖30/60/120fps、不规则帧间隔、转角、到达、薄墙、慢速摇杆及真实客厢路径。66项测试通过；桌面和390×844、320×568浏览器视口已检查真实renderer行走帧序列。视口测试不代表iPhone真机性能验收，仍需用户在Safari复测。
+步态回归覆盖30/60/120fps、不规则帧间隔、转角、到达、薄墙、慢速摇杆及真实客厢路径。原步态阶段66项测试通过；桌面和390×844、320×568浏览器视口已检查真实renderer行走帧序列。视口测试不代表iPhone真机性能验收，仍需用户在Safari复测。
 
 ### 平台外访问
 
 入口保留远程guest-shell扩展，由平台管理外部访客栏；游戏不上传现有试玩记录或个人配置。平台扩展与游戏本地剧情数据库是不同边界。Pages无自有后台、无多人世界。
 
+### 空间物件深度层（2026-09-10）
+
+`world-objects.ts` 定义独立设备和家具的图集裁切、世界矩形、状态与落地深度。家具直接引用 `scene-layout.ts` 的同一布局对象；props 保留原 contain 比例，seat/extra 保留原铺满矩形。`space.ts` 将物件注册为穿透的 RPG-JS 事件，与角色在同一 EventLayer 中按 `y + hitbox.h` 排序。物件事件仅用 1×1 深度锚点，游戏碰撞仍读取共享布局，不能将可穿透的渲染事件当成寻路障碍来源。
+
+`WorldArt` 只把权威 StorySave 的可见状态投射到引擎，不再用整层 DOM 家具压在角色画布下。库存和设备特写仍使用 SVG。柜内独立电池保留固定事件和贴图，深度高于柜体一单位；取出后切换 opacity=0 的 hidden 帧；设备状态、图形可见性和色调不反写剧情。每个场景使用稳定且带场景前缀的事件 ID，转场初始化时重用最新投射状态。
+
+测试覆盖两套图集裁切边界/世界尺寸/脚底锚点、家具布局身份、柜体与电池排序及权威状态投射。几何测试不能替代真实 renderer 的遮挡证据；浏览器验收和限制见 `doc/occlusion-review.md`。
+
 ## 4. 扩展点
 
-玩法规则改story.ts；新增实体同步scene-layout、contract、人物介绍及图集准入。视角和素材改art-catalog/sprite-config/世界图集，但须保留碰撞与状态对应。更换存储通过client-session的显式模式入口，继续复用journey-runtime。在线AI、云存档、动态资产和多人版本需另行部署正式服务，本测试版不宣称具备这些能力。
+玩法规则改story.ts；新增实体同步scene-layout、contract、人物介绍及图集准入。视角和素材改art-catalog/sprite-config/世界图集，但须保留碰撞与状态对应。更换存储通过client-session的显式模式入口，继续复用journey-runtime。云端权威由 server/production-authority.ts 与 worker/source.ts 提供，已获批的临时 capability 只隔离持有人；账号同步、原车厢在线AI、动态资产和多人版本仍未提供。
 
 复用移动时，将distance-motion.ts接到目标游戏自己的主循环与完整hitbox检查；通过createDistancePoseSelector配置目标素材步幅和静态姿态名。110/55参数只属于本样本。独立工具包使用另一套72单位/秒、24单位步幅的合成空间验证，并有不同步幅及错误参数检查；复制模块不等于自动获得目标引擎集成、主题素材或真机性能保证。
 
-用户已授权继续推进完整游戏和正式部署；当前已公开的仍是Pages手机测试版。生产接入和双部署另行验收，不自动上传个人存档。自动化测试不替代新人理解或iPhone真机帧率验收。
+用户已授权继续推进完整游戏和正式部署；当前公开自托管云端试运行与同commit Pages前端镜像，实际发布证据见 doc/cloud-release.md，不自动上传个人存档。自动化测试不替代新人理解或iPhone真机帧率验收。
 
 ### 云端权威存储实现
 
