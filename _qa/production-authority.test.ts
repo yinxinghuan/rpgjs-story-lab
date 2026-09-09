@@ -36,6 +36,7 @@ test('approved production boundary requires capability; disabled rollback remain
  assert.equal((await createHandler(false)(request(),{})).status,503)
  assert.equal((await handleApi(new Request('https://example.test/api/lab/health'),{})).status,200)
  assert.equal((await handleApi(request(),{CARRIAGE_JOURNEYS:{idFromName:n=>n,get:()=>({fetch:async()=>Response.json({})})}})).status,401)
+ const general=await (await handleApi(new Request('https://example.test/api/health'),{})).json();assert.equal(general.ok,true);assert.equal(general.storage,'durable-object-sqlite')
  const enabled=createHandler(true);let route='',headers:Headers|undefined
  const env={CARRIAGE_JOURNEYS:{idFromName:(n:string)=>{route=n;return n},get:()=>({fetch:async(r:Request)=>{headers=r.headers;return Response.json({ok:true})}})}}
  assert.equal((await enabled(request('user123'),env)).status,401)
