@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5197",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build --mode cloud && npm run build:worker",
     "preview": "vite preview --host 127.0.0.1 --port 5197",
     "test": "node --import tsx --test _qa/*.test.ts",
     "test:ui": "node --import tsx _qa/scenes-browser.ts",
@@ -14,14 +14,15 @@
     "build:pages": "tsc --noEmit && vite build --mode pages --outDir dist-pages",
     "preview:pages": "vite preview --mode pages --outDir dist-pages --host 127.0.0.1 --port 5202 --strictPort",
     "build:worker": "node scripts/build-worker.mjs",
-    "build:cloud": "tsc --noEmit && vite build --mode cloud",
+    "build:cloud": "npm run build",
     "build:preflight": "tsc --noEmit && vite build --mode cloud-preflight --outDir dist-preflight",
-    "preview:preflight": "vite preview --mode cloud-preflight --outDir dist-preflight --host 127.0.0.1 --port 5220 --strictPort"
+    "preview:preflight": "vite preview --mode cloud-preflight --outDir dist-preflight --host 127.0.0.1 --port 5220 --strictPort",
+    "build:local": "tsc --noEmit && vite build"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "description": "Carriage 07 \u2014 RPG-JS spatial narrative experiment",
+  "description": "Carriage 07 — RPG-JS spatial narrative experiment",
   "devDependencies": {
     "@canvasengine/compiler": "2.2.0",
     "@resvg/resvg-js": "2.6.2",

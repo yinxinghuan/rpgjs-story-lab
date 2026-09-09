@@ -55,11 +55,11 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 用户已授权继续推进完整游戏和正式部署；当前已公开的仍是Pages手机测试版。生产接入和双部署另行验收，不自动上传个人存档。自动化测试不替代新人理解或iPhone真机帧率验收。
 
-### 云端权威存储预备实现（未启用）
+### 云端权威存储实现
 
 server/production-authority.ts 通过同步 SQL 接口保存 journeys / journal / receipts，复用 journey-runtime 的同一剧情规则。head-migration.ts 同时供本机SQLite与云端预备实现使用，保留旧剧情和行囊。一次动作的head、事件游标和回执在同一 transactionSync 中提交；模型/异步准备在事务外，返回后重查版本。请求用排序后的JSON绑定语义相同的字段，不因JSON键顺序不同失去幂等。
 
-worker/source.ts 导出 CarriageJourneyAuthority 与 handleApi。部署器合同见 worker/bindings.json；npm run build:worker 生成 worker/index.js，不能把普通 npm run build 当成Worker已重建。当前 PRODUCTION_WRITES_ENABLED=false，旅程路由503，health明确未启用，不访问已有本地存档。预备的令牌模式为32字节随机 capability，边界只向DO传SHA256 owner；不是已验证的平台账号身份。尚未获准启用该身份模式，不部署生产写入；当前Narrator固定本地规则，不向模型发送旅程。
+worker/source.ts 导出 CarriageJourneyAuthority 与 handleApi。部署器合同见 worker/bindings.json；npm run build:worker 生成 worker/index.js，不能把普通 npm run build 当成Worker已重建。用户于2026-09-10批准限定的临时凭据试运行，PRODUCTION_WRITES_ENABLED=true；不访问已有本地存档。预备的令牌模式为32字节随机 capability，边界只向DO传SHA256 owner；不是已验证的平台账号身份。当前Narrator固定本地规则，不向模型发送旅程。
 
 每个owner最多100个旅程；列表按更新时间排列。events游标每页最多100条，先验证旅程归属；位置checkpoint不推进剧情版本/游标。无上传/导入旧存档接口，也无客户端覆盖head接口。章节结局继续从权威事实计算，不另建可写结局快照。
 
@@ -69,8 +69,12 @@ worker/source.ts 导出 CarriageJourneyAuthority 与 handleApi。部署器合同
 
 src/session-client.ts 统一处理已有两种运行方式及准备中的云端方式：按action ID分键记录pending，原pending迁移、损坏日志隔离、按当前session恢复。动作回执后读最新head，过期结果返回recovered，不重放旧台词/成功音；确定拒绝清理该请求，未知结果保持原ID。尚有未确认操作时禁止开始新旅程。enrollment-request记录原ID和locale，丢失响应后不能随语言切换改变原请求。
 
-src/cloud-session.ts 生成独立32字节capability并用30秒HTTP期限；不读取Pages或本机owner。云端模式要求Web Locks，不能因浏览器缺少锁或服务不可用而切换本地写入。src/runtime-selection.ts根据显式构建模式、部署主机和story_runtime=legacy选择运行方式，当前发布构建仍为pages。准备中的cloud同一前端bundle在自托管进入服务，在Pages显示主站与旧存档入口，只有显式story_runtime=legacy才打开浏览器版；设置中提供旧Pages入口。不同origin的浏览器数据不能自动读取，不承诺跨设备同步。
+src/cloud-session.ts 生成独立32字节capability并用30秒HTTP期限；不读取Pages或本机owner。云端模式要求Web Locks，不能因浏览器缺少锁或服务不可用而切换本地写入。src/runtime-selection.ts根据显式构建模式、部署主机和story_runtime=legacy选择运行方式，当前发布构建使用cloud，npm run build同时构建Worker。cloud同一前端bundle在自托管进入服务，在Pages显示主站与旧存档入口，只有显式story_runtime=legacy才打开浏览器版；设置中提供旧Pages入口。不同origin的浏览器数据不能自动读取，不承诺跨设备同步。
 
-build:preflight / preview:preflight生成dist-preflight并在127.0.0.1:5220提供真实HTTP与SQLite模拟DO入口。server/preflight-plugin.ts仅用于显式cloud-preflight模式，拒绝非loopback主机；数据库位于内存，服务停止会清空测试旅程。此模式必须使用独立测试来源，不上传已有数据；不是生产Durable Object。普通build和Pages不加载该插件。
+build:preflight / preview:preflight生成dist-preflight并在127.0.0.1:5220提供真实HTTP与SQLite模拟DO入口。server/preflight-plugin.ts仅用于显式cloud-preflight模式，拒绝非loopback主机；数据库位于内存，服务停止会清空测试旅程。此模式必须使用独立测试来源，不上传已有数据；不是生产Durable Object。普通build和Pages不加载该插件。build:local保留原本机研究构建；build:pages保留独立旧版预览。
 
 新增9项客户端测试覆盖丢失动作/enrollment及新旅程回执、旧版本恢复、未确认操作阻止重开、旧旅程pending不篡改当前旅程、损坏日志隔离、凭据独立与服务故障不回退、部署模式选择。已用CUA从HTTP预览开柜和领取保险丝，重新打开页面后库存保险丝×1，柜子已取走状态保持。完整跨设备恢复与正式DO验收仍未完成。
+
+### 云端发布验证
+
+`scripts/check-cloud.ts <HTTPS主站URL> --allow-new-test-journeys` 只创建合成新旅程；随机凭据只在进程内，输出不含凭据或存档正文。脚本验收两路线、重复动作、冲突、隔离、事件与重开。实际执行结果以 doc/cloud-release.md 和本机排除的 _qa/cloud-trial-canary.json 为准；上述历史预检记录不等于线上证据。

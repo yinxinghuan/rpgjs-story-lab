@@ -1,8 +1,8 @@
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {LabError} from '../src/journey-runtime'
 import {localReply} from '../src/contract'
-// Prepared for review; no production journey writes before identity-mode approval.
-export const PRODUCTION_WRITES_ENABLED=false
+// User approved this bounded new-journey capability trial on 2026-09-10.
+export const PRODUCTION_WRITES_ENABLED=true
 interface Namespace{ idFromName(name:string):unknown;get(id:unknown):{fetch(request:Request):Promise<Response>} }
 interface Environment{CARRIAGE_JOURNEYS?:Namespace}
 const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store'}})
@@ -16,7 +16,7 @@ async function body(request:Request){
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
 export function createHandler(writesEnabled:boolean){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
- if(path==='/api/lab/health'&&request.method==='GET')return json({ok:true,runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:false,release:'carriage-production-preflight-1'})
+ if(path==='/api/lab/health'&&request.method==='GET')return json({ok:true,runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:false,release:'carriage-cloud-trial-20260910-1'})
  if(!path.startsWith('/api/lab/'))return json({error:'NOT_FOUND'},404)
  if(!writesEnabled)return json({error:'PRODUCTION_IDENTITY_NOT_ENABLED'},503)
  if(!env.CARRIAGE_JOURNEYS)return json({error:'AUTHORITY_UNAVAILABLE'},503)

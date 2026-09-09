@@ -1,4 +1,4 @@
-name: Deploy iPhone test to GitHub Pages
+name: Deploy cloud frontend mirror to GitHub Pages
 on:
   push:
     branches: [main]
@@ -22,12 +22,12 @@ jobs:
       - run: npm ci
       - run: npm run build:worker
       - run: npm test
-      - run: npm run build:pages
-      - run: test -s dist-pages/THIRD_PARTY_NOTICES.txt && test -s dist-pages/index.html
+      - run: npm run build
+      - run: test -s dist/THIRD_PARTY_NOTICES.txt && test -s dist/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist-pages
+          path: dist
   deploy:
     needs: build
     runs-on: ubuntu-latest

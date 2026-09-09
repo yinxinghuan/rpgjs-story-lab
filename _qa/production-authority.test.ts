@@ -31,9 +31,11 @@ test('late narrator cannot overwrite a competing action',async()=>{
  const winner=await s.action('a',h.id,intent(h,'cabinet','open-cabinet'));release();await assert.rejects(delayed,/VERSION_CONFLICT/);assert.deepEqual(s.get('a',h.id),winner.head);assert.equal(s.events('a',h.id,0).length,1);raw.close()
 })
 test('stale checkpoint cannot move a later head',async()=>{const {service:s,raw}=setup(),h=s.create('a',randomUUID(),'en'),r=await s.action('a',h.id,intent(h,'cabinet','open-cabinet'));assert.throws(()=>s.checkpoint('a',h.id,{sceneId:'carriage',expected_version:0,position:{x:188,y:330}}),/STALE_POSITION/);assert.deepEqual(s.get('a',h.id),r.head);raw.close()})
-test('production boundary remains closed; capability routing strips credentials and caller owner',async()=>{
+test('approved production boundary requires capability; disabled rollback remains closed',async()=>{
  const request=(token?:string)=>new Request('https://example.test/api/lab/sessions',{method:'POST',headers:{Authorization:'Bearer '+(token??''),'X-Authority-Owner':'forged'},body:JSON.stringify({enrollment_id:randomUUID(),locale:'zh'})})
- assert.equal((await handleApi(request(),{})).status,503)
+ assert.equal((await createHandler(false)(request(),{})).status,503)
+ assert.equal((await handleApi(new Request('https://example.test/api/lab/health'),{})).status,200)
+ assert.equal((await handleApi(request(),{CARRIAGE_JOURNEYS:{idFromName:n=>n,get:()=>({fetch:async()=>Response.json({})})}})).status,401)
  const enabled=createHandler(true);let route='',headers:Headers|undefined
  const env={CARRIAGE_JOURNEYS:{idFromName:(n:string)=>{route=n;return n},get:()=>({fetch:async(r:Request)=>{headers=r.headers;return Response.json({ok:true})}})}}
  assert.equal((await enabled(request('user123'),env)).status,401)
