@@ -1,0 +1,794 @@
+{
+  "kind": "synthetic-source-mapping-dry-run",
+  "sourceCartridgeId": "last-train-to-dawn",
+  "targetCartridgeId": "carriage-07",
+  "sourceFiles": {
+    "src/story/cartridges/lastTrainToDawn.ts": "5963f1b90aa5153bba855ef28772779a4cfaf80bf57afd1483ee5e385c930b29",
+    "src/story/types.ts": "d00d5e9abc9c3f3a0c1a6ca6f40e6a20da03dd65483a664d423d232a356f8373",
+    "src/story/engine/reducer.ts": "d4fb6475b885a48fce5ab1c86a62e8e380e142768910347602087f417013202a",
+    "src/story/engine/executeTurn.ts": "ae4ec9e37d0d206d436fdcb3be36ce5de4ae4b6f46f1e4fc83c14819233c8e68"
+  },
+  "catalog": {
+    "characters": [
+      {
+        "id": "ada-mechanic",
+        "name": "阿达",
+        "role": "机修学徒",
+        "hiddenUntilIntroduced": false
+      },
+      {
+        "id": "ren-medic",
+        "name": "任医生",
+        "role": "乡镇急诊医生",
+        "hiddenUntilIntroduced": true
+      },
+      {
+        "id": "lin-scout",
+        "name": "林澈",
+        "role": "线路巡检员",
+        "hiddenUntilIntroduced": true
+      },
+      {
+        "id": "mara-raider",
+        "name": "玛柯",
+        "role": "货场守卫队长",
+        "hiddenUntilIntroduced": true
+      }
+    ],
+    "locations": [
+      {
+        "id": "dead-station",
+        "label": "北岬死站"
+      },
+      {
+        "id": "river-valley",
+        "label": "河谷支线"
+      },
+      {
+        "id": "graystone-yard",
+        "label": "灰石货场"
+      },
+      {
+        "id": "pine-line",
+        "label": "黑松林线"
+      },
+      {
+        "id": "tunnel",
+        "label": "白石隧道"
+      },
+      {
+        "id": "mountain-pass",
+        "label": "山口线"
+      },
+      {
+        "id": "sleeping-town",
+        "label": "沉睡小城"
+      },
+      {
+        "id": "dawn-junction",
+        "label": "黎明枢纽"
+      }
+    ],
+    "stats": [
+      {
+        "id": "fuel",
+        "label": "燃料"
+      },
+      {
+        "id": "condition",
+        "label": "车况"
+      },
+      {
+        "id": "morale",
+        "label": "人心"
+      }
+    ],
+    "initialItems": [
+      {
+        "id": "master-switch-key",
+        "label": "总调度钥匙"
+      },
+      {
+        "id": "field-radio",
+        "label": "铁路电台"
+      },
+      {
+        "id": "spare-hose",
+        "label": "制动软管"
+      }
+    ],
+    "rules": [
+      "repair-starter",
+      "salvage-fuel-shed",
+      "inspect-brakes",
+      "replace-brake-hose",
+      "commit-valley-route",
+      "commit-quarry-route",
+      "commit-forest-route",
+      "use-master-switch-key"
+    ]
+  },
+  "results": [
+    {
+      "locale": "zh",
+      "stage": "opening",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "dead-station"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 7,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "zh",
+      "stage": "repair-starter",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "dead-station"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 12,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "zh",
+      "stage": "salvage-fuel-shed",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "dead-station"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        },
+        {
+          "id": "sealed-diesel",
+          "count": 2
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 19,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "zh",
+      "stage": "commit-valley-route",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "river-valley"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        },
+        {
+          "id": "sealed-diesel",
+          "count": 2
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 27,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "en",
+      "stage": "opening",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "dead-station"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 7,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "en",
+      "stage": "repair-starter",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "dead-station"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 12,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "en",
+      "stage": "salvage-fuel-shed",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "dead-station"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        },
+        {
+          "id": "sealed-diesel",
+          "count": 2
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 19,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    },
+    {
+      "locale": "en",
+      "stage": "commit-valley-route",
+      "sourceVersion": 8,
+      "currentLocations": [
+        "river-valley"
+      ],
+      "knownCharacters": [
+        "ada-mechanic"
+      ],
+      "inventory": [
+        {
+          "id": "master-switch-key",
+          "count": 1
+        },
+        {
+          "id": "field-radio",
+          "count": 1
+        },
+        {
+          "id": "spare-hose",
+          "count": 1
+        },
+        {
+          "id": "sealed-diesel",
+          "count": 2
+        }
+      ],
+      "statIds": [
+        "fuel",
+        "condition",
+        "morale"
+      ],
+      "historyBlocks": 27,
+      "hasFinale": true,
+      "hasJobs": false,
+      "sourceUnchanged": true,
+      "status": "not-ready",
+      "issues": [
+        {
+          "code": "CARTRIDGE_ID_MISMATCH",
+          "id": "last-train-to-dawn"
+        },
+        {
+          "code": "STORY_SCHEMA_REQUIRES_ADAPTER",
+          "id": "8"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dead-station"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "river-valley"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "graystone-yard"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "pine-line"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "tunnel"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "mountain-pass"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "sleeping-town"
+        },
+        {
+          "code": "LOCATION_MAPPING_MISSING",
+          "id": "dawn-junction"
+        },
+        {
+          "code": "CHARACTER_MAPPING_MISSING",
+          "id": "ada-mechanic"
+        }
+      ],
+      "candidate": null
+    }
+  ],
+  "verdict": "current-carriage-world-is-not-an-original-save-migration-target",
+  "requiredWork": [
+    "preserve original cartridge and engine state rather than renaming identities",
+    "bind railway regions to explicit interior rooms",
+    "retain original finale semantics or implement a verified schema adapter",
+    "prepare original characters and regions before spatial activation"
+  ],
+  "writes": 0,
+  "networkCalls": 0
+}

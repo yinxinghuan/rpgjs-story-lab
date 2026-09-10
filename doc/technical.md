@@ -249,3 +249,10 @@ carriage-spatial-binding.ts从正在运行的scene-layout.ts和contract.ts导出
 
 实际CUA在独立本机新旅程复验：地图走近柜子→按钮开柜→预设模式自由输入“取出保险丝”→柜内变空→林的可见首次介绍→配电箱消耗保险丝并恢复照明→连接门进入真实行李车。390×844行李车实际renderer截图与当前场景热点一致；此操作没有调用在线模型。
 刷新后实际行李车与目标保持，浏览器warn/error日志为空。cloud/Worker、Pages和preflight构建全部通过，秘密/API base审计通过。
+
+### 原作存档与区域/房间两级空间（2026-09-10）
+
+实际原作last-train-to-dawn仍为StorySave v8并有独立finale，主游戏为v10；原作指标/角色/地点和车厢不同。只读演练读取原源码、调用离线作者回退生成8份中英文新快照，均未改动源快照，明确拒绝当作carriage-07直接导入。源文件摘要、当前目录与细项报告见original-rpg-mapping-audit.json；具体边界与下一步见original-rpg-spatial-mapping.md。没有访问真实玩家存档或生产API。
+
+空间绑定增加可选storyLocationId（默认scene.id，保持主游戏兼容），分开剧情区域与引擎房间。同区域门户不必修改map；跨区域必须匹配作者map效果。多房间区域恢复要求显式sceneId。dryRunSpatialAttachment只产出独立空间附件草案，完整深拷贝原引擎数据，保留v8 finale等额外字段；不执行schema转换、不替换权威服务。161项回归通过，包含旧v8状态保留、缺少落点/素材拒绝、同区域房间与跨区域规则；多房间数据测试不等于原作RPG-JS运行验收。
+本轮本机真实Worker两条主线及支线/终章/备份共204请求通过；cloud/Worker、Pages、preflight构建及秘密/API base审计通过。未部署正式站点，未提供HTTP导入入口。
