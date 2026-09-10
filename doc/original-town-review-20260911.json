@@ -1,0 +1,36 @@
+{
+  "scope": "Original-v8 Sleeping Town chapter and distinct bridge-approach room in the existing game",
+  "newActions": 12,
+  "mapVersion": "original-train-authoring-8",
+  "storyMapNodes": 8,
+  "spatialRooms": 9,
+  "bridgeApproachRoom": "train-at-flood-bridge",
+  "bridgeStoryRegion": "dawn-junction",
+  "tests": {"newPassed": 53, "fullPassed": 369, "openingToApproachRuns": 48},
+  "matrix": {"locales": ["zh", "en"], "routes": ["quarry", "valley", "forest"], "aid": ["broadcast", "reserve"], "rules": ["public", "emergency"], "rest": [true, false]},
+  "verified": [
+    "Fresh opening through prior authored chapters to bridge approach for all matrix combinations",
+    "Broadcast has real fuel cost, public rules preserve prior promises, policies settle once",
+    "Rest changes recorded time and flood warning without a wall-clock timer",
+    "Actual retained diesel converts one can at a time; tunnel-discarded stock stays absent",
+    "Bridge kit acquired once under its original stable item ID",
+    "Finite repair and refuel permit departure from synthetic zero resources",
+    "Original characters, party, relationships and route history preserved",
+    "Near-bank room and junction interior share one source region but stay distinct spatial rooms",
+    "Town departure does not mark bridge completion, session end or true ending readiness",
+    "Lost departure receipt recovered by reconstructed OriginalSessionClient through the same action ID",
+    "v7 metadata upgrade preserves save and position",
+    "Missing generator or bridge presentation rejects the complete transaction",
+    "Question, negation and protocol-shaped inputs rejected",
+    "369 tests, cloud frontend/Worker build and secret/API audits pass"
+  ],
+  "limitations": [
+    "Explicit test presentation acceptance is not real asset admission",
+    "Client recovery uses injected transport and SQLite, not live HTTP or browser",
+    "No new physical iPhone, native AlterU, real model/media or image-processing evidence",
+    "Bridge crossing and junction/finale progression remain incomplete",
+    "Actual original scenes, characters and production HTTP/UI still pending",
+    "No deployment; main and Pages remain 05db41c"
+  ],
+  "realPlayerDataRead": false
+}

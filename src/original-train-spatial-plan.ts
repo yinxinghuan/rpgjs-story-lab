@@ -4,8 +4,9 @@ import type {SpatialBindingDefinition} from './spatial-binding'
 export const originalTrainLocations=['dead-station','river-valley','graystone-yard','pine-line','tunnel','mountain-pass','sleeping-town','dawn-junction'] as const
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
-export const originalChapterMapVersion='original-train-authoring-7'
-export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5','original-train-authoring-6',originalChapterMapVersion] as const
+export const originalFloodBridgeRoom='train-at-flood-bridge'
+export const originalChapterMapVersion='original-train-authoring-8'
+export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5','original-train-authoring-6','original-train-authoring-7',originalChapterMapVersion] as const
 export function originalTrainSpatialPlan():SpatialBindingDefinition{
  const scenes=originalTrainLocations.map(id=>({id:originalTrainRoom(id),storyLocationId:id,spawn:{x:192,y:430}}))
  const initial=originalTrainRoom('dead-station')
@@ -74,10 +75,27 @@ export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  world.entities.find(e=>e.id===pass+'-mara-raider')!.actions=['pass-mako-duty']
  world.entities.find(e=>e.id===pass+'-ada-mechanic')!.actions=['pass-stabilize']
  world.portals.push({actionId:'pass-depart',fromScene:pass,scene:originalTrainRoom('sleeping-town'),position:{x:192,y:430}})
+ const town=originalTrainRoom('sleeping-town')
+ world.entities.push(
+  {id:'town-platform-board',scene:town,position:{x:110,y:160},approach:{x:110,y:185},states:['unchecked','read'],actions:['town-inspect','town-route-brief']},
+  {id:'town-generator',scene:town,position:{x:270,y:360},approach:{x:270,y:385},states:['silent','broadcast'],actions:['town-grid-aid','town-keep-reserve']},
+  {id:'town-carriage-register',scene:town,position:{x:150,y:380},approach:{x:150,y:405},states:['undecided','public','emergency'],actions:['town-public-rules','town-emergency-command','town-rest']},
+  {id:'town-supply-point',scene:town,position:{x:100,y:480},approach:{x:100,y:505},states:['stocked','empty'],actions:['town-refuel','town-use-diesel','town-pack-kit']},
+  {id:'town-exit',scene:town,position:{x:280,y:480},approach:{x:280,y:505},states:['waiting','bridge'],actions:['town-depart']},
+ )
+ world.entities.find(e=>e.id===town+'-ada-mechanic')!.actions=['town-repair']
+ world.scenes.push({id:originalFloodBridgeRoom,storyLocationId:'dawn-junction',spawn:{x:192,y:430}})
+ for(const [index,id] of characters.entries()){
+  const entityId=originalFloodBridgeRoom+'-'+id
+  world.entities.push({id:entityId,scene:originalFloodBridgeRoom,position:{x:80+index*70,y:270},approach:{x:80+index*70,y:295},states:['hidden','present','absent'],actions:[]})
+  const character=world.characters.find(c=>c.id===id)!
+  character.entities=[...character.entities,entityId]
+ }
+ world.portals.push({actionId:'town-depart',fromScene:town,scene:originalFloodBridgeRoom,position:{x:192,y:430}})
  return world
 }
 // North Cape v2: shared projected footprint, also exported into its TMX.
 // Other regions remain authoring candidates until their own background review.
 export const originalTrainObstacles=[{x:0,y:0,w:60,h:576},{x:336,y:0,w:48,h:576},{x:0,y:0,w:384,h:16},{x:0,y:560,w:384,h:16},{x:146,y:0,w:90,h:248},{x:17,y:260,w:57,h:134}]
 export const originalTrainObstaclesFor=(scene:string)=>scene===originalTrainRoom('river-valley')?[{x:0,y:0,w:384,h:310},{x:0,y:310,w:32,h:266},{x:352,y:310,w:32,h:266},{x:0,y:560,w:384,h:16}]:originalTrainObstacles
-export const originalTrainPlanWalkable=(scene:string,p:{x:number;y:number})=>originalTrainLocations.some(id=>originalTrainRoom(id)===scene)&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x+9<=384&&p.y>=0&&p.y+15<=576&&!originalTrainObstaclesFor(scene).some(o=>p.x+9>o.x&&p.x<o.x+o.w&&p.y+15>o.y&&p.y<o.y+o.h)
+export const originalTrainPlanWalkable=(scene:string,p:{x:number;y:number})=>(scene===originalFloodBridgeRoom||originalTrainLocations.some(id=>originalTrainRoom(id)===scene))&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x+9<=384&&p.y>=0&&p.y+15<=576&&!originalTrainObstaclesFor(scene).some(o=>p.x+9>o.x&&p.x<o.x+o.w&&p.y+15>o.y&&p.y<o.y+o.h)
