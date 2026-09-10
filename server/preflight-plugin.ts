@@ -7,6 +7,7 @@ export function preflightPlugin(){
  // Explicit loopback-only fault injection, absent from cloud/Pages plugins.
  const failAsset=process.env.CARRIAGE_QA_ASSET_FAIL_ONCE
  let assetFailed=false
+ let mismatchOnce=process.env.CARRIAGE_QA_RUNTIME_MISMATCH_ONCE==='1'
  const databases:DatabaseSync[]=[],objects=new Map<string,CarriageJourneyAuthority>()
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
   const owner=String(id);let object=objects.get(owner)
@@ -19,6 +20,7 @@ export function preflightPlugin(){
   if(failAsset&&!assetFailed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===failAsset&&url.searchParams.has('scene_asset')){assetFailed=true;res.writeHead(503,{'Cache-Control':'no-store'});res.end('Synthetic scene resource failure');return}
   if(!url.pathname.startsWith(prefix+'/api/lab'))return next()
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){res.writeHead(403);res.end();return}
+  if(mismatchOnce&&url.pathname===prefix+'/api/lab/health'){mismatchOnce=false;res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({ok:true,runtimeContract:'synthetic-previous-runtime'}));return}
   void(async()=>{try{
    let size=0;const chunks:Buffer[]=[];for await(const chunk of req){size+=chunk.length;if(size>6000){res.writeHead(413);res.end();return}chunks.push(Buffer.from(chunk))}
    url.pathname=url.pathname.slice(prefix.length)

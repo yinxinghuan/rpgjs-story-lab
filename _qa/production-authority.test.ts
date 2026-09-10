@@ -1,4 +1,5 @@
 import {test} from 'node:test'
+import {RUNTIME_CONTRACT,RUNTIME_HEADER} from '../src/runtime-contract'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
 import {randomUUID,randomBytes} from 'node:crypto'
@@ -45,7 +46,7 @@ test('a delayed turn cannot overwrite an unsupported deployment snapshot at the 
 })
 test('stale checkpoint cannot move a later head',async()=>{const {service:s,raw}=setup(),h=s.create('a',randomUUID(),'en'),r=await s.action('a',h.id,intent(h,'cabinet','open-cabinet'));assert.throws(()=>s.checkpoint('a',h.id,{sceneId:'carriage',expected_version:0,position:{x:188,y:330}}),/STALE_POSITION/);assert.deepEqual(s.get('a',h.id),r.head);raw.close()})
 test('approved production boundary requires capability; disabled rollback remains closed',async()=>{
- const request=(token?:string)=>new Request('https://example.test/api/lab/sessions',{method:'POST',headers:{Authorization:'Bearer '+(token??''),'X-Authority-Owner':'forged'},body:JSON.stringify({enrollment_id:randomUUID(),locale:'zh'})})
+ const request=(token?:string)=>new Request('https://example.test/api/lab/sessions',{method:'POST',headers:{[RUNTIME_HEADER]:RUNTIME_CONTRACT,Authorization:'Bearer '+(token??''),'X-Authority-Owner':'forged'},body:JSON.stringify({enrollment_id:randomUUID(),locale:'zh'})})
  assert.equal((await createHandler(false)(request(),{})).status,503)
  assert.equal((await handleApi(new Request('https://example.test/api/lab/health'),{})).status,200)
  assert.equal((await handleApi(request(),{CARRIAGE_JOURNEYS:{idFromName:n=>n,get:()=>({fetch:async()=>Response.json({})})}})).status,401)
@@ -59,7 +60,7 @@ test('approved production boundary requires capability; disabled rollback remain
 test('actual Durable Object adapter enrolls and replays an action on SQLite',async()=>{
  const raw2=new DatabaseSync(':memory:');const sync=<T>(work:()=>T)=>{raw2.exec('BEGIN');try{const r=work();raw2.exec('COMMIT');return r}catch(e){raw2.exec('ROLLBACK');throw e}}
  const actual=new CarriageJourneyAuthority({storage:{sql:{exec:(q,...b)=>{const stmt=raw2.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:sync}})
- const call=(path:string,body?:unknown)=>actual.fetch(new Request('https://authority.test/api/lab'+path,{method:body?'POST':'GET',headers:{'X-Authority-Owner':'a'.repeat(64)},body:body?JSON.stringify(body):undefined}))
+ const call=(path:string,body?:unknown)=>actual.fetch(new Request('https://authority.test/api/lab'+path,{method:body?'POST':'GET',headers:{[RUNTIME_HEADER]:RUNTIME_CONTRACT,'X-Authority-Owner':'a'.repeat(64)},body:body?JSON.stringify(body):undefined}))
  const h=await (await call('/sessions',{enrollment_id:randomUUID(),locale:'en'})).json() as Head,b=intent(h,'cabinet','open-cabinet'),r=await (await call('/sessions/'+h.id+'/actions',b)).json()
  assert.equal(r.accepted,true);assert.deepEqual(await (await call('/sessions/'+h.id+'/actions',b)).json(),r);assert.equal((await (await call('/sessions/'+h.id+'/events?after=0')).json()).events.length,1)
  raw2.close()
@@ -100,7 +101,7 @@ test('online mode is opt-in in the actual Worker authority and plain buttons nev
  const raw=new DatabaseSync(':memory:');let requests=0
  const ctx={storage:{sql:{exec:(q:string,...b:any[])=>{const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}}
  const actual=new CarriageJourneyAuthority(ctx,undefined,async()=>++requests%2?{kind:'action',actionId:'open-cabinet'}:{valid:true,issues:[]})
- const call=async(path:string,body?:unknown)=>actual.fetch(new Request('https://authority.test/api/lab'+path,{method:body?'POST':'GET',headers:{'X-Authority-Owner':'b'.repeat(64)},body:body?JSON.stringify(body):undefined}))
+ const call=async(path:string,body?:unknown)=>actual.fetch(new Request('https://authority.test/api/lab'+path,{method:body?'POST':'GET',headers:{[RUNTIME_HEADER]:RUNTIME_CONTRACT,'X-Authority-Owner':'b'.repeat(64)},body:body?JSON.stringify(body):undefined}))
  let h=await (await call('/sessions',{enrollment_id:randomUUID(),locale:'zh'})).json() as Head
  const localBody={...intent(h,'cabinet',''),type:'free-input',text:'帮我把这扇柜门拉开。'}
  h=(await (await call('/sessions/'+h.id+'/actions',localBody)).json()).head
@@ -129,4 +130,16 @@ test('online allowance persists across authority restarts, falls back without bl
  time+=60000;const fresh=await service.action('quota-test',h.id,request())
  assert.equal(fresh.trace.mode,'live');assert.equal(onlineCalls,7)
  raw.close()
+})
+
+test('old or mismatched clients cannot reach the authority for reads or writes',async()=>{
+ let forwarded=0
+ const env={CARRIAGE_JOURNEYS:{idFromName:(n:string)=>n,get:()=>({fetch:async()=>{forwarded++;return Response.json({})}})}}
+ for(const contract of [null,'previous-release'])for(const method of ['GET','POST']){
+  const headers=new Headers({Authorization:'Bearer '+randomBytes(32).toString('base64url')});if(contract)headers.set(RUNTIME_HEADER,contract)
+  const response=await handleApi(new Request('https://example.test/api/lab/sessions',{method,headers,body:method==='POST'?'{}':undefined}),env)
+  assert.equal(response.status,409);assert.equal((await response.json()).error,'RUNTIME_VERSION_MISMATCH')
+ }
+ assert.equal(forwarded,0)
+ const health=await (await handleApi(new Request('https://example.test/api/lab/health'),env)).json();assert.equal(health.runtimeContract,RUNTIME_CONTRACT)
 })

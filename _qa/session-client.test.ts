@@ -33,3 +33,22 @@ test('cloud capability and timeout transport never touch legacy keys or fallback
 test('runtime selection keeps Pages and explicit legacy separate from cloud failures',()=>{assert.equal(selectRuntime('pages','yinxinghuan.github.io',''),'browser');assert.equal(selectRuntime('cloud','game.aiwaves.tech',''),'cloud');assert.equal(selectRuntime('cloud','game.aiwaves.tech','?story_runtime=legacy'),'browser');assert.equal(selectRuntime('cloud','yinxinghuan.github.io',''),'mirror');assert.equal(selectRuntime('development','localhost',''),'local')})
 
 test('lost restart response finishes the new enrollment rather than silently returning the old session',async()=>{const {storage,store,transport,client}=setup(),old=await client.enroll('en');let fail=true;const flaky:Transport=async(p,b)=>{const r=await transport(p,b);if(p==='/sessions'&&fail){fail=false;throw Error('RESTART_LOST')}return r};await assert.rejects(new SessionClient(storage,'test-',flaky).enroll('zh',true),/RESTART_LOST/);const pending=client.read<any>('enrollment-pending',null);const restored=await new SessionClient(storage,'test-',flaky).enroll('en');assert.notEqual(restored.id,old.id);assert.equal(restored.save.locale,'zh');assert.equal(client.read('enrollment-pending',null),null);assert.equal(restored.id,(await store.create(pending.enrollment_id,'zh')).id);await store.close()})
+
+test('cloud handshake refuses old server before posting and retries when compatible',async()=>{
+ const {RUNTIME_CONTRACT,RUNTIME_HEADER}=await import('../src/runtime-contract')
+ const storage=new MemoryStorage(),lock=async<T>(_n:string,f:()=>Promise<T>)=>f();let current=false,posts=0,healths=0
+ const request:typeof fetch=async(url,options)=>{
+  assert.equal(new Headers(options?.headers).get(RUNTIME_HEADER),RUNTIME_CONTRACT)
+  if(String(url).endsWith('/health')){healths++;return Response.json(current?{runtimeContract:RUNTIME_CONTRACT}:{ok:true})}
+  posts++;return Response.json({ok:true},{headers:{[RUNTIME_HEADER]:RUNTIME_CONTRACT}})
+ }
+ const api=cloudTransport(storage,'version-','/game/api/lab',lock,request)
+ await assert.rejects(api('/sessions',{enrollment_id:randomUUID()}),/RUNTIME_VERSION_MISMATCH/);assert.equal(posts,0)
+ current=true;await api('/sessions',{enrollment_id:randomUUID()});await api('/sessions')
+ assert.equal(healths,2);assert.equal(posts,2)
+})
+test('cloud response from another runtime is not adopted after a successful handshake',async()=>{
+ const {RUNTIME_CONTRACT}=await import('../src/runtime-contract')
+ const api=cloudTransport(new MemoryStorage(),'version-','/game/api/lab',async(_n,f)=>f(),async url=>Response.json(String(url).endsWith('/health')?{runtimeContract:RUNTIME_CONTRACT}:{version:999}))
+ await assert.rejects(api('/sessions'),/RUNTIME_VERSION_MISMATCH/)
+})

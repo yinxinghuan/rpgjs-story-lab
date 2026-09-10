@@ -1,13 +1,14 @@
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {LabError} from '../src/journey-runtime'
 import {propose,type ModelRequest} from '../server/model'
+import {RUNTIME_CONTRACT,RUNTIME_HEADER,RELEASE_ID} from '../src/runtime-contract'
 // Runtime capability; players opt in separately through an explicit live envelope.
 export const ONLINE_NARRATION_AVAILABLE=true
 // User approved this bounded new-journey capability trial on 2026-09-10.
 export const PRODUCTION_WRITES_ENABLED=true
 interface Namespace{ idFromName(name:string):unknown;get(id:unknown):{fetch(request:Request):Promise<Response>} }
 interface Environment{CARRIAGE_JOURNEYS?:Namespace}
-const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store'}})
+const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT}})
 async function body(request:Request){
  const reader=request.body?.getReader();if(!reader)return {}
  let size=0;const chunks:Uint8Array[]=[]
@@ -18,7 +19,7 @@ async function body(request:Request){
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
 export function createHandler(writesEnabled:boolean){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
- if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return json({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:'carriage-cloud-trial-20260910-1'})
+ if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return json({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:RELEASE_ID,runtimeContract:RUNTIME_CONTRACT})
  if(!path.startsWith('/api/lab/'))return json({error:'NOT_FOUND'},404)
  if(!writesEnabled)return json({error:'PRODUCTION_IDENTITY_NOT_ENABLED'},503)
  if(!env.CARRIAGE_JOURNEYS)return json({error:'AUTHORITY_UNAVAILABLE'},503)
@@ -26,10 +27,11 @@ export function createHandler(writesEnabled:boolean){return async(request:Reques
  if(!token)return json({error:'AUTH_REQUIRED'},401)
  // Decode/re-encode uniqueness: a 32-byte base64url capability has a constrained tail.
  if(!/[AEIMQUYcgkosw048]$/.test(token))return json({error:'AUTH_REQUIRED'},401)
+ if(request.headers.get(RUNTIME_HEADER)!==RUNTIME_CONTRACT)return json({error:'RUNTIME_VERSION_MISMATCH'},409)
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)),owner=Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('')
  try{
   const payload=request.method==='GET'?undefined:JSON.stringify(await body(request))
-  const forwarded=new Request(request.url,{method:request.method,headers:{'Content-Type':'application/json','X-Authority-Owner':owner},body:payload})
+  const forwarded=new Request(request.url,{method:request.method,headers:{'Content-Type':'application/json','X-Authority-Owner':owner,[RUNTIME_HEADER]:RUNTIME_CONTRACT},body:payload})
   return await env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName(owner)).fetch(forwarded)
  }catch(e){return failure(e)}
 }}
@@ -43,6 +45,7 @@ export class CarriageJourneyAuthority{
  }
  async fetch(request:Request){try{
   const owner=request.headers.get('X-Authority-Owner');if(!owner||!/^[a-f0-9]{64}$/.test(owner))throw new LabError('AUTH_REQUIRED',401)
+  if(request.headers.get(RUNTIME_HEADER)!==RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice('/api/lab'.length)
   if(path==='/sessions'&&request.method==='GET')return json({sessions:this.authority.directory(owner)})
   if(path==='/sessions'&&request.method==='POST'){const b=await body(request);return json(this.authority.create(owner,b.enrollment_id,b.locale==='en'?'en':'zh'))}
