@@ -1,0 +1,31 @@
+{
+  "scope": "Original-v8 Graystone Yard chapter inside existing main-game authority",
+  "actionsAdded": 11,
+  "spatialVersion": "original-train-authoring-5",
+  "tests": {"fullPassed": 274, "newPassed": 18, "openingToMountainRuns": 14, "actionsPerRoute": {"quarry": 12, "valley": 15}},
+  "matrix": {"locales": ["zh", "en"], "arrival": ["quarry-first-and-return", "valley-after-tunnel"], "agreement": ["medical", "work", "forced"], "escort": ["joined", "stayed"], "constraints": ["medical requires actual Ren companion", "forced excludes joined"]},
+  "evidence": [
+    "New opening through actual SQLite actions to Mountain Pass with original identities and resources",
+    "Visible Mako introduction precedes named choices and interaction",
+    "First quarry visit settles once; tunnel return retains agreement, inventory losses and relationship",
+    "Medical, repair and forced fuel policies have distinct costs and cannot be combined",
+    "Hostile seizure disallows Mako joining; consequence disclosed before selection",
+    "Companions follow; known characters who remain at the yard cannot be addressed in another region",
+    "One condition recovery and one independent starting reserve resolve synthetic zero resources without a doctor",
+    "Source v8 opening Ada location exception retained",
+    "Receipt replay through a reconstructed authority; final head reread from same SQLite database",
+    "Presentation failure rejects debut, pump effects or departure before any durable head write",
+    "Question, negation and appended protocol rejected without mutation",
+    "v4-to-v5 metadata upgrade preserves StorySave",
+    "274 regression tests and cloud frontend/Worker build pass; public-secret and API-base audits pass"
+  ],
+  "limitations": [
+    "Chapter tests explicitly inject presentation acceptance, not real art admission",
+    "No new original HTTP/UI, actual yard renderer or production deployment",
+    "No new disk-reopen test in this chapter; existing session and river tests cover separate persistence cases",
+    "Forest, pass, town, junction and full original finale route remain incomplete",
+    "No real-image processing, model/media request, physical iPhone or native platform test",
+    "Main and Pages remain at 05db41c"
+  ],
+  "realPlayerSavesRead": false
+}

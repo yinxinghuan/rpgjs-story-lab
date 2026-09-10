@@ -3,6 +3,7 @@ import {executeBoundStoryTurn} from '../src/bound-story-turn'
 import {compileSpatialBinding} from '../src/spatial-binding'
 import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable,originalTrainRoom,originalCompatibleMapVersions} from '../src/original-train-spatial-plan'
 import {originalChapterActions,originalChapterBindingRules,originalChapterLabel,resolveOriginalChapter,executeOriginalChapter,projectOriginalChapterChoices} from '../src/original-chapters'
+import {originalCharacterPresent} from '../src/original-character-presence'
 import {lastTrainToDawn,lastTrainToDawnEn} from '../src/vendor/original-train/cartridges/lastTrainToDawn'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {executeStoryTurn,type StoryTurnGenerator} from '../src/vendor/original-train/engine/executeTurn'
@@ -46,7 +47,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    if(!entity)throw new LabError('UNKNOWN_ENTITY')
    if(!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('TOO_FAR')
    const person=world.characters.find(p=>p.entities.includes(entity.id))
-   if(person&&!h.save.characters.some(p=>p.id===person.id&&p.status!=='departed'))throw new LabError('CHARACTER_NOT_PRESENT')
+   if(person&&!originalCharacterPresent(h.save,person.id))throw new LabError('CHARACTER_NOT_PRESENT')
    let input:string
    if(body.type==='action'){
     const rule=c.domainRules?.rules.find(r=>r.id===body.action)

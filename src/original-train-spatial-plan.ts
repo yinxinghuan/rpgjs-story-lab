@@ -4,8 +4,8 @@ import type {SpatialBindingDefinition} from './spatial-binding'
 export const originalTrainLocations=['dead-station','river-valley','graystone-yard','pine-line','tunnel','mountain-pass','sleeping-town','dawn-junction'] as const
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
-export const originalChapterMapVersion='original-train-authoring-4'
-export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3',originalChapterMapVersion] as const
+export const originalChapterMapVersion='original-train-authoring-5'
+export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4',originalChapterMapVersion] as const
 export function originalTrainSpatialPlan():SpatialBindingDefinition{
  const scenes=originalTrainLocations.map(id=>({id:originalTrainRoom(id),storyLocationId:id,spawn:{x:192,y:430}}))
  const initial=originalTrainRoom('dead-station')
@@ -43,6 +43,15 @@ export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  world.entities.find(e=>e.id===tunnel+'-ren-medic')!.actions=['tunnel-doctor-led']
  world.entities.find(e=>e.id===tunnel+'-ada-mechanic')!.actions=['tunnel-stabilize']
  world.portals.push({actionId:'tunnel-depart',fromScene:tunnel,scene:originalTrainRoom('graystone-yard'),position:{x:192,y:430}})
+ const yard=originalTrainRoom('graystone-yard')
+ world.entities.push(
+  {id:'yard-gate',scene:yard,position:{x:110,y:160},approach:{x:110,y:185},states:['guarded','introduced'],actions:['yard-meet']},
+  {id:'yard-pump',scene:yard,position:{x:270,y:360},approach:{x:270,y:385},states:['broken','repaired','forced'],actions:['yard-work-pact','yard-force-pump','yard-starting-reserve']},
+  {id:'yard-exit',scene:yard,position:{x:280,y:480},approach:{x:280,y:505},states:['waiting','tunnel','pass'],actions:['yard-first-exit','yard-depart']},
+ )
+ world.entities.find(e=>e.id===yard+'-mara-raider')!.actions=['yard-medical-pact','yard-route-brief','yard-invite','yard-stay']
+ world.entities.find(e=>e.id===yard+'-ada-mechanic')!.actions=['yard-stabilize']
+ world.portals.push({actionId:'yard-first-exit',fromScene:yard,scene:tunnel,position:{x:192,y:430}},{actionId:'yard-depart',fromScene:yard,scene:originalTrainRoom('mountain-pass'),position:{x:192,y:430}})
  return world
 }
 // North Cape v2: shared projected footprint, also exported into its TMX.
