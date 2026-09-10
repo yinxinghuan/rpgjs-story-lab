@@ -49,7 +49,7 @@
       "sceneId": "train-at-river-valley",
       "position": {
         "x": 280,
-        "y": 105
+        "y": 360
       },
       "stats": {
         "fuel": 76,
@@ -208,7 +208,7 @@
       "sceneId": "train-at-river-valley",
       "position": {
         "x": 280,
-        "y": 105
+        "y": 360
       },
       "stats": {
         "fuel": 76,
@@ -328,7 +328,7 @@
     }
   ],
   "limits": [
-    "authoring geometry; no original room art admitted",
+    "authoring geometry; this source-turn check does not grant art admission",
     "not an RPG-JS renderer pass",
     "no production save import",
     "no model requests",

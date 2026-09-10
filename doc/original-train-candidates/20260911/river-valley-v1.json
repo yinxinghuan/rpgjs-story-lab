@@ -1,0 +1,18 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-09-11",
+  "sourceImage": "/Users/yin/.codex/generated_images/01a07c60-ff88-7ff1-addc-c6da7a2f5fc6/exec-11639b48-cf12-427a-b206-94b623e1a8e3.png",
+  "reference": "north-cape-v2.png",
+  "prompt": "Create ONE opaque 1024x1536 portrait game-map background for the River Valley chapter of an overhead 2D railway narrative RPG. The supplied North Cape map is a STYLE, SCALE and CAMERA reference only. Preserve its crisp richly textured pixel-art impression, parallel orthogonal edges, visible top surfaces, dark wet blue-gray stone and sparse warm amber lamps. This is NOT isometric, NO vanishing point, NO perspective diminution, no tilted horizon. New location: a flooded river valley before dawn, with a visibly damaged small rail bridge and a clinic roof far across the river. Composition: the bottom half is a safe near-bank service apron, broad rectangular damp stone ground with clear walking space from bottom center to bridge approach in middle. A straight railway runs vertically up the center from the bottom edge to a broken narrow bridge in the upper half; the bridge has ONE surviving steel rail and exposed maintenance beam over turbulent dark water, clearly unsafe. Water occupies the upper-middle horizontal band and both sides beyond the stone bank; river surfaces do not look like walkable flooring. The far bank/clinic is environmental background in the topmost fifth, inaccessible from this scene. The clinic is small, ordinary, no readable sign or cross icon. Put permanent low railings only along water edges, not across the open apron. Keep human scale matching the reference: railing posts small, no giant doors or giant furnishings. No locomotive or people visible: the train is immediately below the bottom edge. Do not bake in any changeable equipment, switches, gates, doors, oxygen tanks, fuel cans, loot, interactable props, labels, UI, text, checkerboard, selection circles, or action markers. Only environment and permanent damaged bridge structure. Keep enough clean near-bank floor for characters to walk and inspect the bridge without entering the water.",
+  "status": "preflight-candidate",
+  "notes": [
+    "Opaque environment; no alpha required.",
+    "Near bank only; bridge/water/far bank are inaccessible.",
+    "Far clinic exterior is static scenery, not a usable door or room."
+  ],
+  "sha256": "22a37437b47703bb4b5e27557145e3f80f9898137b13d881f54079725aae71fd",
+  "bytes": 3016350,
+  "width": 1024,
+  "height": 1536,
+  "colorType": 2
+}

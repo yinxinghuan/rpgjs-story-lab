@@ -1,4 +1,5 @@
 import {RendererTransition} from './renderer-transition'
+import {keepWholeMapCamera} from './fixed-map-camera'
 import {Direction} from '@rpgjs/common'
 import {startGame,provideClientGlobalConfig,provideClientModules,provideRpg,type RpgClientEngine} from '@rpgjs/client'
 import {createServer,provideServerModules,type RpgPlayer} from '@rpgjs/server'
@@ -30,7 +31,7 @@ let paused=true,stick={x:0,y:0},pos={...initialPosition},last=0,frame=0,strideDi
 let route:Position[]=[],arrive:(()=>void)|undefined
 const keys=new Set<string>()
 function cancelRoute(){route=[];arrive=undefined;reportDestination(null)}
-function project(){const sprite=client?.getCurrentPlayer();if(sprite&&player){if(sprite.x()!==pos.x)sprite.x.set(pos.x);if(sprite.y()!==pos.y)sprite.y.set(pos.y);if(sprite.direction()!==player.direction())sprite.direction.set(player.direction());sprite.animationFixed=true;if(sprite.animationName()!==player.animationName())sprite.animationName.set(player.animationName())}}
+function project(){if(client)keepWholeMapCamera(client);const sprite=client?.getCurrentPlayer();if(sprite&&player){if(sprite.x()!==pos.x)sprite.x.set(pos.x);if(sprite.y()!==pos.y)sprite.y.set(pos.y);if(sprite.direction()!==player.direction())sprite.direction.set(player.direction());sprite.animationFixed=true;if(sprite.animationName()!==player.animationName())sprite.animationName.set(player.animationName())}}
 function stand(){strideDistance=0;if(player&&player.animationName()!=='stand')player.animationName.set('stand');project()}
 const down=(e:KeyboardEvent)=>{if(!(e.target as HTMLElement)?.matches('input,textarea,select')){const key=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(key)){keys.add(key);cancelRoute();e.preventDefault()}}}
 const up=(e:KeyboardEvent)=>keys.delete(e.key.toLowerCase())

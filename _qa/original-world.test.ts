@@ -25,3 +25,9 @@ test('route between opposite train sides goes around the front, not across the r
  const path=findGridPath({x:110,y:185},{x:260,y:195},walk)
  assert.ok(path.length>0);assert.ok(path.some(p=>p.y>=248));assert.ok(path.every(walk))
 })
+test('river map keeps the full actor on the near bank and reaches all registered candidate positions',()=>{
+ const scene=originalTrainRoom('river-valley'),world=originalTrainSpatialPlan(),spawn=world.scenes.find(s=>s.id===scene)!.spawn,walk=(p:{x:number;y:number})=>originalTrainPlanWalkable(scene,p)
+ for(const p of [{x:188,y:330},{x:80,y:390},{x:290,y:390},...world.entities.filter(e=>e.scene===scene).map(e=>e.approach)]){const path=findGridPath(spawn,p,walk);assert.ok(path.length);assert.ok(path.every(walk))}
+ assert.equal(walk({x:188,y:309}),false);assert.equal(walk({x:188,y:310}),true)
+ for(const p of [{x:188,y:250},{x:188,y:100},{x:28,y:400},{x:345,y:400},{x:188,y:550}]){assert.equal(walk(p),false);assert.equal(findGridPath(spawn,p,walk).length,0)}
+})

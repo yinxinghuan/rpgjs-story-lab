@@ -1,0 +1,61 @@
+{
+  "date": "2026-09-11",
+  "scope": "local preflight; no production deployment or new model calls",
+  "testSuite": {
+    "pass": 197,
+    "fail": 0
+  },
+  "originalClient": {
+    "transport": "in-process adapter to SQLite OriginalTrainAuthority; synthetic presentation permission",
+    "cases": [
+      "lost route response recovers same request and river room with one resource charge",
+      "lost enrollment preserves identity and locale",
+      "terminal rejection preserves reason and clears only own request",
+      "foreign/regressed/wrong-room response retains pending",
+      "unready presentation retains pending for retry"
+    ]
+  },
+  "renderer": {
+    "url": "http://127.0.0.1:5304/?scene_preview=north-cape",
+    "actualSizes": [
+      [
+        1280,
+        720
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "evidence": "CUA rendered screenshots and DOM snapshots in current task; external guest banner dismissed through its Close button",
+    "cases": [
+      "North Cape and River Valley stationary spawn at 192,430 visually aligns before any movement",
+      "bridge approach 188,332 and blocked water request leaves position unchanged",
+      "390 left North Cape service point 112,184 remains visible",
+      "390 left river bank 80,392 remains visible",
+      "desktop full map clears footer",
+      "320 spawn and bridge approach remain above footer; no horizontal overflow; minimum control target 44px",
+      "390 right river bank 292,392 remains visible; minimum target 44px and no overflow"
+    ],
+    "fixedIssue": "RPG-JS default player camera retained separate canvas translation on map change despite correct raw position values",
+    "limits": [
+      "scene selector is a renderer inspection control, not a narrative portal",
+      "not new iPhone hardware or native AlterU testing",
+      "Ada, equipment states, original story UI and production original HTTP remain unready"
+    ]
+  },
+  "carriageBrowser": {
+    "sameSyntheticLocalJourney": true,
+    "checks": [
+      "prior spare fuse x1 restored",
+      "repairer visible introduction",
+      "repair action consumes item and unlocks exit",
+      "actual baggage map transition",
+      "refresh restores baggage map and next objective"
+    ]
+  }
+}
