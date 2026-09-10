@@ -49,7 +49,7 @@ for(const locale of ['zh','en'] as const)for(const method of ['powered','manual'
   assert.equal(h.save.facts['chapter-river-complete'],true);assert.equal(h.save.facts['river-rescue-method'],method)
   assert.equal(h.save.stats.fuel,initial.save.stats.fuel-(method==='powered'?12:6));assert.equal(h.save.stats.condition,initial.save.stats.condition-(method==='manual'?8:0))
   assert.equal(h.save.sessionEnded,false);assert.equal(h.save.finale.status,'idle');assert.equal(h.save.danger.currentThreat,locale==='zh'?'白石隧道烟雾':'Smoke in White Stone Tunnel')
-  assert.deepEqual(h.save.choices,[]);assert.equal(s.events(owner,h.id,0).length,6)
+  assert.ok(h.save.choices.some(c=>c.id==='tunnel-inspect'));assert.equal(s.events(owner,h.id,0).length,6)
  }finally{raw.close();rmSync(folder,{recursive:true,force:true})}
 })
 
@@ -91,10 +91,10 @@ test('missing doctor/oxygen or next-room presentation rejects the whole river tu
  await assert.rejects(s.action(owner,h.id,request(h,'river-depart')),/SYNTHETIC_MISSING_ASSETS/);assert.deepEqual(s.get(owner,h.id),h);assert.equal(h.save.facts['chapter-river-complete'],undefined);raw.close()
 })
 
-test('additive original v2-to-v3 binding upgrade preserves story, positions, cursor and historical action receipt',async()=>{
+test('additive original v2-to-current binding upgrade preserves story, positions, cursor and historical action receipt',async()=>{
  const {raw,db,s}=setup();const h=await arrival(s),b=request(h,'use-master-switch-key'),r=await s.action(owner,h.id,b)
  const old={...r.head,mapVersion:'original-train-authoring-2'};db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(old),h.id)
  const oldReceipt={...r,head:old};db.run('UPDATE receipts SET response=? WHERE owner=? AND action=?',JSON.stringify(oldReceipt),owner,b.action_id)
- const upgraded=s.get(owner,h.id);assert.equal(upgraded.mapVersion,'original-train-authoring-3');assert.deepEqual(upgraded.save,old.save);assert.deepEqual(upgraded.position,old.position)
+ const upgraded=s.get(owner,h.id);assert.equal(upgraded.mapVersion,world.mapVersion);assert.deepEqual(upgraded.save,old.save);assert.deepEqual(upgraded.position,old.position)
  assert.deepEqual(await s.action(owner,h.id,b),oldReceipt);assert.equal(s.directory(owner)[0].cursor,3);assert.deepEqual(s.get(owner,h.id),upgraded);raw.close()
 })

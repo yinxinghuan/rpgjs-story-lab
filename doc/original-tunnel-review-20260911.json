@@ -1,0 +1,28 @@
+{
+  "scope": "Original-v8 White Stone Tunnel chapter inside existing authority",
+  "actionsAdded": 8,
+  "spatialVersion": "original-train-authoring-4",
+  "tests": {"fullPassed": 256, "newPassed": 12, "openingToGraystoneRuns": 8, "actionsPerRun": 11},
+  "matrix": {"locales": ["zh", "en"], "organizers": ["doctor", "captain"], "cargo": ["ventilate", "discard"]},
+  "evidence": [
+    "Actual SQLite writes and new authority instance after each action; exact receipt replay",
+    "River facts, cast membership and clinic relationship persist",
+    "Doctor option requires current companion and adds one professional trust event",
+    "Fuel fan uses 8 fuel; departure uses 4 fuel",
+    "Discard removes only owned diesel cans and spare hoses, recording actual quantities",
+    "No owned reserve items does not fabricate an inventory loss",
+    "Wrong order, questions, negations, protocol-shaped inputs and repeated decisions rejected",
+    "Finite fuel and condition recovery from synthetic zero-resource fixture",
+    "Missing changed-equipment or destination presentation blocks full commit",
+    "Explicit v3-to-v4 binding upgrade preserves StorySave and position",
+    "Cloud frontend and Worker build, public-secret and API-base audits pass"
+  ],
+  "limitations": [
+    "No actual original tunnel renderer, assets or production HTTP/UI admission",
+    "Quarry/forest onward chapters and full finale route incomplete",
+    "No new browser, physical iPhone, native AlterU or real model/media call",
+    "Current media documentation rechecked; no new service capability probe",
+    "Not deployed; main and Pages remain 05db41c"
+  ],
+  "realPlayerSavesRead": false
+}

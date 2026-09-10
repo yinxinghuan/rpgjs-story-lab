@@ -4,6 +4,8 @@ import type {SpatialBindingDefinition} from './spatial-binding'
 export const originalTrainLocations=['dead-station','river-valley','graystone-yard','pine-line','tunnel','mountain-pass','sleeping-town','dawn-junction'] as const
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
+export const originalChapterMapVersion='original-train-authoring-4'
+export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3',originalChapterMapVersion] as const
 export function originalTrainSpatialPlan():SpatialBindingDefinition{
  const scenes=originalTrainLocations.map(id=>({id:originalTrainRoom(id),storyLocationId:id,spawn:{x:192,y:430}}))
  const initial=originalTrainRoom('dead-station')
@@ -21,7 +23,7 @@ export function originalTrainSpatialPlan():SpatialBindingDefinition{
  * Existing v2 rooms/footprints/positions do not change. */
 export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  const world=originalTrainSpatialPlan(),scene=originalTrainRoom('river-valley')
- world.mapVersion='original-train-authoring-3'
+ world.mapVersion=originalChapterMapVersion
  world.entities.push(
   {id:'river-bridge',scene,position:{x:180,y:335},approach:{x:180,y:360},states:['unchecked','surveyed','evacuated'],actions:['river-survey','river-rescue-powered','river-rescue-manual']},
   {id:'river-fuel-locker',scene,position:{x:300,y:480},approach:{x:300,y:505},states:['reserve','empty'],actions:['river-refuel']},
@@ -30,6 +32,17 @@ export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  world.entities.find(e=>e.id===scene+'-ren-medic')!.actions=['river-treat']
  world.entities.find(e=>e.id===scene+'-ada-mechanic')!.actions=['river-stabilize']
  world.portals.push({actionId:'river-depart',fromScene:scene,scene:originalTrainRoom('tunnel'),position:{x:192,y:430}})
+ const tunnel=originalTrainRoom('tunnel')
+ world.entities.push(
+  {id:'tunnel-fan',scene:tunnel,position:{x:110,y:160},approach:{x:110,y:185},states:['stopped','inspected','running'],actions:['tunnel-inspect','tunnel-ventilate']},
+  {id:'tunnel-carriage-aisle',scene:tunnel,position:{x:150,y:380},approach:{x:150,y:405},states:['unaccounted','grouped'],actions:['tunnel-captain-led']},
+  {id:'tunnel-cargo',scene:tunnel,position:{x:270,y:360},approach:{x:270,y:385},states:['retained','unloaded'],actions:['tunnel-discard']},
+  {id:'tunnel-reserve',scene:tunnel,position:{x:100,y:480},approach:{x:100,y:505},states:['reserve','empty'],actions:['tunnel-refuel']},
+  {id:'tunnel-exit',scene:tunnel,position:{x:280,y:480},approach:{x:280,y:505},states:['waiting','clear'],actions:['tunnel-depart']},
+ )
+ world.entities.find(e=>e.id===tunnel+'-ren-medic')!.actions=['tunnel-doctor-led']
+ world.entities.find(e=>e.id===tunnel+'-ada-mechanic')!.actions=['tunnel-stabilize']
+ world.portals.push({actionId:'tunnel-depart',fromScene:tunnel,scene:originalTrainRoom('graystone-yard'),position:{x:192,y:430}})
  return world
 }
 // North Cape v2: shared projected footprint, also exported into its TMX.
