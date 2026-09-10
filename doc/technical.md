@@ -268,3 +268,11 @@ contract.ts的recollectionReply把引用再次通过协议解析和现有表现�
 scripts/check-recollection.ts只创建新合成旅程，固定mode=local，23次HTTP请求覆盖原话检索、同ID回执重放、权威重读和无机械效果。本地真实Worker通过；另有两条完整主线/支线/终章及备份恢复204请求通过。脚本能力令牌只在内存中，不输出或保存。前置脚本最初错误地把对白accepted当成行动成功，已按接口语义改为验证dialogue、cursor增长与真实存档内容；不是生产逻辑故障。
 
 当前待发布标识carriage-single-player-20260910-4，旅途画页正式开关仍为false。发布结果按实际线上证据另记。
+
+### 97734e7正式发布核验（2026-09-10）
+
+主站与Pages发布同一提交97734e78c602464686708d79b0130e88ed83c740，实际入口均assets/index-_WYUh1uX.js，SHA256均32f1b56a95e5a83b310cb0d9d806c354ec857ef3d1cd834a77e337f8d75fdc52；实际bundle包含回忆与类型标记。Pages Actions 34493910466成功。主站53个文件使用既有KV，首次上传HeadersTimeout、尚未上传Worker；原部署器同提交重试成功，没有使用临时分批传输候选。2378719字节步道PNG与准入hash一致，原UUID/DO权威链路保留，公开源码ZIP与入口/health检查通过。
+
+新版生产health标识carriage-single-player-20260910-4。线上新增合成旅程23请求验证较早回忆、同ID回执、重读、无机械后果；另204请求验证两完整主线、支线、关系、终章、场景往返及空库备份恢复。全部mode=local，无新增真实模型调用，不读取真实玩家存档。166本地回归、cloud/Worker/Pages构建、源码/暂存/dist秘密扫描、API base、UUID和相对路径检查通过；存储脚本限本项目幂等同步0变化，项目及全局只读隔离审计通过。摇杆的PointerDown属于持续地图输入，不是可滚动列表行。
+
+本次浏览器手机尺寸UI和刷新为本机预发布证据，线上证据为实际HTTP权威路径及构建文件；没有把它们合称新一轮Telegram平台内或iPhone硬件验收。已关闭的生成画页仍关闭；原作正向探索模式装配、动态个性化素材与通用生产入口仍是后续目标。
