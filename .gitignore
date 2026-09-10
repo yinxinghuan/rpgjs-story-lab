@@ -21,3 +21,7 @@ worker/index.js
 dist-preflight/
 dist-cloud/
 doc/cloud-identity-review.md
+
+# Explicit local performance instrumentation, stripped from normal builds.
+!_qa/performance-probe.ts
+dist-perf/

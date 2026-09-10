@@ -25,6 +25,7 @@ function applyObject(event:RpgPlayer,projection:ObjectProjection){
 }
 function setObjects(scene:SceneId,objects:ObjectProjection[]){for(const object of objects){if(!object.id.startsWith('art-'+scene+'-'))continue;artProjection.set(object.id,object);const event=artEvents.get(object.id);if(event)applyObject(event,object)}}
 function objectEvents(scene:SceneId){return worldObjects[scene].map(object=>{const id=objectId(scene,object.id);return {id,x:Math.round(object.rect.x+object.rect.w/2),y:object.depth-1,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;artEvents.set(id,this);applyObject(this,artProjection.get(id)??{id,state:object.states[0],visible:!object.parent,tint:'#d4d4d4'})}}}})}
+declare const __QA_PERFORMANCE__:boolean
 let client:RpgClientEngine|undefined,player:RpgPlayer|undefined
 let activeScene:SceneId='carriage',changing=false,loadedScene:SceneId|null=null,joinedScene:SceneId|null=null
 let loadedMap:{events:()=>Record<string,unknown>}|null=null
@@ -39,7 +40,10 @@ function stand(){strideDistance=0;if(player&&player.animationName()!=='stand')pl
 const down=(e:KeyboardEvent)=>{if(!(e.target as HTMLElement)?.matches('input,textarea,select')){const key=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(key)){keys.add(key);cancelRoute();e.preventDefault()}}}
 const up=(e:KeyboardEvent)=>keys.delete(e.key.toLowerCase())
 window.addEventListener('keydown',down);window.addEventListener('keyup',up)
-window.addEventListener('blur',()=>{keys.clear();stick={x:0,y:0};cancelRoute();stand()})
+const clearInput=()=>{keys.clear();stick={x:0,y:0};cancelRoute();stand()}
+const visibilityChanged=()=>{if(document.hidden)clearInput()}
+window.addEventListener('blur',clearInput)
+document.addEventListener('visibilitychange',visibilityChanged)
 const host=document.getElementById('rpg')!,frameBox=host.parentElement!
 // Logical coordinates stay 384×576; only the physical backing buffer grows.
 // Render at the displayed CSS scale × device density, rather than enlarging a
@@ -54,9 +58,9 @@ const server=createServer({providers:[tiledServer(),provideServerModules([{playe
   move:(x,y)=>{stick={x,y};if(x||y)cancelRoute()},walkTo:(p,callback)=>{if(paused||changing)return false;const path=findPath(pos,p,activeScene);if(!path.length)return false;route=path;arrive=callback;reportDestination(path[path.length-1]);return true},
   pause:v=>{paused=v;keys.clear();stick={x:0,y:0};if(v){cancelRoute();stand()}},
   setObjects,scene:()=>activeScene,renderedScene:()=>loadedScene,renderedEvents:()=>Object.keys(loadedMap?.events()??{}),restore:async(p,scene='carriage')=>{changing=true;cancelRoute();keys.clear();stick={x:0,y:0};stand();try{await waitForScene(activeScene);pos=safePosition(p,scene);if(activeScene!==scene){loadedScene=null;const changed=await player!.changeMap(scene,pos);if(!changed)throw new Error('MAP_TRANSFER_REJECTED');await waitForScene(scene);activeScene=scene}else await player!.teleport(pos);player!.syncChanges();project();reportPosition(pos)}finally{changing=false}},
-  destroy:()=>{cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener('resize',syncViewport);window.removeEventListener('keydown',down);window.removeEventListener('keyup',up)}})
+  destroy:()=>{cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener('resize',syncViewport);window.removeEventListener('keydown',down);window.removeEventListener('keyup',up);window.removeEventListener('blur',clearInput);document.removeEventListener('visibilitychange',visibilityChanged)}})
  }},maps:sceneIds.map(id=>({id,events:[...objectEvents(id),...(scenes[id].npc&&scenes[id].resident?[{id:scenes[id].resident!.id,x:scenes[id].npc!.x-4.5,y:scenes[id].npc!.y-15,event:{onInit(this:RpgPlayer){this.setGraphic(scenes[id].resident!.graphic);this.setHitbox(9,15)}}}]:[])]}))}])]})
-startGame({providers:[provideClientGlobalConfig({prediction:{enabled:false},bootstrapCanvasOptions:{antialias:false,backgroundAlpha:0,autoDensity:true,resolution:renderResolution()}}),tiledClient({basePath:'./map'}),provideClientModules([{sceneMap:{onAfterLoading(map){const id=client?.activeRoom()?.name?.replace(/^map-/, '') as SceneId;if(sceneIds.includes(id)){loadedScene=id;loadedMap=map as unknown as {events:()=>Record<string,unknown>};sceneWaiters.forEach(fn=>fn())}}},spritesheets:[heroSheet,mechanicSheet,attendantSheet,...objectSheets(isBalancedArt?'balanced':'baseline')],engine:{onStart(engine){client=engine;engine.width.set('384');engine.height.set('576');engine.stopProcessingInput=true;engine.renderer.background.alpha=0;syncViewport()}}}]),provideRpg(server)]})
+startGame({providers:[provideClientGlobalConfig({prediction:{enabled:false},bootstrapCanvasOptions:{antialias:false,backgroundAlpha:0,autoDensity:true,resolution:renderResolution()}}),tiledClient({basePath:'./map'}),provideClientModules([{sceneMap:{onAfterLoading(map){const id=client?.activeRoom()?.name?.replace(/^map-/, '') as SceneId;if(sceneIds.includes(id)){loadedScene=id;loadedMap=map as unknown as {events:()=>Record<string,unknown>};sceneWaiters.forEach(fn=>fn())}}},spritesheets:[heroSheet,mechanicSheet,attendantSheet,...objectSheets(isBalancedArt?'balanced':'baseline')],engine:{onStart(engine){client=engine;if(__QA_PERFORMANCE__)void import('../_qa/performance-probe').then(m=>m.attachPerformanceProbe(engine));engine.width.set('384');engine.height.set('576');engine.stopProcessingInput=true;engine.renderer.background.alpha=0;syncViewport()}}}]),provideRpg(server)]})
 function tick(time:number){
  const dt=Math.min((time-last)/1000,.04);last=time
  if(player&&!paused&&!changing){
