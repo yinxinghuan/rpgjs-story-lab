@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-11",
+  "scope": "synthetic pixels only; no actual asset read/edit/generation",
+  "algorithm": "neutral-matte-unmix-1",
+  "unitCases": 8,
+  "browser": {
+    "surface": "in-app browser",
+    "viewport": [
+      1280,
+      720
+    ],
+    "input": [
+      960,
+      1280
+    ],
+    "frames": 12,
+    "elapsedMs": 121,
+    "uiTimerPeriodMs": 10,
+    "uiTicksDuringWorker": 12,
+    "originalHashUnchanged": true,
+    "outputMatchesSynchronous": true,
+    "preAbort": "SPRITE_PREPARATION_ABORTED",
+    "midAbort": "SPRITE_PREPARATION_ABORTED",
+    "cloneFailure": "SPRITE_PREPARATION_FAILED",
+    "recoveryFrames": 12
+  },
+  "productionIntegrated": false,
+  "realAssetQualityVerified": false,
+  "iphoneHardwareVerified": false,
+  "timeoutFaultInjected": false,
+  "files": {
+    "src/sprite-preparation.ts": "52506360375d70786b724be5f6b66c15a6193b447e279ccc4140aa7648cf8c83",
+    "src/sprite-preparation-client.ts": "36ceb44a8157fe407126d149bc3f3ddd6ee1ebaa4c778d525c8ab06c867f763d",
+    "src/sprite-preparation.worker.ts": "53119b88e96fea8acc13d69eb894a779f83be19c80735b66027316818bc2b560",
+    "_qa/sprite-preparation.test.ts": "5e897d5965b4463fb5ab6e36a358d060b5c436fe8a16e8055e1111a60c6000e5",
+    "_qa/sprite-worker-browser.ts": "2df2291c120f40d3cfc7257fc7dbca611ef160264db2f2738843ce45f26f6b56",
+    "_qa/sprite-worker.vite.ts": "d8e08fedb9b9c51227318a88eb1a56fb95116f58792b87ea0eb2816a18ffc5b5",
+    "_qa/sprite-worker.html": "ea5598e2ba207f4d95eb98e332d5b4cce57f16a8b7f4df01a900f1a42d42f174"
+  },
+  "regressionTests": {
+    "passed": 214,
+    "failed": 0
+  },
+  "build": "npm run build passed (TypeScript, spatial, frontend, Worker); existing large-chunk warning",
+  "audits": {
+    "publicSecrets": "pass",
+    "gameApiBase": "pass",
+    "diffCheck": "pass"
+  }
+}
