@@ -1,0 +1,31 @@
+{
+  "tool": "built-in imagegen",
+  "background": {
+    "path": "north-cape-v2.png",
+    "prompt": "Make one targeted cleanup edit to this game background. Keep the full image, canvas size 1024x1536, locomotive position/scale, ground slabs, rails, shed frame, puddles, lamps, orthographic overhead camera and every other feature unchanged. Remove ONLY the small raised rectangular switch/control box with its metal base in the upper-right area, approximately source image x=685..799, y=96..203. Continue the surrounding flat wet dark blue stone paving through the removed area. Preserve the small ground drain to its right. The result must contain no new object, no new control console, no replacement pedestal, no text, no characters, no UI, no checkerboard. This must be a walkable flat empty placement zone for a separately rendered interactive device. Preserve opaque background, the crisp dark pixel-painted style and amber illumination. Do not change or redraw the rest of the composition.",
+    "reference": "../20260910/north-cape-v1.png",
+    "status": "preflight-renderer-only",
+    "review": "Fixed control box removed. Reviewed in RPG-JS at 390x844; original cast/story are not yet connected.",
+    "inspection": {
+      "width": 1024,
+      "height": 1536,
+      "pngColorType": 2,
+      "sha256": "e8e36bbadda8a8b73cc280431e256ad6583795738a9b62f9efc0a44474d32483",
+      "bytes": 2566605
+    }
+  },
+  "actor": {
+    "path": "ada-v1.png",
+    "prompt": "Create a new character sprite sheet by editing this reference sheet into ADA, a different adult character for the same game. Reference is ONLY the approved camera angle, pixel-painted detail scale, proportions, pose grid and framing. Replace the yellow-coated person in all 12 cells with one consistent young adult woman apprentice railway mechanic: short practical dark-brown hair tucked behind her ears, a faded navy-blue mechanic coverall over a warm off-white work shirt, oil-darkened gloved hands, sturdy brown boots, a small brass enclosed work lamp held close at one hip. No yellow coat, no shoulder satchel, no grey elderly man. Ada is capable and ordinary, not a fantasy warrior. Maintain the reference's overhead orthographic B view: substantial hair/shoulder top surfaces, faces foreshortened downward, no frontal portrait view. Sheet portrait aspect 3:4, ideally 1536x2048 so each cell is exactly512x512, 3 columns x4 rows, no margins beyond equal cell padding. Rows: facing screen down, screen left, screen right, screen up. Middle column idle standing with feet together; left/right columns two genuinely DIFFERENT opposite walking strides (opposite leading feet), not duplicates. Each full figure including hair, boots and lamp stays entirely within its cell; consistent size and ground contact, center foot at cell x256,y464. Body height about340 pixels per512cell. Keep the SAME person, outfit, lamp hand and viewing angle across every direction. Produce genuine RGBA transparent PNG with alpha=0 everywhere outside the twelve silhouettes: no black/white/grey/color backdrop, no checkerboard drawn into RGB, no cast shadow, no glow halo spilling beyond silhouette, no text, no grid lines, no framing UI. Crisp clean silhouette edges without white matte. Lamp glass can have a small warm enclosed amber pixel but no external glowing disc. Preserve camera angle and restrained high-detail pixel art rather than smoothing into illustration.",
+    "reference": "../../../public/art/overhead/hero.png",
+    "status": "rejected-rgb-checkerboard",
+    "review": "RGB PNG, 1086x1448. No alpha channel. Side strides appear too similar; not admitted.",
+    "inspection": {
+      "width": 1086,
+      "height": 1448,
+      "pngColorType": 2,
+      "sha256": "37f88650a26ac296ef8592158b2a5a8644de2ce2c6a435f5303006a3ba3ba61d",
+      "bytes": 2019722
+    }
+  }
+}
