@@ -1,6 +1,7 @@
 import type { StoryCartridge, StorySave, Locale, DomainActionRule } from './vendor/story/types'
 import { createInitialSave } from './vendor/story/engine/reducer'
-import { resolveDomainAction, applyDomainResolution } from './vendor/story/engine/domainRules'
+import { applyDomainResolution } from './vendor/story/engine/domainRules'
+import { resolveStoryActionById } from './story-domain-action'
 
 import {admitAttendant,attendantDefinition,attendantIntro,attendantReply} from './attendant'
 import {admitDispatcher,dispatcherDefinition,dispatcherIntro,dispatcherReply} from './contacts'
@@ -63,7 +64,7 @@ export function journeyObjective(s:StorySave){const f=s.facts;if(f.rescue_sent)r
 // Capability migration is independent of map version and never invents a past choice.
 export function upgradePowerFacts(s:StorySave){let changed=false;const defaults={power_chosen:false,power_radio:false,signal_acknowledged:Boolean(s.facts.rescue_sent),beacon_set:false};for(const [key,value] of Object.entries(defaults))if(s.facts[key]===undefined){s.facts[key]=value;changed=true}return changed}
 export function runRule(base:StorySave,action:string) {
- const c=cartridge(base.locale,base), result=resolveDomainAction(base,c,action)
+ const c=cartridge(base.locale,base), result=resolveStoryActionById(base,c,action)
  if(!result) throw new Error('UNREGISTERED_ACTION')
  if(result.status==='rejected') return {save:base,accepted:false,text:result.reasons.join(' ')}
  const save=structuredClone(base);save.scene++

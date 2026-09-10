@@ -96,3 +96,10 @@ server/journey-backup.ts 维护完整备份格式与跨表一致性检查；Prod
 ### 平台目录登记
 
 正式封面为 public/poster.png，meta.json引用/poster.png；来源与1024/160两级审查见doc/poster-provenance.json。src/game-id.ts保留服务端可用的GAME_ID/getGameApiBase，同时在浏览器启动时写入同一UUID；index.html的storage adapter加载标记和声明补齐。既有存储前缀和数据库名不变。未运行会覆盖整个game-id.ts的旧全量同步器，以免移除同UUID API合同；用针对两项目的UUID验证及全目录存储审计验证实际结果。
+
+
+### 完整单人整合：稳定动作 ID（2026-09-10，开发中）
+
+`src/story-domain-action.ts` 将已通过空间准入的动作 ID 精确绑定到 StoryCartridge 的 domain rule，再复用冻结内核的前提、数值下限、重复策略与效果解析。当前 `runRule` 已消费此适配，原语言关键词不参与地图按钮的选择。未知 ID、重复 ID 明确失败。自由文本不能直接调用此入口；当前场景/实体/距离校验和事务仍分别由 journey-runtime 与既有 authority 完成。
+
+原《开往黎明的末班车》中英文 Cartridge 的 repair-starter 已在内存中验证：稳定 ID 对应原效果，错误地点拒绝且效果为空，原存档输入未修改。此处只是规则接入实证，不代表两款游戏的角色/资源已可自动互换。完整 executeStoryTurn 与空间表现许可的整合仍在推进，未启用新的生产模型调用。
