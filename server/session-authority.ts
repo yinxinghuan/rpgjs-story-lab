@@ -19,6 +19,7 @@ export interface SessionRuntime<H extends SessionHead>{
  validateAction(body:unknown):void
  prepare(head:H,body:any,reserveNarration:()=>boolean):Promise<SessionResult<H>>
  preserveConcurrent(candidate:H,current:H):void
+ ending?:{validate(body:unknown):void;prepare(head:H,body:any):Promise<SessionResult<H>>;assertCurrent(before:H,current:H):void}
 }
 const validId=(id:unknown)=>typeof id==='string'&&/^[a-zA-Z0-9-]{16,80}$/.test(id)
 const wire=<T>(v:T):T=>JSON.parse(JSON.stringify(v))
@@ -61,11 +62,16 @@ export class SessionAuthority<H extends SessionHead>{
   head.position=position;this.write(owner,head,row.cursor);return {position}
  })}
  private replay(owner:string,action:string,hash:string){const r=this.db.all<{digest:string;response:string}>('SELECT digest,response FROM receipts WHERE owner=? AND action=?',owner,action)[0];if(!r)return null;if(r.digest!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return JSON.parse(r.response)}
- async action(owner:string,id:string,body:any){
-  this.runtime.validateAction(body);const hash=digest({id,body}),cached=this.replay(owner,body.action_id,hash);if(cached)return cached
-  const key=JSON.stringify([owner,body.action_id]),existing=this.inFlight.get(key)
+ async action(owner:string,id:string,body:any){return this.dispatch(owner,id,body,'action')}
+ async ending(owner:string,id:string,body:any){return this.dispatch(owner,id,body,'ending')}
+ private async dispatch(owner:string,id:string,body:any,operation:'action'|'ending'){
+  if(operation==='ending'){if(!this.runtime.ending)throw new LabError('ENDING_UNAVAILABLE',503);this.runtime.ending.validate(body)}else this.runtime.validateAction(body)
+  body=wire(body)
+  const receiptId=operation==='ending'?'ending:'+body.ending_id:body.action_id
+  const hash=digest(operation==='ending'?{id,body,operation}:{id,body}),cached=this.replay(owner,receiptId,hash);if(cached)return cached
+  const key=JSON.stringify([owner,receiptId]),existing=this.inFlight.get(key)
   if(existing){if(existing.hash!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return existing.promise}
-  const promise=this.prepareAndCommit(owner,id,body,hash)
+  const promise=this.prepareAndCommit(owner,id,body,hash,operation,receiptId)
   this.inFlight.set(key,{hash,promise})
   try{return await promise}finally{if(this.inFlight.get(key)?.promise===promise)this.inFlight.delete(key)}
  }
@@ -78,22 +84,27 @@ export class SessionAuthority<H extends SessionHead>{
    return true
   })
  }
- private async prepareAndCommit(owner:string,id:string,body:any,hash:string){
-  const head=this.get(owner,id),response=await this.runtime.prepare(head,body,()=>this.reserveNarration(owner))
+ private async prepareAndCommit(owner:string,id:string,body:any,hash:string,operation:'action'|'ending',receiptId:string){
+  const head=this.get(owner,id),response=operation==='ending'?await this.runtime.ending!.prepare(head,body):await this.runtime.prepare(head,body,()=>this.reserveNarration(owner))
   // No network await inside transactionSync. Recheck after narrator yields.
   return this.db.transaction(()=>{
-   const raced=this.replay(owner,body.action_id,hash);if(raced)return raced
+   const raced=this.replay(owner,receiptId,hash);if(raced)return raced
    const row=this.row(owner,id),current=JSON.parse(row.data) as H
    this.runtime.assertReadable(current)
    if(current.mapVersion!==head.mapVersion)throw new LabError('JOURNEY_VERSION_UNSUPPORTED',409)
    if(current.version!==head.version)throw new LabError('VERSION_CONFLICT',409)
    if(response.head.id!==head.id||response.head.version!==head.version+1)throw new LabError('INVALID_COMMIT_CANDIDATE',409)
    this.runtime.assertReadable(response.head)
+   if(operation==='ending'){
+    this.runtime.ending!.assertCurrent(head,current)
+    if(response.kind!=='ending'||this.runtime.scene(response.head)!==this.runtime.scene(current))throw new LabError('INVALID_COMMIT_CANDIDATE',409)
+    response.head.position={...current.position}
+   }
    this.runtime.preserveConcurrent(response.head,current)
-   const cursor=row.cursor+1,result=wire({...response,cursor}),event={cursor,version:response.head.version,action_id:body.action_id,kind:response.kind}
+   const cursor=row.cursor+(operation==='ending'?0:1),result=wire({...response,cursor}),event={cursor,version:response.head.version,action_id:body.action_id,kind:response.kind}
    this.write(owner,response.head,cursor)
-   this.db.run('INSERT INTO journal VALUES(?,?,?,?,?)',id,cursor,body.action_id,response.kind,JSON.stringify(event))
-   this.db.run('INSERT INTO receipts VALUES(?,?,?,?)',owner,body.action_id,hash,JSON.stringify(result))
+   if(operation==='action')this.db.run('INSERT INTO journal VALUES(?,?,?,?,?)',id,cursor,body.action_id,response.kind,JSON.stringify(event))
+   this.db.run('INSERT INTO receipts VALUES(?,?,?,?)',owner,receiptId,hash,JSON.stringify(result))
    return result
   })
  }

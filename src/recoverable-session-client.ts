@@ -1,13 +1,14 @@
 import {randomId} from './random-id'
 type Locale='zh'|'en'
 export interface RecoverableHead{id:string;version:number}
-export interface SessionClientPolicy<H extends RecoverableHead>{scene:(head:H)=>string;assertHead:(value:unknown)=>asserts value is H;terminalErrors?:readonly string[]}
+export interface SessionClientPolicy<H extends RecoverableHead>{scene:(head:H)=>string;assertHead:(value:unknown)=>asserts value is H;terminalErrors?:readonly string[];ending?:{request:(head:H)=>{snapshot_id:string;mapVersion:string};assertResult:(result:any,body:Record<string,any>)=>void;terminalErrors:readonly string[]}}
 export type Transport=(path:string,body?:unknown)=>Promise<any>
 export type SessionLock=<T>(name:string,work:()=>Promise<T>)=>Promise<T>
-export type Pending={id:string;body:Record<string,any>&{action_id:string;expected_version:number;sceneId:string}}
+export type Pending={id:string;operation?:'ending';body:Record<string,any>&{expected_version:number;sceneId:string}}
+const pendingId=(p:Pending)=>p.operation==='ending'?'ending:'+p.body.ending_id:p.body.action_id
 const terminal=new Set(['VERSION_CONFLICT','OFF_SCENE_ENTITY','INVALID_ACTION','UNKNOWN_ENTITY','INVALID_POSITION','TOO_FAR','UNSUPPORTED_ACTION','INVALID_TEXT','INVALID_ACTION_TYPE','INVALID_NARRATION_MODE','ACTION_ID_CONFLICT'])
 const idPattern=/^[a-zA-Z0-9-]{16,80}$/
-function parsePending(raw:string):Pending{const p=JSON.parse(raw);if(!p||!idPattern.test(p.id)||!p.body||!idPattern.test(p.body.action_id)||!Number.isSafeInteger(p.body.expected_version)||typeof p.body.sceneId!=='string')throw Error('INVALID_PENDING');return p}
+function parsePending(raw:string):Pending{const p=JSON.parse(raw);if(!p||!idPattern.test(p.id)||!p.body||(p.operation!==undefined&&p.operation!=='ending')||!idPattern.test(p.operation==='ending'?p.body.ending_id:p.body.action_id)||!Number.isSafeInteger(p.body.expected_version)||typeof p.body.sceneId!=='string'||p.operation==='ending'&&(typeof p.body.snapshot_id!=='string'||typeof p.body.mapVersion!=='string'))throw Error('INVALID_PENDING');return p}
 export class RecoverableSessionClient<H extends RecoverableHead>{
  constructor(private storage:Storage,private prefix:string,private transport:Transport,private policy:SessionClientPolicy<H>,private lock:SessionLock=async(_name,work)=>work()){}
  private head(value:unknown,expectedId?:string):H{this.policy.assertHead(value);const h=value as H;if(!idPattern.test(h.id)||!Number.isSafeInteger(h.version)||h.version<0||expectedId!==undefined&&h.id!==expectedId)throw Error('SESSION_RESPONSE_MISMATCH');return h}
@@ -23,11 +24,11 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
    if(p){this.put(p);if(this.storage.getItem(legacyKey)===legacy)this.storage.removeItem(legacyKey)}
   }
   const prefix=this.key('pending-v2:'),keys=Array.from({length:this.storage.length},(_,i)=>this.storage.key(i)).filter((k):k is string=>Boolean(k?.startsWith(prefix))),items:Pending[]=[]
-  for(const key of keys){const raw=this.storage.getItem(key);if(!raw)continue;try{const p=parsePending(raw);if(key!==prefix+p.body.action_id)throw Error('KEY_MISMATCH');items.push(p)}catch{this.quarantine(key,raw)}}
+  for(const key of keys){const raw=this.storage.getItem(key);if(!raw)continue;try{const p=parsePending(raw);if(key!==prefix+pendingId(p))throw Error('KEY_MISMATCH');items.push(p)}catch{this.quarantine(key,raw)}}
   return items
  }
- private put(p:Pending){const key=this.key('pending-v2:'+p.body.action_id),raw=JSON.stringify(p),old=this.storage.getItem(key);if(old&&old!==raw)throw Error('PENDING_ID_CONFLICT');this.storage.setItem(key,raw)}
- private ack(p:Pending){const key=this.key('pending-v2:'+p.body.action_id);if(this.storage.getItem(key)===JSON.stringify(p))this.storage.removeItem(key)}
+ private put(p:Pending){const key=this.key('pending-v2:'+pendingId(p)),raw=JSON.stringify(p),old=this.storage.getItem(key);if(old&&old!==raw)throw Error('PENDING_ID_CONFLICT');this.storage.setItem(key,raw)}
+ private ack(p:Pending){const key=this.key('pending-v2:'+pendingId(p));if(this.storage.getItem(key)===JSON.stringify(p))this.storage.removeItem(key)}
  hasPending(){const session=this.read('session','');return this.pending().some(p=>p.id===session)}
  async enroll(locale:Locale,restart=false):Promise<H>{return this.lock(this.key('bootstrap'),async()=>{
   const current=this.read('session','')
@@ -43,12 +44,16 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   const head=this.head(await this.transport('/sessions',pending));this.write('session',head.id);this.write('enrollment-pending',null);return head
  })}
  private async settle(p:Pending){
-  let result:any
-  try{result=await this.transport('/sessions/'+p.id+'/actions',p.body)}catch(e){if(!(e instanceof Error)||!terminal.has(e.message)&&!this.policy.terminalErrors?.includes(e.message))throw e;result={kind:'recovered',text:null,accepted:false,rejectionCode:e.message}}
+  let result:any,rejected=false
+  const ending=p.operation==='ending'
+  if(ending&&!this.policy.ending)throw Error('ENDING_UNAVAILABLE')
+  try{result=await this.transport('/sessions/'+p.id+(ending?'/ending':'/actions'),p.body)}catch(e){if(!(e instanceof Error)||!terminal.has(e.message)&&!(ending?this.policy.ending?.terminalErrors:this.policy.terminalErrors)?.includes(e.message))throw e;rejected=true;result={kind:'recovered',text:null,accepted:false,rejectionCode:e.message}}
+  if(ending&&!rejected)this.policy.ending!.assertResult(result,p.body)
   if(result.head)this.head(result.head,p.id)
   const latest=await this.get(p.id)
   if(latest.version<p.body.expected_version||result.head&&latest.version<result.head.version)throw Error('SESSION_RESPONSE_REGRESSED')
   if(result.head&&latest.version===result.head.version&&this.policy.scene(latest)!==this.policy.scene(result.head))throw Error('SESSION_RESPONSE_MISMATCH')
+  if(ending&&!rejected&&latest.version===result.head.version)this.policy.ending!.assertResult({...result,head:latest},p.body)
   if(!result.head||latest.version!==result.head.version)result={kind:'recovered',text:null,accepted:false,...(result.rejectionCode?{rejectionCode:result.rejectionCode}:{})}
   this.ack(p);return {...result,head:latest}
  }
@@ -56,6 +61,13 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   this.head(head)
   if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
   const p:Pending={id:head.id,body:{...body,sceneId:this.policy.scene(head),action_id:randomId(),expected_version:head.version}}
+  this.put(p);return this.settle(p)
+ })}
+ async sendEnding(head:H){return this.lock(this.key('session:'+head.id),async()=>{
+  this.head(head)
+  if(!this.policy.ending)throw Error('ENDING_UNAVAILABLE')
+  if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
+  const p:Pending={id:head.id,operation:'ending',body:{...this.policy.ending.request(head),sceneId:this.policy.scene(head),ending_id:randomId(),expected_version:head.version}}
   this.put(p);return this.settle(p)
  })}
  async recover(){const session=this.read('session','');if(!session)return null;return this.lock(this.key('session:'+session),async()=>{

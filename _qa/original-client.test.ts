@@ -12,8 +12,8 @@ function setup(){
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(q,...b)=>raw.prepare(q).all(...b) as any,run:(q,...b)=>{raw.prepare(q).run(...b)},transaction:work=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  // Explicit source-only admission. This does not activate a visible game.
  const service=new OriginalTrainAuthority(db,()=>true),owner=randomUUID(),storage=new MemoryStorage()
- const transport:Transport=async(path,b:any)=>{let r:unknown;if(path==='/sessions')r=service.create(owner,b.enrollment_id,b.locale);else{const m=path.match(/^\/sessions\/([^/]+)(\/actions)?$/)!;r=m[2]?await service.action(owner,m[1],b):service.get(owner,m[1])}return JSON.parse(JSON.stringify(r))}
- return {raw,service,owner,storage,transport,client:new OriginalSessionClient(storage,'original-',transport)}
+ const transport:Transport=async(path,b:any)=>{let r:unknown;if(path==='/sessions')r=service.create(owner,b.enrollment_id,b.locale);else{const m=path.match(/^\/sessions\/([^/]+)(\/actions|\/ending)?$/)!;r=m[2]==='/ending'?await service.ending(owner,m[1],b):m[2]?await service.action(owner,m[1],b):service.get(owner,m[1])}return JSON.parse(JSON.stringify(r))}
+ return {raw,db,service,owner,storage,transport,client:new OriginalSessionClient(storage,'original-',transport)}
 }
 function input(h:OriginalHead,action:string,free=false){const e=originalTrainSpatialPlan().entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;return {target:e.id,position:e.approach,...(free?{type:'free-input',text:originalCartridge(h.save.locale).domainRules!.rules.find(r=>r.id===action)!.match[0]}:{type:'action',action})}}
 test('original client persists intent before sending and recovers lost route into its actual room',async()=>{
@@ -52,4 +52,31 @@ test('original readiness failure keeps one intent for explicit later retry',asyn
  const gated:Transport=async(p,b:any)=>{if(p.endsWith('/actions')){ids.push(b.action_id);if(!ready)throw Error('ORIGINAL_PRESENTATION_NOT_READY')}return transport(p,b)}
  const c=new OriginalSessionClient(storage,'original-',gated);await assert.rejects(c.send(h,input(h,'inspect-brakes')))
  await assert.rejects(c.recover());assert.equal(c.hasPending(),true);ready=true;const r=await c.recover();assert.equal(r.head.version,1);assert.equal(new Set(ids).size,1);assert.equal(c.hasPending(),false);raw.close()
+})
+
+// Deliberate synthetic terminal fixture: later story chapters are not yet playable.
+async function endingFixture(){const env=setup(),h=await env.client.enroll('en');h.save.scene=24;h.save.facts['chapter-bridge-complete']=true;h.save.finale={status:'ready'};env.db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(h),h.id);return {...env,h}}
+test('original ending persists before POST, blocks new actions/restart and recovers exact envelope after lost receipt',async()=>{
+ const {raw,service,owner,storage,transport,h}=await endingFixture();let fail=true;const requests:any[]=[]
+ const flaky:Transport=async(p,b)=>{if(p.endsWith('/ending')){requests.push(structuredClone(b));assert.equal(new OriginalSessionClient(storage,'original-',transport).pending()[0].operation,'ending')}const r=await transport(p,b);if(p.endsWith('/ending')&&fail){fail=false;throw Error('LOST_ENDING_RESPONSE')}return r}
+ const c=new OriginalSessionClient(storage,'original-',flaky)
+ await assert.rejects(c.sendEnding(h),/LOST_ENDING_RESPONSE/);assert.equal(c.hasPending(),true)
+ const restored=new OriginalSessionClient(storage,'original-',flaky)
+ await assert.rejects(restored.sendEnding(h),/PENDING_ACTION/);await assert.rejects(restored.send(h,input(h,'inspect-brakes')),/PENDING_ACTION/);await assert.rejects(restored.enroll('en',true),/PENDING_ACTION/)
+ const result=await restored.recover();assert.deepEqual(requests[0],requests[1]);assert.equal(result.head.version,1);assert.equal(result.head.save.finale.status,'complete');assert.equal(result.cursor,0);assert.equal(restored.hasPending(),false);assert.equal(service.events(owner,h.id,0).length,0);raw.close()
+})
+test('original ending malformed receipt and latest finale never acknowledge pending',async()=>{
+ for(const change of ['empty','wrong-id','wrong-snapshot','wrong-version','latest-finale']){
+  const {raw,storage,transport,h}=await endingFixture();let invalid=true
+  const corrupt:Transport=async(p,b)=>{const r=await transport(p,b);if(!invalid)return r;if(p.endsWith('/ending')){if(change==='empty')return {};if(change==='wrong-id')r.endingId=randomUUID();if(change==='wrong-snapshot')r.head.save.finale.ending.snapshotId='ending-wrong';if(change==='wrong-version')r.head.version=0}else if(change==='latest-finale')r.save.finale={status:'ready'};return r}
+  const c=new OriginalSessionClient(storage,'original-',corrupt);await assert.rejects(c.sendEnding(h),/ENDING_RESPONSE_MISMATCH/);assert.equal(c.hasPending(),true)
+  invalid=false;const result=await new OriginalSessionClient(storage,'original-',corrupt).recover();assert.equal(result.head.save.finale.status,'complete');assert.equal(c.hasPending(),false);raw.close()
+ }
+})
+test('original ending retries transient failure but settles stale snapshot against latest head',async()=>{
+ const {raw,db,storage,transport,h}=await endingFixture();let ready=false;const requests:any[]=[]
+ const unavailable:Transport=async(p,b)=>{if(p.endsWith('/ending')){requests.push(structuredClone(b));if(!ready)throw Error('ENDING_UNAVAILABLE')}return transport(p,b)}
+ const c=new OriginalSessionClient(storage,'original-',unavailable);await assert.rejects(c.sendEnding(h),/ENDING_UNAVAILABLE/);await assert.rejects(c.recover(),/ENDING_UNAVAILABLE/);assert.equal(c.hasPending(),true)
+ const changed=structuredClone(h);changed.save.facts['synthetic-new-fact']=true;db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(changed),h.id)
+ ready=true;const result=await c.recover();assert.equal(result.rejectionCode,'ENDING_SNAPSHOT_MISMATCH');assert.deepEqual(result.head,changed);assert.equal(c.hasPending(),false);assert.deepEqual(requests[0],requests[2]);raw.close()
 })

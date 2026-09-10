@@ -7,6 +7,7 @@ import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {executeStoryTurn,type StoryTurnGenerator} from '../src/vendor/original-train/engine/executeTurn'
 import {resolveDomainAction} from '../src/vendor/original-train/engine/domainRules'
 import type {StorySave,Locale} from '../src/vendor/original-train/types'
+import {originalEndingPolicy,type OriginalEndingGenerator} from './original-ending'
 import {SessionAuthority,type AuthorityStorage,type SessionRuntime} from './session-authority'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
@@ -24,16 +25,17 @@ export function assertOriginalHead(value:unknown):asserts value is OriginalHead{
  try{binding.locate(s,h.sceneId)}catch{throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)}
  if(!binding.validPosition(h.sceneId,h.position)||originalCartridge(s.locale).statDefinitions.some(d=>!Number.isFinite(s.stats?.[d.id])||s.stats[d.id]<d.min||s.stats[d.id]>d.max))throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
 }
-export function originalTrainRuntime(admit:OriginalPresentationGate=originalPresentationUnavailable,generator:StoryTurnGenerator=authoredOnly):SessionRuntime<OriginalHead>{
+export function originalTrainRuntime(admit:OriginalPresentationGate=originalPresentationUnavailable,generator:StoryTurnGenerator=authoredOnly,endingGenerator?:OriginalEndingGenerator):SessionRuntime<OriginalHead>{
  const clone=<T>(value:T):T=>structuredClone(value)
  const check=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>{if(admit(clone(head),previous?clone(previous):undefined,actionId)!==true)throw new LabError('ORIGINAL_PRESENTATION_NOT_READY',409)}
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindings[h.save.locale].validPosition(h.sceneId,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
  return {
   initial:(locale,id)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion};assertOriginalHead(h);check(h);return h},
   upgrade:value=>{assertOriginalHead(value);return clone(value)},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
-  preserveConcurrent:()=>{},
+  preserveConcurrent:()=>{},ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body)=>{
    assertOriginalHead(h);validateAction(body)
+   if(['ready','generating','failed','complete'].includes(h.save.finale.status)&&!h.save.finale.epilogueActive)throw new LabError('ORIGINAL_FINALE_PENDING',409)
    if(body.expected_version!==h.version)throw new LabError('VERSION_CONFLICT',409)
    if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
    if(body.mode!==undefined&&body.mode!=='local')throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
@@ -69,5 +71,5 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
 /** Same SQLite transaction/replay implementation as the live carriage. This is
  * not wired to the production router while original presentation is unready. */
 export class OriginalTrainAuthority extends SessionAuthority<OriginalHead>{
- constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator){super(db,originalTrainRuntime(admit,generator))}
+ constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator){super(db,originalTrainRuntime(admit,generator,endingGenerator))}
 }

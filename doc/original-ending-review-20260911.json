@@ -1,0 +1,29 @@
+{
+  "scope": "Original v8 ending transaction and recoverable client in the existing game",
+  "environment": "local synthetic SQLite plus current carriage Worker on loopback port 5315",
+  "tests": {"total": 236, "passed": 236, "endingAuthorityAdded": 9, "endingClientAdded": 3},
+  "verified": [
+    "Chinese and English original author ending capability/cost/cast contracts",
+    "version increments once, ordinary cursor and journal remain unchanged",
+    "disk reopen and exact receipt replay",
+    "owner isolation and ending/action receipt namespaces",
+    "malformed candidate, stale snapshot, scene, map and version rejected",
+    "provider, presentation and receipt-write failure retain original head",
+    "same-instance coalescing and cross-instance commit replay",
+    "concurrent version, facts and danger changes cannot be overwritten",
+    "concurrent valid position checkpoint survives ending commit",
+    "client persists before POST and recovers lost ending response with same envelope",
+    "invalid receipt or latest-head finale retains pending request",
+    "pending ending blocks new action and restart",
+    "current carriage real Worker HTTP: 204 requests, radio 41 actions, lights 46 actions, both endings and backup restoration",
+    "cloud frontend and Worker build, public-secret audit, API-base audit"
+  ],
+  "limitations": [
+    "Ending fixtures explicitly set terminal conditions; original opening-to-ending route is not yet playable",
+    "Original production HTTP router, game UI and ending presentation are not connected",
+    "No real narrative/media provider calls; candidate semantics beyond original structured checks remain unproven",
+    "No real player saves accessed or migrated",
+    "No browser visual, physical iPhone or native AlterU evidence added by this logic-only change",
+    "No deployment; live main and Pages remain 05db41c"
+  ]
+}
