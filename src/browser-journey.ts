@@ -1,3 +1,4 @@
+import {upgradeHead} from '../server/head-migration'
 import {initialStory,upgradePowerFacts,type Locale} from './story'
 import {upgradeAttendantFacts} from './attendant'
 import {upgradeContactFacts} from './contacts'
@@ -28,7 +29,8 @@ export class BrowserJourney {
  private async head(tx:IDBTransaction,id:string):Promise<Head>{
   const h=await request(tx.objectStore('heads').get(id)) as Head|undefined
   if(!h)throw new LabError('SESSION_NOT_FOUND',404)
-  if(h.mapVersion!==MAP_VERSION)throw new Error('BROWSER_SAVE_VERSION_UNSUPPORTED')
+  if(h.mapVersion!==MAP_VERSION&&h.mapVersion!=='train-scenes-2')throw new Error('BROWSER_SAVE_VERSION_UNSUPPORTED')
+  upgradeHead(h)
   upgradePowerFacts(h.save);upgradeContactFacts(h.save);upgradeAttendantFacts(h.save)
   return h
  }

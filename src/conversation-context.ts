@@ -1,7 +1,7 @@
 import type {StorySave} from './vendor/story/types'
 import type {EntityId} from './contract'
 export function speakingCharacter(save:StorySave,target:EntityId):string|null{
- const id=target==='radio'&&save.facts.dispatcher_introduced&&save.facts.signal_acknowledged&&save.facts.battery_installed?'xu-lan':target==='lin'&&save.facts.introduced?'lin':target==='zhou-yu'&&save.facts.attendant_introduced?'zhou-yu':null
+ const id=(target==='radio'||target==='callpoint'&&save.facts.access_cleared)&&save.facts.dispatcher_introduced&&save.facts.signal_acknowledged&&save.facts.battery_installed?'xu-lan':target==='lin'&&save.facts.introduced?'lin':target==='zhou-yu'&&save.facts.attendant_introduced?'zhou-yu':null
  return id&&save.characters.some(person=>person.id===id)?id:null
 }
 /** Recent dialogue is data, never instructions or a source of mechanical effects.

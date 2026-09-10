@@ -6,7 +6,8 @@ import type {StorySave} from './story'
 export type WorldObject={id:string;rect:Rect;atlas:'props'|'extra'|'seat';states:string[];depth:number;fit:'contain'|'stretch';furniture?:boolean;parent?:string}
 const item=(id:string,rect:Rect,atlas:WorldObject['atlas'],states:string[],depth=rect.y+rect.h):WorldObject=>({id,rect,atlas,states,depth,fit:atlas==='props'?'contain':'stretch'})
 export const worldObjects:Record<SceneId,WorldObject[]>={
- carriage:[item('cabinet',{x:138,y:80,w:40,h:50},'props',['closed','open','empty']),item('panel',{x:206,y:100,w:30,h:26},'props',['broken','repaired']),item('exit',{x:173,y:28,w:38,h:52},'props',['locked','doorOpen'])],
+ walkway:[item('callpoint',{x:164,y:76,w:56,h:52},'extra',['powered','connected']),item('walkwayBack',{x:173,y:532,w:38,h:43},'props',['doorOpen'])],
+ carriage:[item('rearExit',{x:173,y:532,w:38,h:43},'props',['locked','doorOpen']),item('cabinet',{x:138,y:80,w:40,h:50},'props',['closed','open','empty']),item('panel',{x:206,y:100,w:30,h:26},'props',['broken','repaired']),item('exit',{x:173,y:28,w:38,h:52},'props',['locked','doorOpen'])],
  baggage:[item('supply',{x:138,y:108,w:40,h:50},'props',['closed','empty']),{...item('supply-battery',{x:157,y:132,w:9,h:8},'extra',['battery'],159),parent:'supply'},item('record',{x:216,y:196,w:16,h:24},'extra',['record']),item('forward',{x:173,y:28,w:38,h:52},'props',['doorOpen']),item('back',{x:173,y:492,w:38,h:43},'props',['doorOpen'])],
  cab:[item('radio',{x:164,y:184,w:56,h:52},'extra',['unpowered','powered','connected']),item('cabBack',{x:173,y:494,w:38,h:43},'props',['doorOpen'])],
 }
@@ -28,7 +29,7 @@ export function objectSheets(variant:'balanced'|'baseline'){
 }
 export type ObjectProjection={id:string;state:string;visible:boolean;tint:string}
 export const objectAnimation=(projection:ObjectProjection)=>projection.visible?projection.state:'hidden'
-export function projectWorldObjects(scene:SceneId,save:StorySave):ObjectProjection[]{const vs=states(save),emergency=scene==='carriage'&&save.facts.power_radio
+export function projectWorldObjects(scene:SceneId,save:StorySave):ObjectProjection[]{const vs=states(save),emergency=scene==='carriage'&&save.facts.power_radio&&!save.facts.guidance_released
  return worldObjects[scene].map(object=>{const state=object.id==='supply-battery'?'battery':object.furniture?object.states[0]:visualStates[object.id as keyof typeof visualStates]?.[vs[object.id as keyof typeof vs]]??object.states[0]
  return {id:objectId(scene,object.id),state,visible:object.id!=='supply-battery'||Boolean(save.facts.supply_open&&!save.facts.battery_taken),tint:emergency?'#b8b8b8':object.furniture?'#d9d9d9':save.facts.repaired?'#ffffff':'#d4d4d4'}
  })
