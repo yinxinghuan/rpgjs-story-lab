@@ -1,7 +1,8 @@
 import {LabError,validateAction} from '../src/journey-runtime'
 import {executeBoundStoryTurn} from '../src/bound-story-turn'
 import {compileSpatialBinding} from '../src/spatial-binding'
-import {originalTrainSpatialPlan,originalTrainPlanWalkable,originalTrainRoom} from '../src/original-train-spatial-plan'
+import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable,originalTrainRoom} from '../src/original-train-spatial-plan'
+import {riverActions,riverBindingRules,riverActionLabel,resolveRiverAction,executeRiverTurn} from '../src/original-river-chapter'
 import {lastTrainToDawn,lastTrainToDawnEn} from '../src/vendor/original-train/cartridges/lastTrainToDawn'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {executeStoryTurn,type StoryTurnGenerator} from '../src/vendor/original-train/engine/executeTurn'
@@ -11,8 +12,9 @@ import {originalEndingPolicy,type OriginalEndingGenerator} from './original-endi
 import {SessionAuthority,type AuthorityStorage,type SessionRuntime} from './session-authority'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
-const world=originalTrainSpatialPlan()
-const bindings={zh:compileSpatialBinding(lastTrainToDawn,world,originalTrainPlanWalkable),en:compileSpatialBinding(lastTrainToDawnEn,world,originalTrainPlanWalkable)}
+const world=originalTrainChapterSpatialPlan()
+const bindingFor=(c:ReturnType<typeof originalCartridge>)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...riverBindingRules]}},world,originalTrainPlanWalkable)
+const bindings={zh:bindingFor(lastTrainToDawn),en:bindingFor(lastTrainToDawnEn)}
 /** Mandatory content admission. Callers must validate assets and story projection
  * before enabling a playable session; source-rule QA uses an explicit test gate. */
 export type OriginalPresentationGate=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>true
@@ -20,7 +22,7 @@ export const originalPresentationUnavailable:OriginalPresentationGate=()=>{throw
 const authoredOnly:StoryTurnGenerator={send:async()=>{throw new LabError('ORIGINAL_NARRATION_NOT_READY',503)}}
 export function assertOriginalHead(value:unknown):asserts value is OriginalHead{
  const h=value as OriginalHead,s=h?.save
- if(!h||!s||s.version!==8||s.cartridgeId!=='last-train-to-dawn'||!['zh','en'].includes(s.locale)||h.mapVersion!==world.mapVersion||!Number.isSafeInteger(h.version)||h.version<0||typeof h.id!=='string'||!/^[a-zA-Z0-9-]{16,80}$/.test(h.id)||!h.position||!s.finale||!['idle','ready','generating','complete','failed'].includes(s.finale.status)||!Array.isArray(s.blocks)||!Array.isArray(s.inventory)||!Array.isArray(s.characters)||!Array.isArray(s.relationships)||!Array.isArray(s.partyMemberIds)||!s.facts||!s.danger)throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
+ if(!h||!s||s.version!==8||s.cartridgeId!=='last-train-to-dawn'||!['zh','en'].includes(s.locale)||!['original-train-authoring-2',world.mapVersion].includes(h.mapVersion)||!Number.isSafeInteger(h.version)||h.version<0||typeof h.id!=='string'||!/^[a-zA-Z0-9-]{16,80}$/.test(h.id)||!h.position||!s.finale||!['idle','ready','generating','complete','failed'].includes(s.finale.status)||!Array.isArray(s.blocks)||!Array.isArray(s.inventory)||!Array.isArray(s.characters)||!Array.isArray(s.relationships)||!Array.isArray(s.partyMemberIds)||!s.facts||!s.danger)throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
  const binding=bindings[s.locale]
  try{binding.locate(s,h.sceneId)}catch{throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)}
  if(!binding.validPosition(h.sceneId,h.position)||originalCartridge(s.locale).statDefinitions.some(d=>!Number.isFinite(s.stats?.[d.id])||s.stats[d.id]<d.min||s.stats[d.id]>d.max))throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
@@ -31,7 +33,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindings[h.save.locale].validPosition(h.sceneId,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
  return {
   initial:(locale,id)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion};assertOriginalHead(h);check(h);return h},
-  upgrade:value=>{assertOriginalHead(value);return clone(value)},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
+  upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
   preserveConcurrent:()=>{},ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body)=>{
    assertOriginalHead(h);validateAction(body)
@@ -48,12 +50,23 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    let input:string
    if(body.type==='action'){
     const rule=c.domainRules?.rules.find(r=>r.id===body.action)
-    if(!rule||!entity.actions.includes(rule.id))throw new LabError('UNSUPPORTED_ACTION')
-    input=rule.match[0]
+    const chapter=riverActions.find(r=>r.id===body.action)
+    if((!rule&&!chapter)||!entity.actions.includes(body.action))throw new LabError('UNSUPPORTED_ACTION')
+    input=rule?rule.match[0]:riverActionLabel(chapter!.id,h.save.locale)
    }else if(body.type==='free-input'){
     if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
     input=body.text.trim()
    }else throw new LabError('INVALID_ACTION_TYPE')
+   const chapter=resolveRiverAction(input,h.save.locale)
+   if(chapter){
+    if(!entity.actions.includes(chapter))throw new LabError('UNSUPPORTED_ACTION')
+    check({...h,position:pos})
+    const bound=await executeBoundStoryTurn({save:h.save,binding,sceneId:h.sceneId,target:entity.id,position:pos,
+     execute:async(save,admitAction)=>{admitAction(chapter);return executeRiverTurn(save,c,chapter)},
+     assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const next:OriginalHead={...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos};assertOriginalHead(next);check(next,h,id)},
+    })
+    return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:true,actionId:chapter,source:'author'}
+   }
    const resolution=resolveDomainAction(h.save,c,input)
    // Only existing author actions are currently connected. No invented command
    // or dialogue fallback may silently advance an unprepared original chapter.

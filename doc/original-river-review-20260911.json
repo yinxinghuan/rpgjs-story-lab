@@ -1,0 +1,32 @@
+{
+  "scope": "Authored river-valley continuation inside the existing original-v8 authority",
+  "source": "Frozen original cartridge chapter beats and identities; new local authored action definitions",
+  "actions": 7,
+  "spatialVersion": "original-train-authoring-3",
+  "verification": {
+    "fullTestsPassed": 244,
+    "focusedFinalMatcherTestsPassed": 8,
+    "openingToTunnelRuns": 4,
+    "locales": ["zh", "en"],
+    "rescueMethods": ["powered", "manual"],
+    "actionsPerRun": 6,
+    "storage": "actual temporary SQLite, reopened after every chapter step",
+    "expectedPoweredDeltasFromRiverArrival": {"fuel": -12, "condition": 0, "morale": 6},
+    "expectedManualDeltasFromRiverArrival": {"fuel": -6, "condition": -8, "morale": 6},
+    "checks": ["same request replay", "oxygen acquired once and consumed once", "Doctor Ren visibly introduced before interaction", "Ada and Ren remain companions", "one relationship event", "chapter finish retains unfinished journey", "finite fuel and condition recovery from zero", "missing assets roll back whole action", "negated and question input not executed", "client protocol not interpreted", "v2 upgrade retains save/position/cursor/receipt"],
+    "carriageWorkerHttpRequests": 204,
+    "carriageRoutes": ["radio:41", "lights:46"],
+    "build": "cloud frontend and Worker passed",
+    "audits": ["public secrets passed", "API base passed"]
+  },
+  "notVerified": [
+    "Actual visual river chapter with original characters and equipment",
+    "Original production HTTP/UI integration",
+    "Quarry/forest continuations and tunnel-to-finale route",
+    "General free-text understanding or real model narration",
+    "Physical iPhone or native AlterU play"
+  ],
+  "deployment": "none; main and Pages remain 05db41c",
+  "realPlayerDataAccess": false,
+  "newProviderCalls": 0
+}

@@ -17,6 +17,21 @@ export function originalTrainSpatialPlan():SpatialBindingDefinition{
   characters:characters.map(id=>({id,kind:'physical',travels:true,entities:scenes.map(s=>s.id+'-'+id)})),
  }
 }
+/** Additive chapter bindings, still authoring-only until presentation admission.
+ * Existing v2 rooms/footprints/positions do not change. */
+export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
+ const world=originalTrainSpatialPlan(),scene=originalTrainRoom('river-valley')
+ world.mapVersion='original-train-authoring-3'
+ world.entities.push(
+  {id:'river-bridge',scene,position:{x:180,y:335},approach:{x:180,y:360},states:['unchecked','surveyed','evacuated'],actions:['river-survey','river-rescue-powered','river-rescue-manual']},
+  {id:'river-fuel-locker',scene,position:{x:300,y:480},approach:{x:300,y:505},states:['reserve','empty'],actions:['river-refuel']},
+  {id:'river-return-track',scene,position:{x:270,y:495},approach:{x:270,y:520},states:['waiting','departed'],actions:['river-depart']},
+ )
+ world.entities.find(e=>e.id===scene+'-ren-medic')!.actions=['river-treat']
+ world.entities.find(e=>e.id===scene+'-ada-mechanic')!.actions=['river-stabilize']
+ world.portals.push({actionId:'river-depart',fromScene:scene,scene:originalTrainRoom('tunnel'),position:{x:192,y:430}})
+ return world
+}
 // North Cape v2: shared projected footprint, also exported into its TMX.
 // Other regions remain authoring candidates until their own background review.
 export const originalTrainObstacles=[{x:0,y:0,w:60,h:576},{x:336,y:0,w:48,h:576},{x:0,y:0,w:384,h:16},{x:0,y:560,w:384,h:16},{x:146,y:0,w:90,h:248},{x:17,y:260,w:57,h:134}]
