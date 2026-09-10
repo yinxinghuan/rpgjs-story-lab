@@ -86,7 +86,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
  }
 }
 /** Same SQLite transaction/replay implementation as the live carriage. This is
- * not wired to the production router while original presentation is unready. */
+ * guarded by the original release switch and mandatory presentation admission. */
 export class OriginalTrainAuthority extends SessionAuthority<OriginalHead>{
  constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator){super(db,originalTrainRuntime(admit,generator,endingGenerator))}
 }

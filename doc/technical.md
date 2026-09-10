@@ -476,3 +476,15 @@ server/original-train-runtime.ts安装原作策略，使用src/vendor/original-t
 空间v10增加枢纽路册实体，兼容v2至v9。49项新增测试中，40条中英×是否遇见医生×10归属路线从原新开场执行实际章节到选择ready和结局complete，不注入终局状态；逐项检查选择可见代价、同ID回执、原资源与完整存档保持。另测无援助且敌对的固定列车低能力结局、显式低资源fixture、表现缺失原子拒绝、旧v9升级、错误候选拒绝，以及真实文件SQLite关闭/重开与客户端丢失结局响应后的同ID恢复。结束事务仍只增加version，普通行动cursor不增加。
 
 另4条中英文黑松新开场路线到完整结局，验证林澈同行/留守产生相应后日谈，未访问河谷不出现在地区结果中。全套472项与cloud前端/Worker构建通过。测试中的表现准入为显式测试gate，不能证明原作地图和美术已准入；原作生产HTTP、实际UI/renderer、其余场景与人物设备素材仍需接入。没有新增模型/媒体请求、真实图处理、真实玩家存档读取、浏览器/平台测试或部署。正式主站/Pages保持05db41c。规则与会话层的整段原作现在可到完整结局，但完整可玩的单人总目标尚未完成。
+
+### 原作真实HTTP与现有Worker并存（2026-09-11，开发分支）
+
+现有`CarriageJourneyAuthority`保留原类名、绑定、车厢路径与owner命名。原作新增`/api/original`协议，继续经过原256-bit capability边界：外层验证并散列持有人凭据，剥离Authorization，转发到同一`CARRIAGE_JOURNEYS`命名空间内`original-v8:<owner hash>`对象。车厢仍用原`<owner hash>`对象，数据不搬迁、不合并；同一capability与登记ID分别创建两种旅程时不会解释对方存档。没有新增Worker类、绑定、迁移或第二套部署。匿名能力隔离仍不等于平台实名登录或账号找回。
+
+`server/original-http.ts`连接原作登记/目录、快照、行动、位置、事件和独立结局事务；严格原作语言和登记字段、6000字节请求上限沿用外层JSON边界，版本和原子提交仍由原authority负责。`original-runtime-contract.ts`提供独立原作协议头和版本，原车厢协议不变。`cloudTransport`参数化额外协议，默认车厢行为保持；`originalSessionHttp`从`getGameApiBase()`推导UUID路径，用调用方已有作用域Storage与Web Locks、独立`original-story-1-`日志前缀实例化原作客户端。没有前端私有凭据、硬编码生产后台或本地写入回退。
+
+`createHandler`原作发布开关默认false；即使在测试代码显式打开，实际`originalPresentationUnavailable`仍拒绝创建，没有素材就不能靠开放HTTP绕过准入。当前尚未把真实原作UI接入这个transport，也未部署或启用正式路由。没有测试query、客户端上传存档或环境变量可以打开准入。
+
+新增8项真实本机HTTP测试，Node服务器通过实际Worker handler→原Durable Object适配→文件SQLite执行。6条中英×三路线从开场走到完整结局，混合按钮/完整句自由输入；每条都故意在成功提交后丢弃登记、首次行动、结局响应，并关闭/重开SQLite、重建客户端，从持久日志恢复同ID，没有重复场景、资源或结局。另测原作/车厢同持有人隔离与原车厢真实开柜、其他持有人拒绝、旧协议、JSON/体积/语言/方法拒绝、默认发布关闭和真实素材gate拒绝且无登记。HTTP测试需要本机监听权限；初次沙箱EPERM后在授权本机监听下运行，测试适配器SQL惰性执行错误已修正。
+
+全套480测试及cloud前端/Worker构建通过。该证据为真实HTTP及本机SQLite，不是线上Cloudflare、真实renderer、iPhone或AlterU实测；测试完整路线显式使用合成表现gate。原作实际素材/表现/UI、媒体链及生产发布仍继续，正式主站/Pages保持05db41c；无新模型/媒体外发、真实图处理或真实玩家数据访问。

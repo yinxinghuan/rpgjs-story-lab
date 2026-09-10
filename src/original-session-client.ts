@@ -12,7 +12,7 @@ export function assertOriginalClientHead(value:unknown):asserts value is Origina
  if(!h||!s||s.version!==8||s.cartridgeId!==world.cartridgeId||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!room||!h.position||!originalTrainPlanWalkable(h.sceneId,h.position)||!Array.isArray(s.map)||s.map.filter(n=>n.current).length!==1||s.map.find(n=>n.current)?.id!==room.storyLocationId)throw Error('ORIGINAL_SAVE_UNSUPPORTED')
 }
 /** Instantiate with an original-world namespace and authenticated transport.
- * No browser reducer, local authority fallback or production endpoint is added. */
+ * HTTP transport is supplied separately; no browser reducer or local writer. */
 export class OriginalSessionClient extends RecoverableSessionClient<OriginalHead>{
  constructor(storage:Storage,prefix:string,transport:Transport,lock?:SessionLock){super(storage,prefix,transport,{scene:h=>h.sceneId,assertHead:assertOriginalClientHead,terminalErrors:['CHARACTER_NOT_PRESENT','ORIGINAL_NARRATION_NOT_READY','ORIGINAL_FINALE_PENDING',...originalChapterRejections],ending:{
   request:h=>({snapshot_id:buildEndingSnapshot(h.save,originalEndingCartridge(h.save,h.save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn)).id,mapVersion:h.mapVersion}),

@@ -1,0 +1,26 @@
+{
+  "scope": "Original Story Session HTTP on the existing Worker and namespace",
+  "tests": {"newPassed": 8, "fullPassed": 480, "freshOpeningToCompleteEndingHttpRuns": 6},
+  "verified": [
+    "Actual loopback HTTP -> existing Worker handler -> Durable Object adapter -> file SQLite",
+    "zh/en and quarry/valley/forest routes finish with complete authored endings",
+    "Committed enrollment, first action and finale responses deliberately lost; each recovers the same ID after SQLite reopen and client recreation",
+    "Action and ending requests use the existing persistent pending client and parameterized runtime handshake",
+    "Directory, event cursor, latest head and stale/current checkpoint behavior verified over HTTP",
+    "Same capability and enrollment ID retain independent original and existing carriage saves",
+    "Cross-owner and cross-cartridge reads return not found; original requests do not forward bearer credentials",
+    "Existing carriage HTTP enroll/open-cabinet/reopen remains functional",
+    "Default original release flag closed and actual unadmitted-presentation gate rejects enrollment atomically",
+    "Malformed JSON, oversized body, invalid locale, old protocol and unsupported method rejected",
+    "480 regression tests and cloud frontend/Worker build pass"
+  ],
+  "limitations": [
+    "Complete routes explicitly admit synthetic presentation, not real original assets",
+    "No actual character walking, scene renderer, browser UI or platform validation in this increment",
+    "Loopback file SQLite is not deployed Cloudflare durability evidence",
+    "Original API remains disabled in the released handler, UI not connected yet",
+    "No extra namespace binding, Worker deployment, media/model request or real image processing",
+    "Main and Pages remain 05db41c; complete playable original integration not finished"
+  ],
+  "realPlayerDataRead": false
+}
