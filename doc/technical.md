@@ -350,3 +350,13 @@ server/original-train-runtime.ts安装原作策略，使用src/vendor/original-t
 `sprite-preparation-client.ts` 复制输入后转移副本到同源模块Worker，支持AbortSignal，15秒限时后终止Worker；结果/异常/取消/克隆失败均清理定时器及监听。Worker只执行纯处理器，返回候选像素和处理元数据，没有素材自动准入或存档写入。
 
 `_qa/sprite-preparation.test.ts` 仅用构造像素测试八类合同；`_qa/sprite-worker.html`、`sprite-worker-browser.ts`、`sprite-worker.vite.ts` 将真实模块Worker构建到临时目录，以普通浏览器按钮测试传输、取消和失败恢复。该页面不属于Vite正式入口，不创建新游戏。桌面121ms的单次合成图测试不能代替真实图质量、iPhone硬件和压力验收。接下来在制作页集成时仍需PNG编码/真实解码、源与输出摘要、版本化参数、候选持久保存及同地图检查；当前没有宣称这些部分完成。
+
+### 素材准备页与候选版本（2026-09-11，开发分支）
+
+`creator.html?create_art=sprite` 由同一制作入口装载 `sprite-creator.tsx`，背景制作页可进入/返回。原图支持用户选PNG或读取已固定摘要的平台人物/设备样本。读取样本不调用生成或处理接口；处理须点击明确按钮。页面使用已有UI色彩/间距与中英文文案，提供源/结果切换、深浅检查底、PNG导出链接、历史记录与参数/错误恢复，不改变正式游戏的图形、碰撞或存档。
+
+`sprite-draft.ts` 将源PNG字节/摘要/尺寸、来源名/类型、父记录ID、处理参数、输出PNG及算法/偏移记录保存在独立的 `alteru:<session UUID>:creator-sprite-drafts-v1` IndexedDB。每次处理新建记录，保留原图和旧候选；写入在同一事务检查当前ID和revision，配合跨页Web Lock拒绝迟到覆盖。刷新时保留中断的processing记录，明确允许从源图重新处理。没有云端保存或自动发布。
+
+`sprite-browser-io.ts` 检查PNG头、最大8MiB/1536边长/1572864像素、SHA256及原生Image.decode，再通过Canvas读写像素；重建PNG再次摘要与解码，blobURL按生命周期释放。处理本体仍在模块Worker，取消/失败保留源记录，元数据成功响应不等于质量准入。输入PNG头测试与真实浏览器PNG编码测试分开记录。
+
+本轮220项回归通过。合成图经过真实页面的编码、处理、保存、刷新、故意错误参数失败与旧候选恢复；320/390中英文无横向溢出，控件至少48px。生产构建入口另行验证真实设备样本只读加载、摘要、类型刷新保持和往返导航；外部guest栏曾遮住顶部返回链接，关闭其已有Close按钮后通过，未为外部栏移动平台内布局。未点击真实样本处理按钮、未下载导出链接到用户磁盘、未做真实素材质量或iPhone硬件验收；完整游戏地图试用仍待后续接入。该开发版本未部署，生产保持05db41c。

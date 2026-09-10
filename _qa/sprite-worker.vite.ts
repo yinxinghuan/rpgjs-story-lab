@@ -1,3 +1,3 @@
 import {defineConfig} from 'vite'
 import {resolve} from 'node:path'
-export default defineConfig({base:'./', publicDir:false, build:{outDir:'/private/tmp/rpgjs-synthetic-sprite-worker',emptyOutDir:true,rollupOptions:{input:resolve('_qa/sprite-worker.html')}}})
+export default defineConfig({base:'./', publicDir:false, build:{outDir:'/private/tmp/rpgjs-synthetic-sprite-worker',emptyOutDir:true,rollupOptions:{input:{worker:resolve('_qa/sprite-worker.html'),creator:resolve('_qa/sprite-creator.html')}}}})

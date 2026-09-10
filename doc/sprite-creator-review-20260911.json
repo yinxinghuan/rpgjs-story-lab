@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-11",
+  "scope": "creator preparation flow with synthetic PNG; production build source-only smoke",
+  "regressionTests": 220,
+  "newStateTests": 6,
+  "synthetic": {
+    "source": [
+      72,
+      96
+    ],
+    "frames": 12,
+    "candidateId": "71851194-4559-41b9-89d4-25867679718f",
+    "sourceSha256": "739ccf2bfa29117b98675e770b4e4b262c77842dcb046f2eea2ce959d3347025",
+    "candidateSha256": "6d0d11352eda767026990a09bc5c20cb27737e72863baa7f3bff12fbdd30ac09",
+    "refreshSameCandidate": true,
+    "invalidContactHeight": 1,
+    "failure": "SPRITE_PREPARATION_FRAME_DOES_NOT_FIT",
+    "restorePreviousCandidate": true,
+    "restoredContactHeight": 20,
+    "exportLinkPresent": true,
+    "exportDownloadClicked": false
+  },
+  "ui": {
+    "zh": [
+      [
+        320,
+        568
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "en": [
+      [
+        320,
+        568
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "minControlHeightCss": 48,
+    "horizontalOverflow": false,
+    "screenshotCaveat": "first English viewport capture scaled; reload and repeat screenshots confirmed full-size view",
+    "errorMovedNearActionAndRecaptured": true
+  },
+  "productionBuild": {
+    "sourceOnly": true,
+    "source": "platform-props-edit-01",
+    "sha256": "fdcbd8562b9c9d2b3669922553b2c25f1af213fbbd9e3a109daa30603e71fa0e",
+    "restoredKind": "states",
+    "fixtureButtonAbsent": true,
+    "navigation": "passed after closing existing external guest overlay",
+    "realImageProcessing": false
+  },
+  "deployed": false,
+  "realAssetQualityVerified": false,
+  "mapTrialIntegrated": false,
+  "iphoneHardwareVerified": false,
+  "files": {
+    "src/sprite-draft.ts": "2775f813b06339462e9f442ea466773a5eb302bbff8a24864129d99f3ece968b",
+    "src/sprite-browser-io.ts": "63bf547a5fe6d638a76d0d8d2c2750d727db645a131a1f2ad398b9e3549d0b6d",
+    "src/sprite-creator.tsx": "36198f0aa485e8b6a570b85f6be16397d580293258767f590b34c785e650874d",
+    "src/creator-main.tsx": "b5b522ee7cf0d4b82d007548a1c196dffcd077bb517ff3d47d6b0c619e0d753f",
+    "src/art-creator.tsx": "2a330dea27c5f92e52e5cd01e56e4e7af78eb8299080d2eb3af5093807931771",
+    "src/art-creator.css": "46691030b24ef8866fd420833372c4a501b1472b1138e62b5f9130d096db0847",
+    "_qa/sprite-draft.test.ts": "3846814204388367969f9832ceca68e68efcb4dd249d6af230f61250119c43d9",
+    "_qa/sprite-creator-browser.tsx": "6608262f3cbfb6563dad5f9dd554c6dbf74dfa121ae367272d32457deb9a2578"
+  },
+  "build": "npm run build passed; existing large-chunk warning",
+  "uiAudit": "Existing compiled dependency text-glyph findings; no changed src functional-icon findings; not a clean full-tree strict pass",
+  "audits": {
+    "publicSecrets": "pass",
+    "apiBase": "pass"
+  }
+}
