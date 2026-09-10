@@ -4,6 +4,9 @@ import type {IncomingMessage,ServerResponse} from 'node:http'
 import {CarriageJourneyAuthority,createHandler} from '../worker/source'
 import {GAME_ID} from '../src/game-id'
 export function preflightPlugin(){
+ // Explicit loopback-only fault injection, absent from cloud/Pages plugins.
+ const failAsset=process.env.CARRIAGE_QA_ASSET_FAIL_ONCE
+ let assetFailed=false
  const databases:DatabaseSync[]=[],objects=new Map<string,CarriageJourneyAuthority>()
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
   const owner=String(id);let object=objects.get(owner)
@@ -13,6 +16,7 @@ export function preflightPlugin(){
  const handler=createHandler(true),prefix='/'+GAME_ID
  const middleware=(req:IncomingMessage,res:ServerResponse,next:()=>void)=>{
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
+  if(failAsset&&!assetFailed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===failAsset&&url.searchParams.has('scene_asset')){assetFailed=true;res.writeHead(503,{'Cache-Control':'no-store'});res.end('Synthetic scene resource failure');return}
   if(!url.pathname.startsWith(prefix+'/api/lab'))return next()
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){res.writeHead(403);res.end();return}
   void(async()=>{try{

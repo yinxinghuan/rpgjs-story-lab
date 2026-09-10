@@ -125,3 +125,5 @@ button{transition:background-color .16s,border-color .16s,transform .12s}button:
  .cl-controls__hint small{display:block}
  .cl-controls .cl-interact{grid-column:3;grid-row:1}
 }
+
+.cl-loading__content{width:min(280px,calc(100vw - 32px));text-align:center;line-height:1.65;overflow-wrap:anywhere}.cl-loading__content button{display:block;margin:8px auto 0}
