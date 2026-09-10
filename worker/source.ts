@@ -1,3 +1,5 @@
+import {createJournalImageProducer,readJournalImageAsset,type ImageProducer} from '../server/journal-image'
+import {JOURNAL_IMAGE_RELEASED} from '../src/journal-image-release'
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {LabError} from '../src/journey-runtime'
 import {propose,type ModelRequest} from '../server/model'
@@ -17,10 +19,11 @@ async function body(request:Request){
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
-export function createHandler(writesEnabled:boolean){return async(request:Request,env:Environment)=>{
+export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
  if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return json({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:RELEASE_ID,runtimeContract:RUNTIME_CONTRACT})
  if(!path.startsWith('/api/lab/'))return json({error:'NOT_FOUND'},404)
+ if(!imageEnabled&&/^\/api\/lab\/sessions\/[^/]+\/image(?:\/file)?$/.test(path))return json({error:'NOT_FOUND'},404)
  if(!writesEnabled)return json({error:'PRODUCTION_IDENTITY_NOT_ENABLED'},503)
  if(!env.CARRIAGE_JOURNEYS)return json({error:'AUTHORITY_UNAVAILABLE'},503)
  const token=request.headers.get('Authorization')?.match(/^Bearer ([A-Za-z0-9_-]{43})$/)?.[1]
@@ -36,10 +39,14 @@ export function createHandler(writesEnabled:boolean){return async(request:Reques
  }catch(e){return failure(e)}
 }}
 export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED)
-interface DurableContext{storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
+interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
- constructor(ctx:DurableContext,_env?:Environment,modelRequest?:ModelRequest){
+ private produceImage:ImageProducer
+ private background:(promise:Promise<unknown>)=>void
+ constructor(ctx:DurableContext,_env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer){
+  this.produceImage=imageProducer??createJournalImageProducer()
+  this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
   this.authority=new ProductionAuthority(db,(input,save,target,live)=>propose(input,save,target,live&&ONLINE_NARRATION_AVAILABLE,modelRequest))
  }
@@ -49,6 +56,23 @@ export class CarriageJourneyAuthority{
   const url=new URL(request.url),path=url.pathname.slice('/api/lab'.length)
   if(path==='/sessions'&&request.method==='GET')return json({sessions:this.authority.directory(owner)})
   if(path==='/sessions'&&request.method==='POST'){const b=await body(request);return json(this.authority.create(owner,b.enrollment_id,b.locale==='en'?'en':'zh'))}
+  const imagePath=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})\/image(\/file)?$/)
+  if(imagePath){
+   const id=imagePath[1]
+   if(request.method==='GET'&&imagePath[2]){
+    const job=this.authority.get(owner,id).journalImage;if(!job)throw new LabError('IMAGE_NOT_READY',409)
+    const bytes=await readJournalImageAsset(job)
+    return new Response(bytes,{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT}})
+   }
+   if(request.method==='GET')return json({job:this.authority.image(owner,id)})
+   if(request.method==='POST'&&!imagePath[2]){
+    const b=await body(request);if(Object.keys(b).some(k=>k!=='retry')||b.retry!==undefined&&typeof b.retry!=='boolean')throw new LabError('INVALID_IMAGE_REQUEST')
+    const job=this.authority.startImage(owner,id,b.retry===true)
+    this.background(this.authority.runImage(owner,id,this.produceImage))
+    return json({job})
+   }
+   throw new LabError('METHOD_NOT_ALLOWED',405)
+  }
   const m=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|backup))?$/);if(!m)throw new LabError('NOT_FOUND',404)
   if(request.method==='GET'&&!m[2])return json(this.authority.get(owner,m[1]))
   if(request.method==='GET'&&m[2]==='backup')return json(await this.authority.backup(owner,m[1]))

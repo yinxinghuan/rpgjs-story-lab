@@ -3,9 +3,11 @@ import {DatabaseSync} from 'node:sqlite'
 import type {IncomingMessage,ServerResponse} from 'node:http'
 import {CarriageJourneyAuthority,createHandler} from '../worker/source'
 import {GAME_ID} from '../src/game-id'
+import {completePreflightJourney} from './preflight-complete'
 export function preflightPlugin(){
  // Explicit loopback-only fault injection, absent from cloud/Pages plugins.
  const failAsset=process.env.CARRIAGE_QA_ASSET_FAIL_ONCE
+ const completeFixture=process.env.CARRIAGE_QA_COMPLETED_JOURNEY==='1',completed=new Map<string,Promise<unknown>>()
  let assetFailed=false
  let mismatchOnce=process.env.CARRIAGE_QA_RUNTIME_MISMATCH_ONCE==='1'
  const delayedAsset=process.env.CARRIAGE_QA_ASSET_DELAY_PATH
@@ -15,9 +17,17 @@ export function preflightPlugin(){
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
   const owner=String(id);let object=objects.get(owner)
   if(!object){const raw=new DatabaseSync(':memory:');databases.push(raw);object=new CarriageJourneyAuthority({storage:{sql:{exec:(q,...b)=>{const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{raw.exec('BEGIN IMMEDIATE');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}});objects.set(owner,object)}
-  return object
+  const authority=object
+  return {fetch:async(request:Request)=>{
+   const response=await authority.fetch(request)
+   if(!completeFixture||request.method!=='POST'||new URL(request.url).pathname!=='/api/lab/sessions'||!response.ok)return response
+   const head=await response.json() as any
+   let work=completed.get(head.id)
+   if(!work){work=completePreflightJourney(authority,owner,head);completed.set(head.id,work)}
+   return Response.json(await work,{headers:response.headers})
+  }}
  }}}
- const handler=createHandler(true),prefix='/'+GAME_ID
+ const handler=createHandler(true,true),prefix='/'+GAME_ID
  const middleware=(req:IncomingMessage,res:ServerResponse,next:()=>void)=>{
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
   if(delayMs&&!assetDelayed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===delayedAsset&&(delayEngineMap?!url.searchParams.has('scene_asset'):url.searchParams.has('scene_asset'))){assetDelayed=true;setTimeout(next,delayMs);return}

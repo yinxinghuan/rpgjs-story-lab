@@ -1,3 +1,4 @@
+import {startJournalImage,runJournalImage,publicImageJob,type ImageProducer,type ImageJobStore} from './journal-image'
 import {NARRATION_POLICY} from '../src/narration-policy'
 import {initialStory,type Locale} from '../src/story'
 import {MAP_VERSION,safePosition,currentScene} from '../src/contract'
@@ -23,6 +24,13 @@ export class ProductionAuthority{
   db.run('CREATE TABLE IF NOT EXISTS receipts(owner TEXT NOT NULL, action TEXT NOT NULL, digest TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner,action))')
   db.run('CREATE TABLE IF NOT EXISTS journal(session TEXT NOT NULL, cursor INTEGER NOT NULL, action TEXT NOT NULL, kind TEXT NOT NULL, event TEXT NOT NULL, PRIMARY KEY(session,cursor))')
  }
+ private imageStore(owner:string,id:string):ImageJobStore{return {
+ get:()=>this.get(owner,id),
+ update:change=>this.db.transaction(()=>{const row=this.row(owner,id),head=upgradeHead(JSON.parse(row.data));change(head);this.write(owner,head,row.cursor)}),
+ }}
+ image(owner:string,id:string){return publicImageJob(this.get(owner,id).journalImage)}
+ startImage(owner:string,id:string,retry=false){return publicImageJob(startJournalImage(this.imageStore(owner,id),retry,this.now()))}
+ runImage(owner:string,id:string,producer:ImageProducer){return runJournalImage(this.imageStore(owner,id),producer,this.now)}
  backup(owner:string,id:string){return exportJourney(this.db,owner,id)}
  private row(owner:string,id:string){const row=this.db.all<Row>('SELECT data,cursor FROM journeys WHERE owner=? AND id=?',owner,id)[0];if(!row)throw new LabError('SESSION_NOT_FOUND',404);return row}
  private write(owner:string,h:Head,cursor:number){this.db.run('UPDATE journeys SET data=?,cursor=?,updated=? WHERE owner=? AND id=?',JSON.stringify(h),cursor,Date.now(),owner,h.id)}
@@ -82,6 +90,7 @@ export class ProductionAuthority{
    assertReadableJourney(current)
    if(current.mapVersion!==head.mapVersion)throw new LabError('JOURNEY_VERSION_UNSUPPORTED',409)
    if(current.version!==head.version)throw new LabError('VERSION_CONFLICT',409)
+   response.head.journalImage=current.journalImage
    const cursor=row.cursor+1,result=wire({...response,cursor}),event={cursor,version:response.head.version,action_id:body.action_id,kind:response.kind}
    this.write(owner,response.head,cursor)
    this.db.run('INSERT INTO journal VALUES(?,?,?,?,?)',id,cursor,body.action_id,response.kind,JSON.stringify(event))

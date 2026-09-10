@@ -15,7 +15,7 @@ export function chapterResult(save:StorySave,locale:Locale){
  }
 }
 
-export function ChapterResult({save,locale}:{save:StorySave;locale:Locale}){
+export function ChapterResult({save,locale,children}:{save:StorySave;locale:Locale;children?:React.ReactNode}){
  const result=chapterResult(save,locale),t=(zh:string,en:string)=>tr(locale,zh,en)
  if(!result)return null
  return <div className="cl-chapter" data-chapter-result={result.route}>
@@ -24,5 +24,6 @@ export function ChapterResult({save,locale}:{save:StorySave;locale:Locale}){
   <details><summary>{t('完成的事','What you accomplished')}</summary><ul>{result.milestones.map(m=><li key={m}>{m}</li>)}</ul></details>
   <p className="cl-chapter__stop">{t('可以在这里停下。进度已经保存，下次回来仍能继续这段旅程。','You can stop here. Progress is saved; return later to continue this journey.')}</p>
 
+ {children}
  </div>
 }

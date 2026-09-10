@@ -3,7 +3,8 @@ import {executeSpatialStoryTurn} from './spatial-story-turn'
 import {assertSpatialStoryProjection} from './spatial-story-projection'
 import {validActionTarget,safePosition,entities,currentScene,type Position,type EntityId,type Proposal} from './contract'
 import {portalArrivals} from './scene-layout'
-export type Head={id:string;version:number;save:StorySave;position:Position;mapVersion:string}
+import type {JournalImage} from './journal-image'
+export type Head={journalImage?:JournalImage;id:string;version:number;save:StorySave;position:Position;mapVersion:string}
 export class LabError extends Error{constructor(public code:string,public status=400){super(code);this.message=code}}
 export type Narrator=(input:string,save:StorySave,target:EntityId,live:boolean)=>Promise<{proposal:Proposal;trace:unknown}>
 export function validateAction(body:any){

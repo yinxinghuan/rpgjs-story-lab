@@ -52,3 +52,15 @@ test('cloud response from another runtime is not adopted after a successful hand
  const api=cloudTransport(new MemoryStorage(),'version-','/game/api/lab',async(_n,f)=>f(),async url=>Response.json(String(url).endsWith('/health')?{runtimeContract:RUNTIME_CONTRACT}:{version:999}))
  await assert.rejects(api('/sessions'),/RUNTIME_VERSION_MISMATCH/)
 })
+test('authenticated image transport preserves binary bytes and refuses a different runtime',async()=>{
+ const {RUNTIME_CONTRACT,RUNTIME_HEADER}=await import('../src/runtime-contract')
+ let valid=true
+ const bytes=new Uint8Array([137,80,78,71,0,255])
+ const api=cloudTransport(new MemoryStorage(),'image-','/game/api/lab',async(_n,f)=>f(),async(url,init)=>{
+  if(String(url).endsWith('/health'))return Response.json({runtimeContract:RUNTIME_CONTRACT})
+  assert.match(new Headers(init?.headers).get('Authorization')!,/^Bearer /)
+  return new Response(bytes,{headers:{'Content-Type':'image/png',[RUNTIME_HEADER]:valid?RUNTIME_CONTRACT:'older'}})
+ })
+ assert.deepEqual(await api('/sessions/synthetic/image/file'),bytes)
+ valid=false;await assert.rejects(api('/sessions/synthetic/image/file'),/RUNTIME_VERSION_MISMATCH/)
+})
