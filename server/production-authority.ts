@@ -4,6 +4,7 @@ import {MAP_VERSION,safePosition,currentScene} from '../src/contract'
 import {LabError,prepareAction,validateAction,type Head,type Narrator} from '../src/journey-runtime'
 import {upgradeHead} from './head-migration'
 import {exportJourney} from './journey-backup'
+import {assertReadableJourney} from '../src/journey-compatibility'
 export interface AuthorityStorage{
  all<T>(sql:string,...bindings:any[]):T[]
  run(sql:string,...bindings:any[]):void
@@ -78,6 +79,8 @@ export class ProductionAuthority{
   return this.db.transaction(()=>{
    const raced=this.replay(owner,body.action_id,hash);if(raced)return raced
    const row=this.row(owner,id),current=JSON.parse(row.data) as Head
+   assertReadableJourney(current)
+   if(current.mapVersion!==head.mapVersion)throw new LabError('JOURNEY_VERSION_UNSUPPORTED',409)
    if(current.version!==head.version)throw new LabError('VERSION_CONFLICT',409)
    const cursor=row.cursor+1,result=wire({...response,cursor}),event={cursor,version:response.head.version,action_id:body.action_id,kind:response.kind}
    this.write(owner,response.head,cursor)

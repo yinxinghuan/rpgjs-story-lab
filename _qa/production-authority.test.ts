@@ -30,6 +30,19 @@ test('late narrator cannot overwrite a competing action',async()=>{
  const delayed=s.action('a',h.id,{...intent(h,'cabinet',''),type:'free-input',text:'柜子是什么',mode:'local'});await ready
  const winner=await s.action('a',h.id,intent(h,'cabinet','open-cabinet'));release();await assert.rejects(delayed,/VERSION_CONFLICT/);assert.deepEqual(s.get('a',h.id),winner.head);assert.equal(s.events('a',h.id,0).length,1);raw.close()
 })
+test('a delayed turn cannot overwrite an unsupported deployment snapshot at the same cursor',async()=>{
+ let release!:()=>void,entered!:()=>void;const ready=new Promise<void>(r=>entered=r),gate=new Promise<void>(r=>release=r)
+ const {service:s,raw}=setup(async(...args)=>{entered();await gate;return narrator(...args)}),h=s.create('a',randomUUID(),'zh')
+ try{
+  const delayed=s.action('a',h.id,{...intent(h,'cabinet',''),type:'free-input',text:'柜子是什么',mode:'local'});await ready
+  const future=JSON.stringify({...h,mapVersion:'train-scenes-99'})
+  raw.prepare('UPDATE journeys SET data=? WHERE id=?').run(future,h.id);release()
+  await assert.rejects(delayed,/JOURNEY_VERSION_UNSUPPORTED/)
+  assert.equal(raw.prepare('SELECT data FROM journeys').get()?.data,future)
+  assert.equal(raw.prepare('SELECT COUNT(*) AS n FROM receipts').get()?.n,0)
+  assert.equal(raw.prepare('SELECT COUNT(*) AS n FROM journal').get()?.n,0)
+ }finally{release();raw.close()}
+})
 test('stale checkpoint cannot move a later head',async()=>{const {service:s,raw}=setup(),h=s.create('a',randomUUID(),'en'),r=await s.action('a',h.id,intent(h,'cabinet','open-cabinet'));assert.throws(()=>s.checkpoint('a',h.id,{sceneId:'carriage',expected_version:0,position:{x:188,y:330}}),/STALE_POSITION/);assert.deepEqual(s.get('a',h.id),r.head);raw.close()})
 test('approved production boundary requires capability; disabled rollback remains closed',async()=>{
  const request=(token?:string)=>new Request('https://example.test/api/lab/sessions',{method:'POST',headers:{Authorization:'Bearer '+(token??''),'X-Authority-Owner':'forged'},body:JSON.stringify({enrollment_id:randomUUID(),locale:'zh'})})

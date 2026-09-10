@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite'
 import {randomUUID} from 'node:crypto'
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {restoreJourneyToEmptyDatabase,checksum,validateBackup} from '../server/journey-backup'
-import {currentScene,localReply} from '../src/contract'
+import {currentScene,localReply,MAP_VERSION} from '../src/contract'
 import {approachPoints} from '../src/scene-layout'
 const owner='a'.repeat(64)
 function setup(){const raw=new DatabaseSync(':memory:');let fail=false
@@ -37,4 +37,47 @@ test('offline CLI writes a private new SQLite file and refuses existing destinat
  try{writeFileSync(input,JSON.stringify(s.backup),{mode:0o600});const args=['--import','tsx','scripts/restore-journey-backup.ts',input,output],run=spawnSync(process.execPath,args,{encoding:'utf8'});assert.equal(run.status,0,run.stderr);assert.equal(statSync(output).mode&0o777,0o600)
  const restored=new DatabaseSync(output,{readOnly:true});assert.equal(restored.prepare('SELECT data FROM journeys').get()?.data,JSON.stringify(s.h));restored.close();const old=statSync(output).size;assert.notEqual(spawnSync(process.execPath,args).status,0);assert.equal(statSync(output).size,old)
  }finally{s.raw.close();rmSync(dir,{recursive:true,force:true})}
+})
+
+test('old production archive keeps its version, restores unchanged, upgrades once and replays the original receipt',async()=>{
+ const s=await source(),t=setup()
+ try{
+  const legacy=structuredClone(s.h);legacy.mapVersion='train-scenes-2';legacy.save.map=legacy.save.map.filter(n=>n.id!=='walkway')
+  s.raw.prepare('UPDATE journeys SET data=? WHERE id=?').run(JSON.stringify(legacy),legacy.id)
+  const archive=await s.service.backup(owner,legacy.id)
+  assert.equal(archive.payload.mapVersion,'train-scenes-2');assert.equal(archive.payload.journey.data,JSON.stringify(legacy))
+  await restoreJourneyToEmptyDatabase(t.db,archive)
+  assert.equal(t.raw.prepare('SELECT data FROM journeys').get()?.data,JSON.stringify(legacy))
+  const upgraded=t.service.get(owner,legacy.id)
+  assert.equal(upgraded.mapVersion,MAP_VERSION);assert.equal(upgraded.version,legacy.version)
+  assert.deepEqual(upgraded.save.blocks,legacy.save.blocks);assert.deepEqual(upgraded.save.inventory,legacy.save.inventory)
+  assert.equal(upgraded.save.map.filter(n=>n.id==='walkway').length,1)
+  assert.deepEqual(t.service.get(owner,legacy.id),upgraded)
+  assert.deepEqual(await t.service.action(owner,legacy.id,s.bodies[1]),s.responses[1])
+  assert.deepEqual(t.service.get(owner,legacy.id),upgraded)
+  assert.equal((await t.service.backup(owner,legacy.id)).payload.mapVersion,MAP_VERSION)
+ }finally{s.raw.close();t.raw.close()}
+})
+
+test('unsupported map, future schema and another cartridge never rewrite the stored journey',async()=>{
+ const s=await source()
+ try{
+  for(const mutate of [(h:any)=>h.mapVersion='train-scenes-99',(h:any)=>h.save.version=11,(h:any)=>h.save.cartridgeId='another-game']){
+   const h=structuredClone(s.h);mutate(h);const raw=JSON.stringify(h)
+   s.raw.prepare('UPDATE journeys SET data=? WHERE id=?').run(raw,h.id)
+   assert.throws(()=>s.service.get(owner,h.id),/JOURNEY_VERSION_UNSUPPORTED/)
+   assert.throws(()=>s.service.create(owner,s.enrollment,'zh'),/JOURNEY_VERSION_UNSUPPORTED/)
+   assert.throws(()=>s.service.checkpoint(owner,h.id,{sceneId:'carriage',expected_version:h.version,position:h.position}),/JOURNEY_VERSION_UNSUPPORTED/)
+   await assert.rejects(s.service.action(owner,h.id,{...s.bodies[0],action_id:randomUUID(),expected_version:h.version}),/JOURNEY_VERSION_UNSUPPORTED/)
+   assert.equal(s.raw.prepare('SELECT data FROM journeys').get()?.data,raw)
+   assert.equal(s.raw.prepare('SELECT COUNT(*) AS n FROM receipts').get()?.n,2)
+   const b=structuredClone(s.backup);b.payload.journey.data=raw;b.payload.mapVersion=h.mapVersion;b.sha256=await checksum(b.payload)
+   await assert.rejects(validateBackup(b),/INVALID_BACKUP/)
+  }
+ }finally{s.raw.close()}
+})
+
+test('mismatched backup envelope is rejected even with a recalculated checksum',async()=>{
+ const s=await source()
+ try{const b=structuredClone(s.backup);b.payload.mapVersion='train-scenes-2';b.sha256=await checksum(b.payload);await assert.rejects(validateBackup(b),/INVALID_BACKUP/)}finally{s.raw.close()}
 })

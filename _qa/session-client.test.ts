@@ -10,6 +10,19 @@ import {approachPoints} from '../src/scene-layout'
 class MemoryStorage implements Storage{private data=new Map<string,string>();get length(){return this.data.size}key(i:number){return [...this.data.keys()][i]??null}clear(){this.data.clear()}getItem(k:string){return this.data.get(k)??null}setItem(k:string,v:string){this.data.set(k,String(v))}removeItem(k:string){this.data.delete(k)}}
 const open={target:'cabinet',position:approachPoints.cabinet,type:'action',action:'open-cabinet'},take={...open,action:'take-fuse'}
 function setup(){const storage=new MemoryStorage(),store=new BrowserJourney(randomUUID()),transport:Transport=(p,b)=>store.api(p,b);return {storage,store,transport,client:new SessionClient(storage,'test-',transport)}}
+test('unsupported journey retains the pending action across reload and recovers with the same ID',async()=>{
+ const {storage,store,transport,client}=setup(),h=await client.enroll('zh');let compatible=false;const ids:string[]=[]
+ const guarded:Transport=async(p,b:any)=>{if(p.endsWith('/actions')){ids.push(b.action_id);if(!compatible)throw Error('JOURNEY_VERSION_UNSUPPORTED')}return transport(p,b)}
+ try{
+  const blocked=new SessionClient(storage,'test-',guarded)
+  await assert.rejects(blocked.send(h,open),/JOURNEY_VERSION_UNSUPPORTED/);assert.equal(blocked.hasPending(),true)
+  const reloaded=new SessionClient(storage,'test-',guarded)
+  await assert.rejects(reloaded.recover(),/JOURNEY_VERSION_UNSUPPORTED/);assert.equal(reloaded.hasPending(),true)
+  await assert.rejects(reloaded.enroll('zh',true),/PENDING_ACTION/)
+  compatible=true;const restored=await reloaded.recover()
+  assert.equal(new Set(ids).size,1);assert.equal(restored.head.version,1);assert.equal(reloaded.hasPending(),false)
+ }finally{await store.close()}
+})
 test('lost action response reloads same ID without granting an item twice',async()=>{const {storage,store,transport,client}=setup();let h=await client.enroll('zh');h=(await client.send(h,open)).head;let fail=true,ids:string[]=[];const flaky:Transport=async(p,b:any)=>{const r=await transport(p,b);if(p.endsWith('/actions')){ids.push(b.action_id);if(fail){fail=false;throw Error('NETWORK_LOST')}}return r};const c=new SessionClient(storage,'test-',flaky);await assert.rejects(c.send(h,take),/NETWORK_LOST/);const recovered=await new SessionClient(storage,'test-',flaky).recover();assert.equal(ids[0],ids[1]);assert.equal(recovered.head.save.inventory[0].count,1);assert.equal(c.hasPending(),false);await store.close()})
 test('stale client adopts newest state and clears only rejected request',async()=>{const {storage,store,transport,client}=setup(),h=await client.enroll('en');await client.send(h,open);const stale=new SessionClient(storage,'test-',transport),r=await stale.send(h,take);assert.equal(r.kind,'recovered');assert.equal(r.head.version,1);assert.equal(stale.hasPending(),false);await store.close()})
 test('restart refuses ambiguous actions and cannot orphan the current journey',async()=>{const {storage,store,transport,client}=setup(),h=await client.enroll('en');const offline=new SessionClient(storage,'test-',async()=>{throw Error('OFFLINE')});await assert.rejects(offline.send(h,open));await assert.rejects(client.enroll('en',true),/PENDING_ACTION/);assert.equal(client.read('session',''),h.id);await client.recover();assert.notEqual((await client.enroll('en',true)).id,h.id);await store.close()})

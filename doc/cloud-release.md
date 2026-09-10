@@ -29,3 +29,11 @@
 通用 `audit-story-session-release.mjs` 本次返回失败：它硬编码文字版 `src/story/StoryShell.tsx`、`STORY_SESSIONS`、`/api/story`、`action_cache` 等命名，本项目没有该目录结构。没有添加空壳文件或伪造通过。空间壳的对应实现是 `main.tsx` / `runtime-selection.ts`、`SessionClient`、`cloud-session.ts`、`ProductionAuthority`、`CarriageJourneyAuthority` 和 `/api/lab`；`receipts`、`journeys.enrollment`、`journal` 分别负责回执、登记重放与事件。Worker 构建通过 `npm run build:worker` 间接执行，已实际产出。媒体生成不在本次运行时范围内。对应合同由本项目客户端/SQLite/DO适配器测试和真实云端 canary 验证，通用检查器仍记录为“不适用且未通过”，不能标为绿灯。
 
 仓库级存储检查仅遍历已登记游戏，本项目尚未上架，未被纳入其计数。当前项目单独核对：HTML 在主模块前加载 scoped adapter；源码显式使用 alteruLocalStorage；IndexedDB 由 URL UUID 隔离，并有重混 UUID 与旧数据库名回归测试。
+
+## 2026-09-10 完整单人版本更新前保护
+
+当前开发分支增加四场景主线、接应终章和传话支线；本节不表示已经上线。在线健康只读复查仍为 `liveModelAvailable:false` 的旧版本。
+
+新代码只允许明确支持的 mapVersion 与 StorySave v10 / carriage-07；未知版本不降级、不改写原档。旧 train-scenes-2 备份可原样导入空库再按正常读取升级，历史回执不重算。131项合成回归通过，未读取玩家存档。
+
+回滚边界：旧发布代码尚没有本轮的未来版本保护，不能因本轮检查通过就把 f0dfb9d 等旧 Worker 覆盖到已升级数据上。出现发布事故时保留 Durable Object namespace/class/binding 和已升级数据，在兼容当前存档的代码上禁用入口或前向修复；不能用旧二进制降级存档，不能删除 namespace。既有 createHandler(false) 关闭非health请求（包括读取），不是只读维护模式。正式发布仍需核对客户端/Worker一致性、完整主线云端合成路线、同commit双部署以及AlterU平台内验收。

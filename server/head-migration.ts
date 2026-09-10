@@ -3,8 +3,10 @@ import {upgradeAttendantFacts} from '../src/attendant'
 import {upgradeContactFacts} from '../src/contacts'
 import {MAP_VERSION,currentScene,safePosition} from '../src/contract'
 import type {Head} from '../src/journey-runtime'
+import {assertReadableJourney} from '../src/journey-compatibility'
 // Shared by local SQLite and production authority; preserves narrative and inventory.
 export function upgradeHead(h:Head):Head{
+ assertReadableJourney(h)
  if(h.mapVersion!==MAP_VERSION){
   for(const node of cartridge(h.save.locale).initialMap??[])if(!h.save.map.some(m=>m.id===node.id))h.save.map.push({...node,current:false})
   for(const key of ['supply_open','battery_taken','record_read','battery_installed','rescue_sent'])h.save.facts[key]??=false
