@@ -18,7 +18,7 @@ export function RadioContact({save,locale,disabled,onAction}:{save:StorySave;loc
 }
 
 function Cooperation({save,id,locale}:{save:StorySave;id:string;locale:Locale}){
- const labels:Record<string,[string,string]>={'lighting-cooperation':['共同核实照明，约定看护线路。','Checked the lighting and agreed to watch the circuit.'],'aisle-cooperation':['共同确认通道，约定保持原位。','Checked the aisle and agreed to hold position.'],'verified-handover':['核对了接应识别，建立交接信任。','Verified identification and established handover trust.']}
+ const labels:Record<string,[string,string]>={'message-received':['你亲自带来了同伴的话。','You brought a companion’s message in person.'],'message-promise-kept':['你守住了传话并带回回应的约定。','You kept your promise to deliver a message and bring back a reply.'],'lighting-cooperation':['共同核实照明，约定看护线路。','Checked the lighting and agreed to watch the circuit.'],'aisle-cooperation':['共同确认通道，约定保持原位。','Checked the aisle and agreed to hold position.'],'verified-handover':['核对了接应识别，建立交接信任。','Verified identification and established handover trust.']}
  return <>{save.relationships.filter(r=>r.characterId===id&&labels[r.axis]).map(r=><p className="cl-help" key={r.id}>{labels[r.axis][locale==='zh'?0:1]}</p>)}</>
 }
 export function PeopleMet({save,locale}:{save:StorySave;locale:Locale}){

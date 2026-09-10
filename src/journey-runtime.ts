@@ -21,7 +21,7 @@ export async function prepareAction(h:Head,body:any,narrator:Narrator){
   if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
   if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
  }else if(body.type!=='action'||typeof body.action!=='string'||!body.action)throw new LabError('INVALID_ACTION_TYPE')
- const result=await executeSpatialStoryTurn({save:h.save,target,actionId:body.type==='action'?body.action:undefined,input:body.type==='free-input'?body.text:undefined,live:body.mode==='live',narrator,admitAction:id=>{if(!validActionTarget(id,target,pos,scene))throw new LabError('UNSUPPORTED_ACTION');return true}})
+ const result=await executeSpatialStoryTurn({save:h.save,contentSeed:h.id,target,actionId:body.type==='action'?body.action:undefined,input:body.type==='free-input'?body.text:undefined,live:body.mode==='live',narrator,admitAction:id=>{if(!validActionTarget(id,target,pos,scene))throw new LabError('UNSUPPORTED_ACTION');return true}})
  const {save,text,kind,accepted,actionId,trace}=result
  assertSpatialStoryProjection(h.save,save,accepted?actionId:null)
  const arrival=accepted&&actionId?portalArrivals[actionId]:undefined

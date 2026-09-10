@@ -1,3 +1,4 @@
+import type {RelayChoice} from './relay-content'
 import {actionIntentIssues} from './action-intent'
 import {tagConversationTurn} from './conversation-context'
 import { cartridge, finishStoryTurn, type StorySave } from './story'
@@ -12,6 +13,7 @@ import type { Narrator } from './journey-runtime'
  * policy. The outer session service alone commits the returned candidate. */
 export async function executeSpatialStoryTurn(options: {
   save: StorySave
+  contentSeed?: string
   target: EntityId
   actionId?: string
   input?: string
@@ -21,7 +23,7 @@ export async function executeSpatialStoryTurn(options: {
 }) {
   const base = structuredClone(options.save)
   let actionId = options.actionId
-  let text = '', kind = 'dialogue', trace: unknown
+  let text = '', kind = 'dialogue', trace: unknown,contentChoice:RelayChoice|undefined
   if (options.input !== undefined) {
     // Narrators receive a detached snapshot, never an object that can become
     // the authority's candidate through accidental mutation during an await.
@@ -35,9 +37,9 @@ export async function executeSpatialStoryTurn(options: {
       trace = { fallback: true, admission: 'authored-fallback', issues }
     } else trace = result.trace
     actionId = proposal.kind === 'action' ? proposal.actionId : undefined
-    text = proposal.text;kind = proposal.kind
+    text = proposal.text;kind = proposal.kind;contentChoice=proposal.content
   }
-  const c = cartridge(base.locale, base)
+  const c = cartridge(base.locale, base,{seed:options.contentSeed??'preview',choice:contentChoice})
   let resolution: DomainActionResolution
   if (actionId) {
     if (!options.admitAction(actionId)) throw new Error('UNSUPPORTED_ACTION')

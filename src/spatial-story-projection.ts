@@ -1,3 +1,4 @@
+import {assertRelayProjection} from './relay-content'
 import type { StorySave } from './story'
 import { actionTarget, entities, states } from './contract'
 import { scenes, portalArrivals } from './scene-layout'
@@ -7,6 +8,7 @@ import { DISPATCHER } from './contacts'
  * represented by the admitted spatial world. This never repairs a result by
  * inventing a map, moving an actor or silently choosing another entrance. */
 export function assertSpatialStoryProjection(before: StorySave, after: StorySave, actionId: string | null) {
+  assertRelayProjection(before,after,actionId)
   const source = before.map.filter(node => node.current)
   const target = after.map.filter(node => node.current)
   if (source.length !== 1 || target.length !== 1 || !Object.hasOwn(scenes, source[0].id) || !Object.hasOwn(scenes, target[0].id)) throw new Error('UNREPRESENTABLE_SCENE')

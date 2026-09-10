@@ -1,3 +1,4 @@
+import {relayRules,type RelayChoice} from './relay-content'
 import {departureRules,departureObjective,departureAdvice} from './departure'
 import {receptionRules,receptionObjective,receptionAdvice} from './reception'
 import type { StoryCartridge, StorySave, Locale, DomainActionRule } from './vendor/story/types'
@@ -14,7 +15,7 @@ export const labels: Record<string, [string, string]> = {
   cabinet: ['检修柜', 'Service cabinet'], panel: ['配电箱', 'Circuit panel'],
   lin: ['林', 'Lin'], exit: ['车厢出口', 'Carriage exit'], fuse: ['备用保险丝', 'Spare fuse'],
 }
-export function cartridge(locale: Locale, current?:StorySave): StoryCartridge {
+export function cartridge(locale: Locale, current?:StorySave,content?:{seed:string;choice?:RelayChoice}): StoryCartridge {
  const f=current?.facts??{},radioPriority=Boolean(f.power_radio)
  const t = (zh:string,en:string) => tr(locale,zh,en)
  const rule = (id:string, requirements:DomainActionRule['requirements'],effects:DomainActionRule['effects'],zh:string,en:string):DomainActionRule => ({id,intent:id,match:[id],matchMode:'exact',requirements,effects,successText:t(zh,en),successChoices:[],dangerPolicy:'suppress'})
@@ -34,7 +35,7 @@ export function cartridge(locale: Locale, current?:StorySave): StoryCartridge {
   initialFacts:{attendant_introduced:false,cabinet_open:false,fuse_taken:false,repaired:false,introduced:false,finished:false,supply_open:false,battery_taken:false,record_read:false,battery_installed:false,rescue_sent:false,power_chosen:false,power_radio:false,signal_acknowledged:false,beacon_set:false,dispatcher_introduced:false,dispatcher_briefed:false},
   characters:[{id:'lin',name:t('林','Lin'),role:t('修理工','Mechanic'),vitality:100,stress:10,skills:[],hiddenUntilIntroduced:true,detail:t('灰色工作服，灰白短发。','Grey work jacket, short grey hair.')},dispatcherDefinition(locale),attendantDefinition(locale)],initialPartyMemberIds:[],
   initialMap:[{id:'walkway',label:t('轨旁接应步道','Trackside reception walkway'),current:false,visited:false},{id:'carriage',label:t('07 号客厢','Carriage 07'),current:true,visited:true},{id:'baggage',label:t('06 号行李检修车','Baggage & service car'),current:false,visited:false},{id:'cab',label:t('驾驶室','Driving cab'),current:false,visited:false}],initialInventory:[],demoTurns:[],
-  domainRules:{rules:[...departureRules(locale,current),...receptionRules(locale,current),
+  domainRules:{rules:[...relayRules(locale,current,content?.seed,content?.choice),...departureRules(locale,current),...receptionRules(locale,current),
    rule('meet-attendant',[fact('attendant_introduced',false,'你们已经认识了。','You have already met.')],[{type:'fact',id:'attendant_introduced',value:true}],attendantIntro('zh'),attendantIntro('en')),
    rule('talk-attendant',[fact('attendant_introduced',true,'先走近听她介绍自己。','Approach and hear her introduction first.')],[],attendantReply({facts:f,locale:'zh'}),attendantReply({facts:f,locale:'en'})),
    rule('open-cabinet',[fact('cabinet_open',false,'柜门已经打开了。','The cabinet is already open.')],[{type:'fact',id:'cabinet_open',value:true},{type:'objective',value:t('取出保险丝，再找修理工问问。','Take the fuse, then speak with the mechanic.')}],'你拉开柜门。一枚备用保险丝放在凹槽里，纸条写着“先检查配电箱”。','You pull the cabinet open. A spare fuse rests in its slot. A note reads: “Check the circuit panel first.”'),
