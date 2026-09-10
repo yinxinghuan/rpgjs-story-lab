@@ -2,13 +2,17 @@ export type SceneResource={path:string;kind:'background'|'map';sha256:string;byt
 export type SceneResourceManifest={version:string;scenes:Record<string,{version:string;assets:SceneResource[]}>}
 export type PreparedScene={version:string;background:string}
 export type PreparationState='proposed'|'preparing'|'validated'|'active'|'failed'
+// The budget includes both downloads, SHA verification and image decoding.
+// Mobile WebViews may need more than 12 seconds for a cold multi-megabyte scene.
+export const SCENE_PREPARATION_TIMEOUT_MS=30000
+const resourceFailures=new Set(['RESOURCE_HTTP','RESOURCE_SIZE','RESOURCE_VERSION','RESOURCE_DECODE'])
 export class ScenePreparationError extends Error{constructor(public scene:string,public reason:string){super('SCENE_NOT_READY:'+reason)}}
 type Entry={state:PreparationState;attempts:number;value?:PreparedScene;pending?:Promise<PreparedScene>;reason?:string}
 export type SceneResourceLoader=(resource:SceneResource,signal:AbortSignal)=>Promise<string|undefined>
 /** Cache lifetime is this immutable build. Failed entries retry only explicitly. */
 export class SceneReadiness{
  private entries=new Map<string,Entry>()
- constructor(private manifest:SceneResourceManifest,private load:SceneResourceLoader,private timeoutMs=12000){}
+ constructor(private manifest:SceneResourceManifest,private load:SceneResourceLoader,private timeoutMs=SCENE_PREPARATION_TIMEOUT_MS){}
  status(id:string){const e=this.entries.get(id);return {state:e?.state??'proposed',attempts:e?.attempts??0,reason:e?.reason,version:this.manifest.scenes[id]?.version}}
  background(id:string){return this.entries.get(id)?.value?.background}
  activate(id:string){const e=this.entries.get(id);if(!e?.value||!['validated','active'].includes(e.state))throw new ScenePreparationError(id,'NOT_VALIDATED');e.state='active'}
@@ -20,7 +24,7 @@ export class SceneReadiness{
   const abort=new AbortController();let timer:ReturnType<typeof setTimeout>
   const deadline=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(new ScenePreparationError(id,'TIMEOUT'))},this.timeoutMs)})
   const work=async()=>{if(spec.assets.filter(r=>r.kind==='background').length!==1)throw new ScenePreparationError(id,'INVALID_BACKGROUND_COUNT');let background='';for(const resource of [...spec.assets].sort((a,b)=>Number(a.kind==='background')-Number(b.kind==='background'))){const result=await this.load(resource,abort.signal);if(abort.signal.aborted)throw new ScenePreparationError(id,'ABORTED');if(resource.kind==='background')background=result??''}if(!background)throw new ScenePreparationError(id,'NO_BACKGROUND');return {version:spec.version,background}}
-  entry.pending=Promise.race([work(),deadline]).then(value=>{entry.value=value;entry.state='validated';return value},error=>{entry.state='failed';entry.reason=error instanceof ScenePreparationError?error.reason:'RESOURCE_UNAVAILABLE';throw new ScenePreparationError(id,entry.reason)}).finally(()=>{clearTimeout(timer);entry.pending=undefined;abort.abort()})
+  entry.pending=Promise.race([work(),deadline]).then(value=>{entry.value=value;entry.state='validated';return value},error=>{entry.state='failed';entry.reason=error instanceof ScenePreparationError?error.reason:error instanceof Error&&resourceFailures.has(error.message)?error.message:'RESOURCE_UNAVAILABLE';throw new ScenePreparationError(id,entry.reason)}).finally(()=>{clearTimeout(timer);entry.pending=undefined;abort.abort()})
   return entry.pending
  }
 }

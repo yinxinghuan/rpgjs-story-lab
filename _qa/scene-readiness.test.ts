@@ -41,6 +41,14 @@ test('failed future scene keeps current background and requires explicit retry',
  fail=false;await assert.rejects(r.prepare('walkway'));assert.equal(r.status('walkway').attempts,1)
  await r.prepare('walkway',true);assert.equal(r.status('walkway').attempts,2);assert.equal(r.status('walkway').state,'validated')
 })
+test('failed preparation preserves safe resource diagnosis without exposing arbitrary error text',async()=>{
+ for(const reason of ['RESOURCE_HTTP','RESOURCE_SIZE','RESOURCE_VERSION','RESOURCE_DECODE','private transport details']){
+  const r=new SceneReadiness(manifest,async()=>{throw Error(reason)})
+  await assert.rejects(r.prepare('carriage'))
+  assert.equal(r.status('carriage').reason,reason==='private transport details'?'RESOURCE_UNAVAILABLE':reason)
+  assert.equal(r.background('carriage'),undefined);assert.throws(()=>r.activate('carriage'))
+ }
+})
 test('timeout cannot be activated by a late loader completion',async()=>{
  let release!:()=>void;const r=new SceneReadiness(manifest,async resource=>{await new Promise<void>(resolve=>{release=resolve});return resource.kind==='background'?'blob:late':undefined},15)
  await assert.rejects(r.prepare('carriage'),/TIMEOUT/);release();await new Promise(resolve=>setTimeout(resolve,0))
