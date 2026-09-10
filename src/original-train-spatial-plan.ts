@@ -5,8 +5,8 @@ export const originalTrainLocations=['dead-station','river-valley','graystone-ya
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
 export const originalFloodBridgeRoom='train-at-flood-bridge'
-export const originalChapterMapVersion='original-train-authoring-8'
-export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5','original-train-authoring-6','original-train-authoring-7',originalChapterMapVersion] as const
+export const originalChapterMapVersion='original-train-authoring-9'
+export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5','original-train-authoring-6','original-train-authoring-7','original-train-authoring-8',originalChapterMapVersion] as const
 export function originalTrainSpatialPlan():SpatialBindingDefinition{
  const scenes=originalTrainLocations.map(id=>({id:originalTrainRoom(id),storyLocationId:id,spawn:{x:192,y:430}}))
  const initial=originalTrainRoom('dead-station')
@@ -92,6 +92,15 @@ export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
   character.entities=[...character.entities,entityId]
  }
  world.portals.push({actionId:'town-depart',fromScene:town,scene:originalFloodBridgeRoom,position:{x:192,y:430}})
+ const bridge=originalFloodBridgeRoom
+ world.entities.push(
+  {id:'bridge-near-bank',scene:bridge,position:{x:110,y:160},approach:{x:110,y:185},states:['unchecked','surveyed'],actions:['bridge-inspect','bridge-kit-survey','bridge-manual-survey']},
+  {id:'bridge-passenger-order',scene:bridge,position:{x:150,y:380},approach:{x:150,y:405},states:['waiting','arranged'],actions:['bridge-arrange']},
+  {id:'bridge-crossing-control',scene:bridge,position:{x:270,y:360},approach:{x:270,y:385},states:['waiting','rail','key','anchor'],actions:['bridge-rail-crossing','bridge-key-crossing','bridge-anchor-crossing']},
+  {id:'bridge-reserve',scene:bridge,position:{x:100,y:480},approach:{x:100,y:505},states:['reserve','empty'],actions:['bridge-refuel']},
+ )
+ world.entities.find(e=>e.id===bridge+'-ada-mechanic')!.actions=['bridge-stabilize']
+ for(const actionId of ['bridge-rail-crossing','bridge-key-crossing','bridge-anchor-crossing'])world.portals.push({actionId,fromScene:bridge,scene:originalTrainRoom('dawn-junction'),position:{x:192,y:430}})
  return world
 }
 // North Cape v2: shared projected footprint, also exported into its TMX.

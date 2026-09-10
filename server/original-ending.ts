@@ -1,3 +1,4 @@
+import {originalEndingCartridge} from '../src/original-ending-capabilities'
 import {LabError,validateAction} from '../src/journey-runtime'
 import {buildEndingSnapshot,canStartTrueEnding,fallbackEndingCandidate,finalizeEnding,validateEndingCandidate} from '../src/vendor/original-train/engine/endingDirector'
 import type {StoryCartridge,StoryEndingCandidate,StoryEndingSnapshot} from '../src/vendor/original-train/types'
@@ -25,7 +26,7 @@ export function originalEndingPolicy(cartridge:(locale:'zh'|'en')=>StoryCartridg
    if(fingerprint(before.save)!==fingerprint(current.save))throw new LabError('ENDING_SNAPSHOT_MISMATCH',409)
   },
   async prepare(head:OriginalHead,body:any){
-   const c=cartridge(head.save.locale)
+   const c=originalEndingCartridge(head.save,cartridge(head.save.locale))
    if(body.expected_version!==head.version)throw new LabError('VERSION_CONFLICT',409)
    if(body.mapVersion!==head.mapVersion||body.sceneId!==head.sceneId)throw new LabError('ENDING_SCENE_MISMATCH',409)
    if(!['ready','failed'].includes(head.save.finale.status)||!canStartTrueEnding(head.save,c))throw new LabError('ENDING_NOT_READY',409)

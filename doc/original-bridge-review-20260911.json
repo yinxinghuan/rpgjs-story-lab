@@ -1,0 +1,33 @@
+{
+  "scope": "Original-v8 Flood Bridge crossing and irreversible physical ending eligibility",
+  "newActions": 9,
+  "mapVersion": "original-train-authoring-9",
+  "tests": {"newPassed": 54, "fullPassed": 423, "openingToJunctionRuns": 48, "bridgeActionsPerRun": 4},
+  "matrix": {"locale": ["zh", "en"], "route": ["quarry", "valley", "forest"], "rest": [true, false], "crossing": ["rail-kit", "rail-manual", "key", "anchor"]},
+  "verified": [
+    "Fresh original opening through prior chapters to actual authoritative junction interior room",
+    "Original eight story regions retain separate bridge approach and junction interior rooms",
+    "Real bridge kit consumes once; water level and current traveling Lin change rail costs",
+    "Original key conditions/effects reused in one reducer scene, one override and 8 fuel",
+    "Missing or spent key cannot fabricate an override; zero resources have finite recovery or anchoring",
+    "Only actual crossing sets bridge completion and physical train fate",
+    "Parties, characters, relationships, prior losses and source route identity persist",
+    "Ordinary crossing does not set finale ready or permit ending transaction before ownership choice",
+    "Anchored train cannot retain moving-train ending capabilities; preserved train cannot retroactively be sacrificed",
+    "Legacy capability definitions stay unchanged and source cartridge is not mutated",
+    "Client and authority build the same physically restricted ending snapshot",
+    "Synthetic ready-state policy rejects a generated moving-train candidate without saving or clearing pending",
+    "Same-library SQLite receipt replay and head reread, v8 upgrade, atomic presentation denial",
+    "423 tests and cloud frontend/Worker build pass; secret/API audits pass"
+  ],
+  "limitations": [
+    "Tests explicitly admit authored presentation, not real bridge or junction assets",
+    "Final ownership choice and complete authored ending prose still incomplete",
+    "Existing fallback anchors can name absent characters; not yet suitable for release",
+    "The terminal-policy test injects a ready fixture; full route only reaches idle junction",
+    "No new live HTTP, browser, iPhone, AlterU, real model/media call or image processing",
+    "Original production HTTP/UI and art integration incomplete",
+    "No deployment; main and Pages remain 05db41c"
+  ],
+  "realPlayerDataRead": false
+}

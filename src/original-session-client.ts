@@ -2,6 +2,7 @@ import {RecoverableSessionClient,type SessionLock,type Transport} from './recove
 import type {OriginalHead} from '../server/original-train-runtime'
 import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable,originalCompatibleMapVersions} from './original-train-spatial-plan'
 import {originalChapterRejections} from './original-chapters'
+import {originalEndingCartridge} from './original-ending-capabilities'
 import {buildEndingSnapshot} from './vendor/original-train/engine/endingDirector'
 import {lastTrainToDawn,lastTrainToDawnEn} from './vendor/original-train/cartridges/lastTrainToDawn'
 const world=originalTrainChapterSpatialPlan()
@@ -14,7 +15,7 @@ export function assertOriginalClientHead(value:unknown):asserts value is Origina
  * No browser reducer, local authority fallback or production endpoint is added. */
 export class OriginalSessionClient extends RecoverableSessionClient<OriginalHead>{
  constructor(storage:Storage,prefix:string,transport:Transport,lock?:SessionLock){super(storage,prefix,transport,{scene:h=>h.sceneId,assertHead:assertOriginalClientHead,terminalErrors:['CHARACTER_NOT_PRESENT','ORIGINAL_NARRATION_NOT_READY','ORIGINAL_FINALE_PENDING',...originalChapterRejections],ending:{
-  request:h=>({snapshot_id:buildEndingSnapshot(h.save,h.save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn).id,mapVersion:h.mapVersion}),
+  request:h=>({snapshot_id:buildEndingSnapshot(h.save,originalEndingCartridge(h.save,h.save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn)).id,mapVersion:h.mapVersion}),
   terminalErrors:['ENDING_NOT_READY','ENDING_SCENE_MISMATCH','ENDING_SNAPSHOT_MISMATCH','INVALID_ENDING'],
   assertResult:(r,b)=>{const f=r?.head?.save?.finale;if(r?.kind!=='ending'||r.endingId!==b.ending_id||r.snapshotId!==b.snapshot_id||r.head.version!==b.expected_version+1||r.head.sceneId!==b.sceneId||r.head.mapVersion!==b.mapVersion||f?.status!=='complete'||f.snapshot?.id!==b.snapshot_id||f.ending?.snapshotId!==b.snapshot_id)throw Error('ENDING_RESPONSE_MISMATCH')},
  }},lock)}
