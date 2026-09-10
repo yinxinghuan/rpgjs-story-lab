@@ -1,3 +1,4 @@
+import {NARRATION_POLICY} from '../src/narration-policy'
 import {initialStory,type Locale} from '../src/story'
 import {MAP_VERSION,safePosition,currentScene} from '../src/contract'
 import {LabError,prepareAction,validateAction,type Head,type Narrator} from '../src/journey-runtime'
@@ -15,7 +16,8 @@ const digest=(v:unknown)=>JSON.stringify(canonical(v))
 type Row={data:string;cursor:number}
 export class ProductionAuthority{
  private inFlight=new Map<string,{hash:string;promise:Promise<any>}>()
- constructor(private db:AuthorityStorage,private narrator:Narrator){
+ constructor(private db:AuthorityStorage,private narrator:Narrator,private now:()=>number=Date.now){
+  db.run('CREATE TABLE IF NOT EXISTS narration_usage(owner TEXT PRIMARY KEY, window_start INTEGER NOT NULL, uses INTEGER NOT NULL)')
   db.run('CREATE TABLE IF NOT EXISTS journeys(id TEXT PRIMARY KEY, owner TEXT NOT NULL, enrollment TEXT NOT NULL, enrollment_digest TEXT NOT NULL, data TEXT NOT NULL, cursor INTEGER NOT NULL DEFAULT 0, updated INTEGER NOT NULL, UNIQUE(owner,enrollment))')
   db.run('CREATE TABLE IF NOT EXISTS receipts(owner TEXT NOT NULL, action TEXT NOT NULL, digest TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner,action))')
   db.run('CREATE TABLE IF NOT EXISTS journal(session TEXT NOT NULL, cursor INTEGER NOT NULL, action TEXT NOT NULL, kind TEXT NOT NULL, event TEXT NOT NULL, PRIMARY KEY(session,cursor))')
@@ -54,8 +56,24 @@ export class ProductionAuthority{
   this.inFlight.set(key,{hash,promise})
   try{return await promise}finally{if(this.inFlight.get(key)?.promise===promise)this.inFlight.delete(key)}
  }
+ private reserveNarration(owner:string){
+  return this.db.transaction(()=>{
+   const now=this.now(),old=this.db.all<{window_start:number;uses:number}>('SELECT window_start,uses FROM narration_usage WHERE owner=?',owner)[0]
+   const active=old&&now>=old.window_start&&now-old.window_start<NARRATION_POLICY.windowMs
+   if(active&&old.uses>=NARRATION_POLICY.turnsPerWindow)return false
+   this.db.run('INSERT INTO narration_usage(owner,window_start,uses) VALUES(?,?,?) ON CONFLICT(owner) DO UPDATE SET window_start=excluded.window_start,uses=excluded.uses',owner,active?old.window_start:now,active?old.uses+1:1)
+   return true
+  })
+ }
  private async prepareAndCommit(owner:string,id:string,body:any,hash:string){
-  const head=this.get(owner,id),response=await prepareAction(head,body,this.narrator)
+  const narrator:Narrator=async(input,save,target,live)=>{
+   if(live&&!this.reserveNarration(owner)){
+    const fallback=await this.narrator(input,save,target,false)
+    return {...fallback,trace:{mode:'local',attempts:0,fallback:true,reason:'rate-limit'}}
+   }
+   return this.narrator(input,save,target,live)
+  }
+  const head=this.get(owner,id),response=await prepareAction(head,body,narrator)
   // No network await inside transactionSync. Recheck after narrator yields.
   return this.db.transaction(()=>{
    const raced=this.replay(owner,body.action_id,hash);if(raced)return raced

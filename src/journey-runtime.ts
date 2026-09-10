@@ -18,6 +18,7 @@ export async function prepareAction(h:Head,body:any,narrator:Narrator){
   const pos=safePosition(body.position,scene);if(!body.position||pos.x!==body.position.x||pos.y!==body.position.y)throw new LabError('INVALID_POSITION')
   if(Math.hypot(pos.x-entities[target].x,pos.y-entities[target].y)>=70)throw new LabError('TOO_FAR')
  if(body.type==='free-input'){
+  if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
   if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
  }else if(body.type!=='action'||typeof body.action!=='string'||!body.action)throw new LabError('INVALID_ACTION_TYPE')
  const result=await executeSpatialStoryTurn({save:h.save,target,actionId:body.type==='action'?body.action:undefined,input:body.type==='free-input'?body.text:undefined,live:body.mode==='live',narrator,admitAction:id=>{if(!validActionTarget(id,target,pos,scene))throw new LabError('UNSUPPORTED_ACTION');return true}})

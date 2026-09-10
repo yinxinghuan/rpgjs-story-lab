@@ -82,3 +82,38 @@ test('concurrent retries share one pending narrator call but cannot change the a
  assert.equal(s.events('pending-model-test',h.id,0).length,1)
  raw.close()
 })
+
+test('online mode is opt-in in the actual Worker authority and plain buttons never call the model',async()=>{
+ const raw=new DatabaseSync(':memory:');let requests=0
+ const ctx={storage:{sql:{exec:(q:string,...b:any[])=>{const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}}
+ const actual=new CarriageJourneyAuthority(ctx,undefined,async()=>++requests%2?{kind:'action',actionId:'open-cabinet'}:{valid:true,issues:[]})
+ const call=async(path:string,body?:unknown)=>actual.fetch(new Request('https://authority.test/api/lab'+path,{method:body?'POST':'GET',headers:{'X-Authority-Owner':'b'.repeat(64)},body:body?JSON.stringify(body):undefined}))
+ let h=await (await call('/sessions',{enrollment_id:randomUUID(),locale:'zh'})).json() as Head
+ const localBody={...intent(h,'cabinet',''),type:'free-input',text:'帮我把这扇柜门拉开。'}
+ h=(await (await call('/sessions/'+h.id+'/actions',localBody)).json()).head
+ assert.equal(requests,0);assert.ok(!h.save.facts.cabinet_open)
+ const liveBody={...intent(h,'cabinet',''),type:'free-input',text:'帮我把这扇柜门拉开。',mode:'live'}
+ const live=await (await call('/sessions/'+h.id+'/actions',liveBody)).json();h=live.head
+ assert.equal(live.accepted,true);assert.equal(h.save.facts.cabinet_open,true);assert.equal(requests,2)
+ assert.deepEqual(await (await call('/sessions/'+h.id+'/actions',liveBody)).json(),live);assert.equal(requests,2)
+ const button=await (await call('/sessions/'+h.id+'/actions',{...intent(h,'cabinet','take-fuse'),mode:'live'})).json()
+ assert.equal(button.accepted,true);assert.equal(requests,2)
+ raw.close()
+})
+
+test('online allowance persists across authority restarts, falls back without blocking play, and excludes invalid spatial requests',async()=>{
+ const {db,raw}=setup();let time=100000,onlineCalls=0
+ const model:Narrator=async(input,save,target,live)=>{if(live)onlineCalls++;return {proposal:localReply(input,save,target),trace:{mode:live?'live':'local'}}}
+ let service=new ProductionAuthority(db,model,()=>time),h=service.create('quota-test',randomUUID(),'zh')
+ const request=()=>({...intent(h,'cabinet',''),type:'free-input',text:'看看这个柜子',mode:'live'})
+ await assert.rejects(service.action('quota-test',h.id,{...request(),position:{x:-1,y:0}}),/INVALID_POSITION/)
+ for(let i=0;i<6;i++){const response=await service.action('quota-test',h.id,request());h=response.head;assert.equal(response.trace.mode,'live')}
+ service=new ProductionAuthority(db,model,()=>time)
+ const limited=await service.action('quota-test',h.id,request());h=limited.head
+ assert.equal(limited.trace.reason,'rate-limit');assert.equal(limited.trace.fallback,true);assert.equal(onlineCalls,6)
+ h=(await service.action('quota-test',h.id,intent(h,'cabinet','open-cabinet'))).head
+ assert.equal(h.save.facts.cabinet_open,true);assert.equal(onlineCalls,6)
+ time+=60000;const fresh=await service.action('quota-test',h.id,request())
+ assert.equal(fresh.trace.mode,'live');assert.equal(onlineCalls,7)
+ raw.close()
+})

@@ -5,7 +5,7 @@ import type {Locale} from './story'
 export type Transport=(path:string,body?:unknown)=>Promise<any>
 export type SessionLock=<T>(name:string,work:()=>Promise<T>)=>Promise<T>
 export type Pending={id:string;body:Record<string,any>&{action_id:string;expected_version:number;sceneId:string}}
-const terminal=new Set(['VERSION_CONFLICT','OFF_SCENE_ENTITY','INVALID_ACTION','UNKNOWN_ENTITY','INVALID_POSITION','TOO_FAR','UNSUPPORTED_ACTION','INVALID_TEXT','INVALID_ACTION_TYPE','ACTION_ID_CONFLICT'])
+const terminal=new Set(['VERSION_CONFLICT','OFF_SCENE_ENTITY','INVALID_ACTION','UNKNOWN_ENTITY','INVALID_POSITION','TOO_FAR','UNSUPPORTED_ACTION','INVALID_TEXT','INVALID_ACTION_TYPE','INVALID_NARRATION_MODE','ACTION_ID_CONFLICT'])
 const idPattern=/^[a-zA-Z0-9-]{16,80}$/
 function parsePending(raw:string):Pending{const p=JSON.parse(raw);if(!p||!idPattern.test(p.id)||!p.body||!idPattern.test(p.body.action_id)||!Number.isSafeInteger(p.body.expected_version)||typeof p.body.sceneId!=='string')throw Error('INVALID_PENDING');return p}
 export class SessionClient{

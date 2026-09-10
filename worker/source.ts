@@ -1,6 +1,8 @@
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {LabError} from '../src/journey-runtime'
-import {localReply} from '../src/contract'
+import {propose,type ModelRequest} from '../server/model'
+// Runtime capability; players opt in separately through an explicit live envelope.
+export const ONLINE_NARRATION_AVAILABLE=true
 // User approved this bounded new-journey capability trial on 2026-09-10.
 export const PRODUCTION_WRITES_ENABLED=true
 interface Namespace{ idFromName(name:string):unknown;get(id:unknown):{fetch(request:Request):Promise<Response>} }
@@ -16,7 +18,7 @@ async function body(request:Request){
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
 export function createHandler(writesEnabled:boolean){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
- if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return json({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:false,release:'carriage-cloud-trial-20260910-1'})
+ if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return json({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:'carriage-cloud-trial-20260910-1'})
  if(!path.startsWith('/api/lab/'))return json({error:'NOT_FOUND'},404)
  if(!writesEnabled)return json({error:'PRODUCTION_IDENTITY_NOT_ENABLED'},503)
  if(!env.CARRIAGE_JOURNEYS)return json({error:'AUTHORITY_UNAVAILABLE'},503)
@@ -35,9 +37,9 @@ export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED)
 interface DurableContext{storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
- constructor(ctx:DurableContext){
+ constructor(ctx:DurableContext,_env?:Environment,modelRequest?:ModelRequest){
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
-  this.authority=new ProductionAuthority(db,async(input,save,target)=>({proposal:localReply(input,save,target),trace:{mode:'local',attempts:0,fallback:false}}))
+  this.authority=new ProductionAuthority(db,(input,save,target,live)=>propose(input,save,target,live&&ONLINE_NARRATION_AVAILABLE,modelRequest))
  }
  async fetch(request:Request){try{
   const owner=request.headers.get('X-Authority-Owner');if(!owner||!/^[a-f0-9]{64}$/.test(owner))throw new LabError('AUTH_REQUIRED',401)
