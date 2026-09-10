@@ -1,0 +1,93 @@
+{
+  "date": "2026-09-11",
+  "scope": "same RPG-JS map trial of saved synthetic actor; no real asset processing",
+  "candidateId": "fc3e79f0-ba08-4632-93d3-adcd93dc521e",
+  "textureIssue": {
+    "observed": "runtime position valid but blob-backed sprite invisible",
+    "fix": "preload via Pixi Assets parser loadTextures and validate texture dimensions",
+    "recaptured": true
+  },
+  "reference": {
+    "file": "public/art/overhead/hero.png",
+    "sha256": "7d07b1e22e9ccbae89ec6da2291fa3898b118f1896330430299d9955ee791793",
+    "alphaThreshold": 200,
+    "heights": [
+      240,
+      226,
+      236,
+      235,
+      239,
+      237,
+      235,
+      234,
+      235,
+      244,
+      236,
+      243
+    ],
+    "median": 236,
+    "scale": 0.14,
+    "worldHeight": 33.04
+  },
+  "browser": {
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        320,
+        568
+      ]
+    ],
+    "directions": {
+      "up": "purple at left inspection",
+      "down": "teal toward fuel shed",
+      "right": "blue toward departure",
+      "left": "ochre returning to apron"
+    },
+    "northCapeStops": [
+      [
+        112,
+        184
+      ],
+      [
+        96,
+        384
+      ],
+      [
+        272,
+        404
+      ],
+      [
+        192,
+        432
+      ]
+    ],
+    "trainCollision": "blocked at 192,432",
+    "riverStop": [
+      188,
+      332
+    ],
+    "waterCollision": "blocked at 188,332",
+    "refresh": "same actor ID; returns inspection page North Cape spawn192,430, not story save restoration",
+    "baselineFallback": "actual yellow-coated baseline visible",
+    "missingCandidate": "error; disabled movement; no rendered position; creator return link"
+  },
+  "tests": {
+    "new": 4,
+    "total": 224
+  },
+  "actualAssetQualityVerified": false,
+  "equipmentTrialComplete": false,
+  "iphoneHardwareVerified": false,
+  "productionDeployed": false,
+  "files": {
+    "src/sprite-map-candidate.ts": "7e496c827e79a31daaa3a43d17e4fc0ed4d78e0e4330108d56aeb00839d15e8f",
+    "src/original-scene-preview.tsx": "31d8aab5920ca69afb1546174ae5c743c9f3b4d870b770dc8378b5a28bcda8fd",
+    "src/sprite-creator.tsx": "7e0cc653d1b9706b28c9b63ec1bac4587ce4edb3214b7ca2b56fc5e0e533f11f",
+    "_qa/sprite-map-candidate.test.ts": "20486a7b244cb5047724d86d6d7b47f4759560a578208213e06c3d478954113a",
+    "_qa/sprite-map.vite.ts": "d8a2da49df0e76949e7b187eb608a3ce996233d1e36af6e5182047202d15fa61",
+    "_qa/sprite-creator-browser.tsx": "f41ecf3f5def78ddbeba334b0437dc477d142a98c581dcc414cc9590a325a5e6"
+  }
+}
