@@ -1,0 +1,46 @@
+{
+  "scope": "Original-v8 actual junction choice through complete authored finale",
+  "mapVersion": "original-train-authoring-10",
+  "newActions": 11,
+  "tests": {
+    "newPassed": 49,
+    "fullPassed": 472,
+    "freshOpeningToCompleteEndingRuns": 44
+  },
+  "matrix": {
+    "locale": [
+      "zh",
+      "en"
+    ],
+    "doctorEncountered": [
+      true,
+      false
+    ],
+    "endingOptions": 10
+  },
+  "verified": [
+    "Fresh opening and real authored chapters reach selected ready and complete ending without injecting terminal state",
+    "All source capability and anchor costs visible before choice and required in candidate",
+    "Original eight anchors plus two minimal-capability endings, without inventing new capabilities",
+    "Anchored train cannot move again; zero-condition preserved train cannot select a moving ending",
+    "Absent Doctor Ren removed from fixed scenes; every actual known character and visited region has epilogue",
+    "Hostile no-aid journey can end without receiving a rescue network",
+    "Choice and ending leave resource, party, relationship and full prior story values intact",
+    "Wrong anchor, missing cost and absent-character candidate reject atomically",
+    "Disk-backed SQLite reopen and client lost-ending-response recovery reuse the same ending ID",
+    "Ending advances version once without advancing ordinary action cursor",
+    "Explicit old spatial v9 upgrade preserves the original save",
+    "472 regression tests and cloud frontend/Worker build pass",
+    "Four additional fresh forest routes in zh/en preserve traveling/staying Lin and omit unvisited valley"
+  ],
+  "limitations": [
+    "Presentation explicitly admitted by test gate; no new original art or renderer admission",
+    "One low-resource case injects a fixture after actual arrival; not part of the 40 fresh route matrix",
+    "Deterministic authored endings; no general prose semantic validator or new model request",
+    "No new HTTP, browser, iPhone or AlterU verification",
+    "Original production HTTP/UI and remaining scene/actor/prop assets still incomplete",
+    "No real image processing or new media request",
+    "No deployment; main and Pages remain 05db41c"
+  ],
+  "realPlayerDataRead": false
+}

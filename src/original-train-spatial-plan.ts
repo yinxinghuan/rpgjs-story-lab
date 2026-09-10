@@ -1,3 +1,4 @@
+import {junctionActions} from './original-junction-chapter'
 import type {SpatialBindingDefinition} from './spatial-binding'
 /** Authoring geometry. North Cape runs in preflight; other rooms and the
  * original cast/state assets are not yet admitted for playable story sessions. */
@@ -5,8 +6,8 @@ export const originalTrainLocations=['dead-station','river-valley','graystone-ya
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
 export const originalFloodBridgeRoom='train-at-flood-bridge'
-export const originalChapterMapVersion='original-train-authoring-9'
-export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5','original-train-authoring-6','original-train-authoring-7','original-train-authoring-8',originalChapterMapVersion] as const
+export const originalChapterMapVersion='original-train-authoring-10'
+export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5','original-train-authoring-6','original-train-authoring-7','original-train-authoring-8','original-train-authoring-9',originalChapterMapVersion] as const
 export function originalTrainSpatialPlan():SpatialBindingDefinition{
  const scenes=originalTrainLocations.map(id=>({id:originalTrainRoom(id),storyLocationId:id,spawn:{x:192,y:430}}))
  const initial=originalTrainRoom('dead-station')
@@ -101,6 +102,7 @@ export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  )
  world.entities.find(e=>e.id===bridge+'-ada-mechanic')!.actions=['bridge-stabilize']
  for(const actionId of ['bridge-rail-crossing','bridge-key-crossing','bridge-anchor-crossing'])world.portals.push({actionId,fromScene:bridge,scene:originalTrainRoom('dawn-junction'),position:{x:192,y:430}})
+ world.entities.push({id:'junction-route-table',scene:originalTrainRoom('dawn-junction'),position:{x:270,y:360},approach:{x:270,y:385},states:['waiting','reviewed','decided'],actions:junctionActions.map(a=>a.id)})
  return world
 }
 // North Cape v2: shared projected footprint, also exported into its TMX.

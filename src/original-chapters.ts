@@ -6,17 +6,19 @@ import {pineActions,pineBindingRules,resolvePineAction,executePineTurn,pineChoic
 import {passActions,passBindingRules,resolvePassAction,executePassTurn,passChoices,passRejections} from './original-pass-chapter'
 import {townActions,townBindingRules,resolveTownAction,executeTownTurn,availableTownActions,townRejections} from './original-town-chapter'
 import {bridgeActions,bridgeBindingRules,resolveBridgeAction,executeBridgeTurn,bridgeChoices,bridgeRejections} from './original-bridge-chapter'
+import {junctionActions,junctionBindingRules,resolveJunctionAction,executeJunctionTurn,junctionChoices,junctionRejections} from './original-junction-chapter'
 import {lastTrainToDawn,lastTrainToDawnEn} from './vendor/original-train/cartridges/lastTrainToDawn'
-export const originalChapterActions=[...riverActions,...tunnelActions,...yardActions,...pineActions,...passActions,...townActions,...bridgeActions]
-export const originalChapterBindingRules=[...riverBindingRules,...tunnelBindingRules,...yardBindingRules,...pineBindingRules,...passBindingRules,...townBindingRules,...bridgeBindingRules]
-export const originalChapterRejections=[...new Set([...riverRejections,...tunnelRejections,...yardRejections,...pineRejections,...passRejections,...townRejections,...bridgeRejections])]
+export const originalChapterActions=[...riverActions,...tunnelActions,...yardActions,...pineActions,...passActions,...townActions,...bridgeActions,...junctionActions]
+export const originalChapterBindingRules=[...riverBindingRules,...tunnelBindingRules,...yardBindingRules,...pineBindingRules,...passBindingRules,...townBindingRules,...bridgeBindingRules,...junctionBindingRules]
+export const originalChapterRejections=[...new Set([...riverRejections,...tunnelRejections,...yardRejections,...pineRejections,...passRejections,...townRejections,...bridgeRejections,...junctionRejections])]
 type ActionId=typeof originalChapterActions[number]['id']
 export const originalChapterLabel=(id:ActionId,locale:Locale)=>originalChapterActions.find(a=>a.id===id)![locale]
-export const resolveOriginalChapter=(text:string,locale:Locale,save?:StorySave)=>resolveRiverAction(text,locale)??resolveTunnelAction(text,locale)??resolveYardAction(text,locale)??resolvePineAction(text,locale)??resolvePassAction(text,locale,save,locale==='en'?lastTrainToDawnEn:lastTrainToDawn)??resolveTownAction(text,locale)??resolveBridgeAction(text,locale,save,locale==='en'?lastTrainToDawnEn:lastTrainToDawn)
+export const resolveOriginalChapter=(text:string,locale:Locale,save?:StorySave)=>resolveRiverAction(text,locale)??resolveTunnelAction(text,locale)??resolveYardAction(text,locale)??resolvePineAction(text,locale)??resolvePassAction(text,locale,save,locale==='en'?lastTrainToDawnEn:lastTrainToDawn)??resolveTownAction(text,locale)??resolveBridgeAction(text,locale,save,locale==='en'?lastTrainToDawnEn:lastTrainToDawn)??resolveJunctionAction(text,locale,save,locale==='en'?lastTrainToDawnEn:lastTrainToDawn)
 /** Choices follow the actual destination after a chapter portal, without rewriting
  * any historical blocks, effects or original opening choices. */
 export function projectOriginalChapterChoices(save:StorySave):StorySave{
  const location=save.map.find(n=>n.current)?.id
+ if(location==='dawn-junction'&&save.facts['chapter-bridge-complete'])return {...save,choices:save.finale.status==='idle'?junctionChoices(save,save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn):[]}
  if(location==='dawn-junction'&&save.facts['bridge-approach-reached'])return {...save,choices:bridgeChoices(save,save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn)}
  if(location==='mountain-pass')return {...save,choices:passChoices(save,save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn)}
  if(location==='pine-line')return {...save,choices:pineChoices(save,save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn)}
@@ -24,7 +26,7 @@ export function projectOriginalChapterChoices(save:StorySave):StorySave{
  return ids?{...save,choices:ids.map(id=>({id,label:originalChapterLabel(id,save.locale)}))}:save
 }
 export function executeOriginalChapter(save:StorySave,c:StoryCartridge,id:ActionId){
- const river=riverActions.find(a=>a.id===id),tunnel=tunnelActions.find(a=>a.id===id),yard=yardActions.find(a=>a.id===id),pine=pineActions.find(a=>a.id===id),pass=passActions.find(a=>a.id===id),town=townActions.find(a=>a.id===id),bridge=bridgeActions.find(a=>a.id===id)
- const result=river?executeRiverTurn(save,c,river.id):tunnel?executeTunnelTurn(save,c,tunnel.id):yard?executeYardTurn(save,c,yard.id):pine?executePineTurn(save,c,pine.id):pass?executePassTurn(save,c,pass.id):town?executeTownTurn(save,c,town.id):executeBridgeTurn(save,c,bridge!.id)
+ const river=riverActions.find(a=>a.id===id),tunnel=tunnelActions.find(a=>a.id===id),yard=yardActions.find(a=>a.id===id),pine=pineActions.find(a=>a.id===id),pass=passActions.find(a=>a.id===id),town=townActions.find(a=>a.id===id),bridge=bridgeActions.find(a=>a.id===id),junction=junctionActions.find(a=>a.id===id)
+ const result=river?executeRiverTurn(save,c,river.id):tunnel?executeTunnelTurn(save,c,tunnel.id):yard?executeYardTurn(save,c,yard.id):pine?executePineTurn(save,c,pine.id):pass?executePassTurn(save,c,pass.id):town?executeTownTurn(save,c,town.id):bridge?executeBridgeTurn(save,c,bridge.id):executeJunctionTurn(save,c,junction!.id)
  return {...result,save:projectOriginalChapterChoices(result.save)}
 }

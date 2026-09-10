@@ -1,10 +1,11 @@
+import {authoredOriginalEnding,validateSelectedOriginalEnding} from '../src/original-ending-options'
 import {originalEndingCartridge} from '../src/original-ending-capabilities'
 import {LabError,validateAction} from '../src/journey-runtime'
 import {buildEndingSnapshot,canStartTrueEnding,fallbackEndingCandidate,finalizeEnding,validateEndingCandidate} from '../src/vendor/original-train/engine/endingDirector'
 import type {StoryCartridge,StoryEndingCandidate,StoryEndingSnapshot} from '../src/vendor/original-train/types'
 import type {OriginalHead,OriginalPresentationGate} from './original-train-runtime'
 export type OriginalEndingGenerator=(snapshot:StoryEndingSnapshot,cartridge:StoryCartridge)=>Promise<{candidate:StoryEndingCandidate;generated:boolean}>
-const authoredEnding:OriginalEndingGenerator=async(snapshot,cartridge)=>({candidate:fallbackEndingCandidate(snapshot,cartridge),generated:false})
+const authoredEnding:OriginalEndingGenerator=async(snapshot,cartridge)=>({candidate:authoredOriginalEnding(snapshot,cartridge)??fallbackEndingCandidate(snapshot,cartridge),generated:false})
 const stable=(v:any):any=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v
 const fingerprint=(v:unknown)=>JSON.stringify(stable(v))
 function candidateShape(value:unknown):asserts value is StoryEndingCandidate{
@@ -37,7 +38,7 @@ export function originalEndingPolicy(cartridge:(locale:'zh'|'en')=>StoryCartridg
    try{result=await generator(structuredClone(snapshot),structuredClone(c))}catch{throw new LabError('ENDING_UNAVAILABLE',503)}
    // The generator receives a copy and can return only a candidate, never a save.
    // Validate before finalizing so malformed output cannot rewrite this snapshot.
-   try{result=structuredClone(result);candidateShape(result.candidate);if(typeof result.generated!=='boolean'||validateEndingCandidate(result.candidate,snapshot,c).length)throw Error()}catch{throw new LabError('ENDING_RESULT_MISMATCH',409)}
+   try{result=structuredClone(result);candidateShape(result.candidate);validateSelectedOriginalEnding(result.candidate,snapshot,c);if(typeof result.generated!=='boolean'||validateEndingCandidate(result.candidate,snapshot,c).length)throw Error()}catch{throw new LabError('ENDING_RESULT_MISMATCH',409)}
    const ending=finalizeEnding(result.candidate,snapshot,result.generated)
    const next:OriginalHead={...head,version:head.version+1,save:{...head.save,finale:{status:'complete',reason:head.save.finale.reason,snapshot,ending}}}
    if(admit(structuredClone(next),structuredClone(head),'original-finale')!==true)throw new LabError('ORIGINAL_PRESENTATION_NOT_READY',409)
