@@ -304,3 +304,17 @@ CUA实际原作390×844：左右检修位可达，车体点击被拒且位置不
 内置imagegen生成的北岬v2去除多余控制盒，作为预发布背景；阿达v1为RGB假棋盘格，未准入NPC。原图、提示词、参考和hash见original-train-candidates/20260911/generation.json。已询问是否明确允许本地脚本去背景，尚未收到答复时不执行；此单项不阻塞其他开发。
 
 补充实际CUA：燃料棚前到达96,384，逻辑与画面一致，原作页面warn/error为空；原车厢刷新后仍在行李车并保留寻找电台电池目标。临时视口覆盖已执行reset。
+
+### 共用持久会话提交层与原作v8（2026-09-11，开发分支）
+
+server/session-authority.ts提取当前ProductionAuthority的同一SQLite表、enrollment/行动回执、in-flight合并、版本复核、事件cursor、checkpoint与叙事限流事务。ProductionAuthority现在安装车厢策略，保留原Head、旧档upgrade、备份格式和媒体附件并发保留；原Worker路由/UUID不变。提交层独立拒绝候选篡改会话ID或跳版本，首次插入与现存行世界核验在同一事务中，避免不同策略向同一存储混入v8/v10记录。
+
+server/original-train-runtime.ts安装原作策略，使用src/vendor/original-train中11份原源码的逐字副本（SOURCE.json记录原repo、commit与逐文件SHA256），包括原Cartridge、v8类型、executeTurn、reducer、规则、危险与结局判定依赖。复制范围不含玩家存档、UUID、前端、媒体、网络适配器或结局HTTP生成器；它是既有世界兼容副本，不能晋升为新游戏默认内核模板。未修改原作工程。实际对照原源码11份hash一致。
+
+原作Head保留整个v8 StorySave，位置/房间与mapVersion在同一Head。按钮使用原规则文本；自由输入先走原resolveDomainAction，再经同一个bound-story-turn与原executeStoryTurn。每步检查目标/当前房间/合法落点/接近距离/作者动作；原始字段不按车厢重命名或升为v10。未知自由对白和live模式目前明确拒绝，无在线叙事调用。原作入口没有接生产HTTP或地图检查UI；默认表现门禁拒绝创建，必须接上同步、显式返回true的实际素材/表现核验后才能激活，Promise/空返回/false不能默认为通过。此门禁是接入接口，不是已完成的素材验证器。
+
+190项回归通过。新增原作中文/英文×三路线六个合成旅程48回合，交替按钮/自由输入，覆盖前置拒绝、软管消费、柴油增加、入队、重复修理、路线代价、异地钥匙拒绝，每步重放并实际关闭/重开磁盘SQLite。验证原开场块、v8/finale字段和稳定人物、恢复后位置及拒绝旧checkpoint。另覆盖跨目标/跨场景/不可走输入、未知剧情/live拒绝无写入，下一物件状态未准入导致整体不提交、并行权威实例版本冲突、回执写失败事务回滚与同ID恢复、混用世界拒绝。原作测试采用明确合成表现许可，不是阿达/其他七区域美术已准入，也未执行原作后续危险/最终结局。
+
+车厢实际本机Worker两条完整路线204请求通过（41/46行动），含传话/关系、终章、回执重放、备份到空SQLite恢复。cloud/Worker、Pages、preflight构建及秘密/API base审计通过。本轮不发布，线上仍97734e7。原作正式会话HTTP、客户端pending恢复、人物/设备表现、后续章节和结局事务仍需继续接入。
+
+实际CUA补验：新版5304通过按钮开柜、预设自由输入“取出保险丝”、刷新后库存×1与询问修理工目标保持；1280×720实际库存截图已检查，浏览器warn/error为空。本轮没有新的手机尺寸或平台内试玩证据。

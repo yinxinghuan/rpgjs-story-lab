@@ -1,0 +1,30 @@
+{
+  "purpose": "Preserve the user-owned original last-train-to-dawn v8 story semantics for its in-project spatial integration; not a new canonical engine template.",
+  "sourceRepository": "https://github.com/yinxinghuan/last-train-to-dawn",
+  "sourceCommit": "3dfd8f29c91b646024a6b73f3047a5329c1c4eef",
+  "sourceSchema": 8,
+  "copiedAt": "2026-09-11",
+  "modifications": [],
+  "files": {
+    "types.ts": "d00d5e9abc9c3f3a0c1a6ca6f40e6a20da03dd65483a664d423d232a356f8373",
+    "i18n.ts": "367e04f9ac033945cb2f83b40b3547722b8d169da7aa8cd2174ec4f32613838f",
+    "cartridges/lastTrainToDawn.ts": "5963f1b90aa5153bba855ef28772779a4cfaf80bf57afd1483ee5e385c930b29",
+    "engine/executeTurn.ts": "ae4ec9e37d0d206d436fdcb3be36ce5de4ae4b6f46f1e4fc83c14819233c8e68",
+    "engine/protocol.ts": "18ca72e2159c713be8164a82c9e4c280d065b78742b4e56fcc04afeddf2b8e0b",
+    "engine/reducer.ts": "d4fb6475b885a48fce5ab1c86a62e8e380e142768910347602087f417013202a",
+    "engine/dangerDirector.ts": "685d07c8ce6d375073ef5174079f7aa3bfae990b6da9c7f12eb98794448f7d0b",
+    "engine/domainRules.ts": "cc889363d3ae437c39aa9e5604f52efd28cacdbf665a277c75d22faa12281ef5",
+    "engine/imageDirector.ts": "8693515838e36f458599068b071f65f16a9e2cc54da42f8820416ddb23ff4208",
+    "engine/endingDirector.ts": "268d69e66a8a2a7dd0ca52240da33277ab84ef320a160df87bad59cf26f425a2",
+    "engine/continuity.ts": "4d35c43f76acd34181b73bc38e9af92e3c3fb69855cb3dba4ed9850e705791be"
+  },
+  "excluded": [
+    "player saves",
+    "credentials",
+    "frontend",
+    "UUID",
+    "network adapters",
+    "media assets",
+    "ending HTTP generator"
+  ]
+}

@@ -1,5 +1,6 @@
 import type {SpatialBindingDefinition} from './spatial-binding'
-/** Authoring geometry only. These rooms have no admitted art or renderer yet. */
+/** Authoring geometry. North Cape runs in preflight; other rooms and the
+ * original cast/state assets are not yet admitted for playable story sessions. */
 export const originalTrainLocations=['dead-station','river-valley','graystone-yard','pine-line','tunnel','mountain-pass','sleeping-town','dawn-junction'] as const
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
