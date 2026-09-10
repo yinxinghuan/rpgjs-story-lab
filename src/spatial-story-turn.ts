@@ -1,3 +1,5 @@
+import {actionIntentIssues} from './action-intent'
+import {tagConversationTurn} from './conversation-context'
 import { cartridge, finishStoryTurn, type StorySave } from './story'
 import { actionLabel, localReply, validateProposal, type EntityId } from './contract'
 import { resolveStoryActionById } from './story-domain-action'
@@ -26,10 +28,11 @@ export async function executeSpatialStoryTurn(options: {
     const result = await options.narrator(options.input, structuredClone(base), options.target, options.live)
     let proposal = result.proposal
     const issues = validateProposal(proposal, base, options.target)
+    if(proposal?.kind==='action')issues.push(...actionIntentIssues(options.input))
     if (typeof proposal?.text === 'string' && parseStoryProtocol(proposal.text, base.locale).commands.length) issues.push('PROTOCOL_IN_PROSE')
     if (issues.length) {
       proposal = localReply(options.input, base, options.target)
-      trace = { admission: 'authored-fallback', issues }
+      trace = { fallback: true, admission: 'authored-fallback', issues }
     } else trace = result.trace
     actionId = proposal.kind === 'action' ? proposal.actionId : undefined
     text = proposal.text;kind = proposal.kind
@@ -54,5 +57,6 @@ export async function executeSpatialStoryTurn(options: {
     generator: { send: async () => { throw new Error('UNADMITTED_GENERATION') } },
   })
   finishStoryTurn(base, result.save, c, text)
+  tagConversationTurn(base,result.save,options.target)
   return { save: JSON.parse(JSON.stringify(result.save)) as StorySave, text, kind, accepted: Boolean(actionId) && resolution.status === 'accepted', actionId: actionId ?? null, trace }
 }

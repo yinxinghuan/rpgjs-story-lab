@@ -68,3 +68,17 @@ test('reception relations persist exactly once through authority replay and reop
  assert.equal(s.events('reception-test',h.id,0).length,steps.length)
  raw.close()
 })
+
+test('concurrent retries share one pending narrator call but cannot change the action envelope',async()=>{
+ let release!:()=>void,entered!:()=>void,calls=0
+ const ready=new Promise<void>(resolve=>entered=resolve),gate=new Promise<void>(resolve=>release=resolve)
+ const {service:s,raw}=setup(async(...args)=>{calls++;entered();await gate;return narrator(...args)})
+ const h=s.create('pending-model-test',randomUUID(),'en')
+ const request={...intent(h,'cabinet',''),type:'free-input',text:'What is this cabinet?'}
+ const first=s.action('pending-model-test',h.id,request);await ready
+ const duplicate=s.action('pending-model-test',h.id,request)
+ await assert.rejects(s.action('pending-model-test',h.id,{...request,text:'different intent'}),/ACTION_ID_CONFLICT/)
+ release();assert.deepEqual(await first,await duplicate);assert.equal(calls,1)
+ assert.equal(s.events('pending-model-test',h.id,0).length,1)
+ raw.close()
+})

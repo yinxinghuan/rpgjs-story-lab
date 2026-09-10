@@ -14,6 +14,7 @@ const canonical=(v:any):any=>Array.isArray(v)?v.map(canonical):v&&typeof v==='ob
 const digest=(v:unknown)=>JSON.stringify(canonical(v))
 type Row={data:string;cursor:number}
 export class ProductionAuthority{
+ private inFlight=new Map<string,{hash:string;promise:Promise<any>}>()
  constructor(private db:AuthorityStorage,private narrator:Narrator){
   db.run('CREATE TABLE IF NOT EXISTS journeys(id TEXT PRIMARY KEY, owner TEXT NOT NULL, enrollment TEXT NOT NULL, enrollment_digest TEXT NOT NULL, data TEXT NOT NULL, cursor INTEGER NOT NULL DEFAULT 0, updated INTEGER NOT NULL, UNIQUE(owner,enrollment))')
   db.run('CREATE TABLE IF NOT EXISTS receipts(owner TEXT NOT NULL, action TEXT NOT NULL, digest TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner,action))')
@@ -47,6 +48,13 @@ export class ProductionAuthority{
  private replay(owner:string,action:string,hash:string){const r=this.db.all<{digest:string;response:string}>('SELECT digest,response FROM receipts WHERE owner=? AND action=?',owner,action)[0];if(!r)return null;if(r.digest!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return JSON.parse(r.response)}
  async action(owner:string,id:string,body:any){
   validateAction(body);const hash=digest({id,body}),cached=this.replay(owner,body.action_id,hash);if(cached)return cached
+  const key=JSON.stringify([owner,body.action_id]),existing=this.inFlight.get(key)
+  if(existing){if(existing.hash!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return existing.promise}
+  const promise=this.prepareAndCommit(owner,id,body,hash)
+  this.inFlight.set(key,{hash,promise})
+  try{return await promise}finally{if(this.inFlight.get(key)?.promise===promise)this.inFlight.delete(key)}
+ }
+ private async prepareAndCommit(owner:string,id:string,body:any,hash:string){
   const head=this.get(owner,id),response=await prepareAction(head,body,this.narrator)
   // No network await inside transactionSync. Recheck after narrator yields.
   return this.db.transaction(()=>{

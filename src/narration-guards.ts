@@ -9,3 +9,11 @@ export function stationaryAdviceIssues(text:string):string[]{
  })
  return offers?['NPC_CAPABILITY_MISMATCH']:[]
 }
+
+
+// Actual live failure: reassurance promised portable lighting that this world
+// cannot provide. This narrow check supplements, not replaces, semantic review.
+export function unsupportedLightingAdviceIssues(text:string):string[]{
+ const clauses=text.split(/[。！？!?;；\n]|(?:但是|不过|但)|\bbut\b/i)
+ return clauses.some(clause=>/(?:备用.{0,6}(?:照明|灯光|灯具|设备)|手电(?:筒)?|蜡烛|\b(?:spare|backup)\s+(?:lighting|lights?|equipment)|\b(?:torch|flashlight|candles?)\b)/i.test(clause)&&!/(?:没有|不会|不能|找不到|不存在|并无|不提供)|\b(?:no|not|cannot|can't|can’t|won't|won’t|unavailable)\b/i.test(clause))?['UNSUPPORTED_LIGHTING_EQUIPMENT']:[]
+}
