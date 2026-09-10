@@ -1,0 +1,32 @@
+{
+  "scope": "Original-v8 Black Pine Line chapter in the existing game authority",
+  "newActions": 10,
+  "reusedSourceAction": "use-master-switch-key",
+  "mapVersion": "original-train-authoring-6",
+  "tests": {"newPassed": 14, "fullPassed": 288, "openingToMountainRuns": 8, "actions": {"reverse": 17, "siding": 18}},
+  "matrix": {"locale": ["zh", "en"], "avoidance": ["reverse", "source-key-siding"], "Lin": ["joined", "stayed"]},
+  "verified": [
+    "Fresh original opening through forest, tunnel and yard to mountain in SQLite",
+    "Original key rule consumes one override and 8 fuel; chapter confirmation does not charge twice",
+    "Previous global hidden-route-open is insufficient to unlock this siding",
+    "Reverse consumes 12 condition and 2 morale and cannot follow an already opened siding",
+    "Fuel below 8 or zero condition rejects an accepted source key operation before persistence",
+    "Missing or spent key permits reverse; zero resources can recover once and reach tunnel",
+    "Anonymous knocking precedes Lin visible debut and named options",
+    "Original lin-scout identity, professional relationship and travel/stay decision preserved",
+    "No Ren or river rescue invented on forest route",
+    "Exact receipt replay through a reconstructed authority and final durable head reread",
+    "Missing key state, debut or destination presentation rejects complete transaction",
+    "v5 metadata upgrade retains StorySave and position",
+    "Source files unchanged, all regression tests and build pass, secret/API audits pass"
+  ],
+  "limitations": [
+    "Tests explicitly accept authored presentation; original forest art is not admitted",
+    "No new original HTTP/UI or actual forest renderer testing",
+    "No real model/media request or actual image processing",
+    "No new browser, physical iPhone or native AlterU validation",
+    "Remaining pass/town/junction/full finale route incomplete",
+    "Not deployed; main and Pages remain 05db41c"
+  ],
+  "realPlayerDataRead": false
+}

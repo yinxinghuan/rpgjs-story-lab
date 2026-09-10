@@ -4,8 +4,8 @@ import type {SpatialBindingDefinition} from './spatial-binding'
 export const originalTrainLocations=['dead-station','river-valley','graystone-yard','pine-line','tunnel','mountain-pass','sleeping-town','dawn-junction'] as const
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
-export const originalChapterMapVersion='original-train-authoring-5'
-export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4',originalChapterMapVersion] as const
+export const originalChapterMapVersion='original-train-authoring-6'
+export const originalCompatibleMapVersions=['original-train-authoring-2','original-train-authoring-3','original-train-authoring-4','original-train-authoring-5',originalChapterMapVersion] as const
 export function originalTrainSpatialPlan():SpatialBindingDefinition{
  const scenes=originalTrainLocations.map(id=>({id:originalTrainRoom(id),storyLocationId:id,spawn:{x:192,y:430}}))
  const initial=originalTrainRoom('dead-station')
@@ -52,6 +52,16 @@ export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  world.entities.find(e=>e.id===yard+'-mara-raider')!.actions=['yard-medical-pact','yard-route-brief','yard-invite','yard-stay']
  world.entities.find(e=>e.id===yard+'-ada-mechanic')!.actions=['yard-stabilize']
  world.portals.push({actionId:'yard-first-exit',fromScene:yard,scene:tunnel,position:{x:192,y:430}},{actionId:'yard-depart',fromScene:yard,scene:originalTrainRoom('mountain-pass'),position:{x:192,y:430}})
+ const pine=originalTrainRoom('pine-line')
+ world.entities.push(
+  {id:'pine-signal',scene:pine,position:{x:110,y:160},approach:{x:110,y:185},states:['unchecked','false-safe','tagged'],actions:['pine-inspect','pine-reverse','pine-confirm-siding']},
+  {id:'pine-rescue-car',scene:pine,position:{x:270,y:360},approach:{x:270,y:385},states:['jammed','open'],actions:['pine-meet']},
+  {id:'pine-reserve',scene:pine,position:{x:100,y:480},approach:{x:100,y:505},states:['reserve','empty'],actions:['pine-refuel']},
+  {id:'pine-exit',scene:pine,position:{x:280,y:480},approach:{x:280,y:505},states:['waiting','verified'],actions:['pine-depart']},
+ )
+ world.entities.find(e=>e.id===pine+'-lin-scout')!.actions=['pine-survey-route','pine-invite','pine-stay']
+ world.entities.find(e=>e.id===pine+'-ada-mechanic')!.actions=['pine-stabilize']
+ world.portals.push({actionId:'pine-depart',fromScene:pine,scene:tunnel,position:{x:192,y:430}})
  return world
 }
 // North Cape v2: shared projected footprint, also exported into its TMX.

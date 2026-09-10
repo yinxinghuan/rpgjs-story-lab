@@ -3,6 +3,7 @@ import {executeBoundStoryTurn} from '../src/bound-story-turn'
 import {compileSpatialBinding} from '../src/spatial-binding'
 import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable,originalTrainRoom,originalCompatibleMapVersions} from '../src/original-train-spatial-plan'
 import {originalChapterActions,originalChapterBindingRules,originalChapterLabel,resolveOriginalChapter,executeOriginalChapter,projectOriginalChapterChoices} from '../src/original-chapters'
+import {assertPineSourceAction} from '../src/original-pine-chapter'
 import {originalCharacterPresent} from '../src/original-character-presence'
 import {lastTrainToDawn,lastTrainToDawnEn} from '../src/vendor/original-train/cartridges/lastTrainToDawn'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
@@ -73,6 +74,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    // or dialogue fallback may silently advance an unprepared original chapter.
    if(!resolution)throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
    if(!entity.actions.includes(resolution.ruleId))throw new LabError('UNSUPPORTED_ACTION')
+   if(resolution.status==='accepted')assertPineSourceAction(h.save,resolution.ruleId)
    check({...h,position:pos})
    const bound=await executeBoundStoryTurn({save:h.save,binding,sceneId:h.sceneId,target:entity.id,position:pos,
     execute:async(save,admitAction)=>{admitAction(resolution.ruleId);const result=await executeStoryTurn({save,cartridge:c,action:input,generator});return {...result,save:projectOriginalChapterChoices(result.save),acceptedActionId:resolution.status==='accepted'?resolution.ruleId:null}},
