@@ -5,10 +5,11 @@ import {findGridPath} from './grid-path'
 import {originalTrainPlanWalkable,originalTrainSpatialPlan,originalTrainRoom} from './original-train-spatial-plan'
 import {SceneReadiness,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
 import './original-scene-preview.css'
-declare const __ORIGINAL_SCENE_PREVIEW__:{initialScene:string;resources:SceneResourceManifest}|null
+declare const __ORIGINAL_SCENE_PREVIEW__:{initialScene:string;resources:SceneResourceManifest;platformResources:SceneResourceManifest}|null
 /** In-project renderer workbench. No StorySave, authority or synthetic quests. */
 export default function OriginalScenePreview(){
- const config=__ORIGINAL_SCENE_PREVIEW__!,world=originalTrainSpatialPlan(),spawn=world.scenes.find(s=>s.id===config.initialScene)!.spawn
+ const platform=new URLSearchParams(location.search).get('art_source')==='platform'
+ const rawConfig=__ORIGINAL_SCENE_PREVIEW__!,config={...rawConfig,resources:platform?rawConfig.platformResources:rawConfig.resources},world=originalTrainSpatialPlan(),spawn=world.scenes.find(s=>s.id===config.initialScene)!.spawn
  const checks=useRef<HTMLElement>(null),frame=useRef<HTMLDivElement>(null),runtime=useRef<RpgRendererRuntime|null>(null),readiness=useRef<SceneReadiness|null>(null),mounted=useRef(true),busy=useRef(false)
  const [position,setPosition]=useState(spawn),[destination,setDestination]=useState<RendererPoint|null>(null),[ready,setReady]=useState(false),[error,setError]=useState(''),[background,setBackground]=useState(''),[notice,setNotice]=useState(''),[rendered,setRendered]=useState<RendererPoint|null>(null),[scene,setScene]=useState(config.initialScene),[requested,setRequested]=useState(config.initialScene),[engineReady,setEngineReady]=useState(false),[switching,setSwitching]=useState(true)
  const zh=navigator.language.startsWith('zh'),t=(a:string,b:string)=>zh?a:b
@@ -43,13 +44,13 @@ export default function OriginalScenePreview(){
  const river=scene===originalTrainRoom('river-valley')
  const points:Array<{label:string;position:RendererPoint}>=river?[{label:t('桥头观察位','Bridge approach'),position:{x:188,y:330}},{label:t('左侧岸边','Left bank'),position:{x:80,y:390}},{label:t('右侧岸边','Right bank'),position:{x:290,y:390}},{label:t('返回停靠方向','Train approach'),position:spawn}]:[['starter','左侧检修位','Starter side'],['brakes','右侧制动位','Brake side'],['fuel-shed','燃料棚前','Fuel frontage'],['departure-control','出站控制位','Departure position']].map(([id,zh,en])=>({label:t(zh,en),position:world.entities.find(e=>e.id===id)!.approach}))
  return <main className="cl-app cl-original-preview">
-  <header className="cl-header"><div><p className="cl-eyebrow">{t('原作探索模式 · 场景检查','Original world · Scene check')}</p><h1>{names[scene]}</h1></div></header>
+  <header className="cl-header"><div><p className="cl-eyebrow">{platform&&scene===config.initialScene?t('平台背景候选 · 待质量验收','Platform background candidate · Under review'):t('原作基准素材 · 场景检查','Original baseline · Scene check')}</p><h1>{names[scene]}</h1></div></header>
   <section className="cl-world" aria-label={t('原作可行走地图','Walkable original map')}><div className="cl-map-frame" ref={frame} onClick={ground}>
    {background&&<img className="cl-backdrop" src={background} alt="" draggable={false}/>}<div id="rpg"/>
    {destination&&<div className="cl-destination" style={{left:(destination.x+4.5)/384*100+'%',top:(destination.y+15)/576*100+'%'}}><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg></div>}
    {!ready&&!error&&<div className="cl-loading">{t('正在准备原作地图…','Preparing original map…')}</div>}
   </div></section>
-  <footer className="cl-original-checks" ref={checks}><label>{t('检查场景','Inspect scene')}<select aria-label={t('检查场景','Inspect scene')} disabled={!engineReady||switching} value={requested} onChange={e=>void enterScene(e.target.value)}>{Object.keys(names).map(id=><option key={id} value={id}>{names[id]}</option>)}</select></label><p>{notice||t('点地面行走 · 人物与剧情尚待接入。','Click to walk · Cast and story are not connected yet.')}</p><div>
+  <footer className="cl-original-checks" ref={checks}><nav className="cl-art-comparison" aria-label={t('背景对照','Background comparison')}><a href="./?scene_preview=north-cape" aria-current={!platform?'page':undefined}>{t('基准背景','Baseline')}</a><a href="./?scene_preview=north-cape&art_source=platform" aria-current={platform?'page':undefined}>{t('平台背景候选','Platform candidate')}</a></nav><label>{t('检查场景','Inspect scene')}<select aria-label={t('检查场景','Inspect scene')} disabled={!engineReady||switching} value={requested} onChange={e=>void enterScene(e.target.value)}>{Object.keys(names).map(id=><option key={id} value={id}>{names[id]}</option>)}</select></label><p>{notice||t('点地面行走 · 人物与剧情尚待接入。','Click to walk · Cast and story are not connected yet.')}</p><div>
    {points.map(p=><button disabled={!ready} key={p.label} onClick={()=>walk(p.position)}>{p.label}</button>)}
    <button disabled={!ready} onClick={()=>walk({x:188,y:river?250:130})}>{river?t('检查水面阻挡','Check water collision'):t('检查车体碰撞','Check train collision')}</button><button disabled={!ready} onClick={()=>walk(spawn)}>{t('返回空地','Return to apron')}</button>
   </div><output aria-label={t('运行位置','Runtime position')} data-scene={runtime.current?.renderedScene()??''}>{Math.round(position.x)},{Math.round(position.y)} · {t('画面','Rendered')} {rendered?`${Math.round(rendered.x)},${Math.round(rendered.y)}`:'—'}</output></footer>

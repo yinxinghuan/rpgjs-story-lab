@@ -1,0 +1,11 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "39a2aa50-532b-418a-a09e-58f052cc2754",
+  "mode": "text",
+  "prompt": "Create one playable 2D overhead orthographic railway maintenance yard background, portrait 2:3, 1024 by 1536 pixels. Fixed parallel projection looking down at approximately 60 degrees above the ground; vertical rails and paving edges stay parallel, no horizon or vanishing point. Rich crisp pixel-painted game art with dark blue-grey wet stone, brown weathered rails and restrained warm amber lamps at night. A narrow old railway locomotive occupies the upper central portion only, its roof clearly visible and its nose facing down toward an open stone apron in the lower half. Locomotive width about one quarter of the image; leave broad walkable stone maintenance paths on both sides of it, and continuous flat empty ground below its nose. A small closed shed along the left outer edge of the middle area. Straight central rails continue down through the lower apron. Lower apron has no raised objects. Small lamps only along outer edges. Adult human scale would be about 55 pixels tall at this resolution, but draw NO people. Empty placement areas for separately rendered repair devices. Consistent compact railway proportions, quiet atmosphere, detailed but readable surface textures. Do not draw any people, animals, labels, letters, symbols, signs, HUD, borders, grid overlay, checkerboard, loose tools, cabinets, consoles or movable equipment. Opaque complete background, no transparency.",
+  "referenceUrls": [],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  }
+}

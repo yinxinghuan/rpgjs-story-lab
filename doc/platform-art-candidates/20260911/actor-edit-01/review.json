@@ -1,0 +1,10 @@
+{
+  "status": "rejected",
+  "findings": [
+    "3x4 layout and new navy outfit produced",
+    "most frames face forward, including intended side/back rows",
+    "white matte and grid are baked into RGB; no alpha or tRNS",
+    "lamp continuity and opposing strides not accepted"
+  ],
+  "runtimeAdmitted": false
+}

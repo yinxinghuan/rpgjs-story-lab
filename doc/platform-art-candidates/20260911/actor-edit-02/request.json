@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "d5e9c25c-763e-44b1-ba8d-fef7ea0784e8",
+  "mode": "edit",
+  "prompt": "Edit this exact 12-frame sprite sheet. Change ONLY the yellow fabric of the coat to a muted navy blue. Keep the same person, hair, trousers, boots and satchel. Preserve EVERY individual pose, facing direction, head angle, arm angle and foot placement from the corresponding reference frame. The second row remains LEFT-facing; third row RIGHT-facing; fourth row is BACK view showing no face. Preserve all 3 columns and 4 rows at corresponding scaled positions. Do not replace side or back poses with front poses. Keep crisp pixel-painted details. Keep the original transparent background as real alpha, no white backdrop, no grid lines and no checkerboard. Output a 960x1280 transparent PNG.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/public/art/overhead/hero.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1280
+  }
+}

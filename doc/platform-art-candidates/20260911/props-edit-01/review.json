@@ -1,0 +1,10 @@
+{
+  "status": "rejected",
+  "findings": [
+    "closed/open-with-fuse/open-empty states are visible",
+    "general top-surface angle and metal material preserved",
+    "white matte is baked into RGB; no alpha or tRNS",
+    "requested baseline y570 not followed; state anchor registration would need validation"
+  ],
+  "runtimeAdmitted": false
+}

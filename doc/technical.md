@@ -6,6 +6,9 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 ## 2. 目录结构
 
+- `scripts/platform-art-candidate.ts`：制作期公共媒体探针，使用游戏同源媒体客户端、预先固定请求 ID 和落盘任务状态；重跑需 `--resume`，不自动新建计费请求。当前是内部证据工具，尚非创作者自助入口。
+- `doc/platform-art-candidates/20260911/`：五次真实服务请求、未修改图片、摘要、透明检查及真实地图对照记录。`server/original-scene-preview.ts` 只在 preflight 输出背景候选与摘要，`?scene_preview=north-cape&art_source=platform` 使用相同地图/碰撞/既有主角比较背景；生成角色和设备未准入。
+
 - src/main.tsx / style.css：移动、镜头、HUD、特写、菜单与双语文案。
 - src/space.ts / space-bridge.ts：真实RPG-JS renderer、移动与碰撞桥接。
 - src/walking-motion.ts：本游戏步速、步幅与姿态名配置。

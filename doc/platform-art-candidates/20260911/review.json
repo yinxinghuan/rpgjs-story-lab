@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "date": "2026-09-11",
+  "publicService": "https://game.aiwaves.tech/alteru-media/api",
+  "plannedUpperBound": 9,
+  "intentionalGenerations": 5,
+  "serviceSuccesses": 5,
+  "runtimeAdmissions": 0,
+  "cost": "public API supplies no billing data",
+  "cases": [
+    {
+      "name": "environment-text-01",
+      "elapsedMs": 9707,
+      "taskId": "mt_2b408585960494ec857f335c69e6202a",
+      "sha256": "57291485b1320c540d6237af9517f49296fc67fd132031d6d90f77246e8e267a",
+      "status": "rejected-layout",
+      "findings": [
+        "1024x1536 PNG successfully generated and decoded",
+        "locomotive extends into area reserved for the lower apron by the existing map",
+        "outer tracks converge and style is more outlined illustration than reference"
+      ],
+      "runtimeAdmitted": false
+    },
+    {
+      "name": "environment-edit-01",
+      "elapsedMs": 13733,
+      "taskId": "mt_2b1ebef848bf93d39fda509cbf78df9d",
+      "sha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+      "status": "layout-playtest-passed-quality-gap",
+      "findings": [
+        "reference preserves locomotive, shed and track placement much better",
+        "same orthographic direction; cooler dawn lighting is visible",
+        "texture treatment is smoother and less granular than baseline",
+        "Actual RPG-JS baseline/candidate comparison, left/right service points and car collision passed; runtime and renderer coordinates agree",
+        "Background is darker with reduced texture readability; production quality parity not accepted"
+      ],
+      "runtimeAdmitted": false
+    },
+    {
+      "name": "actor-edit-01",
+      "elapsedMs": 10775,
+      "taskId": "mt_644f0b69c66eeae1908619dc2a874c31",
+      "sha256": "4c40e3a723c0c7d6e287c15633acdcba59f1c7b924ee32c492b7ac18d2db1611",
+      "status": "rejected",
+      "findings": [
+        "3x4 layout and new navy outfit produced",
+        "most frames face forward, including intended side/back rows",
+        "white matte and grid are baked into RGB; no alpha or tRNS",
+        "lamp continuity and opposing strides not accepted"
+      ],
+      "runtimeAdmitted": false
+    },
+    {
+      "name": "actor-edit-02",
+      "elapsedMs": 10981,
+      "taskId": "mt_0399affae466e9db99019c314b2d2f95",
+      "sha256": "dfcb31ee903944b733814a7d64d579847122247db11030317958e46debd9f9f4",
+      "status": "rejected",
+      "findings": [
+        "simple coat recolor preserves four facing directions better than new-identity request",
+        "checkerboard is baked into RGB; no alpha or tRNS",
+        "opposite stride quality and foot registration not yet proven"
+      ],
+      "runtimeAdmitted": false
+    },
+    {
+      "name": "props-edit-01",
+      "elapsedMs": 11066,
+      "taskId": "mt_6e24ada9b0b7306efafdd484704bfeb7",
+      "sha256": "fdcbd8562b9c9d2b3669922553b2c25f1af213fbbd9e3a109daa30603e71fa0e",
+      "status": "rejected",
+      "findings": [
+        "closed/open-with-fuse/open-empty states are visible",
+        "general top-surface angle and metal material preserved",
+        "white matte is baked into RGB; no alpha or tRNS",
+        "requested baseline y570 not followed; state anchor registration would need validation"
+      ],
+      "runtimeAdmitted": false
+    }
+  ],
+  "limits": [
+    "Five samples establish observed behavior, not long-run success rates",
+    "No real player data or credentials sent",
+    "No local alpha cleanup or manual image editing used",
+    "Creator self-service and in-play generation activation still incomplete",
+    "Browser viewport checks are not physical iPhone performance tests",
+    "390 CSS pixel DOM measurement passed after zoom compensation; screenshot tool showed scaling margins, so full visual composition remains unverified at that size"
+  ]
+}

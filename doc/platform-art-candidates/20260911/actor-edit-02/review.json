@@ -1,0 +1,9 @@
+{
+  "status": "rejected",
+  "findings": [
+    "simple coat recolor preserves four facing directions better than new-identity request",
+    "checkerboard is baked into RGB; no alpha or tRNS",
+    "opposite stride quality and foot registration not yet proven"
+  ],
+  "runtimeAdmitted": false
+}

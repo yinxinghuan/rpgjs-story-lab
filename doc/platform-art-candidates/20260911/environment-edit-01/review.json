@@ -1,0 +1,11 @@
+{
+  "status": "layout-playtest-passed-quality-gap",
+  "findings": [
+    "reference preserves locomotive, shed and track placement much better",
+    "same orthographic direction; cooler dawn lighting is visible",
+    "texture treatment is smoother and less granular than baseline",
+    "Actual RPG-JS baseline/candidate comparison, left/right service points and car collision passed; runtime and renderer coordinates agree",
+    "Background is darker with reduced texture readability; production quality parity not accepted"
+  ],
+  "runtimeAdmitted": false
+}

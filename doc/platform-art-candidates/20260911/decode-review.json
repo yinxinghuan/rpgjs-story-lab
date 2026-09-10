@@ -1,0 +1,57 @@
+[
+  {
+    "case": "actor-edit-01",
+    "size": [
+      960,
+      1280
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "transparentPalette": false,
+    "decoded": true
+  },
+  {
+    "case": "environment-edit-01",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "transparentPalette": false,
+    "decoded": true
+  },
+  {
+    "case": "environment-text-01",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "transparentPalette": false,
+    "decoded": true
+  },
+  {
+    "case": "props-edit-01",
+    "size": [
+      960,
+      640
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "transparentPalette": false,
+    "decoded": true
+  },
+  {
+    "case": "actor-edit-02",
+    "size": [
+      960,
+      1280
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "transparentPalette": false,
+    "decoded": true
+  }
+]

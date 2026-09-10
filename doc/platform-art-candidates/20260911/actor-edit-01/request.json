@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "abc15d58-dea8-4ab7-8449-c1ff0c1d916d",
+  "mode": "edit",
+  "prompt": "Create a production game sprite sheet for ADA, a new adult woman railway apprentice mechanic. Use the reference only for the exact overhead orthographic B viewing angle, visible top of head and shoulders, foreshortened face, crisp high-detail pixel-painted technique and pose grid. Replace the yellow-coated man with one consistent young adult woman: short practical dark brown hair, navy mechanic coverall over an off-white shirt, dark gloves, brown work boots, a small enclosed brass work lamp at her hip. No yellow coat or satchel. Exactly 3 columns by 4 rows on a 960x1280 canvas, each cell 320x320. Row order DOWN, LEFT, RIGHT, UP. Middle column is idle with feet together. First and third columns are genuinely opposite walking strides: opposite leading legs, not duplicated poses. Preserve the same face, haircut, outfit, lamp and proportions in all 12 frames. Full figure height about 215 pixels, foot contact at local cell y292, centered at x160. Equal margins, no cropping or overlapping cells. Reference camera angle must remain the same on every row. Output genuine transparent PNG with alpha zero outside the silhouettes, no drawn checkerboard, no colored or white or black matte, no grid, no text, no cast shadow, no glow halo. Sharp clean silhouette edges; do not smooth into cartoon line art.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/public/art/overhead/hero.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1280
+  }
+}

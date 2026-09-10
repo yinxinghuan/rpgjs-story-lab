@@ -1,0 +1,9 @@
+{
+  "status": "rejected-layout",
+  "findings": [
+    "1024x1536 PNG successfully generated and decoded",
+    "locomotive extends into area reserved for the lower apron by the existing map",
+    "outer tracks converge and style is more outlined illustration than reference"
+  ],
+  "runtimeAdmitted": false
+}

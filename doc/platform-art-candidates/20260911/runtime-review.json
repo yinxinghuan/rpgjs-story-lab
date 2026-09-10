@@ -1,0 +1,72 @@
+{
+  "date": "2026-09-11",
+  "mode": "cloud-preflight only",
+  "url": "http://127.0.0.1:5304/?scene_preview=north-cape&art_source=platform",
+  "method": "CUA real browser pointer actions, visible DOM position probe and screenshots; no save imports or model calls",
+  "candidateSha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+  "desktop": {
+    "viewport": [
+      1280,
+      720
+    ],
+    "spawn": [
+      192,
+      430
+    ],
+    "left": [
+      112,
+      184
+    ],
+    "collision": "car body rejected; position unchanged 112,184",
+    "baselineSwitch": "reference background restored by link; candidate link reloaded candidate"
+  },
+  "smallPhone": {
+    "actualViewport": [
+      320,
+      568
+    ],
+    "scrollWidth": 320,
+    "minimumControlHeight": 44,
+    "right": [
+      260,
+      196
+    ],
+    "result": "character remains above footer; background/character alignment visible"
+  },
+  "phone390": {
+    "actualViewport": [
+      390,
+      844
+    ],
+    "scrollWidth": 390,
+    "browserZoomDpr": 1.3,
+    "viewportOverride": [
+      507,
+      1097
+    ],
+    "note": "First 390 override later measured 300x649 due browser zoom. Compensated and rechecked 390x844. Screenshot tool adds scaling margins; no full visual composition pass claimed.",
+    "fuel": [
+      96,
+      384
+    ],
+    "departure": [
+      272,
+      404
+    ]
+  },
+  "river": "actual river baseline remains; no platform candidate substituted",
+  "refresh": "returns North Cape at 192,430 with platform background mode retained",
+  "positionAgreement": true,
+  "quality": "darker ground, reduced texture detail compared with baseline; not admitted for production",
+  "limitations": [
+    "No new actor/prop candidate admitted or animated",
+    "Existing hero used for background scale test",
+    "Not physical iPhone hardware",
+    "Only checked named routes and body blocker, not every pixel of candidate geometry"
+  ],
+  "tests": {
+    "passed": 198,
+    "failed": 0
+  },
+  "productionChanged": false
+}

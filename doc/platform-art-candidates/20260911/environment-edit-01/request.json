@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "183a1691-d132-4b89-a012-8144e49ddf6e",
+  "mode": "edit",
+  "prompt": "Create a pre-dawn weather variant of this exact playable overhead railway yard background. The reference defines the exact orthographic camera, all geometry and object footprints. Keep the locomotive roof, locomotive nose, tracks, stone apron, shed and all lamps in exactly the same places and at the same proportions. Keep every path unobstructed. Preserve the high-detail crisp pixel-painted texture and substantial visible top surfaces. Change ONLY the lighting/weather: the rain has just stopped, a faint cold blue pre-dawn light begins to reflect on wet paving, while the small amber lamps remain on. Keep it dark and restrained, not daylight. No sky or horizon. No convergence or perspective warping. No extra objects, people, signs, text, tools, controls, doors or equipment. Flat empty zones remain flat. Do not turn it into smooth cartoon line art or a rendered photograph. Opaque PNG, full 1024x1536 canvas, exact same composition.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/doc/original-train-candidates/20260911/north-cape-v2.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  }
+}

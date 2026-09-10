@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-10T18:54:53.225Z",
+  "case": "environment-edit-01",
+  "sameRequestReplayTask": true,
+  "sameAssetUrl": true,
+  "taskReadAfterReplay": true,
+  "taskId": "mt_2b1ebef848bf93d39fda509cbf78df9d",
+  "newIntentionalGenerations": 0,
+  "cost": "not exposed by API; same task identity verified, billing not independently inspected"
+}

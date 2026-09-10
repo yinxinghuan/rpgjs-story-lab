@@ -1,0 +1,215 @@
+{
+  "artDirection": "orthogonal-overhead-b-v1",
+  "assets": [
+    {
+      "id": "actor-edit-01",
+      "path": "doc/platform-art-candidates/20260911/actor-edit-01/candidate.png",
+      "sha256": "4c40e3a723c0c7d6e287c15633acdcba59f1c7b924ee32c492b7ac18d2db1611",
+      "imageWidth": 960,
+      "imageHeight": 1280,
+      "requiresAlpha": true,
+      "crops": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 0,
+          "y": 320,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 320,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 320,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 0,
+          "y": 640,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 640,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 640,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 0,
+          "y": 960,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 960,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 960,
+          "w": 320,
+          "h": 320
+        }
+      ]
+    },
+    {
+      "id": "actor-edit-02",
+      "path": "doc/platform-art-candidates/20260911/actor-edit-02/candidate.png",
+      "sha256": "dfcb31ee903944b733814a7d64d579847122247db11030317958e46debd9f9f4",
+      "imageWidth": 960,
+      "imageHeight": 1280,
+      "requiresAlpha": true,
+      "crops": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 0,
+          "y": 320,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 320,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 320,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 0,
+          "y": 640,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 640,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 640,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 0,
+          "y": 960,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 320,
+          "y": 960,
+          "w": 320,
+          "h": 320
+        },
+        {
+          "x": 640,
+          "y": 960,
+          "w": 320,
+          "h": 320
+        }
+      ]
+    },
+    {
+      "id": "environment-edit-01",
+      "path": "doc/platform-art-candidates/20260911/environment-edit-01/candidate.png",
+      "sha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+      "imageWidth": 1024,
+      "imageHeight": 1536,
+      "requiresAlpha": false,
+      "crops": []
+    },
+    {
+      "id": "environment-text-01",
+      "path": "doc/platform-art-candidates/20260911/environment-text-01/candidate.png",
+      "sha256": "57291485b1320c540d6237af9517f49296fc67fd132031d6d90f77246e8e267a",
+      "imageWidth": 1024,
+      "imageHeight": 1536,
+      "requiresAlpha": false,
+      "crops": []
+    },
+    {
+      "id": "props-edit-01",
+      "path": "doc/platform-art-candidates/20260911/props-edit-01/candidate.png",
+      "sha256": "fdcbd8562b9c9d2b3669922553b2c25f1af213fbbd9e3a109daa30603e71fa0e",
+      "imageWidth": 960,
+      "imageHeight": 640,
+      "requiresAlpha": true,
+      "crops": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 320,
+          "h": 640
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "w": 320,
+          "h": 640
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "w": 320,
+          "h": 640
+        }
+      ]
+    }
+  ]
+}

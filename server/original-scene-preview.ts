@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto'
 import {originalTrainObstaclesFor,originalTrainRoom,originalTrainSpatialPlan} from '../src/original-train-spatial-plan'
 import type {SceneResourceManifest} from '../src/scene-readiness'
 const candidates=[{location:'dead-station',file:'north-cape-v2.png',asset:'original-north-cape'},{location:'river-valley',file:'river-valley-v1.png',asset:'original-river-valley'}]
+function platformBackground(){const data=readFileSync(new URL('../doc/platform-art-candidates/20260911/environment-edit-01/candidate.png',import.meta.url));return {kind:'background' as const,path:'./art/platform-north-cape-candidate.png',data,width:data.readUInt32BE(16),height:data.readUInt32BE(20)}}
 function previewAssets(){return candidates.map(c=>{
  const sceneId=originalTrainRoom(c.location),data=readFileSync(new URL('../doc/original-train-candidates/20260911/'+c.file,import.meta.url))
  const objects=originalTrainObstaclesFor(sceneId).map((o,i)=>`<object id="${i+1}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}"><properties><property name="collision" type="bool" value="true"/></properties></object>`).join('')
@@ -12,6 +13,8 @@ function previewAssets(){return candidates.map(c=>{
 export function originalScenePreviewDefinition(){
  const version=originalTrainSpatialPlan().mapVersion
  const resources:SceneResourceManifest={version,scenes:Object.fromEntries(previewAssets().map(s=>[s.sceneId,{version,assets:s.assets.map(({data,...asset})=>({...asset,bytes:data.byteLength,sha256:createHash('sha256').update(data).digest('hex')}))}]))}
- return {initialScene:originalTrainRoom('dead-station'),resources}
+ const initialScene=originalTrainRoom('dead-station'),{data,...asset}=platformBackground(),platformResources=structuredClone(resources)
+ platformResources.scenes[initialScene].assets=platformResources.scenes[initialScene].assets.map(a=>a.kind==='background'?{...asset,bytes:data.byteLength,sha256:createHash('sha256').update(data).digest('hex')}:a)
+ return {initialScene,resources,platformResources}
 }
-export function originalScenePreviewPlugin(){return {name:'original-scene-preview-assets',generateBundle(this:any){for(const s of previewAssets())for(const a of s.assets)this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data})}}}
+export function originalScenePreviewPlugin(){return {name:'original-scene-preview-assets',generateBundle(this:any){for(const s of previewAssets())for(const a of s.assets)this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data});const a=platformBackground();this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data})}}}

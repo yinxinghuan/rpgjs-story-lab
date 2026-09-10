@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "2b485711-fdfe-45d5-be56-9996e59dc415",
+  "mode": "edit",
+  "prompt": "Use only the three cabinet states across the TOP ROW of this reference to create a standalone game sprite sheet. Preserve their exact overhead orthographic viewing angle, substantial rectangular visible top surface, proportions, dark weathered metal and small brass edges, crisp detailed pixel-painted material. Exactly three equal columns in ONE row on a 960x640 canvas, each cell320x640. Same cabinet body and camera in every column: left CLOSED cabinet; middle cabinet door OPEN with one ceramic fuse on the shelf; right same OPEN cabinet with EMPTY shelf. The middle and right door angles and cabinet geometry must be identical. Body is centered at local x180 with a fixed ground baseline y570, about460px tall; open door remains entirely within its cell. Do not draw the lower-row panel, loose fuse or door from the reference. No labels or text. Genuine RGBA transparent PNG, alpha zero everywhere outside the three complete object silhouettes. No checkerboard pattern, solid matte, shadows, floor or backdrop. No glow. No invented pieces, no perspective convergence. Do not simplify into cartoon line art.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/public/art/overhead/props.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 640
+  }
+}
