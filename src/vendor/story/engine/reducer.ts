@@ -812,7 +812,8 @@ export function applyParsedScene(
   recordPresetEvent(next, presetEventResolution)
   delete next.facts.consistency_quarantined_action
   delete next.facts.consistency_quarantined_location
-  const declaredAlias = playerDeclaredLocationAlias(actionId, cartridge.locale)
+  // A governed action owns every effect; input prose cannot rename its location.
+  const declaredAlias = domainResolution ? undefined : playerDeclaredLocationAlias(actionId, cartridge.locale)
   if (declaredAlias) {
     const sourceNode = next.map.find((node) => node.current || node.label === save.location)
     if (sourceNode) sourceNode.routeHints = mergeRouteHints(sourceNode.routeHints, [declaredAlias])

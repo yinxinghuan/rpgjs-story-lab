@@ -1,6 +1,6 @@
 import type { StoryCartridge, StorySave, Locale, DomainActionRule } from './vendor/story/types'
-import { createInitialSave } from './vendor/story/engine/reducer'
-import { applyDomainResolution } from './vendor/story/engine/domainRules'
+import { createInitialSave, applyParsedScene } from './vendor/story/engine/reducer'
+import { parseStoryProtocol } from './vendor/story/engine/protocol'
 import { resolveStoryActionById } from './story-domain-action'
 
 import {admitAttendant,attendantDefinition,attendantIntro,attendantReply} from './attendant'
@@ -67,9 +67,21 @@ export function runRule(base:StorySave,action:string) {
  const c=cartridge(base.locale,base), result=resolveStoryActionById(base,c,action)
  if(!result) throw new Error('UNREGISTERED_ACTION')
  if(result.status==='rejected') return {save:base,accepted:false,text:result.reasons.join(' ')}
- const save=structuredClone(base);save.scene++
- const blocks=applyDomainResolution(save,c,result);save.blocks.push(...blocks);if(!base.facts.attendant_introduced&&save.facts.attendant_introduced)admitAttendant(base,save,c,result.successText);if(!base.facts.dispatcher_introduced&&save.facts.dispatcher_introduced)admitDispatcher(base,save,c,result.successText);if(save.facts.finished)save.objective=journeyObjective(save)
+ const save=applyParsedScene(base,parseStoryProtocol(result.successText,base.locale),c,action,undefined,undefined,undefined,result)
+ finishStoryTurn(base,save,c,result.successText)
  return {save,accepted:true,text:result.successText}
+}
+
+// Character admission uses the canonical reducer; game-specific goals remain
+// derived from facts. No second inventory, relationship or story snapshot.
+export function finishStoryTurn(base:StorySave,save:StorySave,c:StoryCartridge,text:string){
+ if(!base.facts.attendant_introduced&&save.facts.attendant_introduced)admitAttendant(base,save,c,text)
+ if(!base.facts.dispatcher_introduced&&save.facts.dispatcher_introduced)admitDispatcher(base,save,c,text)
+ if(save.facts.finished)save.objective=journeyObjective(save)
+ // This map shell exposes its registered nearby actions, not the reading shell's
+ // automatically inferred quick replies. Keep historical blocks unchanged.
+ save.choices=[];save.decisionContext=''
+ save.blocks=save.blocks.filter((b,i)=>i<base.blocks.length||b.kind!=='choices')
 }
 
 export function linResponse(s:StorySave,locale=s.locale){const f=s.facts;return tr(locale,f.beacon_set?'林望着门边缓缓明灭的暖光：“他们看见我们了。灯还在，慢慢等就好。”':f.power_radio?'林站在应急光里：“顶灯暗了，但电台能一直领着接应走。过道我看着。”':f.signal_acknowledged&&!f.rescue_sent?'林指向配电箱：“短报文已经发出。把这里拨到引导档，门边的灯会带他们找到车。”':f.power_chosen?'林看看亮着的灯：“把光留给客厢也好。等回执到了，我陪你把引导灯打开。”':'林守着配电箱：“灯留着，接应会找到这里。”',f.beacon_set?'Lin watches the warm guide light. “They can see us. The lights are still on; we can wait.”':f.power_radio?'Lin stands in emergency light. “The ceiling lights are down, but the radio can guide help all the way. I will watch the aisle.”':f.signal_acknowledged&&!f.rescue_sent?'Lin points to the panel. “The short message is through. Set guide mode here; the door light will show them the train.”':f.power_chosen?'Lin glances at the lights. “We can keep the carriage bright. After the acknowledgment, we will switch on the guide light.”':'Lin watches the panel. “Leave the light on. Help will find us.”')}

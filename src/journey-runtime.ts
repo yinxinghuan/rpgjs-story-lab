@@ -1,4 +1,6 @@
-import {runRule,type StorySave} from './story'
+import type {StorySave} from './story'
+import {executeSpatialStoryTurn} from './spatial-story-turn'
+import {assertSpatialStoryProjection} from './spatial-story-projection'
 import {validActionTarget,safePosition,entities,currentScene,type Position,type EntityId,type Proposal} from './contract'
 import {portalArrivals} from './scene-layout'
 export type Head={id:string;version:number;save:StorySave;position:Position;mapVersion:string}
@@ -15,21 +17,13 @@ export async function prepareAction(h:Head,body:any,narrator:Narrator){
   const scene=currentScene(h.save);if((body.sceneId??'carriage')!==scene||entities[target].scene!==scene)throw new LabError('OFF_SCENE_ENTITY');
   const pos=safePosition(body.position,scene);if(!body.position||pos.x!==body.position.x||pos.y!==body.position.y)throw new LabError('INVALID_POSITION')
   if(Math.hypot(pos.x-entities[target].x,pos.y-entities[target].y)>=70)throw new LabError('TOO_FAR')
-  let actionId=body.action;let text='',trace:any,kind='dialogue',accepted=false,save=h.save
-  if(body.type==='free-input'){
-   if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
-   const result=await narrator(body.text,h.save,target,body.mode==='live');trace=result.trace
-   if(result.proposal.kind==='action')actionId=result.proposal.actionId
-   else {actionId=undefined;text=result.proposal.text;kind=result.proposal.kind}
-  }else if(body.type!=='action')throw new LabError('INVALID_ACTION_TYPE')
-  if(actionId){
-   if(!validActionTarget(actionId,target,pos,scene))throw new LabError('UNSUPPORTED_ACTION')
-   const result=runRule(h.save,actionId);text=result.text;save=result.save;accepted=result.accepted;kind=accepted?'action':'rejected'
-  }
-  if(!text)throw new LabError('EMPTY_RESULT')
-
- if(!accepted){save=structuredClone(save);save.blocks.push({id:body.action_id,kind:'narration',text})}
- const arrival=accepted?portalArrivals[actionId]:undefined
+ if(body.type==='free-input'){
+  if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
+ }else if(body.type!=='action'||typeof body.action!=='string'||!body.action)throw new LabError('INVALID_ACTION_TYPE')
+ const result=await executeSpatialStoryTurn({save:h.save,target,actionId:body.type==='action'?body.action:undefined,input:body.type==='free-input'?body.text:undefined,live:body.mode==='live',narrator,admitAction:id=>{if(!validActionTarget(id,target,pos,scene))throw new LabError('UNSUPPORTED_ACTION');return true}})
+ const {save,text,kind,accepted,actionId,trace}=result
+ assertSpatialStoryProjection(h.save,save,accepted?actionId:null)
+ const arrival=accepted&&actionId?portalArrivals[actionId]:undefined
  const next={...h,save,position:arrival?safePosition(arrival.position,arrival.scene):pos,version:h.version+1}
  return {head:next,text,kind,accepted,actionId:actionId??null,trace}
 }

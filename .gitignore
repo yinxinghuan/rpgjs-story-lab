@@ -25,3 +25,4 @@ doc/cloud-identity-review.md
 # Explicit local performance instrumentation, stripped from normal builds.
 !_qa/performance-probe.ts
 dist-perf/
+dist-single-player-qa/

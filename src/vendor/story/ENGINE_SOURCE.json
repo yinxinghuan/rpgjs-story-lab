@@ -27,5 +27,14 @@
   "dangerGraceContract": "active-threat-and-critical-risk-bypass-grace-v1",
   "saveSchema": 10,
   "containsDeploymentCredentials": false,
-  "deploymentWorkflowIncluded": false
+  "deploymentWorkflowIncluded": false,
+  "localIntegrationPatches": {
+    "date": "2026-09-10",
+    "executeTurn": {
+      "source": "create-rpg-game/assets/story-session-runtime/stateful/src/story/engine/executeTurn.ts",
+      "sourceSha256": "0e4532b087caec9b22efc89838e330b1fecd4385f4ca42ac5771b54a872c9d56",
+      "change": "Allow a server-admitted DomainActionResolution to enter the canonical reducer without re-matching localized action text."
+    },
+    "reducer": "Governed domain turns cannot infer map aliases from player prose outside the admitted effects."
+  }
 }
