@@ -35,6 +35,7 @@
       "sourceSha256": "0e4532b087caec9b22efc89838e330b1fecd4385f4ca42ac5771b54a872c9d56",
       "change": "Allow a server-admitted DomainActionResolution to enter the canonical reducer without re-matching localized action text."
     },
-    "reducer": "Governed domain turns cannot infer map aliases from player prose outside the admitted effects."
+    "reducer": "Governed domain turns cannot infer map aliases from player prose outside the admitted effects.",
+    "relationships": "DomainEffect relationship uses a stable introduced character ID and stores the authored delta/axis in the existing StorySave relationship history; no model prose command is admitted."
   }
 }

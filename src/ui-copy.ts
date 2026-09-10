@@ -1,7 +1,9 @@
+import {receptionObjective} from './reception'
 import {tr,type Locale,type StorySave} from './story'
 // Presentation of the next actionable step, derived only from authoritative facts.
 export function objectiveCopy(save:StorySave|undefined,locale:Locale):[string,string]{
  const t=(zh:string,en:string)=>tr(locale,zh,en),f=save?.facts??{}
+ const reception=save&&receptionObjective(save,locale);if(reception)return reception
  if(!f.repaired){
   if(!f.cabinet_open)return [t('查看检修柜','Examine the cabinet'),t('沿过道走到左侧检修柜旁，查看里面是否有备用部件。','Follow the aisle to the cabinet on the left and look for a spare part.')]
   if(!f.fuse_taken)return [t('取出备用保险丝','Collect the spare fuse'),t('检修柜已经打开。在近景中拿起保险丝，再检查配电箱。','The cabinet is open. Collect the fuse in the close-up, then inspect the circuit panel.')]

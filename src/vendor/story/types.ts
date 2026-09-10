@@ -164,6 +164,7 @@ export type DomainRequirement =
   | { type: 'character'; id: string; status: CharacterStatus; reason: string }
   | { type: 'danger'; phases: DangerPhase[]; reason: string }
 export type DomainEffect =
+  | { type: 'relationship'; characterId: string; axis: string; delta: number }
   | { type: 'stat'; id: string; delta: number }
   | { type: 'fact'; id: string; value: StoryFactValue }
   | { type: 'fact-add'; id: string; delta: number }

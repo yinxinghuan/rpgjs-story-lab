@@ -4,6 +4,7 @@ import {tr,type Locale,type StorySave} from './story'
 export function chapterResult(save:StorySave,locale:Locale){
  if(!save.facts.rescue_sent)return null
  const f=save.facts,t=(zh:string,en:string)=>tr(locale,zh,en)
+ if(f.handover_complete)return {route:'handover',title:t('每个人都知道自己的位置','Everyone knows their part'),consequence:t('你核实了照明与通道，和调度核对了接应信号，并把确认带回客厢。车内交接准备已经完成，原来的供电安排仍然保留。','You checked the lighting and aisle, verified the arrival signal with dispatch, and brought the confirmation back to the carriage. Handover preparations are complete; your power arrangement remains in place.'),milestones:[f.power_chosen&&f.power_radio?t('保留电台增幅与客厢应急光','Kept radio amplification and carriage emergency lighting'):f.power_chosen&&f.beacon_set?t('保留客厢照明与引导灯','Kept carriage lighting and the guide light'):t('保留旧旅程的供电安排','Kept the earlier journey’s power arrangement'),t('与修理工核实照明','Checked lighting with the mechanic'),t('与乘务员确认通道','Checked the aisle with the attendant'),t('正确核对接应识别信号','Verified the arrival signal')]}
  const route=f.power_chosen&&f.power_radio?'radio':f.power_chosen&&f.beacon_set?'lights':'legacy'
  return {
   route,
@@ -20,7 +21,7 @@ export function ChapterResult({save,locale}:{save:StorySave;locale:Locale}){
   <p className="cl-chapter__kicker">{t('留一盏灯','A light left on')}</p>
   <h3>{result.title}</h3><p>{result.consequence}</p>
   <details><summary>{t('完成的事','What you accomplished')}</summary><ul>{result.milestones.map(m=><li key={m}>{m}</li>)}</ul></details>
-  <p className="cl-chapter__stop">{t('可以在这里停下。进度已保存在本机，下次回来仍能继续这段旅程。','You can stop here. Progress is saved on this computer; return later to continue this journey.')}</p>
+  <p className="cl-chapter__stop">{t('可以在这里停下。进度已经保存，下次回来仍能继续这段旅程。','You can stop here. Progress is saved; return later to continue this journey.')}</p>
 
  </div>
 }

@@ -17,13 +17,17 @@ export function RadioContact({save,locale,disabled,onAction}:{save:StorySave;loc
  </div>
 }
 
+function Cooperation({save,id,locale}:{save:StorySave;id:string;locale:Locale}){
+ const labels:Record<string,[string,string]>={'lighting-cooperation':['共同核实照明，约定看护线路。','Checked the lighting and agreed to watch the circuit.'],'aisle-cooperation':['共同确认通道，约定保持原位。','Checked the aisle and agreed to hold position.'],'verified-handover':['核对了接应识别，建立交接信任。','Verified identification and established handover trust.']}
+ return <>{save.relationships.filter(r=>r.characterId===id&&labels[r.axis]).map(r=><p className="cl-help" key={r.id}>{labels[r.axis][locale==='zh'?0:1]}</p>)}</>
+}
 export function PeopleMet({save,locale}:{save:StorySave;locale:Locale}){
  const t=(zh:string,en:string)=>tr(locale,zh,en)
  const lin=save.facts.introduced&&save.characters.some(c=>c.id==='lin'),dispatch=knowsDispatcher(save),attendant=knowsAttendant(save)
  return <div className="cl-people">
   {!lin&&!dispatch&&!attendant&&<p>{t('你还没有与人交谈。走近车内的人，听听他们怎么说。','You have not spoken to anyone yet. Approach someone in the carriage to talk.')}</p>}
-  {lin&&<article data-person="lin"><h3>{t('林','Lin')}</h3><p>{t('客厢 · 修理工','Carriage · Mechanic')}</p><p>{t('他留在客厢看护电路，愿意帮你恢复照明。','He stays in the carriage to watch the circuit and help restore the lights.')}</p></article>}
-  {attendant&&<article data-person={ATTENDANT}><h3>{attendantName(locale)}</h3><p>{t('行李车 · 乘务员','Baggage car · Attendant')}</p><p>{t('青衣、米色围巾。她留在行李车看护器材与货箱。','Teal uniform and cream scarf. She watches the equipment and cargo in the baggage car.')}</p></article>}
-  {dispatch&&<article data-person={DISPATCHER}><h3>{dispatcherName(locale)}</h3><p>{t('3 频道 · 值班调度','Channel 3 · Duty dispatcher')}</p><p>{t('只闻其声，尚未见面。到驾驶室电台前可以联系她，询问接应进展。','You have heard her voice but have not met in person. Contact her at the cab radio for rescue updates.')}</p>{save.facts.dispatcher_briefed&&<p className="cl-help">{t('她已记下你告知的车内情况。','She has noted your report about the carriage.')}</p>}</article>}
+  {lin&&<article data-person="lin"><h3>{t('林','Lin')}</h3><p>{t('客厢 · 修理工','Carriage · Mechanic')}</p><p>{t('他留在客厢看护电路，愿意帮你恢复照明。','He stays in the carriage to watch the circuit and help restore the lights.')}</p><Cooperation save={save} id="lin" locale={locale}/></article>}
+  {attendant&&<article data-person={ATTENDANT}><h3>{attendantName(locale)}</h3><p>{t('行李车 · 乘务员','Baggage car · Attendant')}</p><p>{t('青衣、米色围巾。她留在行李车看护器材与货箱。','Teal uniform and cream scarf. She watches the equipment and cargo in the baggage car.')}</p><Cooperation save={save} id={ATTENDANT} locale={locale}/></article>}
+  {dispatch&&<article data-person={DISPATCHER}><h3>{dispatcherName(locale)}</h3><p>{t('3 频道 · 值班调度','Channel 3 · Duty dispatcher')}</p><p>{t('只闻其声，尚未见面。到驾驶室电台前可以联系她，询问接应进展。','You have heard her voice but have not met in person. Contact her at the cab radio for rescue updates.')}</p>{save.facts.dispatcher_briefed&&<p className="cl-help">{t('她已记下你告知的车内情况。','She has noted your report about the carriage.')}</p>}<Cooperation save={save} id={DISPATCHER} locale={locale}/></article>}
  </div>
 }

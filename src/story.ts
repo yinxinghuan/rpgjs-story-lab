@@ -1,3 +1,4 @@
+import {receptionRules,receptionObjective,receptionAdvice} from './reception'
 import type { StoryCartridge, StorySave, Locale, DomainActionRule } from './vendor/story/types'
 import { createInitialSave, applyParsedScene } from './vendor/story/engine/reducer'
 import { parseStoryProtocol } from './vendor/story/engine/protocol'
@@ -32,7 +33,7 @@ export function cartridge(locale: Locale, current?:StorySave): StoryCartridge {
   initialFacts:{attendant_introduced:false,cabinet_open:false,fuse_taken:false,repaired:false,introduced:false,finished:false,supply_open:false,battery_taken:false,record_read:false,battery_installed:false,rescue_sent:false,power_chosen:false,power_radio:false,signal_acknowledged:false,beacon_set:false,dispatcher_introduced:false,dispatcher_briefed:false},
   characters:[{id:'lin',name:t('林','Lin'),role:t('修理工','Mechanic'),vitality:100,stress:10,skills:[],hiddenUntilIntroduced:true,detail:t('灰色工作服，灰白短发。','Grey work jacket, short grey hair.')},dispatcherDefinition(locale),attendantDefinition(locale)],initialPartyMemberIds:[],
   initialMap:[{id:'carriage',label:t('07 号客厢','Carriage 07'),current:true,visited:true},{id:'baggage',label:t('06 号行李检修车','Baggage & service car'),current:false,visited:false},{id:'cab',label:t('驾驶室','Driving cab'),current:false,visited:false}],initialInventory:[],demoTurns:[],
-  domainRules:{rules:[
+  domainRules:{rules:[...receptionRules(locale,current),
    rule('meet-attendant',[fact('attendant_introduced',false,'你们已经认识了。','You have already met.')],[{type:'fact',id:'attendant_introduced',value:true}],attendantIntro('zh'),attendantIntro('en')),
    rule('talk-attendant',[fact('attendant_introduced',true,'先走近听她介绍自己。','Approach and hear her introduction first.')],[],attendantReply({facts:f,locale:'zh'}),attendantReply({facts:f,locale:'en'})),
    rule('open-cabinet',[fact('cabinet_open',false,'柜门已经打开了。','The cabinet is already open.')],[{type:'fact',id:'cabinet_open',value:true},{type:'objective',value:t('取出保险丝，再找修理工问问。','Take the fuse, then speak with the mechanic.')}],'你拉开柜门。一枚备用保险丝放在凹槽里，纸条写着“先检查配电箱”。','You pull the cabinet open. A spare fuse rests in its slot. A note reads: “Check the circuit panel first.”'),
@@ -77,11 +78,11 @@ export function runRule(base:StorySave,action:string) {
 export function finishStoryTurn(base:StorySave,save:StorySave,c:StoryCartridge,text:string){
  if(!base.facts.attendant_introduced&&save.facts.attendant_introduced)admitAttendant(base,save,c,text)
  if(!base.facts.dispatcher_introduced&&save.facts.dispatcher_introduced)admitDispatcher(base,save,c,text)
- if(save.facts.finished)save.objective=journeyObjective(save)
+ if(save.facts.finished)save.objective=receptionObjective(save,save.locale)?.[1]??journeyObjective(save)
  // This map shell exposes its registered nearby actions, not the reading shell's
  // automatically inferred quick replies. Keep historical blocks unchanged.
  save.choices=[];save.decisionContext=''
  save.blocks=save.blocks.filter((b,i)=>i<base.blocks.length||b.kind!=='choices')
 }
 
-export function linResponse(s:StorySave,locale=s.locale){const f=s.facts;return tr(locale,f.beacon_set?'林望着门边缓缓明灭的暖光：“他们看见我们了。灯还在，慢慢等就好。”':f.power_radio?'林站在应急光里：“顶灯暗了，但电台能一直领着接应走。过道我看着。”':f.signal_acknowledged&&!f.rescue_sent?'林指向配电箱：“短报文已经发出。把这里拨到引导档，门边的灯会带他们找到车。”':f.power_chosen?'林看看亮着的灯：“把光留给客厢也好。等回执到了，我陪你把引导灯打开。”':'林守着配电箱：“灯留着，接应会找到这里。”',f.beacon_set?'Lin watches the warm guide light. “They can see us. The lights are still on; we can wait.”':f.power_radio?'Lin stands in emergency light. “The ceiling lights are down, but the radio can guide help all the way. I will watch the aisle.”':f.signal_acknowledged&&!f.rescue_sent?'Lin points to the panel. “The short message is through. Set guide mode here; the door light will show them the train.”':f.power_chosen?'Lin glances at the lights. “We can keep the carriage bright. After the acknowledgment, we will switch on the guide light.”':'Lin watches the panel. “Leave the light on. Help will find us.”')}
+export function linResponse(s:StorySave,locale=s.locale){const advice=receptionAdvice(s,'lin',locale);if(advice)return advice;const f=s.facts;return tr(locale,f.beacon_set?'林望着门边缓缓明灭的暖光：“他们看见我们了。灯还在，慢慢等就好。”':f.power_radio?'林站在应急光里：“顶灯暗了，但电台能一直领着接应走。过道我看着。”':f.signal_acknowledged&&!f.rescue_sent?'林指向配电箱：“短报文已经发出。把这里拨到引导档，门边的灯会带他们找到车。”':f.power_chosen?'林看看亮着的灯：“把光留给客厢也好。等回执到了，我陪你把引导灯打开。”':'林守着配电箱：“灯留着，接应会找到这里。”',f.beacon_set?'Lin watches the warm guide light. “They can see us. The lights are still on; we can wait.”':f.power_radio?'Lin stands in emergency light. “The ceiling lights are down, but the radio can guide help all the way. I will watch the aisle.”':f.signal_acknowledged&&!f.rescue_sent?'Lin points to the panel. “The short message is through. Set guide mode here; the door light will show them the train.”':f.power_chosen?'Lin glances at the lights. “We can keep the carriage bright. After the acknowledgment, we will switch on the guide light.”':'Lin watches the panel. “Leave the light on. Help will find us.”')}

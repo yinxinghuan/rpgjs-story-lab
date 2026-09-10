@@ -379,6 +379,12 @@ export function applyDomainResolution(save: StorySave, cartridge: StoryCartridge
       const verb = cartridge.locale === 'zh' ? (delta > 0 ? '获得' : '消耗') : (delta > 0 ? 'Gained' : 'Consumed')
       if (delta) blocks.push({ id, kind: 'change', text: `${verb} ${effect.item?.label ?? effect.itemId} ×${Math.abs(delta)}`, data: { itemId: effect.itemId, delta, domainRule: resolution.ruleId } })
     }
+    if (effect.type === 'relationship') {
+      const person = save.characters.find(character => character.id === effect.characterId)
+      if (!person || !Number.isFinite(effect.delta) || effect.delta === 0) return
+      save.relationships.push({ id, actor: person.name, characterId: person.id, axis: effect.axis, delta: effect.delta, source: resolution.ruleId })
+      blocks.push({ id: `${id}-change`, kind: 'change', text: `${person.name} · ${cartridge.locale === 'zh' ? '合作已记下' : 'Cooperation remembered'}`, data: { relationshipChange: effect.axis, delta: effect.delta, domainRule: resolution.ruleId } })
+    }
     if (effect.type === 'party') {
       const character = save.characters.find((entry) => entry.id === effect.characterId)
         ?? cartridge.characters.find((entry) => entry.id === effect.characterId)

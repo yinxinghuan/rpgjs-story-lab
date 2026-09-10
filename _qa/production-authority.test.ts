@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite'
 import {randomUUID,randomBytes} from 'node:crypto'
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {createHandler,handleApi,CarriageJourneyAuthority} from '../worker/source'
-import {currentScene,localReply,type EntityId} from '../src/contract'
+import {currentScene,localReply,actionTarget,type EntityId} from '../src/contract'
 import {approachPoints} from '../src/scene-layout'
 import type {Head,Narrator} from '../src/journey-runtime'
 const narrator:Narrator=async(input,save,target)=>({proposal:localReply(input,save,target),trace:{mode:'local'}})
@@ -50,4 +50,21 @@ test('actual Durable Object adapter enrolls and replays an action on SQLite',asy
  const h=await (await call('/sessions',{enrollment_id:randomUUID(),locale:'en'})).json() as Head,b=intent(h,'cabinet','open-cabinet'),r=await (await call('/sessions/'+h.id+'/actions',b)).json()
  assert.equal(r.accepted,true);assert.deepEqual(await (await call('/sessions/'+h.id+'/actions',b)).json(),r);assert.equal((await (await call('/sessions/'+h.id+'/events?after=0')).json()).events.length,1)
  raw2.close()
+})
+
+
+test('reception relations persist exactly once through authority replay and reopen',async()=>{
+ const {service:s,db,raw}=setup();let h=s.create('reception-test',randomUUID(),'en')
+ const steps=['open-cabinet','take-fuse','meet-lin','repair','leave','open-supply','take-battery','read-record','enter-cab','install-battery','route-radio','send-signal','begin-reception','back-baggage','meet-attendant','check-aisle','read-arrival-code','back-carriage','check-circuit','go-baggage','enter-cab','retry-arrival','confirm-arrival','back-baggage','back-carriage','complete-handover']
+ for(const id of steps){
+  const request=intent(h,actionTarget[id],id),result=await s.action('reception-test',h.id,request)
+  assert.equal(result.accepted,true,id)
+  assert.deepEqual(await s.action('reception-test',h.id,request),result)
+  h=new ProductionAuthority(db,narrator).get('reception-test',h.id)
+  assert.deepEqual(h,result.head)
+ }
+ assert.equal(h.save.facts.handover_complete,true)
+ assert.equal(h.save.relationships.length,3)
+ assert.equal(s.events('reception-test',h.id,0).length,steps.length)
+ raw.close()
 })
