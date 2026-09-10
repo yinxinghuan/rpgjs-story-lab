@@ -1,4 +1,5 @@
 import type {RelayChoice} from './relay-content'
+import {bindCarriageStory} from './carriage-spatial-binding'
 import {actionIntentIssues} from './action-intent'
 import {tagConversationTurn} from './conversation-context'
 import { cartridge, finishStoryTurn, type StorySave } from './story'
@@ -40,8 +41,10 @@ export async function executeSpatialStoryTurn(options: {
     text = proposal.text;kind = proposal.kind;contentChoice=proposal.content
   }
   const c = cartridge(base.locale, base,{seed:options.contentSeed??'preview',choice:contentChoice})
+  const binding=bindCarriageStory(c)
   let resolution: DomainActionResolution
   if (actionId) {
+    if(binding.targetFor(actionId)!==options.target)throw new Error('UNSUPPORTED_ACTION')
     if (!options.admitAction(actionId)) throw new Error('UNSUPPORTED_ACTION')
     resolution = resolveStoryActionById(base, c, actionId)
     text = resolution.status === 'accepted' ? resolution.successText : resolution.reasons.join(' ')
