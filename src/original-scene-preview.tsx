@@ -4,11 +4,12 @@ import {heroSheet} from './sprite-config'
 import {findGridPath} from './grid-path'
 import {originalTrainPlanWalkable,originalTrainSpatialPlan,originalTrainRoom} from './original-train-spatial-plan'
 import {SceneReadiness,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
+import {BrowserArtDrafts,artDraftDatabaseName,decodeArtCandidate} from './art-draft'
 import './original-scene-preview.css'
 declare const __ORIGINAL_SCENE_PREVIEW__:{initialScene:string;resources:SceneResourceManifest;platformResources:SceneResourceManifest}|null
 /** In-project renderer workbench. No StorySave, authority or synthetic quests. */
 export default function OriginalScenePreview(){
- const platform=new URLSearchParams(location.search).get('art_source')==='platform'
+ const query=new URLSearchParams(location.search),source=query.get('art_source'),platform=source==='platform',draftMode=source==='draft'
  const rawConfig=__ORIGINAL_SCENE_PREVIEW__!,config={...rawConfig,resources:platform?rawConfig.platformResources:rawConfig.resources},world=originalTrainSpatialPlan(),spawn=world.scenes.find(s=>s.id===config.initialScene)!.spawn
  const checks=useRef<HTMLElement>(null),frame=useRef<HTMLDivElement>(null),runtime=useRef<RpgRendererRuntime|null>(null),readiness=useRef<SceneReadiness|null>(null),mounted=useRef(true),busy=useRef(false)
  const [position,setPosition]=useState(spawn),[destination,setDestination]=useState<RendererPoint|null>(null),[ready,setReady]=useState(false),[error,setError]=useState(''),[background,setBackground]=useState(''),[notice,setNotice]=useState(''),[rendered,setRendered]=useState<RendererPoint|null>(null),[scene,setScene]=useState(config.initialScene),[requested,setRequested]=useState(config.initialScene),[engineReady,setEngineReady]=useState(false),[switching,setSwitching]=useState(true)
@@ -30,30 +31,31 @@ export default function OriginalScenePreview(){
   finally{busy.current=false;if(mounted.current)setSwitching(false)}
  }
  useEffect(()=>{
-  mounted.current=true;let probe:ReturnType<typeof setInterval>|undefined
-  const loader=new SceneReadiness(config.resources,loadBrowserSceneResource);readiness.current=loader
+  mounted.current=true;let draftBlob='';let probe:ReturnType<typeof setInterval>|undefined
+  let loader=new SceneReadiness(config.resources,loadBrowserSceneResource);readiness.current=loader
   void(async()=>{try{
+   if(draftMode){const store=new BrowserArtDrafts(artDraftDatabaseName(location.href));try{const draft=await store.get(query.get('draft')??'missing');if(!draft?.candidate||draft.state!=='candidate'||draft.id!==query.get('draft'))throw Error('DRAFT_NOT_READY');const checked=await decodeArtCandidate(draft.candidate);URL.revokeObjectURL(checked);const resources=structuredClone(config.resources),blob=URL.createObjectURL(new Blob([new Uint8Array(draft.candidate.bytes)],{type:'image/png'}));draftBlob=blob;resources.scenes[config.initialScene].assets=resources.scenes[config.initialScene].assets.map(a=>a.kind==='background'?{...a,path:blob,sha256:draft.candidate!.sha256,bytes:draft.candidate!.bytes.length}:a);loader=new SceneReadiness(resources,(resource,signal)=>loadBrowserSceneResource(resource,signal,document.baseURI,(input,init)=>{const url=String(input);return fetch(url.startsWith(blob)?blob:input,init)}));readiness.current=loader}finally{await store.close()}}
    const initial=await loader.prepare(config.initialScene);if(!mounted.current){URL.revokeObjectURL(initial.background);return}
    setBackground(initial.background)
    createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:Object.keys(config.resources.scenes),initialScene:config.initialScene,initialPosition:spawn,heroGraphic:'hero',spritesheets:[heroSheet],mapEvents:()=>[],walkable:(p,s)=>originalTrainPlanWalkable(s,p),safePosition:(p,s)=>originalTrainPlanWalkable(s,p)?p:world.scenes.find(room=>room.id===s)!.spawn,findPath:(a,b,s)=>findGridPath(a,b,p=>originalTrainPlanWalkable(s,p)),onPosition:setPosition,onDestination:setDestination,onReady:r=>{if(!mounted.current){r.destroy();return}runtime.current=r;setEngineReady(true);probe=setInterval(()=>setRendered(r.renderedPosition()),150);void enterScene(config.initialScene)}})
   }catch{if(mounted.current){setSwitching(false);setError(t('初始场景未通过检查，请重新载入。','Initial scene validation failed. Reload to retry.'))}}})()
-  return()=>{mounted.current=false;if(probe)clearInterval(probe);runtime.current?.destroy();for(const id of Object.keys(config.resources.scenes)){const url=loader.background(id);if(url)URL.revokeObjectURL(url)}}
+  return()=>{mounted.current=false;if(draftBlob)URL.revokeObjectURL(draftBlob);if(probe)clearInterval(probe);runtime.current?.destroy();for(const id of Object.keys(config.resources.scenes)){const url=loader.background(id);if(url)URL.revokeObjectURL(url)}}
  },[])
  function walk(p:RendererPoint){if(!ready)return;setNotice(runtime.current?.walkTo(p)?'':t('这里不可通行','This area is blocked'))}
  function ground(e:React.MouseEvent<HTMLDivElement>){if((e.target as HTMLElement).closest('button'))return;const rect=frame.current!.getBoundingClientRect();walk({x:(e.clientX-rect.left)*384/rect.width-4.5,y:(e.clientY-rect.top)*576/rect.height-15})}
  const river=scene===originalTrainRoom('river-valley')
  const points:Array<{label:string;position:RendererPoint}>=river?[{label:t('桥头观察位','Bridge approach'),position:{x:188,y:330}},{label:t('左侧岸边','Left bank'),position:{x:80,y:390}},{label:t('右侧岸边','Right bank'),position:{x:290,y:390}},{label:t('返回停靠方向','Train approach'),position:spawn}]:[['starter','左侧检修位','Starter side'],['brakes','右侧制动位','Brake side'],['fuel-shed','燃料棚前','Fuel frontage'],['departure-control','出站控制位','Departure position']].map(([id,zh,en])=>({label:t(zh,en),position:world.entities.find(e=>e.id===id)!.approach}))
  return <main className="cl-app cl-original-preview">
-  <header className="cl-header"><div><p className="cl-eyebrow">{platform&&scene===config.initialScene?t('平台背景候选 · 待质量验收','Platform background candidate · Under review'):t('原作基准素材 · 场景检查','Original baseline · Scene check')}</p><h1>{names[scene]}</h1></div></header>
+  <header className="cl-header"><div><p className="cl-eyebrow">{(platform||draftMode)&&scene===config.initialScene?t('平台背景候选 · 待质量验收','Platform background candidate · Under review'):t('原作基准素材 · 场景检查','Original baseline · Scene check')}</p><h1>{names[scene]}</h1></div></header>
   <section className="cl-world" aria-label={t('原作可行走地图','Walkable original map')}><div className="cl-map-frame" ref={frame} onClick={ground}>
    {background&&<img className="cl-backdrop" src={background} alt="" draggable={false}/>}<div id="rpg"/>
    {destination&&<div className="cl-destination" style={{left:(destination.x+4.5)/384*100+'%',top:(destination.y+15)/576*100+'%'}}><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg></div>}
    {!ready&&!error&&<div className="cl-loading">{t('正在准备原作地图…','Preparing original map…')}</div>}
   </div></section>
-  <footer className="cl-original-checks" ref={checks}><nav className="cl-art-comparison" aria-label={t('背景对照','Background comparison')}><a href="./?scene_preview=north-cape" aria-current={!platform?'page':undefined}>{t('基准背景','Baseline')}</a><a href="./?scene_preview=north-cape&art_source=platform" aria-current={platform?'page':undefined}>{t('平台背景候选','Platform candidate')}</a></nav><label>{t('检查场景','Inspect scene')}<select aria-label={t('检查场景','Inspect scene')} disabled={!engineReady||switching} value={requested} onChange={e=>void enterScene(e.target.value)}>{Object.keys(names).map(id=><option key={id} value={id}>{names[id]}</option>)}</select></label><p>{notice||t('点地面行走 · 人物与剧情尚待接入。','Click to walk · Cast and story are not connected yet.')}</p><div>
+  <footer className="cl-original-checks" ref={checks}><nav className="cl-art-comparison" aria-label={t('背景对照','Background comparison')}><a href="./?scene_preview=north-cape" aria-current={!platform&&!draftMode?'page':undefined}>{t('基准背景','Baseline')}</a><a href="./?scene_preview=north-cape&art_source=platform" aria-current={platform?'page':undefined}>{t('平台背景候选','Platform candidate')}</a><a href="./?create_art=north-cape">{t('制作背景','Create background')}</a></nav><label>{t('检查场景','Inspect scene')}<select aria-label={t('检查场景','Inspect scene')} disabled={!engineReady||switching} value={requested} onChange={e=>void enterScene(e.target.value)}>{Object.keys(names).map(id=><option key={id} value={id}>{names[id]}</option>)}</select></label><p>{notice||t('点地面行走 · 人物与剧情尚待接入。','Click to walk · Cast and story are not connected yet.')}</p><div>
    {points.map(p=><button disabled={!ready} key={p.label} onClick={()=>walk(p.position)}>{p.label}</button>)}
    <button disabled={!ready} onClick={()=>walk({x:188,y:river?250:130})}>{river?t('检查水面阻挡','Check water collision'):t('检查车体碰撞','Check train collision')}</button><button disabled={!ready} onClick={()=>walk(spawn)}>{t('返回空地','Return to apron')}</button>
   </div><output aria-label={t('运行位置','Runtime position')} data-scene={runtime.current?.renderedScene()??''}>{Math.round(position.x)},{Math.round(position.y)} · {t('画面','Rendered')} {rendered?`${Math.round(rendered.x)},${Math.round(rendered.y)}`:'—'}</output></footer>
-  {error&&<aside className="cl-error" role="alert"><p>{error}</p><button onClick={()=>engineReady?void enterScene(requested):location.reload()}>{engineReady?t('重试','Retry'):t('重新载入','Reload')}</button></aside>}
+  {error&&<aside className="cl-error" role="alert"><p>{error}</p>{draftMode&&<a href="./?create_art=north-cape">{t('返回制作页选择候选','Choose a candidate in the creator')}</a>}<button onClick={()=>engineReady?void enterScene(requested):location.reload()}>{engineReady?t('重试','Retry'):t('重新载入','Reload')}</button></aside>}
  </main>
 }

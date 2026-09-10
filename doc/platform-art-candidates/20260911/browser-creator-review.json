@@ -1,0 +1,69 @@
+{
+  "date": "2026-09-11",
+  "mode": "preflight only",
+  "requestId": "7ec82edb-2fdf-4c90-9461-99f908531729",
+  "origin": "http://127.0.0.1:5304",
+  "generation": {
+    "intentionalRequest": 6,
+    "result": "ORIGIN_NOT_ALLOWED",
+    "taskId": null,
+    "newCandidate": false,
+    "refresh": "same failure retained; no automatic retry"
+  },
+  "existingSample": {
+    "requestId": "183a1691-d132-4b89-a012-8144e49ddf6e",
+    "sha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+    "source": "previous real platform request",
+    "newGeneration": false,
+    "browserSaved": true,
+    "refreshRetained": true,
+    "mapPreview": true,
+    "left": [
+      112,
+      184
+    ],
+    "right": [
+      260,
+      196
+    ],
+    "carCollision": "rejected; position unchanged",
+    "renderedCoordinatesAgree": true
+  },
+  "viewports": [
+    {
+      "width": 320,
+      "height": 568,
+      "dpr": 1,
+      "scrollWidth": 320,
+      "minControlHeight": 44,
+      "creatorForm": true,
+      "map": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "scrollWidth": 390,
+      "minControlHeight": 44,
+      "creatorCandidateScroll": true,
+      "map": true
+    }
+  ],
+  "supportedOriginProbe": {
+    "method": "GET existing task; command-line read only",
+    "origin": "https://game.aiwaves.tech",
+    "httpStatus": 200,
+    "browserGenerationProven": false
+  },
+  "tests": {
+    "passed": 206,
+    "failed": 0
+  },
+  "limits": [
+    "No new generated image from browser this turn",
+    "No creator cloud storage, asset publication or active story entities",
+    "No physical iPhone performance claim",
+    "No alpha processing or new actor/prop admission",
+    "No production deployment this turn"
+  ]
+}

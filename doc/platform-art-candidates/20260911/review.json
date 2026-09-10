@@ -3,7 +3,7 @@
   "date": "2026-09-11",
   "publicService": "https://game.aiwaves.tech/alteru-media/api",
   "plannedUpperBound": 9,
-  "intentionalGenerations": 5,
+  "intentionalGenerations": 6,
   "serviceSuccesses": 5,
   "runtimeAdmissions": 0,
   "cost": "public API supplies no billing data",
@@ -84,6 +84,9 @@
     "No local alpha cleanup or manual image editing used",
     "Creator self-service and in-play generation activation still incomplete",
     "Browser viewport checks are not physical iPhone performance tests",
-    "390 CSS pixel DOM measurement passed after zoom compensation; screenshot tool showed scaling margins, so full visual composition remains unverified at that size"
-  ]
+    "390 screenshot scaling limitation resolved by later DPR=1 browser creator/map verification",
+    "Sixth intent rejected with ORIGIN_NOT_ALLOWED before a service task or new candidate was returned"
+  ],
+  "failedBeforeTask": 1,
+  "browserCreatorReview": "browser-creator-review.json"
 }

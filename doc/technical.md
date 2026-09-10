@@ -6,6 +6,8 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 
 ## 2. 目录结构
 
+- `src/art-draft.ts` / `art-creator.tsx`：preflight 浏览器背景制作、固定请求 ID、Web Locks 单任务互斥、IndexedDB 当前草稿和历史候选、下载上限/摘要/原生解码。无长期密钥，也不访问玩家旅程。真实 localhost 生成请求被服务以 `ORIGIN_NOT_ALLOWED` 拒绝；受支持来源下的创建仍待实测。已生成真实样本可以从浏览器保存并进入同一地图，不冒充新生成成功。
+
 - `scripts/platform-art-candidate.ts`：制作期公共媒体探针，使用游戏同源媒体客户端、预先固定请求 ID 和落盘任务状态；重跑需 `--resume`，不自动新建计费请求。当前是内部证据工具，尚非创作者自助入口。
 - `doc/platform-art-candidates/20260911/`：五次真实服务请求、未修改图片、摘要、透明检查及真实地图对照记录。`server/original-scene-preview.ts` 只在 preflight 输出背景候选与摘要，`?scene_preview=north-cape&art_source=platform` 使用相同地图/碰撞/既有主角比较背景；生成角色和设备未准入。
 
@@ -25,6 +27,12 @@ React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.2
 - .github/workflows/pages.yml：构建、测试并发布同一 cloud 模式 dist，Pages 入口提供主站和显式旧版浏览器旅程。
 
 ## 3. 核心模块
+
+### 浏览器制作候选（2026-09-11，preflight）
+
+`?create_art=north-cape` 提供冷光/暖光的固定布局背景变体；状态是 prepared/generating/failed/candidate，candidate 不是生产 active。提交前保存 request ID；有 task ID 时仅查询旧任务，无回执时复用原请求。明确终态失败与不确定网络失败分开，限流等待服务指示，来源拒绝在当前失败状态下禁用再次生成。Web Locks 覆盖准备、提交、回执保存与样本载入；不支持该能力的浏览器明确失败，不静默失去跨窗口互斥。
+
+数据库 `alteru:<部署 UUID>:creator-art-drafts-v1` 独立于 StorySave；自托管取地址第一段 UUID。历史按 draft ID 保存，当前指针另存。字节只在下载大小、尺寸、摘要和浏览器解码通过后成为候选；草稿地图按 URL 的固定 draft ID 读取历史，旧版本不会随新制作覆盖。地图复用已有 SceneReadiness 和 RPG-JS 几何，仍显示待质量验收。当前草稿只保存在该浏览器，尚无创作者云端恢复、发布版本或完整角色/设备生产入口。正式 cloud/Pages 构建排除该入口及候选资源。
 
 ### 显式运行方式
 
