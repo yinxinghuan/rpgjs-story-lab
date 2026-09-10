@@ -37,3 +37,19 @@
 新代码只允许明确支持的 mapVersion 与 StorySave v10 / carriage-07；未知版本不降级、不改写原档。旧 train-scenes-2 备份可原样导入空库再按正常读取升级，历史回执不重算。131项合成回归通过，未读取玩家存档。
 
 回滚边界：旧发布代码尚没有本轮的未来版本保护，不能因本轮检查通过就把 f0dfb9d 等旧 Worker 覆盖到已升级数据上。出现发布事故时保留 Durable Object namespace/class/binding 和已升级数据，在兼容当前存档的代码上禁用入口或前向修复；不能用旧二进制降级存档，不能删除 namespace。既有 createHandler(false) 关闭非health请求（包括读取），不是只读维护模式。正式发布仍需核对客户端/Worker一致性、完整主线云端合成路线、同commit双部署以及AlterU平台内验收。
+
+## 完整固定单人主线已双部署 · 2026-09-10
+
+发布源码：`261b06424d955ba46d2eb3c9d51ddd29621e45f8`。现有main由f0dfb9d快进至此提交，没有重建游戏或变更UUID。主站沿用CarriageJourneyAuthority / CARRIAGE_JOURNEYS及原迁移标签，53份静态文件发布到原UUID的KV。GitHub Pages Actions [34472594992](https://github.com/yinxinghuan/rpgjs-story-lab/actions/runs/34472594992) 同提交成功。
+
+主站：https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/
+
+前端镜像：https://yinxinghuan.github.io/rpgjs-story-lab/
+
+两站实际模块均为 `assets/index-CwvDyYPW.js`，SHA256均为 `4ff50ffd4d725dac5b5d3e8c10545886f8ae37888876b87e269712af9a4c7d01`，与本地dist相同，包含当前runtimeContract。四场景PNG/TMX在两个站点共16份响应均200、字节数与SHA256吻合。单次检查最慢4729ms，不作为手机性能基准。
+
+主站health返回 `carriage-single-player-20260910-2`，runtimeContract为 `carriage-session-2.train-scenes-3.story-10.relay-1`，匿名capability不变，在线叙述可用但由玩家显式开启。134项本地测试、cloud/Worker构建、凭据/API base审计、全库145游戏storage审计、正式发布入口检查通过。生产canary只新建两条合成旅程，204次HTTP请求，中文电台41步/英文照明46步，均完成传话、接应、终章、步道往返及完整备份到新SQLite恢复；没有新增真实模型输入，没有读取玩家已有存档。详细无凭据报告保存在内部 `_qa/single-player-*-261b064.json`。
+
+实际Chrome生产UI：首次场景加载出现可重试错误，点击重试后恢复；原因尚未确定，后续16份资源摘要与响应时长没有复现问题，因此不宣称首次加载稳定性已经完全确认。随后实际开柜→拿取→刷新，目标更新为询问修理工、库存备用保险丝×1保持。390×844特写、320×568物品面板无横溢出，刷新后场景正常。浏览器扩展自身的警告与翻译悬浮控件不归入游戏错误。外部访客栏保持生产加载，UI检查时正常点击Close关闭；没有改生产布局回避访客栏。
+
+范围：完整固定主线、现有模板支线及恢复机制已经上线；本轮生产浏览器只验证上述关键交互，完整路线由API合成验收，不能替代AlterU平台内完整试玩或真人理解验收。平台内全程、生成内容/新资产生命周期、正式身份找回以及总规划后续条目仍待推进。此前平台内旧版切片验收不代表本次新主线验收，不再迁移已入库的同一游戏。
