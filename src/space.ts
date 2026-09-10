@@ -1,3 +1,4 @@
+import { RendererTransition } from './renderer-transition'
 import { Direction } from '@rpgjs/common'
 import { startGame, provideClientGlobalConfig, provideClientModules, provideRpg, type RpgClientEngine } from '@rpgjs/client'
 import { createServer, provideServerModules, type RpgPlayer } from '@rpgjs/server'
@@ -27,10 +28,13 @@ function setObjects(scene:SceneId,objects:ObjectProjection[]){for(const object o
 function objectEvents(scene:SceneId){return worldObjects[scene].map(object=>{const id=objectId(scene,object.id);return {id,x:Math.round(object.rect.x+object.rect.w/2),y:object.depth-1,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;artEvents.set(id,this);applyObject(this,artProjection.get(id)??{id,state:object.states[0],visible:!object.parent,tint:'#d4d4d4'})}}}})}
 declare const __QA_PERFORMANCE__:boolean
 let client:RpgClientEngine|undefined,player:RpgPlayer|undefined
-let activeScene:SceneId='carriage',changing=false,loadedScene:SceneId|null=null,joinedScene:SceneId|null=null
+let activeScene:SceneId='carriage',changing=false,loadedScene:SceneId|null=null
 let loadedMap:{events:()=>Record<string,unknown>}|null=null
-const sceneWaiters=new Set<()=>void>()
-function waitForScene(scene:SceneId){if(loadedScene===scene&&joinedScene===scene)return Promise.resolve();return new Promise<void>((resolve,reject)=>{const timer=setTimeout(()=>{sceneWaiters.delete(check);reject(new Error('MAP_TRANSFER_TIMEOUT'))},12000);const check=()=>{if(loadedScene===scene&&joinedScene===scene){clearTimeout(timer);sceneWaiters.delete(check);resolve()}};sceneWaiters.add(check)})}
+const transitions=new RendererTransition<SceneId,Position>('carriage',{
+ changeMap:async(scene,p)=>Boolean(await player!.changeMap(scene,p)),
+ teleport:async p=>player!.teleport(p),
+ commit:(scene,p)=>{activeScene=scene;pos=p;player!.syncChanges();project();reportPosition(pos)},
+})
 let paused=true,stick={x:0,y:0},pos={...SPAWN},last=0,frame=0,strideDistance=0
 let route:Position[]=[],arrive:(()=>void)|undefined
 const keys=new Set<string>()
@@ -52,15 +56,15 @@ function renderResolution(){return Math.min(5.2,Math.max(1,Math.ceil(frameBox.cl
 function syncViewport(){const scale=frameBox.clientWidth/384;host.style.transform=`scale(${scale})`;frameBox.style.setProperty('--world-scale',String(scale));const renderer=client?.renderer,resolution=renderResolution();if(renderer&&Math.abs(renderer.resolution-resolution)>.001)renderer.resize(384,576,resolution)}
 const resize=new ResizeObserver(syncViewport);resize.observe(frameBox)
 window.addEventListener('resize',syncViewport)
-const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic('hero');p.setHitbox(9,15);p.animationFixed=true;joinedScene=map.id.replace(/^map-/, '') as SceneId;sceneWaiters.forEach(fn=>fn())},async onConnected(p){
+const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic('hero');p.setHitbox(9,15);p.animationFixed=true;transitions.joinedScene(map.id.replace(/^map-/, '') as SceneId)},async onConnected(p){
  player=p;p.setGraphic('hero');p.setHitbox(9,15);p.animationFixed=true;await p.changeMap('carriage',pos)
  bindSpace({position:()=>({...pos}),renderedPosition:()=>{const s=client?.getCurrentPlayer();return s?{x:s.x(),y:s.y()}:null},
   move:(x,y)=>{stick={x,y};if(x||y)cancelRoute()},walkTo:(p,callback)=>{if(paused||changing)return false;const path=findPath(pos,p,activeScene);if(!path.length)return false;route=path;arrive=callback;reportDestination(path[path.length-1]);return true},
   pause:v=>{paused=v;keys.clear();stick={x:0,y:0};if(v){cancelRoute();stand()}},
-  setObjects,scene:()=>activeScene,renderedScene:()=>loadedScene,renderedEvents:()=>Object.keys(loadedMap?.events()??{}),restore:async(p,scene='carriage')=>{changing=true;cancelRoute();keys.clear();stick={x:0,y:0};stand();try{await waitForScene(activeScene);pos=safePosition(p,scene);if(activeScene!==scene){loadedScene=null;const changed=await player!.changeMap(scene,pos);if(!changed)throw new Error('MAP_TRANSFER_REJECTED');await waitForScene(scene);activeScene=scene}else await player!.teleport(pos);player!.syncChanges();project();reportPosition(pos)}finally{changing=false}},
-  destroy:()=>{cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener('resize',syncViewport);window.removeEventListener('keydown',down);window.removeEventListener('keyup',up);window.removeEventListener('blur',clearInput);document.removeEventListener('visibilitychange',visibilityChanged)}})
+  setObjects,scene:()=>activeScene,renderedScene:()=>loadedScene,renderedEvents:()=>Object.keys(loadedMap?.events()??{}),restore:async(p,scene='carriage')=>{changing=true;cancelRoute();keys.clear();stick={x:0,y:0};stand();try{await transitions.restore(scene,safePosition(p,scene))}finally{changing=false}},
+  destroy:()=>{transitions.dispose();cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener('resize',syncViewport);window.removeEventListener('keydown',down);window.removeEventListener('keyup',up);window.removeEventListener('blur',clearInput);document.removeEventListener('visibilitychange',visibilityChanged)}})
  }},maps:sceneIds.map(id=>({id,events:[...objectEvents(id),...(scenes[id].npc&&scenes[id].resident?[{id:scenes[id].resident!.id,x:scenes[id].npc!.x-4.5,y:scenes[id].npc!.y-15,event:{onInit(this:RpgPlayer){this.setGraphic(scenes[id].resident!.graphic);this.setHitbox(9,15)}}}]:[])]}))}])]})
-startGame({providers:[provideClientGlobalConfig({prediction:{enabled:false},bootstrapCanvasOptions:{antialias:false,backgroundAlpha:0,autoDensity:true,resolution:renderResolution()}}),tiledClient({basePath:'./map'}),provideClientModules([{sceneMap:{onAfterLoading(map){const id=client?.activeRoom()?.name?.replace(/^map-/, '') as SceneId;if(sceneIds.includes(id)){loadedScene=id;loadedMap=map as unknown as {events:()=>Record<string,unknown>};sceneWaiters.forEach(fn=>fn())}}},spritesheets:[heroSheet,mechanicSheet,attendantSheet,...objectSheets(isBalancedArt?'balanced':'baseline')],engine:{onStart(engine){client=engine;if(__QA_PERFORMANCE__)void import('../_qa/performance-probe').then(m=>m.attachPerformanceProbe(engine));engine.width.set('384');engine.height.set('576');engine.stopProcessingInput=true;engine.renderer.background.alpha=0;syncViewport()}}}]),provideRpg(server)]})
+startGame({providers:[provideClientGlobalConfig({prediction:{enabled:false},bootstrapCanvasOptions:{antialias:false,backgroundAlpha:0,autoDensity:true,resolution:renderResolution()}}),tiledClient({basePath:'./map'}),provideClientModules([{sceneMap:{onAfterLoading(map){const id=client?.activeRoom()?.name?.replace(/^map-/, '') as SceneId;if(sceneIds.includes(id)){loadedScene=id;loadedMap=map as unknown as {events:()=>Record<string,unknown>};transitions.loadedScene(id)}}},spritesheets:[heroSheet,mechanicSheet,attendantSheet,...objectSheets(isBalancedArt?'balanced':'baseline')],engine:{onStart(engine){client=engine;if(__QA_PERFORMANCE__)void import('../_qa/performance-probe').then(m=>m.attachPerformanceProbe(engine));engine.width.set('384');engine.height.set('576');engine.stopProcessingInput=true;engine.renderer.background.alpha=0;syncViewport()}}}]),provideRpg(server)]})
 function tick(time:number){
  const dt=Math.min((time-last)/1000,.04);last=time
  if(player&&!paused&&!changing){

@@ -9,6 +9,7 @@ export function preflightPlugin(){
  let assetFailed=false
  let mismatchOnce=process.env.CARRIAGE_QA_RUNTIME_MISMATCH_ONCE==='1'
  const delayedAsset=process.env.CARRIAGE_QA_ASSET_DELAY_PATH
+ const delayEngineMap=process.env.CARRIAGE_QA_DELAY_ENGINE_MAP==='1'
  const delayMs=Math.min(35000,Math.max(0,Number(process.env.CARRIAGE_QA_ASSET_DELAY_MS)||0));let assetDelayed=false
  const databases:DatabaseSync[]=[],objects=new Map<string,CarriageJourneyAuthority>()
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
@@ -19,7 +20,7 @@ export function preflightPlugin(){
  const handler=createHandler(true),prefix='/'+GAME_ID
  const middleware=(req:IncomingMessage,res:ServerResponse,next:()=>void)=>{
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
-  if(delayMs&&!assetDelayed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===delayedAsset&&url.searchParams.has('scene_asset')){assetDelayed=true;setTimeout(next,delayMs);return}
+  if(delayMs&&!assetDelayed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===delayedAsset&&(delayEngineMap?!url.searchParams.has('scene_asset'):url.searchParams.has('scene_asset'))){assetDelayed=true;setTimeout(next,delayMs);return}
   if(failAsset&&!assetFailed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===failAsset&&url.searchParams.has('scene_asset')){assetFailed=true;res.writeHead(503,{'Cache-Control':'no-store'});res.end('Synthetic scene resource failure');return}
   if(!url.pathname.startsWith(prefix+'/api/lab'))return next()
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){res.writeHead(403);res.end();return}
