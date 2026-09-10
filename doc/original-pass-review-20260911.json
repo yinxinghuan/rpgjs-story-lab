@@ -1,0 +1,34 @@
+{
+  "scope": "Original-v8 Mountain Pass chapter in the existing main-game authority",
+  "newActions": 13,
+  "reusedSourceAction": "use-master-switch-key",
+  "mapVersion": "original-train-authoring-7",
+  "tests": {"newPassed": 28, "fullPassed": 316, "openingToTownRuns": 24, "passActions": {"brakingOrGravel": 6, "sourceKey": 7}},
+  "matrix": {"locales": ["zh", "en"], "routes": ["quarry", "valley", "forest"], "methods": ["air", "dynamic", "gravel", "key"], "crew": "12 selected route/method/duty combinations per locale"},
+  "verified": [
+    "Fresh original openings through prior authored chapters, pass duties and consequences to Sleeping Town",
+    "Lin requires actual companionship plus verified route book; Mako requires actual companionship",
+    "Role assignment alone does not award trust; successful handling grants each performed role one event",
+    "Exact resource and hose consumption reflect actual current inventory and assigned crew",
+    "Tunnel-discarded hose cannot be used or fabricated at the pass",
+    "Source key charges one override and 8 fuel, confirmation charges nothing extra",
+    "Past global hidden-route-open cannot confirm the current pass siding",
+    "Fueled methods preserve six departure fuel, zero resources recover via finite gravel fallback",
+    "Existing Ren provides distinct debrief and relationship; no absent doctor is invented",
+    "Current dynamically priced choice text works as free input; forged price/negation/question/protocol rejected",
+    "Known but non-traveling Lin cannot take the physical lookout duty",
+    "v6 metadata upgrades without rewriting StorySave or position",
+    "Presentation denial rolls back hose use, relationships and departure",
+    "Reconstructed authority replays original receipt and rereads same SQLite head",
+    "316 regression tests, frontend/Worker build and secret/API audits pass"
+  ],
+  "limitations": [
+    "Tests explicitly accept authored presentation; pass and town assets are not admitted",
+    "Original HTTP/UI and actual renderer integration remain incomplete",
+    "No new disk-reopen, browser, physical iPhone, native AlterU or live HTTP evidence",
+    "No real model/media call or actual image processing",
+    "Town/bridge/junction/full original finale route not finished",
+    "No deployment; main and Pages remain 05db41c"
+  ],
+  "realPlayerDataRead": false
+}
