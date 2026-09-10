@@ -2,10 +2,11 @@
 export type SpatialPoint={x:number;y:number}
 export interface SpatialBindingDefinition {
  version:1;cartridgeId:string;mapVersion:string;
+ actionScope?:'scene';
  scenes:Array<{id:string;storyLocationId?:string;spawn:SpatialPoint}>;
  entities:Array<{id:string;scene:string;position:SpatialPoint;approach:SpatialPoint;states:readonly string[];actions:readonly string[]}>;
- portals:Array<{actionId:string;scene:string;position:SpatialPoint}>;
- characters:Array<{id:string;kind:'physical'|'mediated';entities:readonly string[]}>;
+ portals:Array<{actionId:string;fromScene?:string;scene:string;position:SpatialPoint}>;
+ characters:Array<{id:string;kind:'physical'|'mediated';travels?:boolean;entities:readonly string[]}>;
  interactionDistance:number;
 }
 export interface SpatialStoryDefinition {
@@ -29,6 +30,7 @@ function unique<T extends {id:string}>(items:readonly T[],kind:string){
 export function compileSpatialBinding(story:SpatialStoryDefinition,input:SpatialBindingDefinition,isWalkable:(scene:string,p:SpatialPoint)=>boolean){
  const world=structuredClone(input),scenes=unique(world.scenes,'scene'),entities=unique(world.entities,'entity'),characters=unique(world.characters,'character'),rules=unique(story.domainRules?.rules??[],'rule')
  if(world.version!==1||!world.mapVersion||world.cartridgeId!==story.id)fail('SPATIAL_CARTRIDGE_MISMATCH',story.id)
+ if(world.actionScope!==undefined&&world.actionScope!=='scene')fail('INVALID_ACTION_SCOPE',story.id)
  if(!Number.isFinite(world.interactionDistance)||world.interactionDistance<=0)fail('INVALID_INTERACTION_DISTANCE','distance')
  const checkPoint=(scene:string,p:SpatialPoint)=>scenes.has(scene)&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&isWalkable(scene,{...p})
  const storyScenes=unique(story.initialMap,'story-scene'),storyPeople=unique(story.characters,'story-character')
@@ -37,28 +39,33 @@ export function compileSpatialBinding(story:SpatialStoryDefinition,input:Spatial
  if(story.initialMap.filter(n=>n.current).length!==1)fail('INVALID_INITIAL_SCENE','current')
  for(const id of storyScenes.keys())if(!roomsFor(id).length)fail('UNBOUND_STORY_SCENE',id)
  for(const [id,s] of scenes){if(!storyScenes.has(locationOf(id)!))fail('UNKNOWN_STORY_SCENE',id);if(!checkPoint(id,s.spawn))fail('INVALID_SPATIAL_SPAWN',id)}
- const actions=new Map<string,string>(),portals=new Map<string,SpatialBindingDefinition['portals'][number]>()
+ const actions=new Map<string,string[]>(),portals=new Map<string,SpatialBindingDefinition['portals'][number]>()
+ const portalKey=(id:string,scene:string)=>JSON.stringify([id,scene])
  for(const [id,e] of entities){
   if(!scenes.has(e.scene)||!Number.isFinite(e.position.x)||!Number.isFinite(e.position.y))fail('INVALID_ENTITY_SCENE',id)
   if(!checkPoint(e.scene,e.approach)||Math.hypot(e.approach.x-e.position.x,e.approach.y-e.position.y)>=world.interactionDistance)fail('INVALID_ENTITY_APPROACH',id)
   if(!e.states.length||new Set(e.states).size!==e.states.length||e.states.some(s=>!s))fail('INVALID_ENTITY_STATES',id)
-  for(const action of e.actions){if(actions.has(action))fail('DUPLICATE_ACTION_BINDING',action);if(!rules.has(action))fail('MISSING_STORY_RULE',action);actions.set(action,id)}
+  for(const action of e.actions){const prior=actions.get(action)??[];if(prior.length&&(world.actionScope!=='scene'||prior.some(p=>entities.get(p)!.scene===e.scene)))fail('DUPLICATE_ACTION_BINDING',action);if(!rules.has(action))fail('MISSING_STORY_RULE',action);actions.set(action,[...prior,id])}
  }
  for(const p of world.portals){
-  if(portals.has(p.actionId))fail('DUPLICATE_PORTAL_BINDING',p.actionId)
-  if(!actions.has(p.actionId)||!checkPoint(p.scene,p.position))fail('INVALID_PORTAL_BINDING',p.actionId)
-  portals.set(p.actionId,p)
+  const sources=actions.get(p.actionId)??[],source=p.fromScene??(sources.length===1?entities.get(sources[0])!.scene:undefined)
+  if(!source||!sources.some(id=>entities.get(id)!.scene===source)||!checkPoint(p.scene,p.position))fail('INVALID_PORTAL_BINDING',p.actionId)
+  const key=portalKey(p.actionId,source!)
+  if(portals.has(key))fail('DUPLICATE_PORTAL_BINDING',p.actionId)
+  portals.set(key,p)
  }
  for(const [id,rule] of rules){
   if(!actions.has(id))fail('UNBOUND_STORY_ACTION',id)
-  const maps=rule.effects.filter(e=>e.type==='map'),portal=portals.get(id)
-  const sourceLocation=locationOf(entities.get(actions.get(id)!)!.scene),destination=portal?locationOf(portal.scene):sourceLocation
-  if(maps.length>1||(maps.length>0&&!portal)||(portal&&maps.length===0&&sourceLocation!==destination)||(maps.length===1&&maps[0].nodeId!==destination))fail('PORTAL_RULE_MISMATCH',id)
+  for(const target of actions.get(id)!){
+   const from=entities.get(target)!.scene,maps=rule.effects.filter(e=>e.type==='map'),portal=portals.get(portalKey(id,from))
+   const sourceLocation=locationOf(from),destination=portal?locationOf(portal.scene):sourceLocation
+   if(maps.length>1||(maps.length>0&&!portal)||(portal&&maps.length===0&&sourceLocation!==destination)||(maps.length===1&&maps[0].nodeId!==destination))fail('PORTAL_RULE_MISMATCH',id)
+  }
  }
  for(const [id,c] of characters){
   if(!storyPeople.has(id))fail('UNKNOWN_STORY_CHARACTER',id)
   if(!['physical','mediated'].includes(c.kind)||!c.entities.length||new Set(c.entities).size!==c.entities.length||c.entities.some(e=>!entities.has(e)))fail('INVALID_CHARACTER_BINDING',id)
-  if(c.kind==='physical'&&c.entities.length!==1)fail('AMBIGUOUS_PHYSICAL_CHARACTER',id)
+  if(c.kind==='physical'&&(c.travels?new Set(c.entities.map(e=>entities.get(e)!.scene)).size!==c.entities.length:c.entities.length!==1))fail('AMBIGUOUS_PHYSICAL_CHARACTER',id)
  }
  for(const id of storyPeople.keys())if(!characters.has(id))fail('UNBOUND_STORY_CHARACTER',id)
  const current=(snapshot:SpatialSnapshot)=>{
@@ -84,12 +91,14 @@ export function compileSpatialBinding(story:SpatialStoryDefinition,input:Spatial
   roomsFor,
   locate,
   validPosition:checkPoint,
-  targetFor:(id:string)=>actions.get(id),
-  admits:(actionId:string,target:string,scene:string,p:SpatialPoint)=>actions.get(actionId)===target&&entities.get(target)?.scene===scene&&checkPoint(scene,p)&&Math.hypot(p.x-entities.get(target)!.position.x,p.y-entities.get(target)!.position.y)<world.interactionDistance,
+  targetFor:(id:string,scene?:string)=>{const matches=(actions.get(id)??[]).filter(e=>!scene||entities.get(e)!.scene===scene);if(matches.length>1)fail('AMBIGUOUS_ACTION_TARGET',id);return matches[0]},
+  characterEntities:(id:string,scene:string)=>characters.get(id)?.entities.filter(e=>entities.get(e)!.scene===scene)??[],
+  canInteract:(target:string,scene:string,p:SpatialPoint)=>entities.get(target)?.scene===scene&&checkPoint(scene,p)&&Math.hypot(p.x-entities.get(target)!.position.x,p.y-entities.get(target)!.position.y)<world.interactionDistance,
+  admits:(actionId:string,target:string,scene:string,p:SpatialPoint)=>(actions.get(actionId)??[]).includes(target)&&entities.get(target)?.scene===scene&&checkPoint(scene,p)&&Math.hypot(p.x-entities.get(target)!.position.x,p.y-entities.get(target)!.position.y)<world.interactionDistance,
   assertTransition:(before:SpatialSnapshot,after:SpatialSnapshot,actionId:string|null,currentSceneId?:string)=>{
-   const from=locate(before,currentSceneId),portal=actionId?portals.get(actionId):undefined
+   const from=locate(before,currentSceneId),portal=actionId?portals.get(portalKey(actionId,from)):undefined
    const to=portal?portal.scene:from,afterLocation=current(after)
-   if(actionId&&(!actions.has(actionId)||entities.get(actions.get(actionId)!)!.scene!==from))fail('PORTAL_SOURCE_MISMATCH',actionId)
+   if(actionId&&!(actions.get(actionId)??[]).some(id=>entities.get(id)!.scene===from))fail('PORTAL_SOURCE_MISMATCH',actionId)
    if(locationOf(to)!==afterLocation)fail(portal?'PORTAL_STORY_MISMATCH':'UNADMITTED_STORY_TRANSITION',from+' -> '+afterLocation)
    return portal?{scene:portal.scene,position:{...portal.position}}:undefined
   },

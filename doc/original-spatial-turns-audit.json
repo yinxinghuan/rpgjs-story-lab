@@ -1,0 +1,337 @@
+{
+  "result": "pass",
+  "kind": "original-engine-spatial-turns",
+  "sourceFiles": {
+    "src/story/cartridges/lastTrainToDawn.ts": "5963f1b90aa5153bba855ef28772779a4cfaf80bf57afd1483ee5e385c930b29",
+    "src/story/engine/executeTurn.ts": "ae4ec9e37d0d206d436fdcb3be36ce5de4ae4b6f46f1e4fc83c14819233c8e68",
+    "src/story/engine/reducer.ts": "d4fb6475b885a48fce5ab1c86a62e8e380e142768910347602087f417013202a",
+    "src/story/types.ts": "d00d5e9abc9c3f3a0c1a6ca6f40e6a20da03dd65483a664d423d232a356f8373"
+  },
+  "results": [
+    {
+      "locale": "zh",
+      "route": "valley",
+      "actions": [
+        {
+          "id": "replace-brake-hose",
+          "accepted": false
+        },
+        {
+          "id": "inspect-brakes",
+          "accepted": true
+        },
+        {
+          "id": "replace-brake-hose",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": false
+        },
+        {
+          "id": "salvage-fuel-shed",
+          "accepted": true
+        },
+        {
+          "id": "commit-valley-route",
+          "accepted": true
+        },
+        {
+          "id": "use-master-switch-key",
+          "accepted": false
+        }
+      ],
+      "sourceVersion": 8,
+      "sceneId": "train-at-river-valley",
+      "position": {
+        "x": 280,
+        "y": 105
+      },
+      "stats": {
+        "fuel": 76,
+        "condition": 97,
+        "morale": 58
+      },
+      "sourceFinalePreserved": true,
+      "openingPreserved": true,
+      "hiddenCharactersRemainHidden": true,
+      "resumeMapping": true
+    },
+    {
+      "locale": "zh",
+      "route": "quarry",
+      "actions": [
+        {
+          "id": "replace-brake-hose",
+          "accepted": false
+        },
+        {
+          "id": "inspect-brakes",
+          "accepted": true
+        },
+        {
+          "id": "replace-brake-hose",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": false
+        },
+        {
+          "id": "salvage-fuel-shed",
+          "accepted": true
+        },
+        {
+          "id": "commit-quarry-route",
+          "accepted": true
+        },
+        {
+          "id": "use-master-switch-key",
+          "accepted": false
+        }
+      ],
+      "sourceVersion": 8,
+      "sceneId": "train-at-graystone-yard",
+      "position": {
+        "x": 280,
+        "y": 105
+      },
+      "stats": {
+        "fuel": 77,
+        "condition": 97,
+        "morale": 58
+      },
+      "sourceFinalePreserved": true,
+      "openingPreserved": true,
+      "hiddenCharactersRemainHidden": true,
+      "resumeMapping": true
+    },
+    {
+      "locale": "zh",
+      "route": "forest",
+      "actions": [
+        {
+          "id": "replace-brake-hose",
+          "accepted": false
+        },
+        {
+          "id": "inspect-brakes",
+          "accepted": true
+        },
+        {
+          "id": "replace-brake-hose",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": false
+        },
+        {
+          "id": "salvage-fuel-shed",
+          "accepted": true
+        },
+        {
+          "id": "commit-forest-route",
+          "accepted": true
+        },
+        {
+          "id": "use-master-switch-key",
+          "accepted": false
+        }
+      ],
+      "sourceVersion": 8,
+      "sceneId": "train-at-pine-line",
+      "position": {
+        "x": 280,
+        "y": 105
+      },
+      "stats": {
+        "fuel": 78,
+        "condition": 97,
+        "morale": 58
+      },
+      "sourceFinalePreserved": true,
+      "openingPreserved": true,
+      "hiddenCharactersRemainHidden": true,
+      "resumeMapping": true
+    },
+    {
+      "locale": "en",
+      "route": "valley",
+      "actions": [
+        {
+          "id": "replace-brake-hose",
+          "accepted": false
+        },
+        {
+          "id": "inspect-brakes",
+          "accepted": true
+        },
+        {
+          "id": "replace-brake-hose",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": false
+        },
+        {
+          "id": "salvage-fuel-shed",
+          "accepted": true
+        },
+        {
+          "id": "commit-valley-route",
+          "accepted": true
+        },
+        {
+          "id": "use-master-switch-key",
+          "accepted": false
+        }
+      ],
+      "sourceVersion": 8,
+      "sceneId": "train-at-river-valley",
+      "position": {
+        "x": 280,
+        "y": 105
+      },
+      "stats": {
+        "fuel": 76,
+        "condition": 97,
+        "morale": 58
+      },
+      "sourceFinalePreserved": true,
+      "openingPreserved": true,
+      "hiddenCharactersRemainHidden": true,
+      "resumeMapping": true
+    },
+    {
+      "locale": "en",
+      "route": "quarry",
+      "actions": [
+        {
+          "id": "replace-brake-hose",
+          "accepted": false
+        },
+        {
+          "id": "inspect-brakes",
+          "accepted": true
+        },
+        {
+          "id": "replace-brake-hose",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": false
+        },
+        {
+          "id": "salvage-fuel-shed",
+          "accepted": true
+        },
+        {
+          "id": "commit-quarry-route",
+          "accepted": true
+        },
+        {
+          "id": "use-master-switch-key",
+          "accepted": false
+        }
+      ],
+      "sourceVersion": 8,
+      "sceneId": "train-at-graystone-yard",
+      "position": {
+        "x": 280,
+        "y": 105
+      },
+      "stats": {
+        "fuel": 77,
+        "condition": 97,
+        "morale": 58
+      },
+      "sourceFinalePreserved": true,
+      "openingPreserved": true,
+      "hiddenCharactersRemainHidden": true,
+      "resumeMapping": true
+    },
+    {
+      "locale": "en",
+      "route": "forest",
+      "actions": [
+        {
+          "id": "replace-brake-hose",
+          "accepted": false
+        },
+        {
+          "id": "inspect-brakes",
+          "accepted": true
+        },
+        {
+          "id": "replace-brake-hose",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": true
+        },
+        {
+          "id": "repair-starter",
+          "accepted": false
+        },
+        {
+          "id": "salvage-fuel-shed",
+          "accepted": true
+        },
+        {
+          "id": "commit-forest-route",
+          "accepted": true
+        },
+        {
+          "id": "use-master-switch-key",
+          "accepted": false
+        }
+      ],
+      "sourceVersion": 8,
+      "sceneId": "train-at-pine-line",
+      "position": {
+        "x": 280,
+        "y": 105
+      },
+      "stats": {
+        "fuel": 78,
+        "condition": 97,
+        "morale": 58
+      },
+      "sourceFinalePreserved": true,
+      "openingPreserved": true,
+      "hiddenCharactersRemainHidden": true,
+      "resumeMapping": true
+    }
+  ],
+  "limits": [
+    "authoring geometry; no original room art admitted",
+    "not an RPG-JS renderer pass",
+    "no production save import",
+    "no model requests",
+    "later chapters and finale execution still require integration"
+  ]
+}

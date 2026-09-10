@@ -1,0 +1,26 @@
+{
+  "tool": "built-in imagegen",
+  "asset": "north-cape-v1.png",
+  "status": "candidate-not-admitted",
+  "prompt": "Edit the first reference game background into a NEW non-destructive candidate environment for the same RPG, using the second reference only as a matching style/camera/material guide. Produce one portrait 2:3 background, ideally 1024x1536. Maintain these references' orthographic overhead camera, parallel vertical railway edges, richly detailed crisp pixel-painted game art, dark blue wet stone and restrained amber lamps. No vanishing point, no horizon, no isometric diamond, no dramatic perspective. This scene is the North Cape station exterior maintenance apron beside a stranded small diesel locomotive, in rain at night. Composition specified in normalized logical game coordinates WIDTH=384 HEIGHT=576 (scale uniformly to image): locomotive's STATIC solid roof/body occupies x=132..240, y=0..244, vertical length running off the top edge, near end stops at y=244; keep its body a narrow plausible railway vehicle. Two parallel rails run vertically beneath it and continue at ground level through the lower apron; rails must be flush traversable ground, not fences. Leave unobstructed flat service walkways along its left x=40..128 and right x=246..350, and an open walkable apron across y=255..550. Ground must be visually readable and nearly flat, without foreground walls blocking passage. Side access area beside engine at logical (110,160), bogie service area at (260,170), switch-control emplacement at (280,80), fuel shed open frontage at (95,360), dispatch emplacement at (270,380). These are EMPTY placement areas, no interaction objects baked in; only subtle floor markings/drains. Put a shallow roofless shed frame along far LEFT outside x=20..70 around y=335..415, so it does not cover the empty fuel-placement area. Static dim amber lamps may sit along outermost x=20 or 360. Keep human paths near (70,270),(140,270),(210,270),(280,270),(192,430) entirely empty. Train may show fixed weathered metal, vents, wheels, coupler, but NO detachable machinery or open panels. No people, animals, faces, spare parts, fuel cans, movable hose, keys, tools, consoles, signs, readable text, UI, arrows, circles or checkerboard. Do not invent a large hall. A compact believable outdoor working space, cinematic material detail with the already approved game-scale overhead geometry. Opaque full background.",
+  "references": [
+    "public/art/carriage-narrow.png",
+    "public/art/rescue-walkway.png"
+  ],
+  "review": {
+    "camera": "parallel railway edges; matching dark stone and amber palette",
+    "failure": "unrequested fixed control box in upper-right device placement zone",
+    "notVerified": [
+      "RPG-JS renderer scale and movement",
+      "collision alignment",
+      "original actor/equipment overlays"
+    ]
+  },
+  "inspection": {
+    "width": 1024,
+    "height": 1536,
+    "pngColorType": 2,
+    "sha256": "0069baef63141428ad774e6d21b9d126d63bd94d4c757b25ed94810c16b10c22",
+    "bytes": 2778685
+  }
+}
