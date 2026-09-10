@@ -1,0 +1,28 @@
+{
+  "requestId": "85e52bdb-7796-473b-971e-9b9f0af5afcc",
+  "task": {
+    "task_id": "mt_1a1c4492493eaf68a32331d43d91c207",
+    "request_id": "85e52bdb-7796-473b-971e-9b9f0af5afcc",
+    "type": "image",
+    "status": "succeeded",
+    "created_at": 1789068938856,
+    "updated_at": 1789068944081,
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789068943839082.png",
+      "width": 1024,
+      "height": 1536,
+      "format": "png"
+    },
+    "timing_ms": 4405
+  },
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 2811504
+  },
+  "source": "Real browser generation at production creator.html on 05db41c; archived using visible task ID",
+  "cost": "not exposed by public API"
+}

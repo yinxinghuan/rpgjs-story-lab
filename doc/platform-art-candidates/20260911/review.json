@@ -3,8 +3,8 @@
   "date": "2026-09-11",
   "publicService": "https://game.aiwaves.tech/alteru-media/api",
   "plannedUpperBound": 9,
-  "intentionalGenerations": 6,
-  "serviceSuccesses": 5,
+  "intentionalGenerations": 7,
+  "serviceSuccesses": 6,
   "runtimeAdmissions": 0,
   "cost": "public API supplies no billing data",
   "cases": [
@@ -76,6 +76,18 @@
         "requested baseline y570 not followed; state anchor registration would need validation"
       ],
       "runtimeAdmitted": false
+    },
+    {
+      "name": "environment-edit-02",
+      "taskId": "mt_1a1c4492493eaf68a32331d43d91c207",
+      "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+      "status": "controlled-background-review-passed",
+      "findings": [
+        "Locomotive, tracks, shed and approach positions remain aligned with the fixed map",
+        "Ground brightness and detailed material texture improved over environment-edit-01 and are close to the original reference",
+        "Actual browser saved and rendered the new platform result; no Codex imagegen or local image editing took part"
+      ],
+      "runtimeAdmitted": false
     }
   ],
   "limits": [
@@ -88,5 +100,6 @@
     "Sixth intent rejected with ORIGIN_NOT_ALLOWED before a service task or new candidate was returned"
   ],
   "failedBeforeTask": 1,
-  "browserCreatorReview": "browser-creator-review.json"
+  "browserCreatorReview": "browser-creator-review.json",
+  "productionCreatorReview": "environment-edit-02/review.json"
 }

@@ -1,0 +1,74 @@
+{
+  "date": "2026-09-11",
+  "source": "Real browser generation on production creator.html",
+  "releaseCommit": "05db41ca936929919b5a6dd215c781785e67c9e5",
+  "status": "controlled-background-review-passed",
+  "requestId": "85e52bdb-7796-473b-971e-9b9f0af5afcc",
+  "taskId": "mt_1a1c4492493eaf68a32331d43d91c207",
+  "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+  "serviceTimingMs": 4405,
+  "cost": "not exposed",
+  "browser": {
+    "origin": "https://game.aiwaves.tech",
+    "directPublicMediaRequest": true,
+    "downloadAndDecode": true,
+    "persistedBytes": true,
+    "refreshPreservedDraft": true,
+    "requestFinishedBeforeRefresh": true,
+    "interruptedInFlightRecoveryTestedThisRequest": false,
+    "views": [
+      {
+        "width": 1280,
+        "height": 720,
+        "spawn": [
+          192,
+          430
+        ],
+        "left": [
+          112,
+          184
+        ]
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "dpr": 1,
+        "scrollWidth": 320,
+        "right": [
+          260,
+          196
+        ],
+        "collision": "car body rejected; left position unchanged"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "dpr": 1,
+        "scrollWidth": 390,
+        "fuel": [
+          96,
+          384
+        ],
+        "departure": [
+          272,
+          404
+        ]
+      }
+    ],
+    "rendererCoordinatesAgree": true
+  },
+  "findings": [
+    "Locomotive, tracks, shed and approach positions remain aligned with the fixed map",
+    "Ground brightness and detailed material texture improved over environment-edit-01 and are close to the original reference",
+    "Actual browser saved and rendered the new platform result; no Codex imagegen or local image editing took part"
+  ],
+  "scope": "This single reference-bound background variation; not arbitrary new maps or general asset generation",
+  "runtimeAdmitted": false,
+  "limits": [
+    "Authoring map only; no new story scene activated",
+    "Candidate quality still needs individual review; no automatic publish action",
+    "No cloud account-based creator drafts",
+    "Actor alpha, direction/state consistency and device anchors remain incomplete",
+    "Browser viewport evidence is not physical iPhone performance evidence"
+  ]
+}

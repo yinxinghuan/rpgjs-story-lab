@@ -1,0 +1,13 @@
+{
+  "requestId": "85e52bdb-7796-473b-971e-9b9f0af5afcc",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/doc/original-train-candidates/20260911/north-cape-v2.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Use this reference as a fixed orthographic RPG map. Preserve precisely the overhead camera, locomotive outline and length, tracks, pavement, shed, all boundaries and object placement. No new objects, people, words or perspective convergence. Preserve the fine textured pixel-art material detail and strong readable edge contrast. Keep the ground and locomotive at least as bright and readable as in the reference; do not darken shadows or flatten surfaces. Change only the lighting accents: subtle cool blue dawn reflections while keeping warm lamps. Output the same full 1024x1536 composition."
+}

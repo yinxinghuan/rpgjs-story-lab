@@ -1,0 +1,200 @@
+{
+  "commit": "05db41ca936929919b5a6dd215c781785e67c9e5",
+  "pagesRun": 34521169011,
+  "sites": [
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "entries": [
+        {
+          "entry": "index.html",
+          "script": "assets/index-D_EIPXDT.js",
+          "sha256": "b96683df0ced29965d89004eca8984e222be8d1a9e9dcbe4b0019c04e40049e4"
+        },
+        {
+          "entry": "creator.html",
+          "script": "assets/creator-DWta7I0w.js",
+          "sha256": "20c4f30d272965624b6c84442399c516058213c5cdd8df4c4f96fc007df98d0a"
+        }
+      ],
+      "assets": [
+        {
+          "path": "assets/index-D_EIPXDT.js",
+          "sha256": "fa9140ee30410df1e26d084c7081eb5ccf51da0edd8a0eb127c2ec2a2844afec",
+          "bytes": 272673
+        },
+        {
+          "path": "assets/rolldown-runtime-QTnfLwEv.js",
+          "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75",
+          "bytes": 694
+        },
+        {
+          "path": "assets/style-DKnXbVeD.js",
+          "sha256": "5213cf111363b1e862f1d0e4ec24023db04b4a7688ceb489a9a490e546e5b4fd",
+          "bytes": 149057
+        },
+        {
+          "path": "assets/canvasengine-CCC-_bmI.js",
+          "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3",
+          "bytes": 1504206
+        },
+        {
+          "path": "assets/style-NUDpuPK2.css",
+          "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d",
+          "bytes": 26711
+        },
+        {
+          "path": "assets/creator-DWta7I0w.js",
+          "sha256": "936e31e3c5e25e617022766a483d4beb5a5765bf4f506d280b7fa6327ab483b6",
+          "bytes": 28797
+        },
+        {
+          "path": "assets/sprite-config-B7t8GQzB.js",
+          "sha256": "fe3a5b89d8c5cae3779ddea4142781ab1945935502e058a2be6afc9d88c08a01",
+          "bytes": 1093046
+        },
+        {
+          "path": "assets/creator-pBb-E2W-.css",
+          "sha256": "aeb97bd076715b4d582391a7da12fc769bdd29b0e9d8213522a435d84be7964d",
+          "bytes": 3241
+        }
+      ]
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "entries": [
+        {
+          "entry": "index.html",
+          "script": "assets/index-D_EIPXDT.js",
+          "sha256": "b96683df0ced29965d89004eca8984e222be8d1a9e9dcbe4b0019c04e40049e4"
+        },
+        {
+          "entry": "creator.html",
+          "script": "assets/creator-DWta7I0w.js",
+          "sha256": "20c4f30d272965624b6c84442399c516058213c5cdd8df4c4f96fc007df98d0a"
+        }
+      ],
+      "assets": [
+        {
+          "path": "assets/index-D_EIPXDT.js",
+          "sha256": "fa9140ee30410df1e26d084c7081eb5ccf51da0edd8a0eb127c2ec2a2844afec",
+          "bytes": 272673
+        },
+        {
+          "path": "assets/rolldown-runtime-QTnfLwEv.js",
+          "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75",
+          "bytes": 694
+        },
+        {
+          "path": "assets/style-DKnXbVeD.js",
+          "sha256": "5213cf111363b1e862f1d0e4ec24023db04b4a7688ceb489a9a490e546e5b4fd",
+          "bytes": 149057
+        },
+        {
+          "path": "assets/canvasengine-CCC-_bmI.js",
+          "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3",
+          "bytes": 1504206
+        },
+        {
+          "path": "assets/style-NUDpuPK2.css",
+          "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d",
+          "bytes": 26711
+        },
+        {
+          "path": "assets/creator-DWta7I0w.js",
+          "sha256": "936e31e3c5e25e617022766a483d4beb5a5765bf4f506d280b7fa6327ab483b6",
+          "bytes": 28797
+        },
+        {
+          "path": "assets/sprite-config-B7t8GQzB.js",
+          "sha256": "fe3a5b89d8c5cae3779ddea4142781ab1945935502e058a2be6afc9d88c08a01",
+          "bytes": 1093046
+        },
+        {
+          "path": "assets/creator-pBb-E2W-.css",
+          "sha256": "aeb97bd076715b4d582391a7da12fc769bdd29b0e9d8213522a435d84be7964d",
+          "bytes": 3241
+        }
+      ]
+    }
+  ],
+  "largeResource": {
+    "path": "art/platform-north-cape-candidate.png",
+    "bytes": 2221448,
+    "sha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c"
+  },
+  "result": "pass",
+  "publication": {
+    "ok": true,
+    "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "page": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "health": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/health",
+    "remix": "https://github.com/yinxinghuan/rpgjs-story-lab/archive/refs/heads/main.zip",
+    "storage": "durable-object-sqlite",
+    "identity_mode": "anonymous-capability-v1"
+  },
+  "routes": {
+    "at": "2026-09-10T19:35:30.865Z",
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "health": {
+      "ok": true,
+      "storage": "durable-object-sqlite",
+      "identity_mode": "anonymous-capability-v1",
+      "runtime": "durable-object-sqlite",
+      "production": true,
+      "identityMode": "anonymous-capability-v1",
+      "liveModelAvailable": true,
+      "narrationMode": "opt-in",
+      "release": "carriage-authoring-20260911-1",
+      "runtimeContract": "carriage-session-2.train-scenes-3.story-10.relay-1.image-1"
+    },
+    "calls": 204,
+    "endings": [
+      {
+        "backupRestored": true,
+        "route": "radio",
+        "actions": 41,
+        "version": 41,
+        "scene": "walkway",
+        "rescueSent": true,
+        "journeyComplete": true,
+        "relayCompleted": true
+      },
+      {
+        "backupRestored": true,
+        "route": "lights",
+        "actions": 46,
+        "version": 46,
+        "scene": "walkway",
+        "rescueSent": true,
+        "journeyComplete": true,
+        "relayCompleted": true
+      }
+    ],
+    "checks": [
+      "enrollment-replay",
+      "enrollment-conflict",
+      "action-replay",
+      "action-id-conflict",
+      "stale-version",
+      "stale-position",
+      "owner-isolation",
+      "event-cursors",
+      "head-reopen",
+      "two-complete-routes",
+      "relay-and-relationships",
+      "walkway-return",
+      "consumed-inventory",
+      "cloud-backup-to-fresh-sqlite",
+      "restored-receipt-replay",
+      "no-http-import"
+    ],
+    "result": "pass"
+  },
+  "localTests": {
+    "passed": 206,
+    "failed": 0
+  },
+  "creatorReview": "platform-art-candidates/20260911/environment-edit-02/review.json",
+  "platformNativeUiVerifiedThisRelease": false,
+  "existingAuthorityBindingsUnchanged": true
+}
