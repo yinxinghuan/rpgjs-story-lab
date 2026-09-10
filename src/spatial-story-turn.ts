@@ -62,6 +62,6 @@ export async function executeSpatialStoryTurn(options: {
     generator: { send: async () => { throw new Error('UNADMITTED_GENERATION') } },
   })
   finishStoryTurn(base, result.save, c, text)
-  tagConversationTurn(base,result.save,options.target)
+  tagConversationTurn(base,result.save,options.target,{inputKind:options.input===undefined?'action':'free-input',resultKind:kind})
   return { save: JSON.parse(JSON.stringify(result.save)) as StorySave, text, kind, accepted: Boolean(actionId) && resolution.status === 'accepted', actionId: actionId ?? null, trace }
 }

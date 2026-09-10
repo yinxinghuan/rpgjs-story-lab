@@ -1,6 +1,7 @@
 import {relayAction,relayLabels,relayActions,relaySummary,activeRelay,relayMessage,isRelayOffer,relayChoiceIssues,type RelayChoice} from './relay-content'
 import {departureLabels,departureActions,departureObjective} from './departure'
-import {recentConversation} from './conversation-context'
+import {recentConversation,recalledStatements} from './conversation-context'
+import {parseStoryProtocol} from './vendor/story/engine/protocol'
 import {resolveStoryActionById} from './story-domain-action'
 import {receptionLabels,receptionActions,receptionObjective} from './reception'
 import {stationaryAdviceIssues,unsupportedLightingAdviceIssues} from './narration-guards'
@@ -66,7 +67,19 @@ export function validateProposal(raw:unknown,s:StorySave,target:EntityId):string
  if(/红[色衣]|red (?:jacket|coat)|柜子.*(?:倒下|变成)|cabinet.*(?:falls|turns into)/i.test(p.text))issues.push('APPEARANCE_MISMATCH')
  return issues
 }
+export function recollectionReply(input:string,s:StorySave,target:EntityId):Proposal|undefined {
+ const records=recalledStatements(s,target,input)
+ if(!records.length)return
+ const text=tr(s.locale,'你之前跟我说过：','You told me earlier: ')+records.map(r=>'“'+r.input+'”').join(tr(s.locale,' 后来你又说：',' Later, you said: '))
+ const remote=(target==='radio'||target==='callpoint')&&radioContactAvailable(s)
+ const candidate:Proposal={kind:'dialogue',entityIds:remote?[target,DISPATCHER]:[target],claims:[],text}
+ // Quoted player input still passes normal admission, including the protocol
+ // parser. A recollection can never smuggle commands into the story reducer.
+ if(parseStoryProtocol(text,s.locale).commands.length||validateProposal(candidate,s,target).length)return
+ return candidate
+}
 export function localReply(input:string,s:StorySave,target:EntityId):Proposal {
+ const memory=recollectionReply(input,s,target);if(memory)return memory
  const locale=s.locale
  let actionId:string|undefined
  // Conservative explicit commitments only. Unknown and negated inputs never execute.

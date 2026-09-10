@@ -1,6 +1,6 @@
 import {actionIntentIssues} from '../src/action-intent'
 import {knowsAttendant} from '../src/attendant'
-import { sceneContract, localReply, validateProposal, type Proposal, type EntityId } from '../src/contract'
+import { sceneContract, localReply, recollectionReply, validateProposal, type Proposal, type EntityId } from '../src/contract'
 import type { StorySave } from '../src/story'
 
 const endpoint='https://chat.aiwaves.tech/aigram/api/game-chat'
@@ -12,11 +12,13 @@ async function chat(system:string,user:string,options?:{signal:AbortSignal}):Pro
  const content=String(payload.choices?.[0]?.message?.content??'').replace(/^```(?:json)?\s*|\s*```$/g,'').trim()
  return JSON.parse(content)
 }
-export type ModelTrace={mode:'local'|'live';attempts:number;issues:string[];fallback:boolean;guard?:'authored-introduction';elapsedMs?:number;requests?:number;proposal?:Proposal;rejections?:Array<{candidate:unknown;issues:string[]}>}
+export type ModelTrace={mode:'local'|'live';attempts:number;issues:string[];fallback:boolean;guard?:'authored-introduction'|'authored-recollection';elapsedMs?:number;requests?:number;proposal?:Proposal;rejections?:Array<{candidate:unknown;issues:string[]}>}
 export async function propose(input:string,s:StorySave,target:EntityId,live:boolean,request:ModelRequest=chat,budgetMs=22000):Promise<{proposal:Proposal;trace:ModelTrace}>{
  const fallback=localReply(input,s,target)
  const trace:ModelTrace={mode:live?'live':'local',attempts:0,issues:[],fallback:false}
  if(!live)return {proposal:fallback,trace}
+ const memory=recollectionReply(input,s,target)
+ if(memory){trace.mode='local';trace.guard='authored-recollection';return {proposal:memory,trace}}
  if(target==='zhou-yu'&&!knowsAttendant(s)||target==='lin'&&!s.facts.introduced){trace.mode='local';trace.guard='authored-introduction';return {proposal:fallback,trace}}
  if(!Number.isSafeInteger(budgetMs)||budgetMs<1||budgetMs>22000)throw new Error('INVALID_MODEL_BUDGET')
  const contract=sceneContract(s,target)
