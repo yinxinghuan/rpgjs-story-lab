@@ -3,6 +3,7 @@ import type {SceneResource,SceneResourceManifest} from './scene-readiness'
 import {assertPublishedBackground,backgroundReleasePath,type PublishedBackground} from './background-publication'
 import {assertPublishedDevice,type PublishedDevice} from './device-publication'
 import {assertPublishedActor,type PublishedActor} from './actor-publication'
+import {fixedStandingReleases,type FixedStandingBindings} from './original-art-identities'
 
 const northCape='train-at-dead-station'
 export const ORIGINAL_BACKGROUND_BASELINE='north-cape-baseline-e8e36bba'
@@ -19,24 +20,26 @@ export const originalBackgroundReleases:Record<string,SceneResource&{scene:strin
  [FLOOD_BRIDGE_BACKGROUND]:{scene:'train-at-flood-bridge',source:'alteru-media',taskId:'mt_1a711a43966e36311c8f7b2cbc94a1cc',kind:'background',path:'./art/approved/flood-bridge-e38ff237.png',sha256:'e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210',bytes:2685518,width:1024,height:1536},
  [JUNCTION_BACKGROUND]:{scene:'train-at-dawn-junction',source:'alteru-media',taskId:'mt_d4a642fa46a1cb5c82565d28016df02b',kind:'background',path:'./art/approved/dawn-junction-c0b4a545.png',sha256:'c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893',bytes:2472753,width:1024,height:1536},
 }
-type BackgroundBindings={version:1;backgrounds:Record<string,string>}|{version:2;published:PublishedBackground;additional?:Record<string,string>}
+type BackgroundBindings=({version:1;backgrounds:Record<string,string>}|{version:2;published:PublishedBackground;additional?:Record<string,string>})&{standingCast?:FixedStandingBindings}
 type LegacyBindings=BackgroundBindings|{version:3;background:BackgroundBindings;starter:PublishedDevice}
 export type OriginalAssetBindings=LegacyBindings|{version:4;base:LegacyBindings;ada:PublishedActor}
 export const originalBaseAssets=(a?:OriginalAssetBindings):LegacyBindings|undefined=>a?.version===4?a.base:a
 export const originalActorRelease=(a?:OriginalAssetBindings)=>a?.version===4?a.ada:undefined
 export function originalStarterRelease(a?:OriginalAssetBindings){const base=originalBaseAssets(a);return base?.version===3?base.starter:undefined}
 export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND,'train-at-pine-line':PINE_BACKGROUND,'train-at-sleeping-town':TOWN_BACKGROUND,'train-at-tunnel':TUNNEL_BACKGROUND,'train-at-mountain-pass':PASS_BACKGROUND,'train-at-flood-bridge':FLOOD_BRIDGE_BACKGROUND,'train-at-dawn-junction':JUNCTION_BACKGROUND}
-export const newOriginalAssetBindings=():OriginalAssetBindings=>({version:1,backgrounds:{...currentOriginalBackgrounds}})
+const currentStandingCast=():FixedStandingBindings=>({'ren-medic':'ren-standing-v1'})
+export const newOriginalAssetBindings=():OriginalAssetBindings=>({version:1,backgrounds:{...currentOriginalBackgrounds},standingCast:currentStandingCast()})
 const additionalBackgrounds=()=>Object.fromEntries(Object.entries(currentOriginalBackgrounds).filter(([scene])=>scene!==northCape))
-function publishedBackgroundBinding(published:PublishedBackground):BackgroundBindings{const additional=additionalBackgrounds();return {version:2,published:structuredClone(published),...(Object.keys(additional).length?{additional}:{})}}
+function publishedBackgroundBinding(published:PublishedBackground):BackgroundBindings{const additional=additionalBackgrounds();return {version:2,published:structuredClone(published),standingCast:currentStandingCast(),...(Object.keys(additional).length?{additional}:{})}}
 function assertAdditionalBackgrounds(value:unknown){if(!value||Array.isArray(value)||typeof value!=='object'||Object.keys(value).length>8)throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');for(const [scene,id]of Object.entries(value))if(scene===northCape||typeof id!=='string'||!Object.hasOwn(originalBackgroundReleases,id)||originalBackgroundReleases[id].scene!==scene)throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')}
 export function assertOriginalAssetBindings(value:unknown):asserts value is OriginalAssetBindings|undefined{
  if(value===undefined)return // Existing saves remain on their legacy background.
  const a=value as OriginalAssetBindings
  if(a?.version===4){if(Object.keys(a).sort().join(',')!=='ada,base,version'||![1,2,3].includes(a.base?.version))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertOriginalAssetBindings(a.base);assertPublishedActor(a.ada);return}
  if(a?.version===3){if(Object.keys(a).sort().join(',')!=='background,starter,version'||![1,2].includes(a.background?.version))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertOriginalAssetBindings(a.background);assertPublishedDevice(a.starter);return}
- if(a?.version===2){if(Object.keys(a).sort().join(',')!==(a.additional===undefined?'published,version':'additional,published,version'))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedBackground(a.published);if(a.additional!==undefined)assertAdditionalBackgrounds(a.additional);return}
- if(!a||a.version!==1||Object.keys(a).some(k=>!['version','backgrounds'].includes(k))||!a.backgrounds||Array.isArray(a.backgrounds)||typeof a.backgrounds!=='object'||Object.keys(a.backgrounds).length>9||!Object.hasOwn(a.backgrounds,northCape))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')
+ if(a?.standingCast!==undefined){const cast=a.standingCast;if(!cast||typeof cast!=='object'||Array.isArray(cast)||Object.entries(cast).some(([id,version])=>typeof version!=='string'||!Object.hasOwn(fixedStandingReleases,version)||fixedStandingReleases[version as keyof typeof fixedStandingReleases].characterId!==id))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')}
+ if(a?.version===2){if(Object.keys(a).filter(k=>k!=='standingCast').sort().join(',')!==(a.additional===undefined?'published,version':'additional,published,version'))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedBackground(a.published);if(a.additional!==undefined)assertAdditionalBackgrounds(a.additional);return}
+ if(!a||a.version!==1||Object.keys(a).some(k=>!['version','backgrounds','standingCast'].includes(k))||!a.backgrounds||Array.isArray(a.backgrounds)||typeof a.backgrounds!=='object'||Object.keys(a.backgrounds).length>9||!Object.hasOwn(a.backgrounds,northCape))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')
  for(const [scene,id] of Object.entries(a.backgrounds))if(typeof id!=='string'||!Object.hasOwn(originalBackgroundReleases,id)||originalBackgroundReleases[id].scene!==scene)throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')
 }
 export function originalBackgroundVersion(bindings?:OriginalAssetBindings):string{assertOriginalAssetBindings(bindings);if(bindings?.version===4)return originalBackgroundVersion(bindings.base);if(bindings?.version===3)return originalBackgroundVersion(bindings.background);return bindings?.version===2?bindings.published.id:bindings?.backgrounds[northCape]??ORIGINAL_BACKGROUND_BASELINE}
@@ -44,6 +47,8 @@ function backgroundOnly(bindings?:OriginalAssetBindings):BackgroundBindings|unde
  assertOriginalAssetBindings(bindings)
  const base=originalBaseAssets(bindings);return base?.version===3?base.background:base
 }
+/** Absence means the legacy marker, never an implicit upgrade of an old save. */
+export function originalStandingCast(bindings?:OriginalAssetBindings){return backgroundOnly(bindings)?.standingCast??{}}
 export function originalSceneBackgroundVersion(bindings:OriginalAssetBindings|undefined,scene:string){const a=backgroundOnly(bindings);return a?.version===1?a.backgrounds[scene]:a?.version===2?(scene===northCape?a.published.id:a.additional?.[scene]):scene===northCape?ORIGINAL_BACKGROUND_BASELINE:undefined}
 /** A cache key for all fixed room art, excluding unrelated character/device art. */
 export function originalEnvironmentVersion(bindings?:OriginalAssetBindings){

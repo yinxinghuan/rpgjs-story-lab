@@ -1,0 +1,14 @@
+{
+  "status": "standing-candidate-integrated-preflight",
+  "sourceSha256": "db7701d7cda3510a6500242abb9bafd719d3ac5b7f252d096b94e9a79d4eb4d5",
+  "resultSha256": "48e9a626cec744373f209007605a69f9f62716c1788c0419d03fcf6cbea6cade",
+  "taskId": "mt_8871ee3fe1658294fe403a89d3b82dda",
+  "review": [
+    "Large visible crown, shoulder tops and foreshortened body restore the selected overhead camera.",
+    "Gray hair, gray-green jacket and compact brown medical case distinguish Ren from Ada.",
+    "Source has white RGB background; authorized neutral-matte-unmix-1 produces genuine alpha without resizing or repainting the subject.",
+    "Foot aligned to 320,600 in 640-square cell; uniform scale 0.08 gives approximately 33 world units of visible height.",
+    "Painted detail is simpler than the reference. Accepted only as a local standing representation; not a full four-direction walking atlas or proof of batch generation quality."
+  ],
+  "scope": "New preflight journeys explicitly bind ren-standing-v1. Existing saves without standingCast retain development markers. Original story production gate remains closed."
+}

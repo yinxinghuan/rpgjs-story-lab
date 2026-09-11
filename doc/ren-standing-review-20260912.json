@@ -1,0 +1,54 @@
+{
+  "scope": "Local original-story preflight, standing-only, no production admission",
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "journeyPreserved": true,
+      "assets": {
+        "ren-medic": "ren-standing-v1"
+      },
+      "hiddenBeforeRescue": true,
+      "riverAndTunnel": true,
+      "bodyStop": {
+        "x": 152,
+        "y": 400.18499999999995
+      },
+      "refresh": true,
+      "errors": [],
+      "externalConnections": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "journeyPreserved": true,
+      "assets": {
+        "ren-medic": "ren-standing-v1"
+      },
+      "hiddenBeforeRescue": true,
+      "riverAndTunnel": true,
+      "bodyStop": {
+        "x": 152,
+        "y": 400.1519999999998
+      },
+      "refresh": true,
+      "errors": [],
+      "externalConnections": 0
+    }
+  ],
+  "verification": {
+    "tests": 605,
+    "failed": 0,
+    "productionBuild": true,
+    "opaqueWorkerStartup": true,
+    "sourceAndAssetAudit": true
+  },
+  "visualReview": "Both 320x568 and 390x844 river and restored tunnel screenshots inspected. Ren shares the accepted overhead direction and comparable standing height; painted detail remains simpler. No checkerboard rectangle or pale matte halo visible at gameplay scale.",
+  "limits": [
+    "Not iPhone hardware or AlterU production playthrough",
+    "Ren is a front standing frame, not a walking atlas",
+    "Other cast and equipment remain unfinished"
+  ]
+}
