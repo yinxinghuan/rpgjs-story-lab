@@ -1,0 +1,13 @@
+{
+  "admission": "rejected pending targeted clearance correction",
+  "pass": [
+    "orthographic B",
+    "quarry identity",
+    "train scale",
+    "readable flooring"
+  ],
+  "fail": [
+    "large upper-right stones inside traversable strip",
+    "shed roof upper edge outside reserved rectangle"
+  ]
+}

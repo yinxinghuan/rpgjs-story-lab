@@ -1,0 +1,7 @@
+{
+  "scene": "train-at-graystone-yard",
+  "reason": "Upper-right rocks intrude into open collision strip; shed top projects about 10 world units above reserved mass.",
+  "parent": "yard-edit-01",
+  "remainingCorrections": 0,
+  "admission": "pending actual pixels and renderer"
+}

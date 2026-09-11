@@ -1,0 +1,13 @@
+{
+  "requestId": "0e09541a-8719-48dd-a3e7-b4b44315ac21",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/dff13ecd8e70086082e52940b5c66cd0b3ab2d56/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Edit this exact 1024x1536 orthographic overhead RPG background. Preserve the fixed B camera angle, pixel-painted detail, NO perspective convergence, identical full canvas. The same dark diesel locomotive remains in exactly the same position, shape, size, roof details and footprint: approximately x389..629, y0..661 in output pixels. Tracks remain at their exact positions. Preserve every open walking surface and clearance in the reference, especially the left service strip x160..389 and right strip x629..896 and the bottom apron. Keep the floor clearly readable with sharp edges. All figures and interactable machines are separate game sprites: do not draw people, interface, letters, arrows, hazard icons, crates or new obstacles on the floor. Replace the station surroundings with a gray limestone quarry freight yard at early cold dawn. The blocked outer strips x0..160 and x896..1024 contain weathered industrial retaining walls, stone heaps and corrugated service roofs, entirely confined to those strips. Replace the old left shed mass at x45..197,y693..1051 with a low corrugated quarry utility shed of precisely the same outline. No rubble, fencing, machinery, shadows resembling pits or obstacles in the open walking strips. Preserve the broad continuous apron at the bottom. Dusty pale gray-blue crushed-stone paving with flush iron drains, rust-red freight details confined to edges, a few small warm maintenance lamps. The locomotive remains the identical dark diesel engine. Empty mounting ground x293,y427 and x720,y960 stays empty for separate gate/pump sprites. No people, active gate arm or drawn pump. Clear industrial material contrast and an open-air quarry atmosphere, with no sky or horizon."
+}

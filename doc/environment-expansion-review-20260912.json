@@ -1,0 +1,108 @@
+{
+  "date": "2026-09-12",
+  "scope": "first additional original-game environment from platform media",
+  "generations": [
+    {
+      "id": "tunnel-edit-01",
+      "requestId": "6574240d-14b6-4da1-b39b-6ecaa3033867",
+      "status": "failed",
+      "taskId": null,
+      "error": "PROVIDER_REJECTED",
+      "elapsedMs": 53096,
+      "asset": null
+    },
+    {
+      "id": "yard-edit-01",
+      "requestId": "0e09541a-8719-48dd-a3e7-b4b44315ac21",
+      "status": "downloaded",
+      "taskId": "mt_e8b0c4c42e2a53e496e9cb1d92a59d52",
+      "error": null,
+      "elapsedMs": 70396,
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "6e5579907f48dcb36b41bbdcb099de460a29edfcc798ab91264d77d5911a25a8",
+        "bytes": 3457166,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      }
+    },
+    {
+      "id": "yard-edit-02",
+      "requestId": "3c7b4959-8587-4cfa-ae5a-f5de5dea4bd0",
+      "status": "downloaded",
+      "taskId": "mt_9672d560da014da197c499f1f277185c",
+      "error": null,
+      "elapsedMs": 74201,
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "78f22e9b4bf42265be03e5db8462ff732b7ed46706f5cea8cf297d0dd3aa2129",
+        "bytes": 3346737,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      }
+    }
+  ],
+  "runtime": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "sceneHash": "78f22e9b4bf42265be03e5db8462ff732b7ed46706f5cea8cf297d0dd3aa2129",
+      "actualRoofCollision": true,
+      "engineMaps": [
+        "/map/train-at-dead-station.tmx",
+        "/map/graystone-yard-78f22e9b.tmx",
+        "/map/graystone-yard-78f22e9b.tmx",
+        "/map/train-at-tunnel.tmx"
+      ],
+      "failedImageDidNotCommit": true,
+      "sameJourneyAfterRefresh": true,
+      "pumpWorkPact": true,
+      "departedToTunnel": true,
+      "version": 5,
+      "actualAssetRequests": 3,
+      "externalConnections": 0,
+      "pageErrors": [],
+      "unqualifiedEntities": "Mako and pump are still development markers; this is environment evidence only"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "sceneHash": "78f22e9b4bf42265be03e5db8462ff732b7ed46706f5cea8cf297d0dd3aa2129",
+      "actualRoofCollision": true,
+      "engineMaps": [
+        "/map/train-at-dead-station.tmx",
+        "/map/graystone-yard-78f22e9b.tmx",
+        "/map/graystone-yard-78f22e9b.tmx",
+        "/map/train-at-tunnel.tmx"
+      ],
+      "failedImageDidNotCommit": true,
+      "sameJourneyAfterRefresh": true,
+      "pumpWorkPact": true,
+      "departedToTunnel": true,
+      "version": 5,
+      "actualAssetRequests": 3,
+      "externalConnections": 0,
+      "pageErrors": [],
+      "unqualifiedEntities": "Mako and pump are still development markers; this is environment evidence only"
+    }
+  ],
+  "tests": {
+    "total": 590,
+    "passed": 590,
+    "failed": 0
+  },
+  "deployment": "local original-game preflight only; formal main/Pages remains dff13ec",
+  "limitations": [
+    "Tunnnel request ended PROVIDER_REJECTED without an image and was not resubmitted.",
+    "One of seven whitebox environments replaced; six remain.",
+    "Mako and pump remain development markers; character and state art are not admitted.",
+    "No production-browser or iPhone hardware test in this run.",
+    "Public API did not provide price."
+  ],
+  "localPlayable": "http://127.0.0.1:5334/?story=original",
+  "normalPreflightQaInstrumentationAbsent": true
+}

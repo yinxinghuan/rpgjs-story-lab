@@ -1,0 +1,13 @@
+{
+  "requestId": "3c7b4959-8587-4cfa-ae5a-f5de5dea4bd0",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789143751102334.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Correct only collision-clearance details in this exact orthographic RPG map, retaining its 1024x1536 canvas, B overhead angle, gray quarry materials, sharp detail, locomotive and track pixels as closely as possible. The walkable area is inside x160..896 and y43..1493, excluding the locomotive x389..629,y0..661 and the side shed x45..197,y693..1051. Remove large boulders intruding into this walkable area, especially the upper right strip x629..896,y43..250. Replace those intrusions with continuous level compacted-gravel paving matching the adjacent floor. Large stone heaps belong only outside x160..896. Align the complete side shed silhouette to x45..197,y693..1051: its upper roof must not extend above y693 and its lower edge must not extend below y1051. Do not change the shed right edge x197. Keep fine gravel as flat texture, not separate rocks. No new machinery, people, labels, signs, shadows resembling holes, walls or floor obstacles. Do not alter overall camera, train proportions, lighting or composition."
+}

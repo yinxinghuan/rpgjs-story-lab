@@ -1,3 +1,4 @@
+import {GRAYSTONE_BACKGROUND,originalEnvironmentLayouts,originalEnvironmentMapXml} from '../src/original-environment-layouts'
 import {Resvg} from '@resvg/resvg-js'
 import {readFileSync} from 'node:fs'
 import {createHash} from 'node:crypto'
@@ -6,7 +7,7 @@ import type {SceneResourceManifest} from '../src/scene-readiness'
 import {originalBackgroundReleases,ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
 const candidates=[{location:'dead-station',file:'north-cape-v2.png',asset:'original-north-cape'},{location:'river-valley',file:'river-valley-v1.png',asset:'original-river-valley'}]
 export function originalReleasedBackgroundBytes(){
- return [[ORIGINAL_BACKGROUND_BASELINE,'../doc/original-train-candidates/20260911/north-cape-v2.png'],[ORIGINAL_BACKGROUND_PLATFORM,'../doc/platform-art-candidates/20260911/environment-edit-02/candidate.png']].map(([id,file])=>{
+ return [[ORIGINAL_BACKGROUND_BASELINE,'../doc/original-train-candidates/20260911/north-cape-v2.png'],[ORIGINAL_BACKGROUND_PLATFORM,'../doc/platform-art-candidates/20260911/environment-edit-02/candidate.png'],[GRAYSTONE_BACKGROUND,'../doc/platform-art-candidates/20260912/yard-edit-02/candidate.png']].map(([id,file])=>{
   const release=originalBackgroundReleases[id],data=readFileSync(new URL(file,import.meta.url))
   if(data.byteLength!==release.bytes||createHash('sha256').update(data).digest('hex')!==release.sha256||data.readUInt32BE(16)!==release.width||data.readUInt32BE(20)!==release.height)throw Error('ORIGINAL_RELEASE_BYTES_CHANGED:'+id)
   return {release,data}
@@ -27,4 +28,4 @@ export function originalScenePreviewDefinition(){
  return {initialScene,resources,platformResources}
 }
 export function originalStoryPreviewDefinition(){const version=originalTrainChapterSpatialPlan().mapVersion;return {version,scenes:Object.fromEntries(previewAssets(true).map(s=>[s.sceneId,{version,assets:s.assets.map(({data,...a})=>({...a,bytes:data.byteLength,sha256:createHash('sha256').update(data).digest('hex')}))}]))}}
-export function originalScenePreviewPlugin(authoring=false){return {name:'original-scene-preview-assets',generateBundle(this:any){for(const {release,data} of originalReleasedBackgroundBytes())if(release.source==='alteru-media')this.emitFile({type:'asset',fileName:release.path.slice(2),source:data});for(const s of previewAssets(authoring))for(const a of s.assets)this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data});const a=platformBackground();this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data})}}}
+export function originalScenePreviewPlugin(authoring=false){return {name:'original-scene-preview-assets',generateBundle(this:any){for(const {release,data} of originalReleasedBackgroundBytes())if(release.source==='alteru-media'&&(authoring||release.scene===originalTrainRoom('dead-station')))this.emitFile({type:'asset',fileName:release.path.slice(2),source:data});for(const s of previewAssets(authoring))for(const a of s.assets)this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data});if(authoring)for(const [id,layout] of Object.entries(originalEnvironmentLayouts)){const xml=Buffer.from(originalEnvironmentMapXml(id));if(xml.length!==layout.map.bytes||createHash('sha256').update(xml).digest('hex')!==layout.map.sha256)throw Error('ORIGINAL_ENVIRONMENT_MAP_CHANGED');this.emitFile({type:'asset',fileName:layout.map.path.slice(2),source:xml})}const a=platformBackground();this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data})}}}

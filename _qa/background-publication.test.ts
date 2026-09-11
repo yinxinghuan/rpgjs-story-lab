@@ -10,7 +10,7 @@ import {CreatorCloudDrafts,creatorCloudTransport} from '../src/creator-cloud'
 import {inspectArtCandidate,planArtDraft,type ArtDraft} from '../src/art-draft'
 import {BACKGROUND_CHECKS,BACKGROUND_LAYOUT,assertPublishedBackground,backgroundReleasePath} from '../src/background-publication'
 import {originalSessionHttp} from '../src/original-session-http'
-import {originalBoundSceneResources,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
+import {originalBoundSceneResources,originalEnrollmentAssets,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
 import {originalStoryPreviewDefinition} from '../server/original-scene-preview'
 import {originalTrainSpatialPlan} from '../src/original-train-spatial-plan'
 import {GAME_ID} from '../src/game-id'
@@ -51,10 +51,10 @@ test('new journey binds published background once, recovers lost enrollment and 
  const f=await fixture();try{const normal=f.player(),old=await normal.client.enroll('zh');assert.equal(old.assets?.version,1)
   const d=draft(),release=await f.cloud.publish(d),variant=f.player(release.id)
   f.lose('/sessions');await assert.rejects(variant.client.enroll('zh'));f.restart()
-  let h=await f.player(release.id).client.enroll('zh');assert.notEqual(h.id,old.id);assert.deepEqual(h.assets,{version:2,published:release})
+  let h=await f.player(release.id).client.enroll('zh');assert.notEqual(h.id,old.id);assert.deepEqual(h.assets,originalEnrollmentAssets(release))
   const entity=originalTrainSpatialPlan().entities.find(e=>e.id==='starter')!
   h=(await f.player(release.id).client.send(h,{type:'action',action:'repair-starter',target:entity.id,position:entity.approach})).head
-  assert.equal(h.save.stats.condition,87);assert.deepEqual(h.assets,{version:2,published:release})
+  assert.equal(h.save.stats.condition,87);assert.deepEqual(h.assets,originalEnrollmentAssets(release))
   f.restart();assert.deepEqual(await f.player(release.id).client.enroll('zh'),h);assert.deepEqual(await f.player().client.enroll('zh'),old)
   const resources=originalBoundSceneResources(baseResources,h.assets),bg=resources.scenes['train-at-dead-station'].assets.find(a=>a.kind==='background')!
   assert.equal(bg.path,backgroundReleasePath(release.id)+'/file');assert.equal(bg.sha256,candidate.sha256);assert.notEqual(bg.path,ORIGINAL_BACKGROUND_PLATFORM)

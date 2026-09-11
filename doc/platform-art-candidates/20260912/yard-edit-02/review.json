@@ -1,0 +1,35 @@
+{
+  "status": "admitted for original-game preflight environment",
+  "scope": "background and its version-bound collision only",
+  "actualPixelReview": [
+    "same orthographic B angle",
+    "readable quarry yard materials",
+    "large rock intrusions removed",
+    "locomotive and major walkways preserved"
+  ],
+  "geometryAdjustment": {
+    "reason": "Roof top and bottom remained outside old shed reservation; reserve actual silhouette instead of claiming exact generation.",
+    "extraObstacles": [
+      {
+        "x": 60,
+        "y": 246,
+        "w": 14,
+        "h": 14
+      },
+      {
+        "x": 60,
+        "y": 394,
+        "w": 14,
+        "h": 4
+      }
+    ],
+    "legacyVersionsUnchanged": true
+  },
+  "runtimeEvidence": "../../../environment-expansion-review-20260912.json",
+  "unqualified": [
+    "Mako full character art",
+    "pump object states",
+    "all remaining chapter art"
+  ],
+  "noFurtherGenerationForThisBatch": true
+}

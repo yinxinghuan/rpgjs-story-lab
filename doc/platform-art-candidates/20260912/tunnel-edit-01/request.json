@@ -1,0 +1,13 @@
+{
+  "requestId": "6574240d-14b6-4da1-b39b-6ecaa3033867",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/dff13ecd8e70086082e52940b5c66cd0b3ab2d56/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Edit this exact 1024x1536 orthographic overhead RPG background. Preserve the fixed B camera angle, pixel-painted detail, NO perspective convergence, identical full canvas. The same dark diesel locomotive remains in exactly the same position, shape, size, roof details and footprint: approximately x389..629, y0..661 in output pixels. Tracks remain at their exact positions. Preserve every open walking surface and clearance in the reference, especially the left service strip x160..389 and right strip x629..896 and the bottom apron. Keep the floor clearly readable with sharp edges. All figures and interactable machines are separate game sprites: do not draw people, interface, letters, arrows, hazard icons, crates or new obstacles on the floor. Replace the outdoor station environment with a roof-removed cutaway of a long disused railway tunnel, viewed from directly above at the same orthographic angle. The outer blocked strips x0..160 and x896..1024 become thick rough stone tunnel side walls and rusted vertical service conduits. No vanishing point, tunnel mouth in the distance, horizon or receding arch. Replace the old left shed mass at x45..197,y693..1051 with a sealed ventilation alcove occupying precisely that same mass. Keep its right edge fixed so the narrow walkway stays open. Age-darkened blue-gray paving and iron drain seams, sparse amber emergency lamps on walls, very faint cool haze at the outer edges only. The train remains readable. Empty mounting ground around x293,y427 stays empty for a separate fan sprite. The mood is confined, cold and industrial, visibly distinct from an outdoor station; warm light pools are small and do not obscure the surface. No opaque smoke."
+}

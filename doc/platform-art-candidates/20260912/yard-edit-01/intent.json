@@ -1,0 +1,14 @@
+{
+  "scene": "train-at-graystone-yard",
+  "status": "candidate-only",
+  "batch": "first expansion of original full-game environments",
+  "limit": "two initial scene requests, at most one targeted correction per scene after visual inspection",
+  "collision": "existing originalTrainObstaclesFor footprint unchanged",
+  "acceptance": [
+    "orthographic B view",
+    "same locomotive and floor clearances",
+    "different scene identity",
+    "interactive entities remain separate",
+    "real 320/390 renderer walking and action inspection"
+  ]
+}

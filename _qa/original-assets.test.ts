@@ -5,7 +5,7 @@ import {DatabaseSync} from 'node:sqlite'
 import {originalTrainRuntime,assertOriginalHead,OriginalTrainAuthority} from '../server/original-train-runtime'
 import {assertOriginalClientHead} from '../src/original-session-client'
 import {originalStoryPreviewDefinition,originalReleasedBackgroundBytes} from '../server/original-scene-preview'
-import {originalBoundSceneResources,originalBackgroundVersion,originalBackgroundReleases,newOriginalAssetBindings,ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
+import {originalBoundSceneResources,originalBackgroundVersion,originalBackgroundReleases,currentOriginalBackgrounds,newOriginalAssetBindings,ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
 import {loadBrowserSceneResource} from '../src/scene-readiness'
 import type {AuthorityStorage} from '../server/session-authority'
 
@@ -34,7 +34,7 @@ test('snapshot binding selects only the background and preserves collision maps 
  assert.equal(old.scenes[id].assets.find(a=>a.kind==='background')!.sha256,originalBackgroundReleases[ORIGINAL_BACKGROUND_BASELINE].sha256)
  assert.equal(next.scenes[id].assets.find(a=>a.kind==='background')!.sha256,originalBackgroundReleases[ORIGINAL_BACKGROUND_PLATFORM].sha256)
  assert.deepEqual(old.scenes[id].assets.filter(a=>a.kind==='map'),next.scenes[id].assets.filter(a=>a.kind==='map'))
- for(const scene of Object.keys(base.scenes))if(scene!==id)assert.deepEqual(next.scenes[scene],base.scenes[scene])
+ for(const scene of Object.keys(base.scenes))if(scene!==id){assert.deepEqual(old.scenes[scene],base.scenes[scene]);const bound=currentOriginalBackgrounds[scene];if(bound)assert.equal(next.scenes[scene].assets.find(a=>a.kind==='background')!.sha256,originalBackgroundReleases[bound].sha256);else assert.deepEqual(next.scenes[scene],base.scenes[scene])}
  assert.equal(JSON.stringify(base),before)
 })
 test('unsupported or forged bindings are rejected on both sides instead of selecting a fallback',()=>{

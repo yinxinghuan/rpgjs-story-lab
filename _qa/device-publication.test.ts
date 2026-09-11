@@ -1,3 +1,4 @@
+import {originalStoryPreviewDefinition} from '../server/original-scene-preview'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {createServer} from 'node:http'
@@ -74,8 +75,8 @@ test('published geometry uses the same placement and collision in preview, autho
   const old=r.initial('zh',randomUUID());assert.equal(old.assets?.version,1);assert.notEqual(originalEquipmentResource(old.assets).path,originalEquipmentResource(h.assets).path)
   const bg=originalBackgroundReleases[ORIGINAL_BACKGROUND_PLATFORM],background:PublishedBackground={version:1,id:'a'.repeat(64)+'.'+randomUUID(),scene:'train-at-dead-station',sha256:bg.sha256,bytes:bg.bytes,width:1024,height:1536,review:{sha256:bg.sha256,layout:BACKGROUND_LAYOUT,checks:[...BACKGROUND_CHECKS],visualAccepted:true}}
   const combined=r.initial('zh',randomUUID(),{starter:release,background});assert.equal(originalBackgroundVersion(combined.assets),background.id);assert.equal((combined.assets as any).starter.id,release.id)
-  const resources=originalBoundSceneResources({scenes:{[h.sceneId]:{version:'synthetic-layout',assets:[bg]}}} as any,combined.assets)
-  assert.ok(resources.scenes[h.sceneId].assets[0].path.endsWith('/releases/'+background.id+'/file'))
+  const resources=originalBoundSceneResources(originalStoryPreviewDefinition(),combined.assets)
+  assert.ok(resources.scenes[h.sceneId].assets.find(a=>a.kind==='background')!.path.endsWith('/releases/'+background.id+'/file'))
  }finally{await f.close()}
 })
 for(const locale of ['zh','en'] as const)test('published device stays bound through a complete '+locale+' journey and lost responses',async()=>{
