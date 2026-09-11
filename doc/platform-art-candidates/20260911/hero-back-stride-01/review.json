@@ -1,0 +1,6 @@
+{
+  "status": "rejected",
+  "findings": ["Generation changed the first row from front to back", "Bag position and silhouette changed across frames", "Requested bottom-row opposite strides are not reliably preserved", "RGB white background, no true alpha"],
+  "runtimeAdmitted": false,
+  "decision": "Keep the approved B source. Repair only the calibrated lower-leg pixels of the third back frame in a separate derivative."
+}

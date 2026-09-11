@@ -1,0 +1,12 @@
+{
+  "status": "rejected-as-directional-atlas",
+  "findings": [
+    "B overhead camera and most facing directions are improved",
+    "row 3 idle frame faces back instead of right",
+    "lamp moves between hand and belt and disappears in some frames",
+    "PNG is RGB white matte, not transparent alpha",
+    "front idle may be evaluated separately for a stationary NPC only after permitted matte processing and in-map visual review"
+  ],
+  "runtimeAdmitted": false,
+  "imageProcessingPerformed": false
+}

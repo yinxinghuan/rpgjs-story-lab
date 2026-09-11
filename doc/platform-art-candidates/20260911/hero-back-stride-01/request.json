@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "a599102f-a375-4e45-8068-29904eeaceda",
+  "mode": "edit",
+  "prompt": "Correct a walking animation error in this exact yellow-coat character sprite sheet. Keep the same person, yellow hooded jacket, dark teal trousers, boots, brown satchel on the SAME anatomical side, and strong overhead camera. Preserve the 3 columns and 4 rows. DOWN / LEFT / RIGHT / UP. Middle column standing. The BOTTOM ROW is the BACK view walking away: its outer two frames must show OPPOSITE legs stepping. Bottom-left: LEFT leg reaches FORWARD away from camera (shorter/foreshortened on screen), RIGHT leg trails toward camera (longer on screen). Bottom-middle: both feet together. Bottom-right: RIGHT leg reaches FORWARD away from camera (shorter/foreshortened on screen), LEFT leg trails toward camera (longer on screen). Make this left-right alternation unmistakable from the two boot endpoints. Do NOT merely shift the same pose sideways or mirror the whole person: the bag and diagonal strap must stay on their original side in all frames. Preserve the original hair and upper body, repair the leg poses only. All BACK frames show only the back of the head, NO face. Do not change other rows or add a lamp, equipment, text or a grid. Output 960x1280 PNG, preserve clean transparent background when supported. No checkerboard or floor shadows.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/public/art/overhead/hero.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1280
+  }
+}

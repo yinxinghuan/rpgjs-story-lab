@@ -1,8 +1,9 @@
+import {originalCharacterWalkable,originalCharacterSafePosition} from './original-character-space'
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react'
 import {createRpgRenderer,type RpgRendererRuntime,type RendererPoint} from './rpg-renderer'
 import {heroSheet} from './sprite-config'
 import {findGridPath} from './grid-path'
-import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable} from './original-train-spatial-plan'
+import {originalTrainChapterSpatialPlan} from './original-train-spatial-plan'
 import {SceneReadiness,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
 import {originalSessionHttp} from './original-session-http'
 import {originalGameEntities,originalReadingBlocks,originalGameObjective,originalActionDestinations} from './original-game-projection'
@@ -33,7 +34,7 @@ export default function OriginalGame(){
  async function restore(next:OriginalHead){
   runtime.current?.pause(true);setReady(false);headRef.current=next;setHead(next)
   const loader=loaderFor(next),prepared=await loader.prepare(next.sceneId,true);if(!mounted.current)return
-  if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet],mapEvents:()=>[],walkable:(p,s)=>originalTrainPlanWalkable(s,p),safePosition:(p,s)=>originalTrainPlanWalkable(s,p)?p:world.scenes.find(r=>r.id===s)!.spawn,findPath:(a,b,s)=>findGridPath(a,b,p=>originalTrainPlanWalkable(s,p)),onPosition:p=>{pos.current=p;setPosition(p)},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
+  if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet],mapEvents:()=>[],walkable:(p,s)=>originalCharacterWalkable({...headRef.current!,sceneId:s},p),safePosition:(p,s)=>originalCharacterSafePosition({...headRef.current!,sceneId:s},p),findPath:(a,b,s)=>findGridPath(a,b,p=>originalCharacterWalkable({...headRef.current!,sceneId:s},p)),onPosition:p=>{pos.current=p;setPosition(p)},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
   await runtime.current!.restore(next.position,next.sceneId);if(!mounted.current)return
   loader.activate(next.sceneId);setBackground(prepared.background);setPosition(runtime.current!.position());setReady(true)
  }

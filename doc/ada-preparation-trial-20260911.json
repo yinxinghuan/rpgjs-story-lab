@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-11",
+  "authorization": "User allowed project code to remove background, split frames and align foot anchors, preserving originals and using no new external services",
+  "source": "doc/platform-art-candidates/20260911/actor-edit-03/candidate.png",
+  "sourceSha256": "43ba101c2bc5903ae6df9efef0067c1a753c44df2079285a74e7d3a3fb6144dd",
+  "browserCandidateId": "899481d9-8b34-4d0a-8387-e6dbbf9ee04e",
+  "browserOutputSha256": "1671149f6e83d43284b54c6519428deb110aa81b77c17390358d466893cda742",
+  "spec": {
+    "columns": 3,
+    "rows": 4,
+    "foot": [
+      160,
+      300
+    ],
+    "neutralMin": 200,
+    "chromaMax": 20,
+    "backgroundMode": "pale-neutral"
+  },
+  "algorithm": "neutral-matte-unmix-1",
+  "browserObserved": [
+    "source and candidate separately persisted",
+    "deep background preview no longer has white matte",
+    "actual RPG-JS preview loaded visible actor from candidate",
+    "direction defects remain, not admitted as directional atlas"
+  ],
+  "newModelRequests": 0,
+  "newMediaRequestsThisPhase": 0,
+  "productionAdmitted": false
+}

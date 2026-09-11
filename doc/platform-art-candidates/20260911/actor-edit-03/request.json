@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "1e2f7df4-aa46-4585-b8ff-1bb3864c2bae",
+  "mode": "edit",
+  "prompt": "Edit the supplied sprite sheet IN PLACE. Preserve the exact 3-column, 4-row layout and the pose and viewing direction of EACH corresponding figure. This is one young adult female railway apprentice, Ada: practical short dark-brown hair, muted navy work coat over an off-white collar, dark teal work trousers and brown boots. Reinterpret the small shoulder bag as her tool pouch with an enclosed brass work lamp clipped to it. Preserve the original body proportions, strong overhead orthographic angle, visible top of head and shoulders, foreshortened face, sharp pixel-painted detail. Only change the character styling, never the poses. Row 1 faces DOWN toward viewer, row 2 faces LEFT (nose points left), row 3 faces RIGHT (nose points right), row 4 faces UP away from viewer (only back of hair, NO face). For each row the middle figure is standing, outer figures retain the two different reference walking strides. Keep the reference margins and separate all figures. Scale the complete sheet uniformly to 960x1280. Preserve real transparent alpha outside each figure. No drawn checkerboard, no grid lines, no background scene, no letters or labels, no ground shadow.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/public/art/overhead/hero.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1280
+  }
+}
