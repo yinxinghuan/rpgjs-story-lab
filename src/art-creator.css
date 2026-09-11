@@ -6,3 +6,5 @@
 
 .cl-sprite fieldset{min-width:0;margin:12px 0;padding:12px;border:1px solid #9c804e66}.cl-sprite fieldset p{overflow-wrap:anywhere}.cl-sprite legend{padding:0 6px}
 .cl-sprite section p{overflow-wrap:anywhere}
+
+.cl-actor-review__frames{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:12px 0 16px;padding:4px}.cl-actor-review__frames figure{margin:0;min-width:0}.cl-actor-review__frames figure>div{width:100%;background-repeat:no-repeat;image-rendering:pixelated}.cl-actor-review__frames figcaption{font-size:14px;text-align:center;background:#142836;color:#f0e6d0;overflow-wrap:anywhere}.cl-actor-review ul{padding-left:20px}.cl-actor-review li{overflow-wrap:anywhere}

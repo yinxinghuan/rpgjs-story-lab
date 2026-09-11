@@ -3,6 +3,7 @@ import type {PixelRaster, PreparedSprite, SpritePreparationSpec} from './sprite-
 import {composeRepairFrames} from './sprite-composition'
 import type {DeviceReview} from './device-publication'
 import type {SpriteGenerationSource} from './sprite-generation-recipe'
+import type {ActorSheetReview} from './actor-sheet-review'
 export type SpritePng = {bytes: Uint8Array; sha256: string; width: number; height: number}
 export type SpriteCompositionInput={source:SpritePng;sourceName:string;columns:number;column:number;generation?:SpriteGenerationSource}
 export type SpriteDraft = {
@@ -10,6 +11,7 @@ export type SpriteDraft = {
   source: SpritePng; sourceName: string; sourceKind?: 'actor'|'states'; spec?: SpritePreparationSpec;
   deviceStateSet?: 'repair'; composition?: {version:1;inputs:SpriteCompositionInput[]};
   deviceReview?: DeviceReview;
+  actorReview?: ActorSheetReview;
   generation?: SpriteGenerationSource;
   state: 'source'|'processing'|'candidate'|'failed'; error?: string;
   result?: {png: SpritePng; frames: PreparedSprite['frames']; metrics: PreparedSprite['metrics']; algorithm: PreparedSprite['algorithm']}
@@ -87,7 +89,7 @@ export async function runSpriteDraft(repo:SpriteDraftRepository,source:SpriteDra
   if(current?.id!==source.id || current.revision!==source.revision)throw Error('SPRITE_DRAFT_REPLACED')
   // New attempts preserve all earlier source/candidate records, even after failure.
   let draft:SpriteDraft={...structuredClone(source),id:crypto.randomUUID(),parentId:source.id,revision:0,createdAt:Date.now(),spec:structuredClone(spec),state:'processing'}
-  delete draft.result;delete draft.error;delete draft.deviceReview
+  delete draft.result;delete draft.error;delete draft.deviceReview;delete draft.actorReview
   await repo.save(draft,current);notify(draft)
   try {
     await verifySpritePng(draft.source)
