@@ -5,7 +5,7 @@
 - `server/original-presentation.ts`：准入检查九房间绑定、四名固定人物素材、通风机、当前地面与交互点、旅程内素材身份不变。它是结构检查，不是自动审美认证，也不表示其他设备素材全部完成。原始运行时仍默认拒绝；正式Worker显式使用此gate。
 - `vite.config.ts`及`server/original-scene-preview.ts`：cloud/Pages和preflight输出完整地图与背景；`scripts/check-original-dist.ts`在构建时核验实际采用资源的字节、SHA、尺寸和许可证文件，拒绝采用whitebox背景。
 - `worker/source.ts`：原作服务在同一DO namespace的`original-v8:<owner>`内运行，旧车厢对象和数据库迁移标签不变。正式原作使用现有game-chat接口的行动理解/交谈适配器、20秒预算、持久6回合/分钟配额和玩家主动开启；按钮无需模型。显式测试gate不会隐式获得在线provider。
-- 当前候选原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。候选发布身份为`carriage-brake-state-20260912-1`；实际线上提交以发布记录为准。
+- 当前正式原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-brake-state-20260912-1`，正式主站/Pages同一8d765e5，发布记录为brake-release-20260912.json。
 - `_qa/original-production-server.ts`仅供本机测试：原样导入已编译Worker、服务dist、全新临时SQLite，禁止服务器外发；浏览器脚本另拦截所有远程来源。它不是生产Worker，也不读取生产或个人存档。
 - 原作与车厢切换先保存位置；有待确认操作时不得切换。原作目录和两种故事的续玩键保留，不做自动存档迁移。平台账户恢复、全面设备状态美术、最终真实AlterU整段验收仍待完成；上线与实测结果另记发布证据，后文历史“原作关闭”不代表当前候选代码。
 
@@ -875,3 +875,5 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 原作wire升original-session-15.assets-12，旧carriage/creator wire不变；发布标识carriage-brake-state-20260912-1。`prepare-brake-parts.ts`保留原图，仅分帧去边界分隔线、背景处理与脚点对齐；第二图的四装配位是实际输出，两个下方位用于软管，不能声称严格实现原提示的两接口。320×568中文与390×844英文浏览器已复验图形状态、一次扣除、碰撞、无棋盘/分隔线残留、刷新和离站持久化。两条39行动完整浏览器路线均完成40版本结局，同行/留守、结局刷新、切换旧车厢后返回原作保持，零页面错误。625项测试、构建、27份采用资源SHA及发布审计通过。详见brake-review-20260912.json；这些是本机正式构建证据，非iPhone或AlterU实机。
 
 `server/original-spatial-turn.ts`编排已绑定的原规则行动：保留原始resolveDomainAction、协议解析、applyParsedScene、明确encounter命令和domain danger效果，不调用无空间绑定的buildDangerDirective。章节仍使用原reducer处理显式险情，维修钥匙仍能解决合法险情；不修改冻结vendor、不重写历史、不返还旧档已扣资源。此修正来自390英文浏览器实测：检查/换管/修启动器/选河谷后车况意外从预期97变成85；通用导演在检修回合中插入险情并执行−12兜底代价，中文与英文输入哈希又使结果不同。新增双语测试覆盖正常检修精确资源、无自动插曲，以及河谷显式预警、救援消耗与解除。
+
+本轮双部署已完成：8d765e5主站与Pages实际各53份文件和本机测试构建逐项SHA一致，Pages运行34656888493成功。线上新建中文42版本/英文39版本旅程均完成settle-basic结局，180次合成HTTP请求、零模型调用，换管及开场资源精确、开户/行动/结局丢回执恢复通过。没有读取真实玩家存档。此结果不代替真实iPhone/AlterU全程验收；整体目标保持推进。
