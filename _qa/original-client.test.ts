@@ -80,3 +80,14 @@ test('original ending retries transient failure but settles stale snapshot again
  const changed=structuredClone(h);changed.save.facts['synthetic-new-fact']=true;db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(changed),h.id)
  ready=true;const result=await c.recover();assert.equal(result.rejectionCode,'ENDING_SNAPSHOT_MISMATCH');assert.deepEqual(result.head,changed);assert.equal(c.hasPending(),false);assert.deepEqual(requests[0],requests[2]);raw.close()
 })
+
+test('original exhausted model budget clears pending without losing the journey or blocking authored actions',async()=>{
+ const {raw,storage,transport}=setup()
+ const exhausted:Transport=async(p,b)=>{if(p.endsWith('/actions')&&(b as any)?.mode==='live')throw Error('ORIGINAL_MODEL_TEST_BUDGET_EXHAUSTED');return transport(p,b)}
+ try{
+  const client=new OriginalSessionClient(storage,'original-',exhausted),h=await client.enroll('zh')
+  const r=await client.send(h,{...input(h,'inspect-brakes'),type:'dialogue',text:'你好',mode:'live'})
+  assert.equal(r.accepted,false);assert.equal(r.rejectionCode,'ORIGINAL_MODEL_TEST_BUDGET_EXHAUSTED');assert.deepEqual(r.head,h);assert.equal(client.hasPending(),false)
+  const next=await client.send(h,input(h,'repair-starter'));assert.equal(next.head.save.stats.condition,h.save.stats.condition+5)
+ }finally{raw.close()}
+})

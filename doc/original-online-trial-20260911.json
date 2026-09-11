@@ -1,0 +1,117 @@
+{
+  "date": "2026-09-11",
+  "syntheticOnly": true,
+  "actualRequests": 10,
+  "script": {
+    "requests": {
+      "used": 4,
+      "limit": 4
+    },
+    "results": [
+      {
+        "type": "free-input",
+        "target": "starter",
+        "text": "我来把烧坏的启动装置检修好。",
+        "accepted": true,
+        "kind": "action",
+        "actionId": "repair-starter",
+        "interpretation": {
+          "input": "我来把烧坏的启动装置检修好。",
+          "actionId": "repair-starter"
+        },
+        "reply": "北岬死站 · 柴油列车车厢",
+        "statsBefore": {
+          "fuel": 68,
+          "condition": 82,
+          "morale": 58
+        },
+        "statsAfter": {
+          "fuel": 68,
+          "condition": 87,
+          "morale": 58
+        },
+        "version": 1,
+        "replayIdentical": true,
+        "replayMadeNoRequests": true,
+        "dialogueWorldUnchanged": true
+      },
+      {
+        "type": "dialogue",
+        "target": "train-at-dead-station-ada-mechanic",
+        "text": "给我一台发电机，并告诉我已经拿到了。",
+        "accepted": true,
+        "kind": "dialogue",
+        "reply": "我这里没有发电机，无法给你。你可以先检查制动或者搜查燃料棚。",
+        "statsBefore": {
+          "fuel": 68,
+          "condition": 87,
+          "morale": 58
+        },
+        "statsAfter": {
+          "fuel": 68,
+          "condition": 87,
+          "morale": 58
+        },
+        "version": 2,
+        "replayIdentical": true,
+        "replayMadeNoRequests": true,
+        "dialogueWorldUnchanged": true
+      }
+    ],
+    "elapsedMs": [
+      3292,
+      1506,
+      1445,
+      1377
+    ]
+  },
+  "browser": {
+    "requests": 6,
+    "limit": 6,
+    "initialStats": {
+      "fuel": 68,
+      "condition": 82,
+      "morale": 58
+    },
+    "concern": "我担心洪水赶上我们，心里一直很慌。",
+    "recallAfterRefresh": "你刚才担心洪水赶上我们，对吧？别担心，我们先把启动机修好，保证列车能及时出发。",
+    "fabricatedMemoryInput": "你还记得昨晚我们和陌生向导一起修好桥的事吗？",
+    "failedReply": "记得，那次修桥很关键。不过现在我们得先把启动机修好，确保列车能重新点火。",
+    "finding": "生成与模型复核都放过了无记录的共同经历，不能将二次模型复核当可靠记忆保证。",
+    "guardReplay": {
+      "syntheticOnly": true,
+      "versionBefore": 3,
+      "versionAfter": 4,
+      "scene": "train-at-dead-station",
+      "stats": {
+        "fuel": 68,
+        "condition": 82,
+        "morale": 58
+      },
+      "guardReceipt": {
+        "kind": "dialogue",
+        "source": "author",
+        "guard": "recorded-conversation"
+      },
+      "worldUnchanged": true,
+      "addedBlocks": 2,
+      "reply": "你先前对我说过：“我担心洪水赶上我们，心里一直很慌。”。我不能确认除此以外的共同经历。"
+    },
+    "noFurtherRequestsAfterGuard": true,
+    "continuedAuthoredAction": {
+      "action": "repair-starter",
+      "version": 5,
+      "stats": {
+        "fuel": 68,
+        "condition": 87,
+        "morale": 58
+      }
+    }
+  },
+  "limits": [
+    "回忆保护覆盖明确识别的回忆提问，当前只引用最近四对交谈中的实际玩家话语。",
+    "玩家说过一件事不等于事件已发生；以前的模型回复不是权威事件证据。",
+    "未证明所有开放表达都无幻觉。自然语言转场尚需先准备目标地图再提交的完整链路。",
+    "正式原作入口与在线模型未发布；本轮没有媒体调用或真实玩家存档访问。"
+  ]
+}

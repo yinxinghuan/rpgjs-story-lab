@@ -609,3 +609,13 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 `creator.html?scene_preview=north-cape&device_draft=<id>` 读取当前浏览器的候选，显式用 Pixi texture parser 加载 PNG；在北岬/河谷检查状态、前后遮挡、绕行与阻挡。状态仅是预览选择，转场保持当前选择，刷新回到关柜但仍使用 URL 指定的候选。无 StorySave 修改、无设备剧情或云端发布；语义正确与美术质量不由此检查器自动认证。
 
 合成测试入口复用 `_qa/sprite-creator-browser.tsx?device=1` 与 `_qa/sprite-map.vite.ts`，普通构建不包含合成入口。实际操作发现柜后点被 4 单位寻路网格向障碍取整，增加网格余量后复验通过；测试样本包含落地点下方一个不透明像素，以覆盖占地深度进位。真实平台图未在本轮处理。
+
+### 原作在线交谈与实际回忆反例（2026-09-11）
+
+`server/model.ts` 导出既有平台 JSON 请求适配。仅本机 preflight 的 `original-preflight-model.ts` 显式配置 2–12 次实际请求预算时装配原作解释器/对话生成器；生成与审查都计费到该预算，失败也计数。`CARRIAGE_QA_ORIGINAL_MODEL_USED` 可显式恢复已用计数。本轮以 6/6 重启，不重置实际外发配额；这是测试预算，不是平台正式玩家额度或跨进程自动记账。
+
+原作 health 分开报告 `liveDialogueAvailable` 和仍关闭的 `liveModelAvailable`，默认均关闭。预演交谈开关默认关闭，刷新不自动开启；已有按钮行动保持原管线。在线请求仍用原作 owner/SessionAuthority、pending 信封、速率限制和条件事务。额度耗尽为可结束的拒绝，清当前 pending、不增旅程版本；拒绝时保留输入与当前面板，显示可见说明。
+
+真实测试共 10 次请求。自然维修表达被解析为原规则且幂等，修正后的发电机反例拒绝成功。但浏览器中的虚构共同修桥回忆被生成和审查双双放过。修复为 `originalRecollectionReply`：明确的回忆请求在本地/在线模式均优先只引用最近四对交谈中实际非回忆的玩家话语，不把玩家报告或生成回复提升为真实共同经历，不调用模型。回执标注 `source:author`、`guard:recorded-conversation`。中文真实浏览器同输入复验通过、模型总数不增；具体数值和失败文本见 `original-online-trial-20260911.json`。
+
+限制：该保护覆盖已识别的回忆提问，不能保证其他开放表达全部可靠，也不是完整长期事件回忆系统。自然输入解释到转场的资源准备链尚待实现，当前在线 UI 只开放交谈。正式原作开关、生产素材门与原车厢存档保持；未把本次预演等同生产发布。

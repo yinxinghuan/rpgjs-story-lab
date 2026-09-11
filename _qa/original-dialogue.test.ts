@@ -117,3 +117,29 @@ test('late dialogue, unready presentation and missing provider cannot silently m
  const timed=fixture(createOriginalDialogueGenerator(async(_s,_u,o)=>{signal=o?.signal;return new Promise(()=>{})},10))
  try{const h=timed.service.create(owner,randomUUID(),'en');await assert.rejects(timed.service.action(owner,h.id,say(h,'Hello','ada-mechanic','live')),/ORIGINAL_DIALOGUE_TIMEOUT/);assert.equal(signal?.aborted,true);assert.deepEqual(timed.service.get(owner,h.id),h)}finally{timed.close()}
 })
+
+test('live memory questions quote recorded player words instead of accepting invented shared events',async()=>{
+ let requests=0
+ const f=fixture(createOriginalDialogueGenerator(async()=>{requests++;return {text:'记得，那次修桥很关键。',characters:[]}}))
+ try{
+  let h=f.service.create(owner,randomUUID(),'zh')
+  h=(await f.service.action(owner,h.id,say(h,'我担心洪水赶上我们，心里一直很慌。'))).head
+  const before=structuredClone(h.save),r=await f.service.action(owner,h.id,say(h,'你还记得昨晚我们和陌生向导一起修好桥的事吗？','ada-mechanic','live'))
+  assert.equal(requests,0);assert.equal(r.source,'author');assert.equal(r.guard,'recorded-conversation')
+  assert.ok(r.head.save.blocks.at(-1)!.text.includes('我担心洪水赶上我们'))
+  assert.ok(!r.head.save.blocks.at(-1)!.text.includes('修桥'));assert.ok(!r.head.save.blocks.at(-1)!.text.includes('向导'))
+  assert.deepEqual({...r.head.save,blocks:before.blocks},before)
+  const recalled=await f.reopen().action(owner,h.id,say(r.head,'你还记得我刚才担心什么吗？','ada-mechanic','live'))
+  assert.ok(recalled.head.save.blocks.at(-1)!.text.includes('我担心洪水赶上我们'));assert.equal(requests,0)
+ }finally{f.close()}
+})
+test('recorded player claims and prior generated replies cannot prove shared experiences',async()=>{
+ let requests=0;const f=fixture(createOriginalDialogueGenerator(async()=>{requests++;throw Error('MUST_NOT_CALL')}))
+ try{
+  let h=f.service.create(owner,randomUUID(),'en')
+  h=(await f.service.action(owner,h.id,say(h,'I am worried that my claim about our bridge repair was wrong.'))).head
+  const r=await f.service.action(owner,h.id,say(h,'Remember when we repaired the bridge yesterday?','ada-mechanic','live'))
+  assert.equal(requests,0);assert.ok(r.head.save.blocks.at(-1)!.text.startsWith('Earlier you told me: “I am worried'))
+  assert.ok(r.head.save.blocks.at(-1)!.text.includes('cannot confirm'));assert.equal(r.head.save.scene,h.save.scene)
+ }finally{f.close()}
+})

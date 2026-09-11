@@ -17,12 +17,17 @@ export function originalDialogueContext(h:OriginalHead,speakerId:string){
 }
 export type OriginalDialogueContext=ReturnType<typeof originalDialogueContext>
 export type OriginalDialogueGenerator=(input:string,context:OriginalDialogueContext)=>Promise<string>
+const memoryQuestion=/(?:记得|回忆|我(?:刚才|之前).{0,8}说|(?:讲讲|说说).{0,12}(?:昨晚|昨天|上次|从前))|\b(?:remember|recall|what did (?:i|we) (?:say|do)|what happened (?:yesterday|last))\b/i
+export function originalRecollectionReply(input:string,c:OriginalDialogueContext):string|null{
+ if(!memoryQuestion.test(input))return null
+ const previous=c.recentTurns.filter(t=>!memoryQuestion.test(t.input)).at(-1)
+ // A quote establishes only what the player said, never that a claimed event
+ // happened. Previously generated replies are not evidence of shared history.
+ return previous?(c.locale==='zh'?`你先前对我说过：“${previous.input}”。我不能确认除此以外的共同经历。`:`Earlier you told me: “${previous.input}”. I cannot confirm other shared experiences.`):(c.locale==='zh'?'我们还没有留下可回忆的交谈记录。':'We have no earlier conversation recorded together.')
+}
 export function originalLocalDialogue(input:string,c:OriginalDialogueContext){
- const zh=c.locale==='zh'
- if(/你(?:还)?记得|回忆|我(?:刚才|之前).{0,8}说|\b(?:remember|recall|what did i say)\b/i.test(input)){
-  const previous=c.recentTurns.filter(t=>!/你(?:还)?记得|回忆|\b(?:remember|recall)\b/i.test(t.input)).at(-1)
-  return previous?(zh?`你刚才对我说：“${previous.input}”`:`Earlier you told me: “${previous.input}”`):(zh?'我们还没有留下可回忆的交谈记录。':'We have no earlier conversation recorded together.')
- }
+ const zh=c.locale==='zh',recollection=originalRecollectionReply(input,c)
+ if(recollection!==null)return recollection
  if(/担心|害怕|紧张|\b(?:worried|afraid|scared|anxious)\b/i.test(input))return zh?'我听见你的担心了。先说清楚，不必急着把它变成决定。':'I hear your concern. We can talk it through before turning it into a decision.'
  if(/^(?:你好|嗨|hello|hi|hey)[。！!,.\s]*$/i.test(input))return zh?'我在听。你想先谈哪件事？':'I am listening. What would you like to talk about first?'
  if(/现在|目标|下一步|\b(?:objective|next|now)\b/i.test(input))return zh?`眼下要考虑的是：${c.objective}`:`Our current priority is: ${c.objective}`
@@ -34,6 +39,7 @@ export function originalLocalDialogue(input:string,c:OriginalDialogueContext){
 export function createOriginalDialogueGenerator(request:ModelRequest,budgetMs=20000):OriginalDialogueGenerator{
  if(!Number.isSafeInteger(budgetMs)||budgetMs<1||budgetMs>20000)throw Error('INVALID_MODEL_BUDGET')
  return async(input,context)=>{
+  const recollection=originalRecollectionReply(input,context);if(recollection!==null)return recollection
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),budgetMs)
   const call=(system:string,user:string)=>new Promise<unknown>((resolve,reject)=>{
    const expired=()=>reject(Error('ORIGINAL_DIALOGUE_TIMEOUT'))

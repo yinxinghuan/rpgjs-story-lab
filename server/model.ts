@@ -5,7 +5,7 @@ import type { StorySave } from '../src/story'
 
 const endpoint='https://chat.aiwaves.tech/aigram/api/game-chat'
 export type ModelRequest=(system:string,user:string,options?:{signal:AbortSignal})=>Promise<unknown>
-async function chat(system:string,user:string,options?:{signal:AbortSignal}):Promise<unknown> {
+export async function chatModel(system:string,user:string,options?:{signal:AbortSignal}):Promise<unknown> {
  const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},signal:options?.signal??AbortSignal.timeout(22000),body:JSON.stringify({messages:[{role:'system',content:system},{role:'user',content:user}]})})
  if(!response.ok)throw new Error('MODEL_HTTP_'+response.status)
  const payload=await response.json() as any
@@ -13,7 +13,7 @@ async function chat(system:string,user:string,options?:{signal:AbortSignal}):Pro
  return JSON.parse(content)
 }
 export type ModelTrace={mode:'local'|'live';attempts:number;issues:string[];fallback:boolean;guard?:'authored-introduction'|'authored-recollection';elapsedMs?:number;requests?:number;proposal?:Proposal;rejections?:Array<{candidate:unknown;issues:string[]}>}
-export async function propose(input:string,s:StorySave,target:EntityId,live:boolean,request:ModelRequest=chat,budgetMs=22000):Promise<{proposal:Proposal;trace:ModelTrace}>{
+export async function propose(input:string,s:StorySave,target:EntityId,live:boolean,request:ModelRequest=chatModel,budgetMs=22000):Promise<{proposal:Proposal;trace:ModelTrace}>{
  const fallback=localReply(input,s,target)
  const trace:ModelTrace={mode:live?'live':'local',attempts:0,issues:[],fallback:false}
  if(!live)return {proposal:fallback,trace}
