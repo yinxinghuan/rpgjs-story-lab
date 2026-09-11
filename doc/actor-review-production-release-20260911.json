@@ -1,0 +1,181 @@
+{
+  "commit": "f8c7cd078883a2b9e2cab2cede61919838634a65",
+  "pagesRun": 34605180844,
+  "pagesConclusion": "success",
+  "tests": 573,
+  "localBrowserEvidence": "actor-sheet-review-browser-20260911.json",
+  "portability": "canonical page, API health and main branch Remix ZIP passed",
+  "storageAudit": {"selfHostedGames":145,"problems":0},
+  "scope": "Creator actor review and retained equipment sources; no story/backend contract, save namespace or default art changes",
+  "limits": ["Local headless browser is not iPhone hardware or AlterU platform playthrough", "Production browser source permission remains pending", "No newly qualified actor atlas or new media generation"],
+  "at": "2026-09-11T13:39:27.164Z",
+  "sites": [
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "assets": [
+        {
+          "path": "index.html",
+          "bytes": 1251,
+          "sha256": "a2e7850415374b9abd4815d7d81567bebeb80cc4e6266c861a0e1109d0c31c6d"
+        },
+        {
+          "path": "creator.html",
+          "bytes": 1410,
+          "sha256": "40052b3a4c9d7df7c0531e7874d00b2e1312c16fc17c379ddce9906cd25fd347"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.txt",
+          "bytes": 107869,
+          "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+        },
+        {
+          "path": "art/overhead/hero-gait-v2.png",
+          "bytes": 460181,
+          "sha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842"
+        },
+        {
+          "path": "assets/index-BRvbfBE5.js",
+          "bytes": 67246,
+          "sha256": "e0e416616879f956ac276574050943b2abaeea8fb7222d862f91f35d7d68b8f5"
+        },
+        {
+          "path": "assets/rolldown-runtime-QTnfLwEv.js",
+          "bytes": 694,
+          "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75"
+        },
+        {
+          "path": "assets/style-CGecqlBH.js",
+          "bytes": 357363,
+          "sha256": "830874ddb8e549dfde2455557b58dd3961b78640b222be22b90a15be0d42dd8c"
+        },
+        {
+          "path": "assets/canvasengine-CCC-_bmI.js",
+          "bytes": 1504206,
+          "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3"
+        },
+        {
+          "path": "assets/style-NUDpuPK2.css",
+          "bytes": 26711,
+          "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d"
+        },
+        {
+          "path": "assets/creator-BU8BiPpx.js",
+          "bytes": 198460,
+          "sha256": "982be3e6389b6dc96456ca33d8048bc5b364e7f7799d0343659e83638b9d428d"
+        },
+        {
+          "path": "assets/sprite-config-BbgBeDsW.js",
+          "bytes": 1093293,
+          "sha256": "263ca7b30e507aa1a81e6f5cacf6d2c9a24850df0e87db58d219877e27bd57e5"
+        },
+        {
+          "path": "assets/creator-C_7JZpSW.css",
+          "bytes": 4730,
+          "sha256": "30753051f8fedc216a76b4f06eb34475d8fb1bcad64b523fe9f52aa78ee50515"
+        }
+      ],
+      "creatorVerified": true
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "assets": [
+        {
+          "path": "index.html",
+          "bytes": 1251,
+          "sha256": "a2e7850415374b9abd4815d7d81567bebeb80cc4e6266c861a0e1109d0c31c6d"
+        },
+        {
+          "path": "creator.html",
+          "bytes": 1410,
+          "sha256": "40052b3a4c9d7df7c0531e7874d00b2e1312c16fc17c379ddce9906cd25fd347"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.txt",
+          "bytes": 107869,
+          "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+        },
+        {
+          "path": "art/overhead/hero-gait-v2.png",
+          "bytes": 460181,
+          "sha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842"
+        },
+        {
+          "path": "assets/index-BRvbfBE5.js",
+          "bytes": 67246,
+          "sha256": "e0e416616879f956ac276574050943b2abaeea8fb7222d862f91f35d7d68b8f5"
+        },
+        {
+          "path": "assets/rolldown-runtime-QTnfLwEv.js",
+          "bytes": 694,
+          "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75"
+        },
+        {
+          "path": "assets/style-CGecqlBH.js",
+          "bytes": 357363,
+          "sha256": "830874ddb8e549dfde2455557b58dd3961b78640b222be22b90a15be0d42dd8c"
+        },
+        {
+          "path": "assets/canvasengine-CCC-_bmI.js",
+          "bytes": 1504206,
+          "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3"
+        },
+        {
+          "path": "assets/style-NUDpuPK2.css",
+          "bytes": 26711,
+          "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d"
+        },
+        {
+          "path": "assets/creator-BU8BiPpx.js",
+          "bytes": 198460,
+          "sha256": "982be3e6389b6dc96456ca33d8048bc5b364e7f7799d0343659e83638b9d428d"
+        },
+        {
+          "path": "assets/sprite-config-BbgBeDsW.js",
+          "bytes": 1093293,
+          "sha256": "263ca7b30e507aa1a81e6f5cacf6d2c9a24850df0e87db58d219877e27bd57e5"
+        },
+        {
+          "path": "assets/creator-C_7JZpSW.css",
+          "bytes": 4730,
+          "sha256": "30753051f8fedc216a76b4f06eb34475d8fb1bcad64b523fe9f52aa78ee50515"
+        }
+      ],
+      "creatorVerified": true
+    }
+  ],
+  "api/creator/health": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "runtimeContract": "creator-background-1",
+      "identityMode": "anonymous-capability-v1"
+    }
+  },
+  "api/creator/sprites": {
+    "status": 401,
+    "body": {
+      "error": "AUTH_REQUIRED"
+    }
+  },
+  "api/original/health": {
+    "status": 404,
+    "body": {
+      "error": "NOT_FOUND"
+    }
+  },
+  "api/lab/health": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "storage": "durable-object-sqlite",
+      "identity_mode": "anonymous-capability-v1",
+      "runtime": "durable-object-sqlite",
+      "production": true,
+      "identityMode": "anonymous-capability-v1",
+      "liveModelAvailable": true,
+      "narrationMode": "opt-in",
+      "release": "carriage-creator-storage-20260911-2",
+      "runtimeContract": "carriage-session-2.train-scenes-3.story-10.relay-1.image-1"
+    }
+  }
+}

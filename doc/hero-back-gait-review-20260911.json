@@ -45,7 +45,8 @@
     "contactSheet": "_qa/ui/hero-gait-runtime-strip.png",
     "otherBaselineActors": "mechanic and attendant front/back opposite boot endpoints, visually checked",
     "iPhoneHardware": false,
-    "productionDeployed": false
+    "productionDeployed": true,
+    "deploymentEvidence": "actor-review-production-release-20260911.json verifies hero-gait-v2.png bytes on both sites at f8c7cd0"
   },
   "limits": [
     "Calibrated only for this exact B hero sheet; not a generic anatomical animation repair",
