@@ -1,3 +1,4 @@
+import {brakeArt} from '../src/original-brake-art'
 import {readFileSync,statSync} from 'node:fs'
 import {resolve,relative} from 'node:path'
 import {createHash} from 'node:crypto'
@@ -7,7 +8,7 @@ import {adaStandingResource,fixedStandingReleases} from '../src/original-art-ide
 import {actorArt} from '../src/art-catalog'
 import {originalEquipmentResource,originalFanResources} from '../src/original-equipment-art'
 const dir=resolve(process.argv[2]??'dist'),assets=newOriginalAssetBindings(),manifest=originalBoundSceneResources(originalStoryPreviewDefinition(),assets)
-const resources=[{kind:'background' as const,path:actorArt.balanced.hero.path,sha256:'7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842',bytes:460181,width:1086,height:1448},...Object.values(manifest.scenes).flatMap(s=>s.assets),adaStandingResource,...Object.values(fixedStandingReleases).map(r=>r.resource),originalEquipmentResource(assets),...originalFanResources(assets).map(([,r])=>r)]
+const resources=[brakeArt.resource,{kind:'background' as const,path:actorArt.balanced.hero.path,sha256:'7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842',bytes:460181,width:1086,height:1448},...Object.values(manifest.scenes).flatMap(s=>s.assets),adaStandingResource,...Object.values(fixedStandingReleases).map(r=>r.resource),originalEquipmentResource(assets),...originalFanResources(assets).map(([,r])=>r)]
 for(const r of resources){
  if(!r.path.startsWith('./')||r.path.includes('whitebox'))throw Error('ORIGINAL_DIST_UNRELEASED_PATH:'+r.path)
  const path=resolve(dir,r.path);if(relative(dir,path).startsWith('..'))throw Error('ORIGINAL_DIST_PATH_ESCAPE')

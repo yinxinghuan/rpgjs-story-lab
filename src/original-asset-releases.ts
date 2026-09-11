@@ -5,7 +5,7 @@ import {assertPublishedBackground,backgroundReleasePath,type PublishedBackground
 import {assertPublishedDevice,type PublishedDevice} from './device-publication'
 import {assertPublishedActor,type PublishedActor} from './actor-publication'
 import {fixedStandingReleases,type FixedStandingBindings} from './original-art-identities'
-import {fixedEquipmentReleases,type FixedEquipmentBindings} from './original-fan-art'
+import {fixedEquipmentReleases,type FixedEquipmentBindings} from './original-fixed-equipment'
 
 const northCape='train-at-dead-station'
 export const ORIGINAL_BACKGROUND_BASELINE='north-cape-baseline-e8e36bba'
@@ -30,7 +30,7 @@ export const originalActorRelease=(a?:OriginalAssetBindings)=>a?.version===4?a.a
 export function originalStarterRelease(a?:OriginalAssetBindings){const base=originalBaseAssets(a);return base?.version===3?base.starter:undefined}
 export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND,'train-at-pine-line':PINE_BACKGROUND,'train-at-sleeping-town':TOWN_BACKGROUND,'train-at-tunnel':TUNNEL_BACKGROUND,'train-at-mountain-pass':PASS_BACKGROUND,'train-at-flood-bridge':FLOOD_BRIDGE_BACKGROUND,'train-at-dawn-junction':JUNCTION_BACKGROUND}
 const currentStandingCast=():FixedStandingBindings=>({'ren-medic':'ren-standing-v1','lin-scout':'lin-standing-v1','mara-raider':'mako-standing-v1'})
-const currentFixedEquipment=():FixedEquipmentBindings=>({'tunnel-fan':'tunnel-fan-parts-v1'})
+const currentFixedEquipment=():FixedEquipmentBindings=>({'tunnel-fan':'tunnel-fan-parts-v1','brakes':'brake-parts-v1'})
 export const newOriginalAssetBindings=():OriginalAssetBindings=>({version:1,backgrounds:{...currentOriginalBackgrounds},standingCast:currentStandingCast(),fixedEquipment:currentFixedEquipment()})
 const additionalBackgrounds=()=>Object.fromEntries(Object.entries(currentOriginalBackgrounds).filter(([scene])=>scene!==northCape))
 function publishedBackgroundBinding(published:PublishedBackground):BackgroundBindings{const additional=additionalBackgrounds();return {version:2,published:structuredClone(published),standingCast:currentStandingCast(),fixedEquipment:currentFixedEquipment(),...(Object.keys(additional).length?{additional}:{})}}

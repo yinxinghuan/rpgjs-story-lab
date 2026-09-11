@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "e0409120-35e3-40e5-a44d-245c886c8bcf",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789166343755860.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 640
+  },
+  "prompt": "Correct this three-part game asset kit. Keep three 320x640 cells, pure WHITE uniform backdrop with NO separator lines. Preserve crisp pixel-painted dark olive/brass/black art. REPLACE the LEFT tall cabinet completely: it must be a LOW HORIZONTAL OPEN RECTANGULAR BRAKE SERVICE TRAY viewed from a high downward orthographic camera. Outer tray silhouette about240 pixels wide and130 pixels deep, centeredx160 y390. NO tall rear wall, roof, tower, cabinet, door, legs or vertical panels. The visible broad TOP INSIDE of the tray is a DARK empty horizontal recess with two small brass upward-facing socket mounts on its lower-left and lower-right corners, spaced160 pixels apart; four shallow squat rubber feet below the tray. Think a shallow railway bogie inspection module lying flat on the ground, NOT a cabinet standing on it. MIDDLE cell: ONLY one black hose, bent into a shallow inverted-U arch, brass downward-pointing threaded end couplings at the two ends. It is viewed from the SAME HIGH DOWNWARD camera: projected outside silhouette about180 pixels wide and90 pixels tall, centeredx480 y390. Keep the continuous hose and shallow surface cracks in the black rubber, NOT a severed hose. RIGHT cell: exact same compact hose/couplings and high camera atx800 y390, sound uncracked rubber. Both hoses lie horizontally in the plane of the tray, not vertical hanging arches or tall loops. They will be overlaid on the fixed tray with the couplings seated into its paired socket mounts. Keep all three parts independent, substantial white margin, no cast shadow, no text, no dividers, no scenery, no smoke, no glow. The critical correction is a low flat TOP-VIEW tray and compressed low TOP-VIEW hoses, not the previous upright cabinet and upright loops."
+}

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "requestSha256": "364973846291598742a7a6f9366177287b9e2810accaa9119ef0db1c94b75b47",
+  "requestId": "7001b07b-68c7-4d47-8f2e-be1f3b345630",
+  "status": "downloaded",
+  "startedAt": "2026-09-11T22:38:57.911Z",
+  "attempts": 1,
+  "task": {
+    "task_id": "mt_99a4d61eeeed4c2f2d550ce02e279644",
+    "request_id": "7001b07b-68c7-4d47-8f2e-be1f3b345630",
+    "status": "succeeded",
+    "type": "image",
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789166343755860.png",
+      "width": 960,
+      "height": 640,
+      "format": "png"
+    },
+    "timing_ms": 3338
+  },
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "4eac43abb5e36ef27cba6064383cff1a8aa9d8f7ba7337691497b82bb0b1c673",
+    "bytes": 398489,
+    "width": 960,
+    "height": 640,
+    "pngColorType": 2
+  },
+  "elapsedMs": 10825,
+  "cost": "not provided by public API",
+  "admission": "rejected",
+  "review": {
+    "issues": [
+      "Tall upright housing instead of low bogie service tray",
+      "Socket directions do not match detached hose ends",
+      "Separators baked into background"
+    ],
+    "next": "One bounded correction; no runtime admission"
+  }
+}

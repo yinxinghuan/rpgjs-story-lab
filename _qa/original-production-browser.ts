@@ -5,7 +5,8 @@ import {originalGameEntities} from '../src/original-game-projection'
 import {originalCharacterBodies} from '../src/original-character-space'
 import {originalCharacterPresent} from '../src/original-character-presence'
 import {environmentStoryRoute} from './environment-story-route'
-const origin='http://127.0.0.1:5349',evidence:any[]=[]
+const origin=process.argv[2]??'http://127.0.0.1:5349',evidence:any[]=[]
+if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(origin))throw Error('LOCAL_QA_ONLY')
 const browser=await chromium.launch({executablePath:'/Users/yin/Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',headless:true})
 try{for(const [width,height,lang,travel]of [[320,568,'zh',true],[390,844,'en',false]]as const){
  const context=await browser.newContext({viewport:{width,height},locale:lang==='zh'?'zh-CN':'en-US',hasTouch:true});let head:any;const errors:string[]=[],assets=new Set<string>(),checks:any[]=[]

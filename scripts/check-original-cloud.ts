@@ -4,6 +4,7 @@ import {originalSessionHttp} from '../src/original-session-http'
 import {originalGameEntities} from '../src/original-game-projection'
 import {environmentStoryRoute} from '../_qa/environment-story-route'
 import {GAME_ID} from '../src/game-id'
+import {originalEquipmentHasArt} from '../src/original-equipment-art'
 const base=(process.argv[2]??'').replace(/\/$/,'')
 if(!process.argv.includes('--allow-new-test-journeys')||base!=='https://game.aiwaves.tech/'+GAME_ID)throw Error('EXPLICIT_CANONICAL_SYNTHETIC_TEST_REQUIRED')
 const output:any[]=[]
@@ -14,14 +15,16 @@ for(const locale of ['zh','en']as const){
  const connection=originalSessionHttp(store,lock,request,base)
  const health=await connection.api('/health');assert.equal(health.production,true)
  lose='/sessions';await assert.rejects(connection.client.enroll(locale));let head=await connection.client.enroll(locale),initial=head.id
- const steps=locale==='zh'?[...environmentStoryRoute]:['repair-starter','commit-valley-route','river-survey','river-rescue-manual','river-treat','river-depart',...environmentStoryRoute.slice(9).map(a=>a==='tunnel-captain-led'?'tunnel-doctor-led':a==='pass-lin-watch'?'pass-player-watch':a==='yard-work-pact'?'yard-medical-pact':a)]
+ assert.equal(originalEquipmentHasArt('brakes',head.assets),true)
+ const steps=['inspect-brakes','replace-brake-hose',...(locale==='zh'?[...environmentStoryRoute]:['repair-starter','commit-valley-route','river-survey','river-rescue-manual','river-treat','river-depart',...environmentStoryRoute.slice(9).map(a=>a==='tunnel-captain-led'?'tunnel-doctor-led':a==='pass-lin-watch'?'pass-player-watch':a==='yard-work-pact'?'yard-medical-pact':a)])]
  for(const [i,id]of steps.entries()){
   const entity=originalGameEntities(head).find(e=>e.actions.some(a=>a.id===id));assert.ok(entity,id)
   const body={target:entity.id,position:entity.approach,type:'action',action:id}
   if(i===0){lose='/actions';await assert.rejects(connection.client.send(head,body));head=(await connection.client.recover()).head}else head=(await connection.client.send(head,body)).head
   assert.equal(head.id,initial);assert.equal(head.version,i+1)
+  if(i===3){assert.equal(head.save.stats.condition,97);assert.equal(head.save.facts['brake-hose-replaced'],true);assert.equal(head.save.inventory.some(item=>item.id==='spare-hose'),false);assert.equal(head.save.danger.phase,'calm')}
  }
  assert.equal(head.save.finale.status,'ready');lose='/ending';await assert.rejects(connection.client.sendEnding(head));head=(await connection.client.recover()).head;assert.equal(head.save.finale.status,'complete');assert.deepEqual(await connection.client.enroll(locale),head)
- output.push({locale,journey:initial,version:head.version,scenes:head.save.map.filter(m=>m.visited).map(m=>m.id),ending:head.save.finale.ending?.anchorFamily,stats:head.save.stats,requests:calls,lostEnrollmentActionEndingRecovered:true})
+ output.push({locale,journey:initial,version:head.version,scenes:head.save.map.filter(m=>m.visited).map(m=>m.id),ending:head.save.finale.ending?.anchorFamily,stats:head.save.stats,requests:calls,brakeRepairAndExactOpeningCosts:true,lostEnrollmentActionEndingRecovered:true})
 }
 console.log(JSON.stringify({at:new Date().toISOString(),base,modelRequests:0,syntheticOnly:true,results:output},null,2))

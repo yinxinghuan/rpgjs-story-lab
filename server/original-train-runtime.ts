@@ -1,3 +1,4 @@
+import {assertOriginalEquipmentAction} from '../src/original-equipment-state'
 import {originalBoundWorldPlan} from '../src/original-world-plan'
 import {originalEnvironmentWalkable} from '../src/original-environment-layouts'
 import {originalSceneBackgroundVersion} from '../src/original-asset-releases'
@@ -12,7 +13,8 @@ import {assertPineSourceAction} from '../src/original-pine-chapter'
 import {originalCharacterPresent} from '../src/original-character-presence'
 import {lastTrainToDawn,lastTrainToDawnEn} from '../src/vendor/original-train/cartridges/lastTrainToDawn'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
-import {executeStoryTurn,type StoryTurnGenerator} from '../src/vendor/original-train/engine/executeTurn'
+import type {StoryTurnGenerator} from '../src/vendor/original-train/engine/executeTurn'
+import {executeOriginalSpatialTurn} from './original-spatial-turn'
 import {resolveDomainAction} from '../src/vendor/original-train/engine/domainRules'
 import type {StorySave,Locale} from '../src/vendor/original-train/types'
 import {originalEndingPolicy,type OriginalEndingGenerator} from './original-ending'
@@ -115,10 +117,11 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    // or dialogue fallback may silently advance an unprepared original chapter.
    if(!resolution)throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
    if(!entity.actions.includes(resolution.ruleId))throw new LabError('UNSUPPORTED_ACTION')
+   assertOriginalEquipmentAction(h.save,resolution.ruleId)
    if(resolution.status==='accepted'){assertPineSourceAction(h.save,resolution.ruleId);assertPassSourceAction(h.save,resolution.ruleId)}
    check({...h,position:pos})
    const bound=await executeBoundStoryTurn({save:h.save,binding,sceneId:h.sceneId,target:entity.id,position:pos,
-    execute:async(save,admitAction)=>{admitAction(resolution.ruleId);const result=await executeStoryTurn({save,cartridge:c,action:input,generator});return {...result,save:projectOriginalChapterChoices(result.save),acceptedActionId:resolution.status==='accepted'?resolution.ruleId:null}},
+    execute:async(save,admitAction)=>{admitAction(resolution.ruleId);const result=await executeOriginalSpatialTurn({save,cartridge:c,action:input,generator});return {...result,save:projectOriginalChapterChoices(result.save),acceptedActionId:resolution.status==='accepted'?resolution.ruleId:null}},
     assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const candidate:OriginalHead={...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos};assertOriginalHead(candidate);check(candidate,h,id)},
    })
    return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:resolution.status==='accepted',actionId:resolution.ruleId,source:bound.result.source,...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}

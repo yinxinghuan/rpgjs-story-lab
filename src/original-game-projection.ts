@@ -1,3 +1,5 @@
+import {originalEquipmentHasArt} from './original-equipment-art'
+import {assertOriginalEquipmentAction} from './original-equipment-state'
 import {originalEntityLayout} from './original-world-plan'
 import type {OriginalHead} from '../server/original-train-runtime'
 import {lastTrainToDawn,lastTrainToDawnEn} from './vendor/original-train/cartridges/lastTrainToDawn'
@@ -30,13 +32,15 @@ export function originalGameEntities(head:OriginalHead){
   const actor=world.characters.find(p=>p.entities.includes(e.id))
   if(actor&&!originalCharacterPresent(save,actor.id))return []
   const actions=terminal?[]:e.actions.flatMap(id=>{
+   try{assertOriginalEquipmentAction(save,id)}catch{return []}
    const choice=save.choices.find(a=>a.id===id);if(choice)return [choice]
    const rule=c.domainRules?.rules.find(r=>r.id===id);if(!rule||resolveDomainAction(save,c,rule.match[0])?.status!=='accepted')return []
    try{assertPassSourceAction(save,id);assertPineSourceAction(save,id)}catch{return []}
    return [{id,label:rule.match[0]}]
   })
-  if(!actions.length&&!actor)return []
-  return [{...e,actions,person:actor?save.characters.find(p=>p.id===actor.id):undefined}]
+  const label=e.id==='brakes'&&originalEquipmentHasArt('brakes',head.assets)?(save.locale==='zh'?'制动检修点':'Brake service point'):undefined
+  if(!actions.length&&!actor&&!label)return []
+  return [{...e,actions,label,person:actor?save.characters.find(p=>p.id===actor.id):undefined}]
  })
 }
 

@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "requestSha256": "25b9b808ab9446aed10694e6515ca26e52ee1ca43568d82e52adb16c445144c1",
+  "requestId": "e0409120-35e3-40e5-a44d-245c886c8bcf",
+  "status": "downloaded",
+  "startedAt": "2026-09-11T22:40:54.333Z",
+  "attempts": 1,
+  "task": {
+    "task_id": "mt_a8b91e9169e95643891ea9bd363d9de1",
+    "request_id": "e0409120-35e3-40e5-a44d-245c886c8bcf",
+    "status": "succeeded",
+    "type": "image",
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789166458844950.png",
+      "width": 960,
+      "height": 640,
+      "format": "png"
+    },
+    "timing_ms": 3052
+  },
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "80196c51b93ed7e4a6e5457b3fa996a2ed839dc4ce77f400782fb9655bc62fa7",
+    "bytes": 341956,
+    "width": 960,
+    "height": 640,
+    "pngColorType": 2
+  },
+  "elapsedMs": 12620,
+  "cost": "not provided by public API",
+  "admission": "accepted-runtime",
+  "review": {
+    "scope": "North Cape brake service point; fixed tray with replaceable cracked/sound hose",
+    "sourcePreserved": true,
+    "prepared": "public/art/brake-parts-v1.png",
+    "preparedSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+    "evidence": "doc/brake-review-20260912.json",
+    "limits": [
+      "Original is opaque RGB, not transparent; explicit authorized local preparation removes pale background and divider margins.",
+      "Source has four fittings, not the requested two; runtime hoses use lower two.",
+      "Local 320x568 and 390x844 Chromium verification; not physical iPhone or AlterU proof."
+    ]
+  }
+}

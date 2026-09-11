@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "7001b07b-68c7-4d47-8f2e-be1f3b345630",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/76acd54/public/art/starter-states-v1.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 640
+  },
+  "prompt": "Create a railway brake service assembly kit in THREE EQUAL VERTICAL CELLS (320x640 each), with pure uniform WHITE background. Match only the reference's crisp pixel-painted dark olive metal/brass material and high downward orthographic JRPG camera. No cabinet and no doors. LEFT cell: one low open rectangular metal brake maintenance frame, showing its broad horizontal top tray and shallow front face from above. Four squat corner feet, brass pipe socket on each side of the front face, a DARK EMPTY rectangular center between sockets. Frame width about240 pixels, height about180 pixels, centered x160, foot contact y470. NO hose in this cell. MIDDLE cell: ONLY a detached black rubber U-shaped brake hose with two brass threaded end couplings. The couplings point upward, the rubber makes a shallow U bend below them. Clearly visible small pale surface cracks across the lower rubber bend, but the hose stays continuous and the braided inner layer intact. No broken gap, no smoke. Hose alone widthabout150 heightabout85, centered x480 y360. RIGHT cell: the SAME isolated U-shaped hose, same size, camera and shape, now sound uncracked black rubber with clean brass couplings, centered x800 y360. Both hoses are viewed from the SAME high camera as the left frame, not a flat icon. These are separate parts for assembly in a game: one unchanged fixed frame, plus damaged/replacement hoses to place between its two sockets. Plenty of clear margin around every part. No floor, scenery, people, labels, arrows, grid, checkerboard, drop shadows, lamps, glow or gauges. Output exactly 960x640."
+}

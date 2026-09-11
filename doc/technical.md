@@ -5,7 +5,7 @@
 - `server/original-presentation.ts`：准入检查九房间绑定、四名固定人物素材、通风机、当前地面与交互点、旅程内素材身份不变。它是结构检查，不是自动审美认证，也不表示其他设备素材全部完成。原始运行时仍默认拒绝；正式Worker显式使用此gate。
 - `vite.config.ts`及`server/original-scene-preview.ts`：cloud/Pages和preflight输出完整地图与背景；`scripts/check-original-dist.ts`在构建时核验实际采用资源的字节、SHA、尺寸和许可证文件，拒绝采用whitebox背景。
 - `worker/source.ts`：原作服务在同一DO namespace的`original-v8:<owner>`内运行，旧车厢对象和数据库迁移标签不变。正式原作使用现有game-chat接口的行动理解/交谈适配器、20秒预算、持久6回合/分钟配额和玩家主动开启；按钮无需模型。显式测试gate不会隐式获得在线provider。
-- 原作wire为`original-session-14.assets-11.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-single-player-20260912-1`。
+- 当前候选原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。候选发布身份为`carriage-brake-state-20260912-1`；实际线上提交以发布记录为准。
 - `_qa/original-production-server.ts`仅供本机测试：原样导入已编译Worker、服务dist、全新临时SQLite，禁止服务器外发；浏览器脚本另拦截所有远程来源。它不是生产Worker，也不读取生产或个人存档。
 - 原作与车厢切换先保存位置；有待确认操作时不得切换。原作目录和两种故事的续玩键保留，不做自动存档迁移。平台账户恢复、全面设备状态美术、最终真实AlterU整段验收仍待完成；上线与实测结果另记发布证据，后文历史“原作关闭”不代表当前候选代码。
 
@@ -865,3 +865,13 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 主站与Pages现为同一76acd54，实际各52文件与本机测试构建逐项SHA一致，Pages运行34654237184成功。正式新建中文林线40版本/英文河谷37版本旅程均完成settle-basic结局，开户、行动、结局模拟丢回执恢复成功，172次合成HTTP请求、零模型请求、不读既有存档。源码与可用构建不再只包含旧车厢：主入口为原作，旧车厢显式入口保留。
 
 620项回归、原样cloud构建和已编译Worker的320中文同行/390英文留守39行动两条完整浏览器路线、切旧车厢再回原作、入口chunk失败重载恢复通过。上述是新建本机浏览器与线上合成HTTP证据，实际AlterU原作全程尚未完成：生产来源浏览器权限仍待此前问题回复。发布详单见original-production-release-20260912.json；完整生产工作流、设备美术与账号恢复仍继续，未关闭整体目标。
+
+### 2026-09-12 制动设备状态与旧故障防回退
+
+`original-fixed-equipment.ts`统一固定设备版本，新增可选brakes绑定；原风机字段/旧旅程保持。`original-brake-art.ts`用一幅912×640三格RGBA定义固定托盘、裂纹/新软管，两RPG-JS事件共享脚点，只有软管帧变化；`original-equipment-art.ts`提供唯一机座，`BrakeDetail`以相同锚点显示当前图。新旅程预加载并核验真实PNG摘要；旧无绑定档不新增物体或碰撞。
+
+`original-equipment-state.ts`把已换管/山口安装事实投影为持续物理状态。冻结原规则在清除warning后会重新接受旧裂纹检查，因此空间runtime与UI统一挡住已安装后的旧检查/更换；不改vendored源码，拒绝不写回合、消耗或资源。客户端把拒绝作为确定结果清除本次pending，不困在恢复循环。新图仍可作为只读检修点打开，隐藏空行动的在线理解开关和输入框。
+
+原作wire升original-session-15.assets-12，旧carriage/creator wire不变；发布标识carriage-brake-state-20260912-1。`prepare-brake-parts.ts`保留原图，仅分帧去边界分隔线、背景处理与脚点对齐；第二图的四装配位是实际输出，两个下方位用于软管，不能声称严格实现原提示的两接口。320×568中文与390×844英文浏览器已复验图形状态、一次扣除、碰撞、无棋盘/分隔线残留、刷新和离站持久化。两条39行动完整浏览器路线均完成40版本结局，同行/留守、结局刷新、切换旧车厢后返回原作保持，零页面错误。625项测试、构建、27份采用资源SHA及发布审计通过。详见brake-review-20260912.json；这些是本机正式构建证据，非iPhone或AlterU实机。
+
+`server/original-spatial-turn.ts`编排已绑定的原规则行动：保留原始resolveDomainAction、协议解析、applyParsedScene、明确encounter命令和domain danger效果，不调用无空间绑定的buildDangerDirective。章节仍使用原reducer处理显式险情，维修钥匙仍能解决合法险情；不修改冻结vendor、不重写历史、不返还旧档已扣资源。此修正来自390英文浏览器实测：检查/换管/修启动器/选河谷后车况意外从预期97变成85；通用导演在检修回合中插入险情并执行−12兜底代价，中文与英文输入哈希又使结果不同。新增双语测试覆盖正常检修精确资源、无自动插曲，以及河谷显式预警、救援消耗与解除。
