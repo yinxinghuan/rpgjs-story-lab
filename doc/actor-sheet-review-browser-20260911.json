@@ -1,0 +1,155 @@
+{
+  "mode": "isolated local headless browser; no media generation or production access",
+  "testedCommit": "82edc63",
+  "visualReview": {
+    "screenshots": "_qa/ui/actor-review-{320-zh,390-en}-{back,right,saved}-local-qa.png and source-reuse-{320-zh,390-en}-local-qa.png",
+    "observed": "Back strides repeat the same leading leg; right standing frame faces away; fail records and control labels are readable at both sizes",
+    "acceptedAsActorAtlas": false,
+    "iPhoneHardware": false,
+    "productionBrowserAccess": false
+  },
+  "evidence": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "lang": "zh",
+      "rejectedId": "7024ee09-0ab3-469c-bc7c-351e1ad1605a",
+      "reviewReopen": true,
+      "reprocessClearsReview": true,
+      "oldReviewRetained": true,
+      "layout": {
+        "overflow": false,
+        "controls": [
+          {
+            "height": 48,
+            "width": 288
+          },
+          {
+            "height": 48,
+            "width": 288
+          },
+          {
+            "height": 48,
+            "width": 288
+          },
+          {
+            "height": 48,
+            "width": 288
+          },
+          {
+            "height": 48,
+            "width": 288
+          },
+          {
+            "height": 48,
+            "width": 288
+          }
+        ],
+        "frames": [
+          {
+            "width": 90.65625,
+            "height": 90.65625,
+            "position": "0% 100%"
+          },
+          {
+            "width": 90.671875,
+            "height": 90.671875,
+            "position": "50% 100%"
+          },
+          {
+            "width": 90.65625,
+            "height": 90.65625,
+            "position": "100% 100%"
+          }
+        ]
+      },
+      "retainedColumns": [
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "recomposedSha256": "35be79d550309e577c292d128a2dbc70df5903b205d76ca29b8e3c5e6669b7d7",
+      "recompositionAndReloadMatch": true,
+      "externalRequests": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "en",
+      "rejectedId": "1f3aadca-92d4-4600-9495-b206c36fcaea",
+      "reviewReopen": true,
+      "reprocessClearsReview": true,
+      "oldReviewRetained": true,
+      "layout": {
+        "overflow": false,
+        "controls": [
+          {
+            "height": 48,
+            "width": 358
+          },
+          {
+            "height": 48,
+            "width": 358
+          },
+          {
+            "height": 48,
+            "width": 358
+          },
+          {
+            "height": 48,
+            "width": 358
+          },
+          {
+            "height": 48,
+            "width": 358
+          },
+          {
+            "height": 48,
+            "width": 358
+          }
+        ],
+        "frames": [
+          {
+            "width": 114,
+            "height": 114,
+            "position": "0% 100%"
+          },
+          {
+            "width": 114,
+            "height": 114,
+            "position": "50% 100%"
+          },
+          {
+            "width": 114,
+            "height": 114,
+            "position": "100% 100%"
+          }
+        ]
+      },
+      "retainedColumns": [
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "recomposedSha256": "35be79d550309e577c292d128a2dbc70df5903b205d76ca29b8e3c5e6669b7d7",
+      "recompositionAndReloadMatch": true,
+      "externalRequests": [],
+      "pageErrors": []
+    }
+  ]
+}
