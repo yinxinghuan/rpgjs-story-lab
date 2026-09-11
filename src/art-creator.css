@@ -3,3 +3,5 @@
 .cl-creator summary{min-height:44px;cursor:pointer;display:flex;align-items:center}.cl-creator dd{margin:0 0 16px;overflow-wrap:anywhere;font-size:14px}
 
 .cl-sprite input{box-sizing:border-box;width:100%;min-height:48px;font:inherit;margin-bottom:12px;padding:8px;color:inherit;background:#142836;border:1px solid #9c804e}.cl-sprite input[type=file]{white-space:normal;font-size:14px}.cl-sprite__preview{padding:8px;min-height:120px}.cl-sprite__preview--dark{background:#15212b}.cl-sprite__preview--light{background:#f2f1e9}.cl-sprite__preview img{image-rendering:pixelated}.cl-sprite small{display:block;overflow-wrap:anywhere}.cl-sprite select{min-width:0;max-width:100%}
+
+.cl-sprite fieldset{min-width:0;margin:12px 0;padding:12px;border:1px solid #9c804e66}.cl-sprite fieldset p{overflow-wrap:anywhere}.cl-sprite legend{padding:0 6px}

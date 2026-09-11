@@ -685,3 +685,11 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 `original-equipment-art.ts`从原场景实体starter派生脚点和固定40×18占地，提供两帧纹理、资源摘要及`starter-repaired`事实投影。原作renderer创建独立1×1穿透图形节点，实体动作消失后设备仍存在；每次权威Head恢复后更新图形，故事不由画面驱动。`original-world-space.ts`组合原场景、在场人物与设备占位，客户端寻路和服务端位置校验共用；旧Head仍先按原静态地图校验，再在组合占位下恢复合法点，不改动StorySave。PNG在renderer前验证摘要/解码，缺图使用既有恢复界面。
 
 本轮545项测试、preflight/cloud+worker/Pages构建、公开秘密与API base扫描通过。真实新建浏览器旅程完成检修、82→87车况、刷新版本1、390×844与320×568布局及柜后行走；缺少设备PNG时明确恢复提示，恢复正常加载后继续。详见`starter-entity-review-20260911.json`。未正式部署，不等于完整原作发布完成。
+
+### 浏览器两来源设备组合（2026-09-11）
+
+`composeRepairFrames`仅选择两张PNG横向图集中的声明列，拒绝越界、不整除、不同帧尺寸和超大结果；像素不缩放。`SpriteDraft.composition`可选保存version1、两张完整原始PNG/SHA、文件名和选帧列，`deviceStateSet: repair`明确两帧语义；旧记录无这些字段时保持原三状态合同。处理与地图载入都会验证原图SHA，并重建组合像素与组合源对照，迟到/失败沿用原版本锁和独立历史。
+
+制作页可手动选择两份PNG，也可载入已生成starter-edit-02第1列与starter-repair-03；后者预置已审查的接地点并明确不发起生图。固定样本和手工输入共用浏览器组合函数、原生PNG编码、IndexedDB保存、Web Worker去底和地图检查。组合前的文件选择只在页面内暂存，组合成功后才保存完整来源。设备预览按states长度选择两帧或三帧，同一图集比例和落地深度；占地将门尖超出脚点的部分放到真实前方，所有状态预留相同范围。仍未提供两来源的在线生成/云端版本发布，不宣称完整自助制作链已经通过。
+
+此轮549项回归、preflight/cloud+worker/Pages构建及媒体/秘密/API审计通过。真实浏览器组合候选07f75a8a-d1e3-411b-a486-ac710b555cbd经保存、刷新、北岬/河谷加载与两状态切换通过，具体原图/候选摘要及截图限制见`sprite-composition-review-20260911.json`。最后返场截图受宿主缩放影响，不能当作完整手机视觉验收；此前390×844和320×568场景截图与DOM尺寸相符。

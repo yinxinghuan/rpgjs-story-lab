@@ -1,9 +1,12 @@
 import {artDraftDatabaseName} from './art-draft'
 import type {PixelRaster, PreparedSprite, SpritePreparationSpec} from './sprite-preparation'
+import {composeRepairFrames} from './sprite-composition'
 export type SpritePng = {bytes: Uint8Array; sha256: string; width: number; height: number}
+export type SpriteCompositionInput={source:SpritePng;sourceName:string;columns:number;column:number}
 export type SpriteDraft = {
   version: 'sprite-draft-1'; id: string; revision: number; parentId?: string; createdAt: number;
   source: SpritePng; sourceName: string; sourceKind?: 'actor'|'states'; spec?: SpritePreparationSpec;
+  deviceStateSet?: 'repair'; composition?: {version:1;inputs:SpriteCompositionInput[]};
   state: 'source'|'processing'|'candidate'|'failed'; error?: string;
   result?: {png: SpritePng; frames: PreparedSprite['frames']; metrics: PreparedSprite['metrics']; algorithm: PreparedSprite['algorithm']}
 }
@@ -29,6 +32,15 @@ export async function verifySpritePng(png: SpritePng) {
 }
 export function newSpriteSource(source: SpritePng, sourceName: string,sourceKind:'actor'|'states'='actor'): SpriteDraft {
   return {version:'sprite-draft-1',id:crypto.randomUUID(),revision:0,createdAt:Date.now(),source,sourceName:sourceName.slice(0,100),sourceKind,state:'source'}
+}
+export async function verifySpriteComposition(draft:SpriteDraft,decode:(png:SpritePng)=>Promise<PixelRaster>,decoded?:PixelRaster){
+ if(!draft.composition)return
+ const c=draft.composition
+ if(c.version!==1||!Array.isArray(c.inputs)||c.inputs.length!==2||draft.sourceKind!=='states'||draft.deviceStateSet!=='repair')throw Error('SPRITE_COMPOSITION_INVALID')
+ const frames=[]
+ for(const i of c.inputs){await verifySpritePng(i.source);const raster=await decode(i.source);if(raster.width!==i.source.width||raster.height!==i.source.height)throw Error('SPRITE_DECODE');frames.push({raster,columns:i.columns,column:i.column})}
+ const expected=composeRepairFrames(frames),actual=decoded??await decode(draft.source)
+ if(expected.width!==actual.width||expected.height!==actual.height||expected.rgba.length!==actual.rgba.length||!expected.rgba.every((v,i)=>v===actual.rgba[i]))throw Error('SPRITE_COMPOSITION_MISMATCH')
 }
 export class BrowserSpriteDrafts implements SpriteDraftRepository {
   private db: Promise<IDBDatabase>
@@ -77,6 +89,7 @@ export async function runSpriteDraft(repo:SpriteDraftRepository,source:SpriteDra
     await verifySpritePng(draft.source)
     const input=await io.decode(draft.source)
     if(input.width!==draft.source.width || input.height!==draft.source.height)throw Error('SPRITE_DECODE')
+    await verifySpriteComposition(draft,io.decode,input)
     if(signal?.aborted)throw Error('SPRITE_PREPARATION_ABORTED')
     const prepared=await io.process(input,draft.spec!,signal)
     if(signal?.aborted)throw Error('SPRITE_PREPARATION_ABORTED')

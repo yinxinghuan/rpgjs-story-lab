@@ -1,0 +1,60 @@
+{
+  "date": "2026-09-11",
+  "scope": "Browser two-source repair-state assembly and actual map preview",
+  "candidateId": "07f75a8a-d1e3-411b-a486-ac710b555cbd",
+  "compositeSourceSha256": "57e4fc795820fb7d322a54b4a181c9625c55f3a70074ddeebd90e4f42112bf16",
+  "candidateSha256": "35be79d550309e577c292d128a2dbc70df5903b205d76ca29b8e3c5e6669b7d7",
+  "retainedSources": [
+    {
+      "name": "starter-edit-02",
+      "sha256": "8eb32bb26a859cf20c1647bddb0896c3f8821b53f5aff1e6a71641b1adcde8da",
+      "column": 1,
+      "columns": 3
+    },
+    {
+      "name": "starter-repair-03",
+      "sha256": "2a55ef71cf18431a9eff62336a265f11d4c4af2e93fc12c77ff0749b4bcd71b2",
+      "column": 0,
+      "columns": 1
+    }
+  ],
+  "browserEvidence": [
+    "loaded two existing public platform samples without generation",
+    "browser composition and PNG encoding",
+    "Web Worker preparation -> candidate saved",
+    "reload retains same candidate ID and source provenance",
+    "actual RPG-JS map: broken/repaired frame switching",
+    "north cape front logical/rendered 104,244",
+    "cabinet collision refused",
+    "river valley front logical/rendered 276,428",
+    "390x844 and 320x568 DOM no overflow",
+    "return to cached north map retains repaired selector; authored code reapplies same frame after restore",
+    "creator form actual 300x649 under host zoom: no document or fieldset overflow"
+  ],
+  "tests": {
+    "total": 549,
+    "passed": 549,
+    "failed": 0
+  },
+  "sourcesChanged": false,
+  "newMediaRequests": 0,
+  "newModelRequests": 0,
+  "productionDeployed": false,
+  "limits": [
+    "This trial used existing-sample buttons. OS file-picker path has not been exercised in a real browser.",
+    "Multi-source composition is not online generation or cloud publication.",
+    "Creator state selection is temporary inspection state, not a StorySave mutation.",
+    "iPhone hardware and formal AlterU full game review remain outstanding.",
+    "Host zoom changed during the final return screenshot: file is 246x437 while prior map screenshots are true 390x844 and 320x568. Final returned-frame screenshot is not a valid mobile visual gate."
+  ],
+  "builds": [
+    "preflight",
+    "cloud + worker",
+    "pages"
+  ],
+  "audits": [
+    "public secrets pass",
+    "game API base pass",
+    "media integration pass"
+  ]
+}

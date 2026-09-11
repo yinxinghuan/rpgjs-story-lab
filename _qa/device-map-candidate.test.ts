@@ -41,8 +41,9 @@ test('both admitted maps allow front/back approach, reserve every state footprin
  const {draft,pixels}=await fixture(),c=await inspectDeviceMapCandidate(draft,draft.id,async()=>pixels)
  for(const scene of [originalTrainRoom('dead-station'),originalTrainRoom('river-valley')]){
   const a=deviceCandidatePlacement(scene),walkable=(p:{x:number;y:number})=>originalTrainPlanWalkable(scene,p)&&!deviceCandidateBlocks(c,scene,p)
-  const front={x:a.x-4.5,y:a.y+2},back={x:a.x-4.5,y:a.y-c.footprint.depth-20},inside={x:a.x-4.5,y:a.y-12}
+  const front={x:a.x-4.5,y:a.y+c.footprint.front+2},back={x:a.x-4.5,y:a.y-c.footprint.depth-20},inside={x:a.x-4.5,y:a.y-12}
   assert.equal(walkable(front),true);assert.equal(walkable(back),true);assert.equal(walkable(inside),false)
+  assert.equal(walkable({x:a.x-4.5,y:a.y+c.footprint.front-.5}),false,'forward door tip is reserved')
   assert.ok(findGridPath({x:192,y:430},front,walkable).length);assert.ok(findGridPath(front,back,walkable).length)
   assert.equal(findGridPath(front,inside,walkable).length,0)
  }
