@@ -1,11 +1,14 @@
 import {verifySpritePng,type SpriteDraft,type SpriteDraftRepository,type SpritePng} from './sprite-draft'
+import {assertActorMapReview,type ActorMapReview} from './actor-map-review'
+import {inspectActorMapCandidate,type ActorPreview} from './sprite-map-candidate'
+import type {PixelRaster} from './sprite-preparation'
 
 export const ACTOR_DIRECTIONS=['down','left','right','up'] as const
 export const ACTOR_ROW_CHECKS=['facing','alternatingSteps','attachments'] as const
 export type ActorDirection=typeof ACTOR_DIRECTIONS[number]
 export type ActorVerdict='unchecked'|'pass'|'fail'
 export type ActorAnswers=Record<ActorDirection,Record<typeof ACTOR_ROW_CHECKS[number],ActorVerdict>>
-export type ActorSheetReview={version:1;draftId:string;sourceSha256:string;candidateSha256:string;preparation:string;recordedAt:number;answers:ActorAnswers}
+export type ActorSheetReview={version:1;draftId:string;sourceSha256:string;candidateSha256:string;preparation:string;recordedAt:number;answers:ActorAnswers;map?:ActorMapReview}
 export type ActorReviewTarget=Pick<SpriteDraft,'id'|'state'|'spec'|'deviceStateSet'|'composition'> & {source:Pick<SpritePng,'sha256'>;result?:Pick<NonNullable<SpriteDraft['result']>,'frames'|'algorithm'> & {png:Pick<SpritePng,'sha256'>}}
 const invalid=()=>{throw Error('SPRITE_ACTOR_REVIEW_INVALID')}
 export function emptyActorAnswers():ActorAnswers{
@@ -26,9 +29,20 @@ export function actorReviewStatus(answers:ActorAnswers){
  return values.includes('fail')?'rejected':values.every(v=>v==='pass')?'sheet-reviewed':'incomplete'
 }
 export function assertActorSheetReview(r:any,d:ActorReviewTarget):asserts r is ActorSheetReview{
- if(!r||Object.keys(r).sort().join(',')!=='answers,candidateSha256,draftId,preparation,recordedAt,sourceSha256,version'||r.version!==1||!Number.isSafeInteger(r.recordedAt)||r.recordedAt<0)return invalid()
+ if(!r||Object.keys(r).sort().join(',')!==(r.map===undefined?'answers,candidateSha256,draftId,preparation,recordedAt,sourceSha256,version':'answers,candidateSha256,draftId,map,preparation,recordedAt,sourceSha256,version')||r.version!==1||!Number.isSafeInteger(r.recordedAt)||r.recordedAt<0)return invalid()
  const expected=binding(d);for(const key of Object.keys(expected) as Array<keyof typeof expected>)if(r[key]!==expected[key])return invalid()
  assertAnswers(r.answers)
+ if(r.map!==undefined){if(actorReviewStatus(r.answers)!=='sheet-reviewed')return invalid();assertActorMapReview(r.map,d)}
+}
+export async function saveActorMapReview(repo:SpriteDraftRepository,expected:SpriteDraft,map:ActorMapReview,candidate:ActorPreview,decode:(png:SpritePng)=>Promise<PixelRaster>){
+ const current=await repo.get()
+ if(!current||current.id!==expected.id||current.revision!==expected.revision||JSON.stringify(current.actorReview)!==JSON.stringify(expected.actorReview))throw Error('SPRITE_DRAFT_REPLACED')
+ assertActorSheetReview(current.actorReview,current)
+ if(actorReviewStatus(current.actorReview.answers)!=='sheet-reviewed')throw Error('ACTOR_MAP_REVIEW_REQUIRED')
+ const checked=await inspectActorMapCandidate(current,current.id,decode)
+ if(checked.png.sha256!==candidate.png.sha256||map.scale!==checked.scale||JSON.stringify(map.bounds)!==JSON.stringify(checked.frameBounds))throw Error('SPRITE_DRAFT_REPLACED')
+ const next:SpriteDraft={...current,actorReview:{...structuredClone(current.actorReview),recordedAt:Date.now(),map:structuredClone(map)}}
+ assertActorSheetReview(next.actorReview,next);await repo.save(next,current);return next
 }
 export function currentActorReview(d:SpriteDraft){try{assertActorSheetReview(d.actorReview,d);return d.actorReview}catch{return undefined}}
 export async function saveActorSheetReview(repo:SpriteDraftRepository,expected:SpriteDraft,answers:ActorAnswers){

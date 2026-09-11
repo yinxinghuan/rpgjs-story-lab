@@ -1,0 +1,61 @@
+{
+  "date": "2026-09-11",
+  "scope": "人物图集判断→实际地图试走→私有版本保存恢复",
+  "tests": {
+    "total": 582,
+    "pass": 582
+  },
+  "build": "cloud frontend and opaque-module Worker startup passed",
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "syntheticDraftId": "3ee1b28d-c578-4e75-bf5a-3f5e256b8c8b",
+      "checks": 8,
+      "onlineRestoreWithMap": true,
+      "reloadRetainsMap": true,
+      "adaNotApproved": true,
+      "visualApproval": "synthetic fixture only; no real actor admitted",
+      "externalConnections": 0,
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "pageErrors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "syntheticDraftId": "7867bda9-e3df-4241-a071-9f1f1cac081d",
+      "checks": 8,
+      "onlineRestoreWithMap": true,
+      "reloadRetainsMap": true,
+      "adaNotApproved": true,
+      "visualApproval": "synthetic fixture only; no real actor admitted",
+      "externalConnections": 0,
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "pageErrors": []
+    }
+  ],
+  "screenshots": [
+    "_qa/ui/actor-map-320-zh-home-local-qa.png",
+    "_qa/ui/actor-map-320-zh-river-local-qa.png",
+    "_qa/ui/actor-map-320-zh-saved-local-qa.png",
+    "_qa/ui/actor-map-320-zh-ada-rejected-local-qa.png",
+    "_qa/ui/actor-map-390-en-home-local-qa.png",
+    "_qa/ui/actor-map-390-en-river-local-qa.png",
+    "_qa/ui/actor-map-390-en-saved-local-qa.png",
+    "_qa/ui/actor-map-390-en-ada-rejected-local-qa.png"
+  ],
+  "inspection": "两个尺寸的北岬、河谷、返回保存、阿达拒绝画面均已实际查看。最终收紧四向停步规则后复跑并复拍，同状态复验保存和河谷画面。",
+  "limits": [
+    "合成诊断图的表单通过仅用于验证保存分支，不是合格人物资源",
+    "真实阿达旧图仍拒绝",
+    "本机新建无登录态Chromium，远程访客扩展被QA网络规则阻止，无生产来源操作或iPhone硬件证据",
+    "没有新增生图、人物正式发布或原作正式开放"
+  ],
+  "next": "衔接通过检查的人物不可变发布与原作旅程资产绑定；继续完整美术和正式平台验收"
+}

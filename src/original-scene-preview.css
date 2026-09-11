@@ -7,3 +7,4 @@
 .cl-original-checks button[aria-pressed="true"]{background:#30404a;border-color:#cfaa69}
 
 .cl-background-review summary{min-height:44px;display:flex;align-items:center;cursor:pointer}.cl-background-review p{font-size:16px;line-height:1.5}.cl-background-review a{display:flex;min-height:44px;align-items:center;color:inherit}
+.cl-original-preview--actor .cl-original-checks{max-height:45dvh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}

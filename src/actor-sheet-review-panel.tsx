@@ -18,6 +18,7 @@ export default function ActorSheetReviewPanel({draft,imageUrl,busy,locale,onSave
   <ul>{ACTOR_DIRECTIONS.map(d=><li key={d}>{names[d]} · {t('通过','Passed')} {ACTOR_ROW_CHECKS.filter(c=>answers[d][c]==='pass').length}/3{ACTOR_ROW_CHECKS.some(c=>answers[d][c]==='fail')?' · '+t('有问题','Issue found'):''}</li>)}</ul>
   <p role="status">{status==='rejected'?t('发现问题，不能作为合格行走图集。','Issues found. This is not a qualified walking sheet.'):status==='sheet-reviewed'?t('图集检查已填写，仍需地图、遮挡、比例和手机运行检查。','Sheet checks filled in. Map, occlusion, scale and mobile runtime checks are still required.'):t('尚有方向未检查，可以先保存当前记录。','Some directions remain unchecked. You can save your progress.')}{review&&!dirty?' '+t('当前记录已保存。','The current record is saved.'):dirty?' '+t('修改尚未保存。','Changes are not saved.') :''}</p>
   <button disabled={busy||!dirty||!imageUrl} onClick={()=>onSave(structuredClone(answers))}>{t('保存图集检查记录','Save sheet review')}</button>
+  {review?.map&&!dirty&&<p>{t('此版本已保存地图试走及画面确认，仍未发布。修改图集检查会清空这次地图确认。','This version has a saved map trial and visual confirmation and is still unpublished. Editing sheet checks clears that map confirmation.')}</p>}
   <p>{t('此按钮保存本地检查。再使用下方的在线保存，可将检查作为独立版本保存；在线取回恢复最近一版，每份素材最多64版。重新处理会清空新候选检查，旧记录保留。检查不会自动发布或替换人物。','This button saves locally. Use online save below to retain a separate review version; restoring art loads the latest review, up to 64 versions per asset. Reprocessing clears new candidate checks and retains old records. Reviews never automatically publish or replace an actor.')}</p>
  </details></section>
 }

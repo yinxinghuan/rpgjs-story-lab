@@ -8,7 +8,10 @@ export function actorReviewTarget(manifest:SpriteArchiveManifest):ActorReviewTar
 }
 /** Content identity survives lost responses and refresh without a second intent. */
 export async function actorReviewId(r:ActorSheetReview){
- const text=JSON.stringify([r.version,r.draftId,r.sourceSha256,r.candidateSha256,r.preparation,r.recordedAt,ACTOR_DIRECTIONS.map(d=>ACTOR_ROW_CHECKS.map(c=>r.answers[d][c]))])
+ const fields:any[]=[r.version,r.draftId,r.sourceSha256,r.candidateSha256,r.preparation,r.recordedAt,ACTOR_DIRECTIONS.map(d=>ACTOR_ROW_CHECKS.map(c=>r.answers[d][c]))]
+ // Keep old sheet-only identities byte-for-byte stable across this addition.
+ if(r.map)fields.push([r.map.version,r.map.layout,r.map.scale,r.map.bounds,r.map.checks,r.map.visualAccepted])
+ const text=JSON.stringify(fields)
  return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),v=>v.toString(16).padStart(2,'0')).join('')
 }
 export async function assertArchivedActorReview(r:any,target:ActorReviewTarget):Promise<void>{

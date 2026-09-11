@@ -9,9 +9,11 @@ import {findGridPath} from './grid-path'
 import {originalTrainPlanWalkable,originalTrainSpatialPlan,originalTrainRoom} from './original-train-spatial-plan'
 import {SceneReadiness,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
 import {BrowserArtDrafts,artDraftDatabaseName,decodeArtCandidate} from './art-draft'
-import {BrowserSpriteDrafts,spriteDatabaseName} from './sprite-draft'
+import {BrowserSpriteDrafts,spriteDatabaseName,type SpriteDraft} from './sprite-draft'
 import {decodeSpritePixels,spritePreviewUrl} from './sprite-browser-io'
-import {inspectActorMapCandidate} from './sprite-map-candidate'
+import {inspectActorMapCandidate,type ActorPreview} from './sprite-map-candidate'
+import {ActorMapTrial,ACTOR_MAP_CHECKS,actorMapReview} from './actor-map-review'
+import {currentActorReview,actorReviewStatus,saveActorMapReview} from './actor-sheet-review'
 import {DEVICE_CHECKS,DEVICE_LAYOUT,deviceGeometry,sameDeviceGeometry} from './device-publication'
 import {BACKGROUND_CHECKS,BACKGROUND_LAYOUT} from './background-publication'
 import './original-scene-preview.css'
@@ -22,6 +24,8 @@ export default function OriginalScenePreview(){
  const actorSuffix=actorDraftId?'&actor_draft='+encodeURIComponent(actorDraftId):'',backgroundSuffix=draftMode?'&art_source=draft&draft='+encodeURIComponent(query.get('draft')??''):platform?'&art_source=platform':''
  const deviceSuffix=deviceDraftId?'&device_draft='+encodeURIComponent(deviceDraftId):''
  const device=useRef<DevicePreview|null>(null),deviceEvents=useRef(new Map<string,RpgPlayer>()),deviceStateRef=useRef<DeviceState>('closed')
+ const actor=useRef<{draft:SpriteDraft;candidate:ActorPreview}|null>(null),actorTrial=useRef(new ActorMapTrial())
+ const [actorChecks,setActorChecks]=useState<string[]>([]),[actorSheetPassed,setActorSheetPassed]=useState(false),[actorSaved,setActorSaved]=useState(false)
  const [deviceState,setDeviceState]=useState<DeviceState>('closed')
  const [reviewChecks,setReviewChecks]=useState<string[]>([]),[reviewSaved,setReviewSaved]=useState(false),[reviewBusy,setReviewBusy]=useState(false),draftHash=useRef('')
  function applyDevice(event:RpgPlayer,state:DeviceState){const id=device.current!.id;if(event.graphics()[0]!==id)event.setGraphic(id);event.animationFixed=true;event.animationName.set(state);event.syncChanges()}
@@ -35,6 +39,19 @@ export default function OriginalScenePreview(){
  const positionRef=useRef(position);positionRef.current=position
  const reviewing=draftMode&&!actorDraftId&&!deviceDraftId
  const deviceReviewing=Boolean(deviceDraftId)&&!actorDraftId&&device.current?.states[0]==='broken'
+ async function saveActorReview(){
+  const loaded=actor.current;if(reviewBusy||!loaded||!actorSheetPassed||!ACTOR_MAP_CHECKS.every(c=>actorChecks.includes(c)))return
+  setReviewBusy(true)
+  try{await navigator.locks.request(spriteDatabaseName(location.href),async()=>{const store=new BrowserSpriteDrafts(spriteDatabaseName(location.href));try{
+   const saved=await saveActorMapReview(store,loaded.draft,actorMapReview(loaded.candidate,actorTrial.current.result()),loaded.candidate,decodeSpritePixels)
+   actor.current={...loaded,draft:saved};setActorSaved(true)
+  }finally{await store.close()}})}catch{setNotice(t('人物检查未能保存。候选或图集判断可能已变化，请返回制作页核对。','Actor review could not be saved. The candidate or sheet review may have changed; check it in the creator.'))}finally{setReviewBusy(false)}
+ }
+ function observeActor(){
+  if(!actor.current)return
+  actorTrial.current.sample(document.hidden?null:runtime.current?.motion?.()??null,performance.now())
+  const next=actorTrial.current.result();setActorChecks(old=>old.join(',')===next.join(',')?old:next)
+ }
  useEffect(()=>{
   const c=device.current;if(!deviceReviewing||!c||!ready||scene!==config.initialScene||!rendered||Math.hypot(position.x-rendered.x,position.y-rendered.y)>1.5)return
   const a=deviceCandidatePlacement(scene,c),hits:string[]=[deviceStateRef.current]
@@ -74,20 +91,21 @@ export default function OriginalScenePreview(){
   void(async()=>{try{
    if(draftMode){const store=new BrowserArtDrafts(artDraftDatabaseName(location.href));try{const draft=await store.get(query.get('draft')??'missing');if(!draft?.candidate||draft.state!=='candidate'||draft.id!==query.get('draft'))throw Error('DRAFT_NOT_READY');const checked=await decodeArtCandidate(draft.candidate);URL.revokeObjectURL(checked);const resources=structuredClone(config.resources),blob=URL.createObjectURL(new Blob([new Uint8Array(draft.candidate.bytes)],{type:'image/png'}));draftBlob=blob;draftHash.current=draft.candidate.sha256;resources.scenes[config.initialScene].assets=resources.scenes[config.initialScene].assets.map(a=>a.kind==='background'?{...a,path:blob,sha256:draft.candidate!.sha256,bytes:draft.candidate!.bytes.length}:a);loader=new SceneReadiness(resources,(resource,signal)=>loadBrowserSceneResource(resource,signal,document.baseURI,(input,init)=>{const url=String(input);return fetch(url.startsWith(blob)?blob:input,init)}));readiness.current=loader}finally{await store.close()}}
    let sheet=heroSheet,heroGraphic='hero'
-   if(actorDraftId){const store=new BrowserSpriteDrafts(spriteDatabaseName(location.href));try{const draft=await store.get(actorDraftId);if(!draft)throw Error('SPRITE_MISSING');const candidate=await inspectActorMapCandidate(draft,actorDraftId,decodeSpritePixels);actorBlob=await spritePreviewUrl(candidate.png);const texture=await Assets.load({src:actorBlob,parser:'loadTextures'});if(texture?.width!==candidate.width||texture?.height!==candidate.height)throw Error('SPRITE_TEXTURE_NOT_READY');sheet=actorSheet(candidate.id,actorBlob,candidate.width,candidate.height,candidate.baselines,candidate.scale,candidate.centers);heroGraphic=candidate.id}finally{await store.close()}}
+   if(actorDraftId){const store=new BrowserSpriteDrafts(spriteDatabaseName(location.href));try{const draft=await store.get(actorDraftId);if(!draft)throw Error('SPRITE_MISSING');const candidate=await inspectActorMapCandidate(draft,actorDraftId,decodeSpritePixels);actorBlob=await spritePreviewUrl(candidate.png);const texture=await Assets.load({src:actorBlob,parser:'loadTextures'});if(texture?.width!==candidate.width||texture?.height!==candidate.height)throw Error('SPRITE_TEXTURE_NOT_READY');actor.current={draft,candidate};const review=currentActorReview(draft);setActorSheetPassed(Boolean(review&&actorReviewStatus(review.answers)==='sheet-reviewed'));sheet=actorSheet(candidate.id,actorBlob,candidate.width,candidate.height,candidate.baselines,candidate.scale,candidate.centers);heroGraphic=candidate.id}finally{await store.close()}}
    if(deviceDraftId){const store=new BrowserSpriteDrafts(spriteDatabaseName(location.href));try{const draft=await store.get(deviceDraftId);if(!draft)throw Error('SPRITE_MISSING');const checked=await inspectDeviceMapCandidate(draft,deviceDraftId,decodeSpritePixels);deviceBlob=await spritePreviewUrl(checked.png);const texture=await Assets.load({src:deviceBlob,parser:'loadTextures'});if(texture?.width!==checked.png.width||texture?.height!==checked.png.height)throw Error('SPRITE_TEXTURE_NOT_READY');device.current=checked;deviceStateRef.current=checked.states[0];setDeviceState(checked.states[0])}finally{await store.close()}}
    const initial=await loader.prepare(config.initialScene);if(!mounted.current){URL.revokeObjectURL(initial.background);return}
    setBackground(initial.background)
-   createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:Object.keys(config.resources.scenes),initialScene:config.initialScene,initialPosition:spawn,heroGraphic,spritesheets:[sheet,...(device.current?[deviceCandidateSheet(device.current,deviceBlob)]:[])],mapEvents:s=>{if(!device.current)return [];const at=deviceCandidatePlacement(s,device.current);return [{id:device.current.id+'-'+s,x:at.x,y:at.y-1,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;deviceEvents.current.set(s,this);applyDevice(this,deviceStateRef.current)}}}]},walkable,safePosition:(p,s)=>walkable(p,s)?p:world.scenes.find(room=>room.id===s)!.spawn,findPath:(a,b,s)=>findGridPath(a,b,p=>walkable(p,s)),onPosition:setPosition,onDestination:setDestination,onReady:r=>{if(!mounted.current){r.destroy();return}runtime.current=r;setEngineReady(true);probe=setInterval(()=>setRendered(r.renderedPosition()),150);void enterScene(config.initialScene)}})
+   createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:Object.keys(config.resources.scenes),initialScene:config.initialScene,initialPosition:spawn,heroGraphic,spritesheets:[sheet,...(device.current?[deviceCandidateSheet(device.current,deviceBlob)]:[])],mapEvents:s=>{if(!device.current)return [];const at=deviceCandidatePlacement(s,device.current);return [{id:device.current.id+'-'+s,x:at.x,y:at.y-1,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;deviceEvents.current.set(s,this);applyDevice(this,deviceStateRef.current)}}}]},walkable,safePosition:(p,s)=>walkable(p,s)?p:world.scenes.find(room=>room.id===s)!.spawn,findPath:(a,b,s)=>findGridPath(a,b,p=>walkable(p,s)),onPosition:setPosition,onDestination:setDestination,onReady:r=>{if(!mounted.current){r.destroy();return}runtime.current=r;setEngineReady(true);probe=setInterval(()=>{setRendered(r.renderedPosition());observeActor()},actorDraftId?50:150);void enterScene(config.initialScene)}})
   }catch{if(mounted.current){setSwitching(false);setError(actorDraftId||deviceDraftId?t('人物、设备候选或场景未通过检查，请返回准备页核对。','The actor, device candidate or scene failed validation. Check the preparation page.'):t('初始场景未通过检查，请重新载入。','Initial scene validation failed. Reload to retry.'))}}})()
   return()=>{mounted.current=false;if(draftBlob)URL.revokeObjectURL(draftBlob);if(actorBlob){void Assets.unload(actorBlob).catch(()=>{});URL.revokeObjectURL(actorBlob);}if(deviceBlob){void Assets.unload(deviceBlob).catch(()=>{});URL.revokeObjectURL(deviceBlob)}deviceEvents.current.clear();if(probe)clearInterval(probe);runtime.current?.destroy();for(const id of Object.keys(config.resources.scenes)){const url=loader.background(id);if(url)URL.revokeObjectURL(url)}}
  },[])
- function walk(p:RendererPoint){if(!ready)return;const accepted=runtime.current?.walkTo(p);setNotice(accepted?'':t('这里不可通行','This area is blocked'));if(deviceReviewing&&scene===config.initialScene&&device.current){const a=deviceCandidatePlacement(scene,device.current);if(p.x===a.x-4.5&&p.y===a.y-12&&accepted===false&&deviceCandidateBlocks(device.current,scene,p))setReviewChecks(old=>old.includes('collision')?old:[...old,'collision'])}if(reviewing&&scene===config.initialScene&&p.x===188&&p.y===130&&accepted===false&&!walkable(p,scene))setReviewChecks(old=>old.includes('collision')?old:[...old,'collision'])}
+ function walk(p:RendererPoint){if(!ready)return;const accepted=runtime.current?.walkTo(p);if(actorDraftId){actorTrial.current.collision(scene,p.x===188&&p.y===130&&accepted===false&&!walkable(p,scene));observeActor()}setNotice(accepted?'':t('这里不可通行','This area is blocked'));if(deviceReviewing&&scene===config.initialScene&&device.current){const a=deviceCandidatePlacement(scene,device.current);if(p.x===a.x-4.5&&p.y===a.y-12&&accepted===false&&deviceCandidateBlocks(device.current,scene,p))setReviewChecks(old=>old.includes('collision')?old:[...old,'collision'])}if(reviewing&&scene===config.initialScene&&p.x===188&&p.y===130&&accepted===false&&!walkable(p,scene))setReviewChecks(old=>old.includes('collision')?old:[...old,'collision'])}
  function ground(e:React.MouseEvent<HTMLDivElement>){if((e.target as HTMLElement).closest('button'))return;const rect=frame.current!.getBoundingClientRect();walk({x:(e.clientX-rect.left)*384/rect.width-4.5,y:(e.clientY-rect.top)*576/rect.height-15})}
  const river=scene===originalTrainRoom('river-valley')
  const at=deviceDraftId?deviceCandidatePlacement(scene,device.current??undefined):null
  const points:Array<{label:string;position:RendererPoint}>=at?[{label:t('走到柜前','Walk in front'),position:{x:at.x-4.5,y:at.y+(device.current?.footprint.front??0)+2}},{label:t('走到柜后','Walk behind'),position:{x:at.x-4.5,y:at.y-(device.current?.footprint.depth??12)-20}},{label:t('检查柜体阻挡','Check cabinet collision'),position:{x:at.x-4.5,y:at.y-12}}]:river?[{label:t('桥头观察位','Bridge approach'),position:{x:188,y:330}},{label:t('左侧岸边','Left bank'),position:{x:80,y:390}},{label:t('右侧岸边','Right bank'),position:{x:290,y:390}},{label:t('返回停靠方向','Train approach'),position:spawn}]:[['starter','左侧检修位','Starter side'],['brakes','右侧制动位','Brake side'],['fuel-shed','燃料棚前','Fuel frontage'],['departure-control','出站控制位','Departure position']].map(([id,zh,en])=>({label:t(zh,en),position:world.entities.find(e=>e.id===id)!.approach}))
- return <main className="cl-app cl-original-preview" data-device-state={deviceDraftId?deviceState:undefined} data-device-draft={deviceDraftId??undefined}>
+ const actorLabels:Record<string,string>={down:t('向下行走','Walk down'),left:t('向左行走','Walk left'),right:t('向右行走','Walk right'),up:t('背向行走','Walk away'),stand:t('停步站稳','Stop and stand'),collision:t('车体阻挡','Train collision'),river:t('河谷行走','Walk in River Valley'),return:t('返回北岬后行走停步','Walk and stop back at North Cape')}
+ return <main className={`cl-app cl-original-preview${actorDraftId?' cl-original-preview--actor':''}`} data-device-state={deviceDraftId?deviceState:undefined} data-device-draft={deviceDraftId??undefined}>
   <header className="cl-header"><div><p className="cl-eyebrow">{deviceDraftId?t('设备候选状态检查 · 未准入正式游戏','Device candidate states · Not admitted to live game'):actorDraftId?t('人物候选试走 · 未准入正式游戏','Actor candidate trial · Not admitted to live game'):(platform||draftMode)&&scene===config.initialScene?t('平台背景候选 · 待质量验收','Platform background candidate · Under review'):t('原作基准素材 · 场景检查','Original baseline · Scene check')}</p><h1>{names[scene]}</h1></div></header>
   <section className="cl-world" aria-label={t('原作可行走地图','Walkable original map')}><div className="cl-map-frame" ref={frame} onClick={ground}>
    {background&&<img className="cl-backdrop" src={background} alt="" draggable={false}/>}<div id="rpg"/>
@@ -104,6 +122,13 @@ export default function OriginalScenePreview(){
     <a href={`./creator.html?scene_preview=north-cape${backgroundSuffix}${deviceSuffix}`}>{t('退回基准人物','Use baseline actor')}</a>
     <a href="./creator.html?create_art=sprite">{t('返回人物准备','Back to sprite preparation')}</a>
    </nav>}
+   {actorDraftId&&<details className="cl-background-review cl-actor-map-review"><summary>{t('人物地图检查','Actor map checks')} {actorChecks.length}/{ACTOR_MAP_CHECKS.length}</summary>
+    <p>{t('每个方向连续走过至少一个完整步态周期，再停步。到河谷行走后返回北岬，检查列车阻挡；机器只记录执行，比例、透明边缘及左右腿仍需亲眼确认。','Walk at least one full stride cycle in each direction, then stop. Walk in River Valley and return to North Cape; test train collision. Execution is recorded; proportions, alpha edges and alternating legs still need visual review.')}</p>
+    {!actorSheetPassed&&<p role="status">{t('图集12项尚未全部通过。可以试走，但不能保存地图通过记录。','The 12 sheet checks have not all passed. Walking is available; map approval cannot be saved.')}</p>}
+    <p aria-label={t('尚待执行的人物检查','Remaining actor checks')}>{ACTOR_MAP_CHECKS.filter(c=>!actorChecks.includes(c)).map(c=>actorLabels[c]).join(' · ')||t('试走步骤完成，请确认实际画面。','Trial steps completed. Confirm the actual visuals.')}</p>
+    <button disabled={!ready||!actorSheetPassed||actorChecks.length!==ACTOR_MAP_CHECKS.length||reviewBusy||actorSaved} onClick={()=>void saveActorReview()}>{actorSaved?t('人物地图检查已保存','Actor map review saved'):t('确认人物画面并保存检查','Confirm actor visuals and save review')}</button>
+    <p>{t('返回人物准备页在线保存，保留此检查版本；保存不自动发布或替换角色。','Save online from sprite preparation to retain this review version. Saving never publishes or replaces a character automatically.')}</p>
+   </details>}
    {deviceDraftId&&<>
     <nav className="cl-art-comparison" aria-label={t('设备候选对照','Device comparison')}>
      <a href={`./creator.html?scene_preview=north-cape${backgroundSuffix}${actorSuffix}`}>{t('移除设备候选','Remove device candidate')}</a>
