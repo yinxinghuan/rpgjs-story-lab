@@ -1,0 +1,25 @@
+{
+  "date": "2026-09-11",
+  "scope": "Original single-player story, Ada front-standing frame in real RPG-JS events; preflight only",
+  "source": "doc/platform-art-candidates/20260911/actor-edit-03/candidate.png",
+  "sourceSha256": "43ba101c2bc5903ae6df9efef0067c1a753c44df2079285a74e7d3a3fb6144dd",
+  "output": "public/art/ada-standing-v1.png",
+  "sha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+  "bytes": 36405,
+  "processing": "Same prepareSpritePixels as creator; pale-neutral 200/20, 3x4 cells 320x320, foot 160/300; crop only row 0 column 1, retain original",
+  "display": {"scale": 0.16, "foot": [160,300], "textures": ["stand","hidden"], "capability": "front-standing-only"},
+  "visual": {
+    "frame": "Young mechanic in navy coat with brown tool bag and visible lamp; no white rectangle on river or gray map",
+    "directionAtlas": "REJECTED: other directions and lamp consistency still fail; no walk animation admitted",
+    "browser": ["Ada visible in River Valley", "click person walks to same authored approach and opens original dialogue", "synthetic concern and reply persisted, resource values unchanged", "front and rear approach screenshots captured; exhaustive overlapping depth verification remains", "rescue introduced Ren only after visible prose; treatment added him to original party", "Ada retained on actual transition to White Stone Tunnel and on reload", "blocked Ada PNG prevented activation; unblocking and reconnect restored same v7 and resource values"],
+    "mobileDom": ["390x844, no horizontal overflow, actor target approximately 44x47.4 CSS px", "320x568, no horizontal overflow, same version and one Ada target after recovery"],
+    "screenshotLimit": "IAB host 130% zoom caused some screenshots to shrink content within requested canvas. Compensated viewport confirmed actual CSS dimensions, but this is not complete mobile visual or iPhone hardware acceptance.",
+    "productionVisualAccepted": false
+  },
+  "syntheticJourney": {"id":"b89f2586-15d7-4587-a385-1d49c72de41b", "fromVersion":2,"toVersion":7,"scene":"train-at-tunnel","stats":{"fuel":50,"condition":87,"morale":64}},
+  "checks": {"fullRegression":542,"passed":542,"preflightBuild":true,"cloudBuild":true,"pagesBuild":true,"secretAudit":true,"apiBaseAudit":true,"uiSourceFindings":0},
+  "newMediaRequests":0,
+  "newModelRequests":0,
+  "published":false,
+  "remaining": ["Complete directional actor quality", "Other original cast and equipment", "Creator actor cloud publication and player activation", "Complete mobile visual and platform playthrough", "Original full-game production release"]
+}

@@ -1,10 +1,13 @@
 import {originalCharacterWalkable,originalCharacterSafePosition} from './original-character-space'
+import {Assets} from 'pixi.js'
+import type {RpgPlayer} from '@rpgjs/server'
+import {adaStandingResource,originalStandingArt,originalStandingSheet,originalCharacterArtSlots,originalCharacterArtAnimation} from './original-character-art'
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react'
 import {createRpgRenderer,type RpgRendererRuntime,type RendererPoint} from './rpg-renderer'
 import {heroSheet} from './sprite-config'
 import {findGridPath} from './grid-path'
 import {originalTrainChapterSpatialPlan} from './original-train-spatial-plan'
-import {SceneReadiness,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
+import {SceneReadiness,ScenePreparationError,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
 import {originalSessionHttp} from './original-session-http'
 import {originalGameEntities,originalReadingBlocks,originalGameObjective,originalActionDestinations} from './original-game-projection'
 import {originalPlaceLabel} from './original-place-presentation'
@@ -24,6 +27,9 @@ export default function OriginalGame(){
  const [position,setPosition]=useState<RendererPoint>({x:192,y:430}),pos=useRef(position);pos.current=position
  const [background,setBackground]=useState(''),[destination,setDestination]=useState<RendererPoint|null>(null),[ready,setReady]=useState(false),[busy,setBusy]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState(''),[input,setInput]=useState(''),[panel,setPanel]=useState<Panel>(null),[selected,setSelected]=useState<string|null>(null)
  const [talk,setTalk]=useState(false),[onlineTalk,setOnlineTalk]=useState(false),[onlineAvailable,setOnlineAvailable]=useState(false),[onlineActionAvailable,setOnlineActionAvailable]=useState(false)
+ const actorBlob=useRef(''),actorEvents=useRef(new Map<string,{event:RpgPlayer;characterId:string}>())
+ function projectActors(){const h=headRef.current;if(!h)return;for(const {event,characterId} of actorEvents.current.values()){const animation=originalCharacterArtAnimation(h.save,characterId);if(event.animationName()!==animation){event.animationName.set(animation);event.syncChanges()}}}
+ async function prepareActors(){if(actorBlob.current)return;const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob='';try{blob=(await loadBrowserSceneResource(adaStandingResource,abort.signal))!;const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==320||texture?.height!==320)throw Error('RESOURCE_DECODE');actorBlob.current=blob}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}}
  const runtime=useRef<RpgRendererRuntime|null>(null),frame=useRef<HTMLDivElement>(null),hud=useRef<HTMLElement>(null),footer=useRef<HTMLElement>(null),busyRef=useRef(true),mounted=useRef(true)
  const scene=head?.sceneId,locale=head?.save.locale??(navigator.language.startsWith('zh')?'zh':'en'),t=(zh:string,en:string)=>locale==='zh'?zh:en
  const entities=head?originalGameEntities(head):[],entity=entities.find(e=>e.id===selected),save=head?.save
@@ -33,13 +39,13 @@ export default function OriginalGame(){
  useEffect(()=>{const o=new ResizeObserver(camera);for(const el of [frame.current,frame.current?.parentElement,hud.current,footer.current])if(el)o.observe(el);return()=>o.disconnect()},[])
  async function restore(next:OriginalHead){
   runtime.current?.pause(true);setReady(false);headRef.current=next;setHead(next)
-  const loader=loaderFor(next),prepared=await loader.prepare(next.sceneId,true);if(!mounted.current)return
-  if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet],mapEvents:()=>[],walkable:(p,s)=>originalCharacterWalkable({...headRef.current!,sceneId:s},p),safePosition:(p,s)=>originalCharacterSafePosition({...headRef.current!,sceneId:s},p),findPath:(a,b,s)=>findGridPath(a,b,p=>originalCharacterWalkable({...headRef.current!,sceneId:s},p)),onPosition:p=>{pos.current=p;setPosition(p)},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
-  await runtime.current!.restore(next.position,next.sceneId);if(!mounted.current)return
+  const loader=loaderFor(next),prepared=await loader.prepare(next.sceneId,true);await prepareActors();if(!mounted.current)return
+  if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet,originalStandingSheet(actorBlob.current)],mapEvents:s=>originalCharacterArtSlots(s).map(slot=>({id:slot.id,x:slot.x,y:slot.y,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;this.animationFixed=true;this.setGraphic(originalStandingArt.graphic);this.animationName.set(originalCharacterArtAnimation(headRef.current!.save,slot.characterId));actorEvents.current.set(slot.id,{event:this,characterId:slot.characterId});this.syncChanges()}}})),walkable:(p,s)=>originalCharacterWalkable({...headRef.current!,sceneId:s},p),safePosition:(p,s)=>originalCharacterSafePosition({...headRef.current!,sceneId:s},p),findPath:(a,b,s)=>findGridPath(a,b,p=>originalCharacterWalkable({...headRef.current!,sceneId:s},p)),onPosition:p=>{pos.current=p;setPosition(p)},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
+  await runtime.current!.restore(next.position,next.sceneId);projectActors();if(!mounted.current)return
   loader.activate(next.sceneId);setBackground(prepared.background);setPosition(runtime.current!.position());setReady(true)
  }
  async function init(){setWorking(true);setError('');runtime.current?.pause(true);try{const health=await connection.api('/health');setOnlineAvailable(health.liveDialogueAvailable===true);setOnlineActionAvailable(health.liveModelAvailable===true);if(!health.liveDialogueAvailable&&!health.liveModelAvailable)setOnlineTalk(false);const h=await connection.client.enroll(locale);const recovered=await connection.client.recover();const next=recovered?.head??h;await restore(next);setPanel(next.version===0?'log':next.save.finale.status==='complete'?'ending':null)}catch(e){setError(e instanceof Error?e.message:'NETWORK_ERROR')}finally{setWorking(false)}}
- useEffect(()=>{mounted.current=true;void init();return()=>{mounted.current=false;runtime.current?.destroy();for(const loader of loaders.current.values())for(const s of world.scenes){const blob=loader.background(s.id);if(blob)URL.revokeObjectURL(blob)}}},[])
+ useEffect(()=>{mounted.current=true;void init();return()=>{mounted.current=false;runtime.current?.destroy();actorEvents.current.clear();if(actorBlob.current){void Assets.unload(actorBlob.current).catch(()=>{});URL.revokeObjectURL(actorBlob.current)}for(const loader of loaders.current.values())for(const s of world.scenes){const blob=loader.background(s.id);if(blob)URL.revokeObjectURL(blob)}}},[])
  useEffect(()=>{runtime.current?.pause(busy||!ready||Boolean(panel)||Boolean(error))},[busy,ready,panel,error])
  useEffect(()=>{const checkpoint=()=>{const h=headRef.current;if(h&&runtime.current&&!busyRef.current&&runtime.current.renderedScene()===h.sceneId)void connection.api('/sessions/'+h.id+'/position',{position:pos.current,sceneId:h.sceneId,expected_version:h.version}).catch(()=>{})};const timer=setInterval(checkpoint,2000);const hide=()=>{if(document.hidden){runtime.current?.move(0,0);checkpoint()}};document.addEventListener('visibilitychange',hide);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',hide)}},[])
  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!busyRef.current)setPanel(null)};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[])
@@ -56,7 +62,7 @@ export default function OriginalGame(){
  return <main className="og-game" data-scene={scene??''} data-version={head?.version??-1} data-background-version={head?originalBackgroundVersion(head.assets):undefined}>
   <section className="og-world" aria-label={t('原作地图','Original map')}><div ref={frame} className="og-map" onClick={ground}>
    {background&&<img className="og-background" src={background} alt="" draggable={false}/>}<div id="rpg"/>
-   {ready&&entities.map((e,i)=><button className="og-marker" key={e.id} aria-label={e.person?.name??e.actions[0]?.label} style={{left:e.position.x/384*100+'%',top:e.position.y/576*100+'%'}} onClick={ev=>{ev.stopPropagation();open(e)}} disabled={busy||Boolean(error)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M7 12h10"/></svg><span>{e.person?.name??String(i+1)}</span></button>)}
+   {ready&&entities.map((e,i)=><button className={"og-marker"+(e.person?.id===originalStandingArt.characterId?" og-person":"")} data-entity={e.id} key={e.id} aria-label={e.person?.name??e.actions[0]?.label} style={{left:e.position.x/384*100+'%',top:e.position.y/576*100+'%'}} onClick={ev=>{ev.stopPropagation();open(e)}} disabled={busy||Boolean(error)}>{e.person?.id!==originalStandingArt.characterId&&<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M7 12h10"/></svg>}<span>{e.person?.name??String(i+1)}</span></button>)}
    {destination&&<svg className="og-destination" viewBox="0 0 24 24" style={{left:(destination.x+4.5)/384*100+'%',top:(destination.y+15)/576*100+'%'}}><circle cx="12" cy="12" r="9"/></svg>}
   </div></section>
   <header className="og-hud" ref={hud}><small>{t('原作流程开发版 · 美术未完成','Original story development · Draft art')}</small><h1>{head?originalPlaceLabel(head.sceneId,head.save):t('正在连接旅程','Connecting journey')}</h1><div className="og-stats">{save&&Object.entries(save.stats).map(([id,value])=><span key={id}>{({fuel:t('燃料','Fuel'),condition:t('车况','Condition'),morale:t('人心','Morale')} as Record<string,string>)[id]??id} <b>{value}</b></span>)}</div></header>
