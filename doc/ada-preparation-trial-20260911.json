@@ -25,5 +25,18 @@
   ],
   "newModelRequests": 0,
   "newMediaRequestsThisPhase": 0,
-  "productionAdmitted": false
+  "productionAdmitted": false,
+  "strideReinspection": {
+    "date": "2026-09-11",
+    "matchedUserPageCandidate": true,
+    "evidence": "Read-only inspection of the original actor-edit-03 PNG; the current browser could not be inspected because the Mac was locked",
+    "defects": [
+      "Back-row outer walking frames repeat the same leading leg",
+      "Right-facing row middle standing frame faces away instead",
+      "Lamp position and attachment vary between frames"
+    ],
+    "decision": "Keep this historical candidate unadmitted; background removal and foot alignment do not repair pose semantics",
+    "baseline": "The default B hero and new actor generation reference already use hero-gait-v2.png; this does not retroactively repair saved candidates",
+    "regression": "hero-back-gait.test.ts and sprite-generation.test.ts: 7 tests passed"
+  }
 }
