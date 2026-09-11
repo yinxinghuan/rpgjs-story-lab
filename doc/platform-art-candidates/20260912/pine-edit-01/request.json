@@ -1,0 +1,13 @@
+{
+  "requestId": "0fc812cd-ae8b-4db9-b004-c85f41bd1829",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/9ce202a2500a950313e6afcbeab8feacb3995ade/doc/platform-art-candidates/20260912/yard-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Use this exact orthographic top-down RPG map as a geometric template. Preserve the 1024x1536 canvas, camera angle, diesel locomotive silhouette and size, railway positions, long clear walking lanes on both sides and open bottom apron. Retain crisp detailed painted-pixel materials. No horizon, perspective convergence, figures, text or interface. Main walking ground x160..896 must remain unobstructed except the existing locomotive and left utility shed; new environmental masses belong only in the outer strips x0..160 and x896..1024. Keep the existing left shed footprint rather than enlarging it. Do not draw interactive machines, signal equipment, loose crates or props in the open floor. Change the quarry surroundings into a remote black-pine railway siding before dawn. The two outer strips become dense dark pine canopy edges and rough tree trunks viewed from the same high orthographic camera. Keep branches and foliage out of the walking lanes. The existing side shed becomes a weathered timber maintenance hut of the exact same footprint. The ground becomes damp fine railway ballast with flat earthy patches, restrained moss seams and a few small puddles, all clearly walkable. Deep forest green and charcoal at the margins, blue dawn reflections on the train and a few warm wall lanterns. Mist only at the extreme outer margins, never obscuring the walkway. No fallen trees across the track, no animals or people."
+}

@@ -788,3 +788,9 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定剧情场景ID映射至实际版本文件名，并在地图加入、加载完成、恢复与转场时映射回稳定ID。灰石新旅程实际请求map/graystone-yard-78f22e9b.tmx，旧旅程继续请求map/train-at-graystone-yard.tmx。未配置映射的旧车厢和制作地图保持原行为。资源准备、真实renderer和权威碰撞不再各用一份不同几何。
 
 `_qa/original-environments-browser.ts`使用专用QA构建的只读motion引用，正常按钮推进剧情；没有teleport、直接改存档或代替行动的接口。网络仅允许localhost，阻止远程访客扩展。实际覆盖缺图不转场/不扣费、图像blob摘要、栅门介绍、键盘走到屋檐停止、修泵合作、刷新同旅程、离站及真实TMX请求。`_qa/original-environments.vite.ts`只在显式QA构建插入该引用，正式和普通preflight无此引用。测试最初的鼠标落点碰到了阿达透明触控区而触发走近，已改为键盘碰撞观察；未把那次角色位移误判为碰撞失效。
+
+### 2026-09-12 林线、隧道、小城环境扩展
+
+`original-environment-layouts.ts` 增加三个图片版本对应的保守轮廓及不可变 TMX 元数据；`original-asset-releases.ts` 用实际平台任务、SHA-256、尺寸和字节数注册原图，仅新旅程绑定新版房间。`original-scene-preview.ts` 在 authoring/preflight 输出版本图片与地图并逐项验证字节；普通 cloud 的完整原作发布门禁继续关闭。原作 wire 更新为 `original-session-8.assets-6.story-8.original-train-authoring-10`，避免开发服务器与旧前端混用；旧存档素材字典及原车厢协议不变。
+
+`_qa/environment-story-route.ts` 记录林线至结局的 39 个真实作者动作；专项测试用实际角色/设备/地图占地进行可达性搜索，并验证固定素材和恢复。`_qa/environment-story-browser.ts` 只连接独立 localhost，调用真实 UI 行走/互动，观察合成旅程响应，检查三幅背景像素摘要、引擎实际 TMX 请求、屋檐碰撞与手机尺寸构图；QA 只读 renderer 插桩仅在显式 `_qa/original-environments.vite.ts` 构建存在。

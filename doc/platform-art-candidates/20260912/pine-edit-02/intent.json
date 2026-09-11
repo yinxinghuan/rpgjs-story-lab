@@ -1,0 +1,7 @@
+{
+  "scene": "train-at-pine-line",
+  "parent": "pine-edit-01",
+  "reason": "Tree canopy silhouettes overhang the traversable strips, particularly upper left and lower right.",
+  "remainingCorrections": 0,
+  "admission": "candidate only"
+}

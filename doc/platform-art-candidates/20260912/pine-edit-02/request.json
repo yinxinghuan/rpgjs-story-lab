@@ -1,0 +1,13 @@
+{
+  "requestId": "d16d1943-6392-4260-8cee-6cbe349a50bd",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789146468310719.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Correct only the forest edge clearance in this exact 1024x1536 orthographic map. Keep the locomotive, tracks, maintenance hut, floor composition and fixed overhead camera unchanged. Trim all tree foliage, trunks and branch silhouettes back to the outer margins x0..160 and x896..1024. There must be NO tree canopy or dark branch silhouettes inside the clear lanes x160..389 and x629..896 at any height, especially the upper-left corner and right-side lower half. Replace those overhangs with the same level fine gravel paving and flat moss texture. Keep the trees dense outside those exact boundaries. Keep the small left hut exactly where it is. Make the floor texture about 15 percent more readable while preserving predawn forest atmosphere and warm lamps. Keep puddles visibly shallow, with faint ground texture showing beneath them. No new objects, signs, characters, altered train scale or perspective."
+}

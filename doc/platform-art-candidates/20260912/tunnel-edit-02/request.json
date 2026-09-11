@@ -1,0 +1,13 @@
+{
+  "requestId": "79964d46-90a6-464a-a302-84ced7cec0b9",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/9ce202a2500a950313e6afcbeab8feacb3995ade/doc/platform-art-candidates/20260912/yard-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Transform this exact orthographic RPG map into a railway tunnel cutaway with its ceiling removed. Keep the identical 1024x1536 overhead composition, locomotive, tracks, side walkway widths and small left shed footprint. Show thick dark stone side walls only along the leftmost and rightmost margins; the tunnel extends vertically beyond the image. No distant tunnel mouth, horizon, arch across the middle, or perspective convergence. The left shed becomes a sealed stone maintenance recess in the same silhouette. Cool gray worn stone floor, vertical rusted conduits on the outer walls and sparse amber maintenance lights. The floor and train must remain bright enough to read fine texture. Keep all walking ground clear. No ceiling over the train, opaque fog, people, machinery in the lanes, text or interface."
+}

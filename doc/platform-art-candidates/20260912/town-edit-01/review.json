@@ -1,0 +1,63 @@
+{
+  "status": "admitted-preflight-environment",
+  "sourceSha256": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+  "scene": "train-at-sleeping-town",
+  "pass": [
+    "B orthographic camera and fixed narrow locomotive/service-lane composition",
+    "No baked characters or interactive machinery",
+    "Single image preserves source pixels without editing"
+  ],
+  "extraObstacles": [
+    {
+      "x": 60,
+      "y": 244,
+      "w": 14,
+      "h": 16
+    },
+    {
+      "x": 60,
+      "y": 394,
+      "w": 14,
+      "h": 12
+    }
+  ],
+  "limitations": [
+    "Small left store roof extends beyond requested footprint; reserve actual silhouette."
+  ],
+  "notApproved": "characters, equipment states, full production readiness",
+  "validation": {
+    "authority": "591 tests passed, including footprint reachability for all interaction approaches through full route",
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "result": {
+          "scene": "train-at-sleeping-town",
+          "hash": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+          "versionedEngineMap": "./map/sleeping-town-f9922760.tmx",
+          "roofCollision": {
+            "x": 61.40000000000046,
+            "y": 228.8799999999991
+          },
+          "logicalSceneMatchesRendered": true
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "result": {
+          "scene": "train-at-sleeping-town",
+          "hash": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+          "versionedEngineMap": "./map/sleeping-town-f9922760.tmx",
+          "roofCollision": {
+            "x": 61.48799999999987,
+            "y": 228.91300000000015
+          },
+          "logicalSceneMatchesRendered": true
+        }
+      }
+    ]
+  }
+}

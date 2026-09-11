@@ -1,4 +1,4 @@
-import {GRAYSTONE_BACKGROUND,originalEnvironmentLayouts} from './original-environment-layouts'
+import {PINE_BACKGROUND,TOWN_BACKGROUND,TUNNEL_BACKGROUND,GRAYSTONE_BACKGROUND,originalEnvironmentLayouts} from './original-environment-layouts'
 import type {SceneResource,SceneResourceManifest} from './scene-readiness'
 import {assertPublishedBackground,backgroundReleasePath,type PublishedBackground} from './background-publication'
 import {assertPublishedDevice,type PublishedDevice} from './device-publication'
@@ -12,6 +12,9 @@ export const originalBackgroundReleases:Record<string,SceneResource&{scene:strin
  [ORIGINAL_BACKGROUND_BASELINE]:{scene:northCape,source:'baseline',kind:'background',path:'./art/original-north-cape.png',sha256:'e8e36bbadda8a8b73cc280431e256ad6583795738a9b62f9efc0a44474d32483',bytes:2566605,width:1024,height:1536},
  [ORIGINAL_BACKGROUND_PLATFORM]:{scene:northCape,source:'alteru-media',taskId:'mt_1a1c4492493eaf68a32331d43d91c207',kind:'background',path:'./art/approved/north-cape-8fc11a96.png',sha256:'8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031',bytes:2811504,width:1024,height:1536},
  [GRAYSTONE_BACKGROUND]:{scene:'train-at-graystone-yard',source:'alteru-media',taskId:'mt_9672d560da014da197c499f1f277185c',kind:'background',path:'./art/approved/graystone-yard-78f22e9b.png',sha256:'78f22e9b4bf42265be03e5db8462ff732b7ed46706f5cea8cf297d0dd3aa2129',bytes:3346737,width:1024,height:1536},
+ [PINE_BACKGROUND]:{scene:'train-at-pine-line',source:'alteru-media',taskId:'mt_6a44b0ee831e9561da1ce32a1776ebe0',kind:'background',path:'./art/approved/pine-line-90af55e7.png',sha256:'90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5',bytes:2736873,width:1024,height:1536},
+ [TOWN_BACKGROUND]:{scene:'train-at-sleeping-town',source:'alteru-media',taskId:'mt_815ffc50cff4e47b770f387b6155c849',kind:'background',path:'./art/approved/sleeping-town-f9922760.png',sha256:'f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8',bytes:2807539,width:1024,height:1536},
+ [TUNNEL_BACKGROUND]:{scene:'train-at-tunnel',source:'alteru-media',taskId:'mt_29d30413007cb316a2a2e3add9fb7db4',kind:'background',path:'./art/approved/tunnel-b084000a.png',sha256:'b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c',bytes:3068960,width:1024,height:1536},
 }
 type BackgroundBindings={version:1;backgrounds:Record<string,string>}|{version:2;published:PublishedBackground;additional?:Record<string,string>}
 type LegacyBindings=BackgroundBindings|{version:3;background:BackgroundBindings;starter:PublishedDevice}
@@ -19,7 +22,7 @@ export type OriginalAssetBindings=LegacyBindings|{version:4;base:LegacyBindings;
 export const originalBaseAssets=(a?:OriginalAssetBindings):LegacyBindings|undefined=>a?.version===4?a.base:a
 export const originalActorRelease=(a?:OriginalAssetBindings)=>a?.version===4?a.ada:undefined
 export function originalStarterRelease(a?:OriginalAssetBindings){const base=originalBaseAssets(a);return base?.version===3?base.starter:undefined}
-export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND}
+export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND,'train-at-pine-line':PINE_BACKGROUND,'train-at-sleeping-town':TOWN_BACKGROUND,'train-at-tunnel':TUNNEL_BACKGROUND}
 export const newOriginalAssetBindings=():OriginalAssetBindings=>({version:1,backgrounds:{...currentOriginalBackgrounds}})
 const additionalBackgrounds=()=>Object.fromEntries(Object.entries(currentOriginalBackgrounds).filter(([scene])=>scene!==northCape))
 function publishedBackgroundBinding(published:PublishedBackground):BackgroundBindings{const additional=additionalBackgrounds();return {version:2,published:structuredClone(published),...(Object.keys(additional).length?{additional}:{})}}

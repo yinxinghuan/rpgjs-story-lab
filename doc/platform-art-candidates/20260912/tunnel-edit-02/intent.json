@@ -1,0 +1,8 @@
+{
+  "scene": "train-at-tunnel",
+  "phase": "remaining original full-game environments",
+  "initialRequestsThisPhase": 3,
+  "corrections": "At most one targeted correction per successful scene after actual pixel review. No automatic terminal retries.",
+  "priorTunnelFailure": "tunnel-edit-01 terminal PROVIDER_REJECTED; tunnel-edit-02 is a new shorter prompt with the reviewed quarry source.",
+  "admission": "candidate only; needs matching geometry and actual route evidence"
+}

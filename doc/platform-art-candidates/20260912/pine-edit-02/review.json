@@ -1,0 +1,100 @@
+{
+  "status": "admitted-preflight-environment",
+  "sourceSha256": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+  "scene": "train-at-pine-line",
+  "pass": [
+    "B orthographic camera and fixed narrow locomotive/service-lane composition",
+    "No baked characters or interactive machinery",
+    "Single image preserves source pixels without editing"
+  ],
+  "extraObstacles": [
+    {
+      "x": 60,
+      "y": 16,
+      "w": 32,
+      "h": 30
+    },
+    {
+      "x": 294,
+      "y": 16,
+      "w": 42,
+      "h": 20
+    },
+    {
+      "x": 318,
+      "y": 36,
+      "w": 18,
+      "h": 200
+    },
+    {
+      "x": 318,
+      "y": 338,
+      "w": 18,
+      "h": 222
+    },
+    {
+      "x": 60,
+      "y": 516,
+      "w": 14,
+      "h": 44
+    },
+    {
+      "x": 60,
+      "y": 250,
+      "w": 14,
+      "h": 10
+    },
+    {
+      "x": 60,
+      "y": 394,
+      "w": 14,
+      "h": 12
+    },
+    {
+      "x": 146,
+      "y": 248,
+      "w": 90,
+      "h": 4
+    }
+  ],
+  "limitations": [
+    "Tree crowns still exceed requested margins; measured reserved forest edges remain nonwalkable.",
+    "Top-left forest is dark; actual mobile renderer check required."
+  ],
+  "notApproved": "characters, equipment states, full production readiness",
+  "validation": {
+    "authority": "591 tests passed, including footprint reachability for all interaction approaches through full route",
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "result": {
+          "scene": "train-at-pine-line",
+          "hash": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+          "versionedEngineMap": "./map/pine-line-90af55e7.tmx",
+          "roofCollision": {
+            "x": 61.68599999999993,
+            "y": 234.9684999999998
+          },
+          "logicalSceneMatchesRendered": true
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "result": {
+          "scene": "train-at-pine-line",
+          "hash": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+          "versionedEngineMap": "./map/pine-line-90af55e7.tmx",
+          "roofCollision": {
+            "x": 61.532000000000046,
+            "y": 234.80899999999988
+          },
+          "logicalSceneMatchesRendered": true
+        }
+      }
+    ]
+  }
+}

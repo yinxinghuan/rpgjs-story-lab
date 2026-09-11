@@ -1,4 +1,4 @@
-import {GRAYSTONE_BACKGROUND,originalEnvironmentLayouts,originalEnvironmentMapXml} from '../src/original-environment-layouts'
+import {PINE_BACKGROUND,TOWN_BACKGROUND,TUNNEL_BACKGROUND,GRAYSTONE_BACKGROUND,originalEnvironmentLayouts,originalEnvironmentMapXml} from '../src/original-environment-layouts'
 import {Resvg} from '@resvg/resvg-js'
 import {readFileSync} from 'node:fs'
 import {createHash} from 'node:crypto'
@@ -7,7 +7,7 @@ import type {SceneResourceManifest} from '../src/scene-readiness'
 import {originalBackgroundReleases,ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
 const candidates=[{location:'dead-station',file:'north-cape-v2.png',asset:'original-north-cape'},{location:'river-valley',file:'river-valley-v1.png',asset:'original-river-valley'}]
 export function originalReleasedBackgroundBytes(){
- return [[ORIGINAL_BACKGROUND_BASELINE,'../doc/original-train-candidates/20260911/north-cape-v2.png'],[ORIGINAL_BACKGROUND_PLATFORM,'../doc/platform-art-candidates/20260911/environment-edit-02/candidate.png'],[GRAYSTONE_BACKGROUND,'../doc/platform-art-candidates/20260912/yard-edit-02/candidate.png']].map(([id,file])=>{
+ return [[ORIGINAL_BACKGROUND_BASELINE,'../doc/original-train-candidates/20260911/north-cape-v2.png'],[ORIGINAL_BACKGROUND_PLATFORM,'../doc/platform-art-candidates/20260911/environment-edit-02/candidate.png'],[GRAYSTONE_BACKGROUND,'../doc/platform-art-candidates/20260912/yard-edit-02/candidate.png'],[PINE_BACKGROUND,'../doc/platform-art-candidates/20260912/pine-edit-02/candidate.png'],[TOWN_BACKGROUND,'../doc/platform-art-candidates/20260912/town-edit-01/candidate.png'],[TUNNEL_BACKGROUND,'../doc/platform-art-candidates/20260912/tunnel-edit-02/candidate.png']].map(([id,file])=>{
   const release=originalBackgroundReleases[id],data=readFileSync(new URL(file,import.meta.url))
   if(data.byteLength!==release.bytes||createHash('sha256').update(data).digest('hex')!==release.sha256||data.readUInt32BE(16)!==release.width||data.readUInt32BE(20)!==release.height)throw Error('ORIGINAL_RELEASE_BYTES_CHANGED:'+id)
   return {release,data}

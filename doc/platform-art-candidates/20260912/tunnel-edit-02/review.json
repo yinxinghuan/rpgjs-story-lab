@@ -1,0 +1,63 @@
+{
+  "status": "admitted-preflight-environment",
+  "sourceSha256": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+  "scene": "train-at-tunnel",
+  "pass": [
+    "B orthographic camera and fixed narrow locomotive/service-lane composition",
+    "No baked characters or interactive machinery",
+    "Single image preserves source pixels without editing"
+  ],
+  "extraObstacles": [
+    {
+      "x": 60,
+      "y": 248,
+      "w": 14,
+      "h": 12
+    },
+    {
+      "x": 60,
+      "y": 394,
+      "w": 14,
+      "h": 4
+    }
+  ],
+  "limitations": [
+    "Roof-removed tunnel environment only; fan, smoke state and passengers still require separate presentation."
+  ],
+  "notApproved": "characters, equipment states, full production readiness",
+  "validation": {
+    "authority": "591 tests passed, including footprint reachability for all interaction approaches through full route",
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "result": {
+          "scene": "train-at-tunnel",
+          "hash": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+          "versionedEngineMap": "./map/tunnel-b084000a.tmx",
+          "roofCollision": {
+            "x": 62.389999999999986,
+            "y": 232.7189999999999
+          },
+          "logicalSceneMatchesRendered": true
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "result": {
+          "scene": "train-at-tunnel",
+          "hash": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+          "versionedEngineMap": "./map/tunnel-b084000a.tmx",
+          "roofCollision": {
+            "x": 62.62099999999973,
+            "y": 232.71899999999994
+          },
+          "logicalSceneMatchesRendered": true
+        }
+      }
+    ]
+  }
+}

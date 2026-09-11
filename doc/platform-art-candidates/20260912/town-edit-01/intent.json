@@ -1,0 +1,8 @@
+{
+  "scene": "train-at-sleeping-town",
+  "phase": "remaining original full-game environments",
+  "initialRequestsThisPhase": 3,
+  "corrections": "At most one targeted correction per successful scene after actual pixel review. No automatic terminal retries.",
+  "priorTunnelFailure": null,
+  "admission": "candidate only; needs matching geometry and actual route evidence"
+}

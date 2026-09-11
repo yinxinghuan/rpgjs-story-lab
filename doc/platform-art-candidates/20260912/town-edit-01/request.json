@@ -1,0 +1,13 @@
+{
+  "requestId": "2da1d9a2-424e-44c2-8a1e-672089a03061",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/9ce202a2500a950313e6afcbeab8feacb3995ade/doc/platform-art-candidates/20260912/yard-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Use this exact orthographic top-down RPG map as a geometric template. Preserve the 1024x1536 canvas, camera angle, diesel locomotive silhouette and size, railway positions, long clear walking lanes on both sides and open bottom apron. Retain crisp detailed painted-pixel materials. No horizon, perspective convergence, figures, text or interface. Main walking ground x160..896 must remain unobstructed except the existing locomotive and left utility shed; new environmental masses belong only in the outer strips x0..160 and x896..1024. Keep the existing left shed footprint rather than enlarging it. Do not draw interactive machines, signal equipment, loose crates or props in the open floor. Change the surroundings into a quiet small-town railway stop at first blue dawn. Both outer strips contain closely packed old brick station-side buildings, cropped slate roofs and narrow boarded facades, entirely outside the walking lanes. The existing side shed is a little brick railway store with the exact same footprint. Fine worn paving, flush drains and a few shallow rain reflections on the clear service platform. Muted warm brick, slate blue and brass, a few small oil lamps at the edges; most windows are dark. A sheltered and inhabited place without showing any people. Keep the main platform spacious and unobstructed. No signage, lettering, banners, benches, barrels or market stalls inside the walkable area."
+}

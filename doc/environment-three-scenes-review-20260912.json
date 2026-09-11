@@ -1,0 +1,219 @@
+{
+  "date": "2026-09-12",
+  "scope": "Three platform environments in existing original single-player preflight",
+  "media": [
+    {
+      "folder": "pine-edit-01",
+      "status": "downloaded",
+      "task": "mt_528f245ba96c6077d114e81cc3f6bb4f",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "f29a855f895af7b565e66cfb049a27825a1f7d373f2acd8b3cc2bd56e4a2286c",
+        "bytes": 2563449,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 17519,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "pine-edit-02",
+      "status": "downloaded",
+      "task": "mt_6a44b0ee831e9561da1ce32a1776ebe0",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+        "bytes": 2736873,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 15796,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "town-edit-01",
+      "status": "downloaded",
+      "task": "mt_815ffc50cff4e47b770f387b6155c849",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+        "bytes": 2807539,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 20937,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "tunnel-edit-02",
+      "status": "downloaded",
+      "task": "mt_29d30413007cb316a2a2e3add9fb7db4",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+        "bytes": 3068960,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 17810,
+      "cost": "not provided by public API"
+    }
+  ],
+  "admitted": [
+    {
+      "scene": "train-at-pine-line",
+      "version": "pine-line-platform-90af55e7",
+      "source": "pine-edit-02",
+      "limits": [
+        "Tree crowns still exceed requested margins; measured reserved forest edges remain nonwalkable.",
+        "Top-left forest is dark; actual mobile renderer check required."
+      ]
+    },
+    {
+      "scene": "train-at-sleeping-town",
+      "version": "sleeping-town-platform-f9922760",
+      "source": "town-edit-01",
+      "limits": [
+        "Small left store roof extends beyond requested footprint; reserve actual silhouette."
+      ]
+    },
+    {
+      "scene": "train-at-tunnel",
+      "version": "tunnel-platform-b084000a",
+      "source": "tunnel-edit-02",
+      "limits": [
+        "Roof-removed tunnel environment only; fan, smoke state and passengers still require separate presentation."
+      ]
+    }
+  ],
+  "validation": {
+    "tests": 591,
+    "failures": 0,
+    "build": [
+      "cloud",
+      "opaque Worker startup",
+      "clean cloud-preflight"
+    ],
+    "audits": [
+      "secrets",
+      "API base",
+      "media integration",
+      "UI src",
+      "UUID",
+      "storage 145 games / 0 problems"
+    ],
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "lang": "zh",
+        "checked": [
+          {
+            "scene": "train-at-pine-line",
+            "hash": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+            "versionedEngineMap": "./map/pine-line-90af55e7.tmx",
+            "roofCollision": {
+              "x": 61.68599999999993,
+              "y": 234.9684999999998
+            },
+            "logicalSceneMatchesRendered": true
+          },
+          {
+            "scene": "train-at-tunnel",
+            "hash": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+            "versionedEngineMap": "./map/tunnel-b084000a.tmx",
+            "roofCollision": {
+              "x": 62.389999999999986,
+              "y": 232.7189999999999
+            },
+            "logicalSceneMatchesRendered": true
+          },
+          {
+            "scene": "train-at-sleeping-town",
+            "hash": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+            "versionedEngineMap": "./map/sleeping-town-f9922760.tmx",
+            "roofCollision": {
+              "x": 61.40000000000046,
+              "y": 228.8799999999991
+            },
+            "logicalSceneMatchesRendered": true
+          }
+        ],
+        "failedImageDidNotCommit": true,
+        "refreshes": 4,
+        "fixedAssetsThroughEnding": true,
+        "actions": 39,
+        "finalVersion": 40,
+        "externalConnections": 0,
+        "pageErrors": [],
+        "limits": "Local synthetic run only; characters/equipment and pass/bridge/junction art still incomplete. Not a platform playthrough."
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "lang": "en",
+        "checked": [
+          {
+            "scene": "train-at-pine-line",
+            "hash": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+            "versionedEngineMap": "./map/pine-line-90af55e7.tmx",
+            "roofCollision": {
+              "x": 61.532000000000046,
+              "y": 234.80899999999988
+            },
+            "logicalSceneMatchesRendered": true
+          },
+          {
+            "scene": "train-at-tunnel",
+            "hash": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+            "versionedEngineMap": "./map/tunnel-b084000a.tmx",
+            "roofCollision": {
+              "x": 62.62099999999973,
+              "y": 232.71899999999994
+            },
+            "logicalSceneMatchesRendered": true
+          },
+          {
+            "scene": "train-at-sleeping-town",
+            "hash": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+            "versionedEngineMap": "./map/sleeping-town-f9922760.tmx",
+            "roofCollision": {
+              "x": 61.48799999999987,
+              "y": 228.91300000000015
+            },
+            "logicalSceneMatchesRendered": true
+          }
+        ],
+        "failedImageDidNotCommit": true,
+        "refreshes": 4,
+        "fixedAssetsThroughEnding": true,
+        "actions": 39,
+        "finalVersion": 40,
+        "externalConnections": 0,
+        "pageErrors": [],
+        "limits": "Local synthetic run only; characters/equipment and pass/bridge/junction art still incomplete. Not a platform playthrough."
+      }
+    ],
+    "normalBuildHasQaProbe": false
+  },
+  "production": {
+    "unchanged": "dff13ecd8e70086082e52940b5c66cd0b3ab2d56",
+    "originalStoryOpen": false
+  },
+  "remaining": [
+    "mountain pass, flood bridge, dawn junction backgrounds",
+    "complete qualified original cast and stateful equipment",
+    "trusted platform identity integration",
+    "authorized actual production creator and platform whole-story validation"
+  ],
+  "limits": [
+    "No iPhone hardware test",
+    "Only localhost synthetic browser contexts, no production cookies or browser access",
+    "No new narrative model calls",
+    "Image generation was public platform API, no GPT image tool used"
+  ]
+}

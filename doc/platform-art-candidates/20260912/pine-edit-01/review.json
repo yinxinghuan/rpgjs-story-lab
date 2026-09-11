@@ -1,0 +1,13 @@
+{
+  "admission": "rejected pending lane-clearance correction",
+  "pass": [
+    "forest identity",
+    "B overhead camera",
+    "train silhouette",
+    "small hut retained"
+  ],
+  "fail": [
+    "tree canopies within walkable lanes",
+    "very dark upper-left walkway"
+  ]
+}
