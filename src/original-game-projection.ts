@@ -7,6 +7,7 @@ import {assertPassSourceAction} from './original-pass-chapter'
 import {assertPineSourceAction} from './original-pine-chapter'
 import {originalPlaceBlocks} from './original-place-presentation'
 import {resolveOriginalChapter} from './original-chapters'
+import {originalActionIntentIssues} from './original-action-intent'
 const world=originalTrainChapterSpatialPlan()
 /** Preparation follows the same action resolver as authority, but never commits
  * a turn. An unrelated branch must not prevent the selected route loading. */
@@ -14,6 +15,10 @@ export function originalActionDestinations(head:OriginalHead,target:string,input
  const entity=world.entities.find(e=>e.id===target&&e.scene===head.sceneId)
  if(!entity)return []
  const c=head.save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn
+ if('text' in input){
+  const labels=[...entity.actions.flatMap(id=>c.domainRules?.rules.find(r=>r.id===id)?.match??[]),...(originalGameEntities(head).find(e=>e.id===target)?.actions.map(a=>a.label)??[])]
+  if(originalActionIntentIssues(input.text,labels).length)return []
+ }
  const action='action' in input?input.action:resolveOriginalChapter(input.text.trim(),head.save.locale,head.save)??resolveDomainAction(head.save,c,input.text.trim())?.ruleId
  return world.portals.filter(p=>p.fromScene===head.sceneId&&p.actionId===action&&entity.actions.includes(p.actionId)).map(p=>p.scene)
 }

@@ -13,15 +13,16 @@ import {originalSessionHttp} from '../src/original-session-http'
 import {originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
 import {originalCartridge,originalPresentationUnavailable,type OriginalHead,type OriginalPresentationGate} from '../server/original-train-runtime'
 import {originalChapterActions,originalChapterLabel} from '../src/original-chapters'
+import {createOriginalActionInterpreter,type OriginalActionInterpreter} from '../server/original-action-interpreter'
 const world=originalTrainChapterSpatialPlan()
 const lock=async<T>(_name:string,work:()=>Promise<T>)=>work()
 function memory(){const values=new Map<string,string>();return {get length(){return values.size},getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v)},removeItem:(k:string)=>{values.delete(k)},key:(i:number)=>[...values.keys()][i]??null,clear:()=>values.clear()} as Storage}
 function intent(h:OriginalHead,id:string,free=false){const e=world.entities.find(e=>e.scene===h.sceneId&&e.actions.includes(id))!,chapter=originalChapterActions.find(a=>a.id===id);return {target:e.id,position:e.approach,...(free?{type:'free-input',text:h.save.choices.find(c=>c.id===id)?.label??(chapter?originalChapterLabel(id,h.save.locale):originalCartridge(h.save.locale).domainRules!.rules.find(r=>r.id===id)!.match[0])}:{type:'action',action:id})}}
-async function harness(admit:OriginalPresentationGate=()=>true){
+async function harness(admit:OriginalPresentationGate=()=>true,interpreter?:OriginalActionInterpreter){
  const dir=mkdtempSync(join(tmpdir(),'original-http-')),objects=new Map<string,CarriageJourneyAuthority>(),storage=new PreflightStorage(dir),forwarded:Request[]=[]
  const env={CARRIAGE_JOURNEYS:{idFromName:(name:string)=>name,get:(key:unknown)=>({fetch:async(request:Request)=>{
   const id=String(key);let object=objects.get(id)
-  if(!object){object=new CarriageJourneyAuthority(storage.context(id),undefined,undefined,undefined,admit);objects.set(id,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(id),undefined,undefined,undefined,admit,interpreter);objects.set(id,object)}
   forwarded.push(request.clone());return object.fetch(request)
  }})}}
  const handler=createHandler(true,false,true);let lost='';let requests=0
@@ -53,6 +54,35 @@ for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','
  }finally{await h.close()}
 })
 const headers=(token=randomBytes(32).toString('base64url'))=>({'Content-Type':'application/json',Authorization:'Bearer '+token,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT})
+test('original semantic HTTP commits an admitted action once after lost response and disk reopen',async()=>{
+ let calls=0
+ const interpreter=createOriginalActionInterpreter(async()=>++calls%2===1?{kind:'action',actionId:'repair-starter'}:{valid:true,issues:[]})
+ const h=await harness(()=>true,interpreter),auth=headers()
+ const call=async(path:string,b?:unknown)=>{const r=await fetch(h.base+'/api/original'+path,{method:b===undefined?'GET':'POST',headers:auth,body:b===undefined?undefined:JSON.stringify(b)});return {status:r.status,data:await r.json()}}
+ try{
+  const head:OriginalHead=(await call('/sessions',{enrollment_id:randomUUID(),locale:'zh'})).data
+  const path='/sessions/'+head.id,body={...intent(head,'repair-starter'),action_id:randomUUID(),expected_version:0,sceneId:head.sceneId,type:'free-input',text:'我来把这台坏掉的机器修好',mode:'live'}
+  delete (body as any).action
+  h.lose('/actions');await assert.rejects(call(path+'/actions',body));assert.equal(calls,2)
+  h.reopen();const replay=await call(path+'/actions',body)
+  assert.equal(replay.status,200);assert.equal(replay.data.accepted,true);assert.equal(replay.data.head.version,1);assert.equal(replay.data.head.save.stats.condition,87)
+  assert.deepEqual(replay.data.interpretation,{input:body.text,actionId:'repair-starter'});assert.equal(calls,2)
+  assert.deepEqual((await call(path)).data,replay.data.head);assert.equal((await call(path+'/events?after=0')).data.events.length,1)
+  const rejected=await call(path+'/actions',{...body,action_id:randomUUID(),expected_version:1,text:'不要检修启动机'})
+  assert.equal(rejected.status,409);assert.equal(rejected.data.error,'ORIGINAL_ACTION_REQUIRES_COMMITMENT');assert.equal(calls,2)
+  assert.deepEqual((await call(path)).data,replay.data.head)
+ }finally{await h.close()}
+})
+test('original browser client clears a refused input without losing progress or blocking the next action',async()=>{
+ const h=await harness(),connection=originalSessionHttp(memory(),lock,fetch,h.base)
+ try{
+  const head=await connection.client.enroll('zh'),draft=intent(head,'repair-starter',true)
+  const result=await connection.client.send(head,{...draft,text:'不要检修启动机'})
+  assert.equal(result.accepted,false);assert.equal(result.rejectionCode,'ORIGINAL_ACTION_REQUIRES_COMMITMENT');assert.deepEqual(result.head,head);assert.equal(connection.client.hasPending(),false)
+  const accepted=await connection.client.send(head,intent(head,'repair-starter'))
+  assert.equal(accepted.accepted,true);assert.equal(accepted.head.version,1);assert.equal(accepted.head.save.stats.condition,87)
+ }finally{await h.close()}
+})
 test('original HTTP isolates owners and cartridges while existing carriage route remains functional',async()=>{
  const h=await harness(),auth=headers();const call=async(path:string,b?:unknown,hs=auth)=>{const r=await fetch(h.base+path,{method:b===undefined?'GET':'POST',headers:hs,body:b===undefined?undefined:JSON.stringify(b)});return {status:r.status,data:await r.json()}}
  try{

@@ -14,6 +14,9 @@ import type {StorySave,Locale} from '../src/vendor/original-train/types'
 import {originalEndingPolicy,type OriginalEndingGenerator} from './original-ending'
 import {SessionAuthority,type AuthorityStorage,type SessionRuntime} from './session-authority'
 import {assertOriginalAssetBindings,newOriginalAssetBindings,type OriginalAssetBindings} from '../src/original-asset-releases'
+import {originalActionIntentIssues,originalIsAuthoredAction} from '../src/original-action-intent'
+import {originalGameEntities,originalGameObjective} from '../src/original-game-projection'
+import type {OriginalActionInterpreter} from './original-action-interpreter'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
 const world=originalTrainChapterSpatialPlan()
@@ -32,7 +35,7 @@ export function assertOriginalHead(value:unknown):asserts value is OriginalHead{
  try{binding.locate(s,h.sceneId)}catch{throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)}
  if(!binding.validPosition(h.sceneId,h.position)||originalCartridge(s.locale).statDefinitions.some(d=>!Number.isFinite(s.stats?.[d.id])||s.stats[d.id]<d.min||s.stats[d.id]>d.max))throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
 }
-export function originalTrainRuntime(admit:OriginalPresentationGate=originalPresentationUnavailable,generator:StoryTurnGenerator=authoredOnly,endingGenerator?:OriginalEndingGenerator):SessionRuntime<OriginalHead>{
+export function originalTrainRuntime(admit:OriginalPresentationGate=originalPresentationUnavailable,generator:StoryTurnGenerator=authoredOnly,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter):SessionRuntime<OriginalHead>{
  const clone=<T>(value:T):T=>structuredClone(value)
  const check=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>{if(admit(clone(head),previous?clone(previous):undefined,actionId)!==true)throw new LabError('ORIGINAL_PRESENTATION_NOT_READY',409)}
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindings[h.save.locale].validPosition(h.sceneId,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
@@ -40,19 +43,22 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
   initial:(locale,id)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion,assets:newOriginalAssetBindings()};assertOriginalHead(h);check(h);return h},
   upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
   preserveConcurrent:()=>{},ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
-  prepare:async(h,body)=>{
+  prepare:async(h,body,reserveNarration)=>{
    assertOriginalHead(h);validateAction(body)
    if(['ready','generating','failed','complete'].includes(h.save.finale.status)&&!h.save.finale.epilogueActive)throw new LabError('ORIGINAL_FINALE_PENDING',409)
    if(body.expected_version!==h.version)throw new LabError('VERSION_CONFLICT',409)
    if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-   if(body.mode!==undefined&&body.mode!=='local')throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
+   if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
+   if(body.mode==='live'&&!interpreter)throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
    const c=originalCartridge(h.save.locale),binding=bindings[h.save.locale],pos=position(h,body.position)
    const entity=world.entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
    if(!entity)throw new LabError('UNKNOWN_ENTITY')
    if(!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('TOO_FAR')
    const person=world.characters.find(p=>p.entities.includes(entity.id))
    if(person&&!originalCharacterPresent(h.save,person.id))throw new LabError('CHARACTER_NOT_PRESENT')
-   let input:string
+   const actions=originalGameEntities(h).find(e=>e.id===entity.id)?.actions.map(a=>({id:a.id,label:a.label}))??[]
+   const authoredLabels=[...entity.actions.flatMap(id=>c.domainRules?.rules.find(r=>r.id===id)?.match??[]),...actions.map(a=>a.label)]
+   let input:string,interpretedAction:string|undefined
    if(body.type==='action'){
     const rule=c.domainRules?.rules.find(r=>r.id===body.action)
     const chapter=originalChapterActions.find(r=>r.id===body.action)
@@ -61,7 +67,19 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    }else if(body.type==='free-input'){
     if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
     input=body.text.trim()
+    if(originalActionIntentIssues(input,authoredLabels).length)throw new LabError('ORIGINAL_ACTION_REQUIRES_COMMITMENT',409)
    }else throw new LabError('INVALID_ACTION_TYPE')
+   if(body.type==='free-input'&&body.mode==='live'&&!originalIsAuthoredAction(input,authoredLabels)){
+    check({...h,position:pos})
+    if(!actions.length)throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
+    if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+    const id=await interpreter!(input,{locale:h.save.locale,sceneId:h.sceneId,target:entity.id,objective:originalGameObjective(h),actions:clone(actions)})
+    if(!id||!actions.some(a=>a.id===id))throw new LabError('ORIGINAL_INTENT_UNSUPPORTED',409)
+    const rule=c.domainRules?.rules.find(r=>r.id===id),chapter=originalChapterActions.find(a=>a.id===id)
+    if(!rule&&!chapter)throw new LabError('ORIGINAL_INTENT_UNSUPPORTED',409)
+    interpretedAction=id
+    input=rule?rule.match[0]:originalChapterLabel(chapter!.id,h.save.locale)
+   }
    const chapter=resolveOriginalChapter(input,h.save.locale,h.save)
    if(chapter){
     if(!entity.actions.includes(chapter))throw new LabError('UNSUPPORTED_ACTION')
@@ -70,7 +88,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
      execute:async(save,admitAction)=>{admitAction(chapter);return executeOriginalChapter(save,c,chapter)},
      assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const next:OriginalHead={...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos};assertOriginalHead(next);check(next,h,id)},
     })
-    return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:true,actionId:chapter,source:'author'}
+    return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:true,actionId:chapter,source:'author',...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}
    }
    const resolution=resolveDomainAction(h.save,c,input)
    // Only existing author actions are currently connected. No invented command
@@ -83,12 +101,12 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
     execute:async(save,admitAction)=>{admitAction(resolution.ruleId);const result=await executeStoryTurn({save,cartridge:c,action:input,generator});return {...result,save:projectOriginalChapterChoices(result.save),acceptedActionId:resolution.status==='accepted'?resolution.ruleId:null}},
     assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const candidate:OriginalHead={...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos};assertOriginalHead(candidate);check(candidate,h,id)},
    })
-   return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:resolution.status==='accepted',actionId:resolution.ruleId,source:bound.result.source}
+   return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:resolution.status==='accepted',actionId:resolution.ruleId,source:bound.result.source,...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}
   },
  }
 }
 /** Same SQLite transaction/replay implementation as the live carriage. This is
  * guarded by the original release switch and mandatory presentation admission. */
 export class OriginalTrainAuthority extends SessionAuthority<OriginalHead>{
- constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator){super(db,originalTrainRuntime(admit,generator,endingGenerator))}
+ constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter){super(db,originalTrainRuntime(admit,generator,endingGenerator,interpreter))}
 }

@@ -16,7 +16,7 @@ export function assertOriginalClientHead(value:unknown):asserts value is Origina
 /** Instantiate with an original-world namespace and authenticated transport.
  * HTTP transport is supplied separately; no browser reducer or local writer. */
 export class OriginalSessionClient extends RecoverableSessionClient<OriginalHead>{
- constructor(storage:Storage,prefix:string,transport:Transport,lock?:SessionLock){super(storage,prefix,transport,{scene:h=>h.sceneId,assertHead:assertOriginalClientHead,terminalErrors:['CHARACTER_NOT_PRESENT','ORIGINAL_NARRATION_NOT_READY','ORIGINAL_FINALE_PENDING',...originalChapterRejections],ending:{
+ constructor(storage:Storage,prefix:string,transport:Transport,lock?:SessionLock){super(storage,prefix,transport,{scene:h=>h.sceneId,assertHead:assertOriginalClientHead,terminalErrors:['CHARACTER_NOT_PRESENT','ORIGINAL_NARRATION_NOT_READY','ORIGINAL_ACTION_REQUIRES_COMMITMENT','ORIGINAL_INTENT_UNSUPPORTED','ORIGINAL_FINALE_PENDING',...originalChapterRejections],ending:{
   request:h=>({snapshot_id:buildEndingSnapshot(h.save,originalEndingCartridge(h.save,h.save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn)).id,mapVersion:h.mapVersion}),
   terminalErrors:['ENDING_NOT_READY','ENDING_SCENE_MISMATCH','ENDING_SNAPSHOT_MISMATCH','INVALID_ENDING'],
   assertResult:(r,b)=>{const f=r?.head?.save?.finale;if(r?.kind!=='ending'||r.endingId!==b.ending_id||r.snapshotId!==b.snapshot_id||r.head.version!==b.expected_version+1||r.head.sceneId!==b.sceneId||r.head.mapVersion!==b.mapVersion||f?.status!=='complete'||f.snapshot?.id!==b.snapshot_id||f.ending?.snapshotId!==b.snapshot_id)throw Error('ENDING_RESPONSE_MISMATCH')},
