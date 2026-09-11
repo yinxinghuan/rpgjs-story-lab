@@ -11,7 +11,7 @@ test('current reviewed actor pixels and starter state enter dialogue without fut
  assert.deepEqual(c.visuals.speaker.appearance,adaStandingAppearance);assert.equal(c.visuals.speaker.assetSha256,adaStandingResource.sha256)
  assert.equal(c.visuals.equipment[0].state,'broken');assert.equal(JSON.stringify(c.visuals).includes('ren-medic'),false);assert.deepEqual(h,before)
  h.save.facts['starter-repaired']=true;assert.equal(originalVisualContext(h,'ada-mechanic').equipment[0].state,'repaired')
- h.sceneId='train-at-tunnel';assert.deepEqual(originalVisualContext(h,'ada-mechanic').equipment,[])
+ h.sceneId='train-at-tunnel';const equipment=originalVisualContext(h,'ada-mechanic').equipment;assert.equal(equipment.length,1);assert.equal(equipment[0].id,'tunnel-fan');assert.equal(equipment[0].state,'stopped')
 })
 test('replacement art and development markers never inherit the baseline appearance description',()=>{
  const h=initial()

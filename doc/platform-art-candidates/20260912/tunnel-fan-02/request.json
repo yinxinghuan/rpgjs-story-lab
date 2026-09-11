@@ -1,0 +1,8 @@
+{
+ "sessionId":"cb90357b-fe01-48ab-b14b-0620eb0d556e",
+ "requestId":"0b2885ed-95bc-4bb8-9c47-3a38492e8276",
+ "mode":"edit",
+ "referenceUrls":["https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/b60d90f/public/art/starter-states-v1.png"],
+ "size":{"width":640,"height":640},
+ "prompt":"Use the reference only for its weathered dark metal, brass fittings, painted pixel texture and steep DOWNWARD orthographic camera. Produce a two-frame game sprite of a compact railway tunnel extractor fan on a rectangular metal skid. Canvas 640x640, two 320x640 cells side by side. Each cell contains the SAME machine at the SAME size, facing downward on the page, with a large visible TOP surface. A squat box-shaped enclosure with a large round fan opening on the front, sparse protective grille, small emergency-drive box at its side. No cabinet door or copper starter coil. Center each machine on x160 and x480, ground contact at y500, top around y200, width about230 pixels. LEFT is stopped: three stationary blades visible inside the round opening and small indicator lamp dark. RIGHT is powered: same enclosure, skid, opening, grille, viewpoint, silhouette and contact points; only fan blades have circular motion streaks INSIDE the opening and the small lamp glows warm amber. Keep external metal parts identical between states. Clear silhouette, crisp pixel-painted edges, no smooth cartoon shading. Uniform white background. No floor, cast shadow, surrounding scenery, people, text, dividing lines, checkerboard, or perspective vanishing point. Both complete machines fit entirely within their respective cells with generous white margins."
+}

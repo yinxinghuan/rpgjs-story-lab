@@ -1,0 +1,8 @@
+{
+ "sessionId":"cb90357b-fe01-48ab-b14b-0620eb0d556e",
+ "requestId":"855201ea-1c74-49cc-8338-f4f9c3bb6518",
+ "mode":"edit",
+ "referenceUrls":["https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789155681953138.png"],
+ "size":{"width":640,"height":640},
+ "prompt":"Correct this two-cell fan state sprite. Keep the LEFT machine's exact camera, metal style, dimensions and position as the master: top y183, bottom y507, centered x160. Make the RIGHT machine a copy of that same LEFT machine translated exactly320 pixels right; identical roof height, feet, side motor, control box, casing and external color. Both machines MUST have the same silhouette and all ground contacts. LEFT remains stopped. Fix its accidental white wedge inside the fan: every gap behind the blades is dark charcoal, never white. RIGHT is simply the same dark machine with spinning charcoal-gray fan blades, rendered as subtle DARK GRAY curved blade trails confined inside the round grille, and one SMALL amber status lamp on the control box at image right. Remove ALL orange/gold light from the fan opening, center and metal housing. No glowing rotor, heater coils, bright center, fire, or sparks. Fan hub stays dark gray, grille stays crisp and identical to the left. Do not change the camera or add perspective. No visible text, no checkerboard or ground shadows. Pure white empty background. Keep two complete 320x640 cells on the640x640 canvas, no overlap. This is an ordinary industrial ventilation fan, not a furnace, fantasy engine or reactor."
+}

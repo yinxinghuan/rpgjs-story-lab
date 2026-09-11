@@ -1,0 +1,7 @@
+{
+ "status":"rejected",
+ "sourceSha256":"15be05843638eea0c51ca856d95b9e880eccf2684f0be36afad8965c4199bae7",
+ "findings":["Orange glowing rotor has been replaced with a plausible dark spinning fan and small indicator.","Powered enclosure is still taller than stopped enclosure; correction did not preserve identical housing geometry.","Stopped white wedge remains inside the rotor opening."],
+ "admitted":false,
+ "next":"Whole-machine paired-state generation budget exhausted. Test a different representation: one immutable housing and a separate rotor, animated at runtime instead of regenerating the housing per state."
+}

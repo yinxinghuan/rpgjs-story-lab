@@ -1,0 +1,93 @@
+{
+  "scope": "Fixed layered fan in original-story local preflight",
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "running": true,
+      "observed": {
+        "poses": [
+          "spin-3",
+          "spin-7",
+          "spin-11",
+          "spin-15"
+        ],
+        "changed": 1646,
+        "roofChanged": 0
+      },
+      "restored": {
+        "poses": [
+          "spin-5",
+          "spin-9",
+          "spin-14",
+          "spin-18"
+        ],
+        "changed": 1598,
+        "roofChanged": 0
+      },
+      "collisionStop": {
+        "x": 112,
+        "y": 163.44099999999986
+      },
+      "menuPaused": true,
+      "refreshWithoutRecharging": true,
+      "departed": true,
+      "errors": [],
+      "externalConnections": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "running": false,
+      "observed": {
+        "poses": [
+          "stopped",
+          "stopped",
+          "stopped",
+          "stopped"
+        ],
+        "changed": 0,
+        "roofChanged": 0
+      },
+      "restored": {
+        "poses": [
+          "stopped",
+          "stopped",
+          "stopped",
+          "stopped"
+        ],
+        "changed": 0,
+        "roofChanged": 0
+      },
+      "collisionStop": {
+        "x": 112,
+        "y": 163.28150000000008
+      },
+      "menuPaused": true,
+      "refreshWithoutRecharging": true,
+      "departed": true,
+      "errors": [],
+      "externalConnections": 0
+    }
+  ],
+  "verification": {
+    "tests": 612,
+    "failed": 0,
+    "productionBuild": true,
+    "preflightBuild": true,
+    "opaqueWorkerStartup": true,
+    "secretAudit": true,
+    "apiBaseAudit": true,
+    "mediaAudit": true,
+    "storageAudit": true
+  },
+  "visualReview": "320x568 running and390x844 stopped-on-discard images inspected. Housing retains scale and foot position; rotor fits opening, no white hub disk. Gameplay animation changes rotor pixels, while sampled roof pixels stay identical.",
+  "limits": [
+    "No actual iPhone or logged AlterU production playthrough",
+    "Layered-device creator publication is not implemented yet",
+    "Other interactive device art remains incomplete"
+  ],
+  "testCorrection": "Ground approach uses4-world-unit grid nodes112,240 and112,184; no game path or collision relaxation."
+}

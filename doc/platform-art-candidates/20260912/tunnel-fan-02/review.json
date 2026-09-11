@@ -1,0 +1,7 @@
+{
+ "status":"rejected",
+ "sourceSha256":"c1a0922076d2420ab8ef7d663897c78de927c4d14559d0e2cbe72b1d8430ac7e",
+ "findings":["Overhead top plane and compact metal housing are suitable.","Powered housing starts about23px higher than stopped housing although feet align; whole-body state change would pop.","Powered rotor glows orange at its center, reading like a heater rather than a ventilation fan.","Stopped rotor has a white wedge inside the opening that must not become a hole in the whole cabinet."],
+ "admitted":false,
+ "next":"The one correction was completed as tunnel-fan-03 and also rejected. Whole-machine pair budget is exhausted; only the separate tunnel-fan-parts-01 assembly was admitted."
+}

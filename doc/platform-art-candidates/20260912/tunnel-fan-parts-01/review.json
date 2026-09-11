@@ -1,0 +1,38 @@
+{
+  "status": "layered-device-admitted-preflight",
+  "sourceSha256": "8fdd576bd4bc1982436e99a93c04ef1e545ec890d046a75cb5a99e05304dc16a",
+  "taskId": "mt_7d1beaafe0a8bafb6d352c98cb1e7dbd",
+  "sourceRetained": true,
+  "parts": [
+    {
+      "part": "housing",
+      "sha256": "b21bbe6f95f3fa982c980a975a1133c2fcf904c96cb3c5e15820dca3fb4f107b",
+      "scale": 0.11,
+      "anchor": [
+        160,
+        544
+      ]
+    },
+    {
+      "part": "rotor",
+      "sha256": "8e07f4c8a840678f11e9c44f253d7584c4a12563b67113299e42ace1e6867c3f",
+      "scale": 0.046,
+      "anchor": [
+        160,
+        320
+      ]
+    }
+  ],
+  "review": [
+    "Dark empty housing and detached rotor are separate usable components",
+    "Actual aperture sampled through360degrees, blade radius stays inside",
+    "No new painting; original split/matte/anchor operations retained",
+    "Only retained-supplies policy runs the rotor; discarded policy stays stopped",
+    "320/390 renderer pixels, collision, pause and refresh verified"
+  ],
+  "notAdmitted": [
+    "tunnel-fan-02 whole-machine pair",
+    "tunnel-fan-03 whole-machine pair"
+  ],
+  "limits": "This fixed runtime assembly is not yet a general creator publication feature."
+}

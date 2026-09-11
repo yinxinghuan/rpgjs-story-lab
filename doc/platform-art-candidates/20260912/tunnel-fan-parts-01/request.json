@@ -1,0 +1,8 @@
+{
+ "sessionId":"cb90357b-fe01-48ab-b14b-0620eb0d556e",
+ "requestId":"cf40773d-e504-4a96-960b-c095eb62d73c",
+ "mode":"edit",
+ "referenceUrls":["https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/b60d90f/public/art/starter-states-v1.png"],
+ "size":{"width":640,"height":640},
+ "prompt":"Create TWO SEPARATE GAME ASSET PARTS, not two machine states. Use the reference's weathered dark olive metal, brass details, crisp pixel-painted art and high downward orthographic camera. On LEFT320x640 cell: one compact freestanding railway tunnel ventilation housing on a skid, complete outer shell and feet, top plane clearly visible. A big round DARK EMPTY fan opening on the front, no blades, no grille bars crossing the opening, no door and no light. No visible inner mechanism. Machine centered x160, foot contact y520, top abouty180, width about240. Empty circular dark opening center approximatelyx160 y405, diameter130. On RIGHT320x640 cell: ONLY one detached three-blade charcoal-gray fan rotor and its circular hub, NO housing, casing, frame, stand, grille, floor or other object. View this rotor directly face-on so it can rotate in a game; rotor centered x480 y405, outer diameterabout130, balanced three broad industrial fan blades equally spaced around a small brass hub. The transparent gaps between its blades should instead be solid white background for later background removal. Keep this right part isolated with lots of empty margin. This is an assembly kit: LEFT empty fixed housing plus RIGHT detached rotor. Single uniform pure WHITE background across the entire640x640 image, no labels or gridlines, no checkerboard, no cast shadow. The left opening stays fully dark; the right is only the rotor silhouette with white gaps."
+}
