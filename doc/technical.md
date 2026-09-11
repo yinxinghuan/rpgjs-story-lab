@@ -1,5 +1,15 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 当前正式接入合同（2026-09-12）
+- `src/original-release.ts`：cloud主入口选完整原作；`?story=carriage`继续旧车厢，`?story_runtime=legacy`保留旧浏览器存档。Pages镜像不访问原作后台；preflight仍需显式`?story=original`。
+- `server/original-presentation.ts`：准入检查九房间绑定、四名固定人物素材、通风机、当前地面与交互点、旅程内素材身份不变。它是结构检查，不是自动审美认证，也不表示其他设备素材全部完成。原始运行时仍默认拒绝；正式Worker显式使用此gate。
+- `vite.config.ts`及`server/original-scene-preview.ts`：cloud/Pages和preflight输出完整地图与背景；`scripts/check-original-dist.ts`在构建时核验实际采用资源的字节、SHA、尺寸和许可证文件，拒绝采用whitebox背景。
+- `worker/source.ts`：原作服务在同一DO namespace的`original-v8:<owner>`内运行，旧车厢对象和数据库迁移标签不变。正式原作使用现有game-chat接口的行动理解/交谈适配器、20秒预算、持久6回合/分钟配额和玩家主动开启；按钮无需模型。显式测试gate不会隐式获得在线provider。
+- 原作wire为`original-session-14.assets-11.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-single-player-20260912-1`。
+- `_qa/original-production-server.ts`仅供本机测试：原样导入已编译Worker、服务dist、全新临时SQLite，禁止服务器外发；浏览器脚本另拦截所有远程来源。它不是生产Worker，也不读取生产或个人存档。
+- 原作与车厢切换先保存位置；有待确认操作时不得切换。原作目录和两种故事的续玩键保留，不做自动存档迁移。平台账户恢复、全面设备状态美术、最终真实AlterU整段验收仍待完成；上线与实测结果另记发布证据，后文历史“原作关闭”不代表当前候选代码。
+
+
 ## 1. 技术栈
 
 React 18、TypeScript、Vite 8、RPG-JS 5 beta、CanvasEngine/PixiJS。Node 22.22.2用于构建和本地服务。界面DOM与引擎画布共享世界地图父层和尺度。第三方固定版本见package-lock.json；完整声明随public/THIRD_PARTY_NOTICES.txt进入构建。

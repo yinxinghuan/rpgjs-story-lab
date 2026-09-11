@@ -1,3 +1,7 @@
+import {ORIGINAL_STORY_RELEASED} from '../src/original-release'
+import {originalReleasedPresentation} from '../server/original-presentation'
+import {createOriginalActionInterpreter} from '../server/original-action-interpreter'
+import {createOriginalDialogueGenerator} from '../server/original-dialogue'
 import {CreatorLayerArchive} from '../server/creator-layers'
 import {assertPublishedLayer,layerReleaseId} from '../src/layered-archive-contract'
 import {assertPublishedActor,actorReleaseId} from '../src/actor-publication'
@@ -13,7 +17,7 @@ import {createJournalImageProducer,readJournalImageAsset,type ImageProducer} fro
 import {JOURNAL_IMAGE_RELEASED} from '../src/journal-image-release'
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {LabError} from '../src/journey-runtime'
-import {propose,type ModelRequest} from '../server/model'
+import {propose,chatModel,type ModelRequest} from '../server/model'
 import {RUNTIME_CONTRACT,RUNTIME_HEADER,RELEASE_ID} from '../src/runtime-contract'
 import {CreatorArtArchive,type ArtArchiveSource} from '../server/creator-art'
 import {CREATOR_API_PATH,CREATOR_RUNTIME_HEADER,CREATOR_RUNTIME_CONTRACT} from '../src/creator-contract'
@@ -33,7 +37,7 @@ async function body(request:Request,limit=6000){
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
-export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false){return async(request:Request,env:Environment)=>{
+export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false,originalProduction=false){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
  const creator=path===CREATOR_API_PATH||path.startsWith(CREATOR_API_PATH+'/')
  const creatorJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
@@ -47,7 +51,7 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
   return env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+owner)).fetch(new Request(request.url,{headers:{'X-Authority-Owner':owner,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
  }
  if(original&&!originalEnabled)return reply({error:'NOT_FOUND'},404)
- if(original&&path===ORIGINAL_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:false,identityMode:'anonymous-capability-v1',runtimeContract:ORIGINAL_RUNTIME_CONTRACT,liveModelAvailable:originalActionAvailable(),liveDialogueAvailable:originalDialogueAvailable()})
+ if(original&&path===ORIGINAL_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:originalProduction,identityMode:'anonymous-capability-v1',runtimeContract:ORIGINAL_RUNTIME_CONTRACT,liveModelAvailable:originalActionAvailable(),liveDialogueAvailable:originalDialogueAvailable()})
  if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return reply({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:RELEASE_ID,runtimeContract:RUNTIME_CONTRACT})
  if(!creator&&!original&&!path.startsWith('/api/lab/'))return reply({error:'NOT_FOUND'},404)
  if(!imageEnabled&&/^\/api\/lab\/sessions\/[^/]+\/image(?:\/file)?$/.test(path))return reply({error:'NOT_FOUND'},404)
@@ -65,9 +69,8 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
   return await env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName(creator?'creator-art-v1:'+owner:original?'original-v8:'+owner:owner)).fetch(forwarded)
  }catch(e){return reply({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
 }}
-// Creator archives use the existing namespace and separate owner keys. Original
-// story admission remains closed until its complete presentation is released.
-export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED,JOURNAL_IMAGE_RELEASED,false,()=>false,()=>false,true)
+// Both stories retain their own owner keys inside the existing namespace.
+export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED,JOURNAL_IMAGE_RELEASED,ORIGINAL_STORY_RELEASED,()=>ORIGINAL_STORY_RELEASED,()=>ORIGINAL_STORY_RELEASED,true,ORIGINAL_STORY_RELEASED)
 interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
@@ -79,11 +82,17 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
   this.db=db;this.originalGate=originalGate
+  // Explicit preflight/test gates never acquire a live provider accidentally.
+  // The session authority enforces its persisted per-owner narration quota.
+  if(originalGate===originalReleasedPresentation){
+   this.originalInterpreter??=createOriginalActionInterpreter(modelRequest??chatModel)
+   this.originalDialogue??=createOriginalDialogueGenerator(modelRequest??chatModel)
+  }
   this.authority=new ProductionAuthority(db,(input,save,target,live)=>propose(input,save,target,live&&ONLINE_NARRATION_AVAILABLE,modelRequest))
  }
  async fetch(request:Request){try{

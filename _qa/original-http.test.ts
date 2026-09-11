@@ -1,3 +1,4 @@
+import {originalReleasedPresentation} from '../server/original-presentation'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {createServer} from 'node:http'
@@ -18,14 +19,14 @@ const world=originalTrainChapterSpatialPlan()
 const lock=async<T>(_name:string,work:()=>Promise<T>)=>work()
 function memory(){const values=new Map<string,string>();return {get length(){return values.size},getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v)},removeItem:(k:string)=>{values.delete(k)},key:(i:number)=>[...values.keys()][i]??null,clear:()=>values.clear()} as Storage}
 function intent(h:OriginalHead,id:string,free=false){const e=world.entities.find(e=>e.scene===h.sceneId&&e.actions.includes(id))!,chapter=originalChapterActions.find(a=>a.id===id);return {target:e.id,position:e.approach,...(free?{type:'free-input',text:h.save.choices.find(c=>c.id===id)?.label??(chapter?originalChapterLabel(id,h.save.locale):originalCartridge(h.save.locale).domainRules!.rules.find(r=>r.id===id)!.match[0])}:{type:'action',action:id})}}
-async function harness(admit:OriginalPresentationGate=()=>true,interpreter?:OriginalActionInterpreter){
+async function harness(admit:OriginalPresentationGate=originalReleasedPresentation,interpreter?:OriginalActionInterpreter){
  const dir=mkdtempSync(join(tmpdir(),'original-http-')),objects=new Map<string,CarriageJourneyAuthority>(),storage=new PreflightStorage(dir),forwarded:Request[]=[]
  const env={CARRIAGE_JOURNEYS:{idFromName:(name:string)=>name,get:(key:unknown)=>({fetch:async(request:Request)=>{
   const id=String(key);let object=objects.get(id)
   if(!object){object=new CarriageJourneyAuthority(storage.context(id),undefined,undefined,undefined,admit,interpreter);objects.set(id,object)}
   forwarded.push(request.clone());return object.fetch(request)
  }})}}
- const handler=createHandler(true,false,true);let lost='';let requests=0
+ const handler=handleApi;let lost='';let requests=0
  const server=createServer(async(req,res)=>{try{requests++;const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const headers=new Headers();for(const [k,v] of Object.entries(req.headers))if(v)headers.set(k,Array.isArray(v)?v.join(','):v);const request=new Request('http://127.0.0.1'+req.url,{method:req.method,headers,body:req.method==='GET'||req.method==='HEAD'?undefined:Buffer.concat(chunks)});const response=await handler(request,env);if(lost&&req.method==='POST'&&req.url?.endsWith(lost)&&response.ok){lost='';res.destroy();return}res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()))}catch{res.writeHead(500);res.end('{}')}})
  await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve)})
  const address=server.address() as {port:number},base=`http://127.0.0.1:${address.port}`
@@ -118,7 +119,7 @@ test('original HTTP isolates owners and cartridges while existing carriage route
 test('original HTTP release, presentation, capability, contract and body gates reject before writing',async()=>{
  const h=await harness(originalPresentationUnavailable),auth=headers(),url=h.base+'/api/original/sessions',body=JSON.stringify({enrollment_id:randomUUID(),locale:'en'})
  try{
-  assert.equal((await handleApi(new Request(url,{method:'POST',headers:auth,body}),h.env)).status,404)
+  assert.equal((await createHandler(true,false,false)(new Request(url,{method:'POST',headers:auth,body}),h.env)).status,404)
   assert.equal((await fetch(url,{method:'POST',body})).status,401)
   assert.equal((await fetch(url,{method:'POST',headers:{...auth,[ORIGINAL_RUNTIME_HEADER]:'old'},body})).status,409)
   assert.equal((await fetch(url,{method:'POST',headers:auth,body:'['})).status,400)

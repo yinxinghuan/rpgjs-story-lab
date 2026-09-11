@@ -1,0 +1,629 @@
+{
+  "at": "2026-09-12",
+  "tests": 620,
+  "build": "cloud dist and opaque compiled Worker, no renderer hooks",
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "travel": true,
+      "actions": 39,
+      "finalVersion": 40,
+      "checks": [
+        {
+          "action": "opening",
+          "scene": "train-at-dead-station",
+          "visible": []
+        },
+        {
+          "action": "repair-starter",
+          "scene": "train-at-dead-station",
+          "visible": []
+        },
+        {
+          "action": "commit-forest-route",
+          "scene": "train-at-pine-line",
+          "visible": []
+        },
+        {
+          "action": "pine-inspect",
+          "scene": "train-at-pine-line",
+          "visible": []
+        },
+        {
+          "action": "pine-reverse",
+          "scene": "train-at-pine-line",
+          "visible": []
+        },
+        {
+          "action": "pine-meet",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-survey-route",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-invite",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-invite-restored",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-refuel",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-depart",
+          "scene": "train-at-tunnel",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "tunnel-inspect",
+          "scene": "train-at-tunnel",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "tunnel-captain-led",
+          "scene": "train-at-tunnel",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "tunnel-ventilate",
+          "scene": "train-at-tunnel",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "tunnel-refuel",
+          "scene": "train-at-tunnel",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "tunnel-depart",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "yard-meet",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-work-pact",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-route-brief",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-invite",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-invite-restored",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-depart",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-inspect",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-lin-watch",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-mako-duty",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-gravel-siding",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-debrief",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-debrief-restored",
+          "scene": "train-at-mountain-pass",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "pass-depart",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-inspect",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-grid-aid",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-public-rules",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-refuel",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-repair",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-route-brief",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-pack-kit",
+          "scene": "train-at-sleeping-town",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "town-depart",
+          "scene": "train-at-flood-bridge",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "bridge-inspect",
+          "scene": "train-at-flood-bridge",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "bridge-kit-survey",
+          "scene": "train-at-flood-bridge",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "bridge-arrange",
+          "scene": "train-at-flood-bridge",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "bridge-arrange-restored",
+          "scene": "train-at-flood-bridge",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "bridge-rail-crossing",
+          "scene": "train-at-dawn-junction",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "junction-review",
+          "scene": "train-at-dawn-junction",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "junction-review-restored",
+          "scene": "train-at-dawn-junction",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "junction-settle-basic",
+          "scene": "train-at-dawn-junction",
+          "visible": [
+            "lin-scout",
+            "mara-raider"
+          ]
+        }
+      ],
+      "assets": [
+        "/art/lin-standing-v1.png",
+        "/art/mako-standing-v1.png"
+      ],
+      "endingRetained": true,
+      "errors": [],
+      "externalConnections": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "travel": false,
+      "actions": 39,
+      "finalVersion": 40,
+      "checks": [
+        {
+          "action": "opening",
+          "scene": "train-at-dead-station",
+          "visible": []
+        },
+        {
+          "action": "repair-starter",
+          "scene": "train-at-dead-station",
+          "visible": []
+        },
+        {
+          "action": "commit-forest-route",
+          "scene": "train-at-pine-line",
+          "visible": []
+        },
+        {
+          "action": "pine-inspect",
+          "scene": "train-at-pine-line",
+          "visible": []
+        },
+        {
+          "action": "pine-reverse",
+          "scene": "train-at-pine-line",
+          "visible": []
+        },
+        {
+          "action": "pine-meet",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-survey-route",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-stay",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-stay-restored",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-refuel",
+          "scene": "train-at-pine-line",
+          "visible": [
+            "lin-scout"
+          ]
+        },
+        {
+          "action": "pine-depart",
+          "scene": "train-at-tunnel",
+          "visible": []
+        },
+        {
+          "action": "tunnel-inspect",
+          "scene": "train-at-tunnel",
+          "visible": []
+        },
+        {
+          "action": "tunnel-captain-led",
+          "scene": "train-at-tunnel",
+          "visible": []
+        },
+        {
+          "action": "tunnel-ventilate",
+          "scene": "train-at-tunnel",
+          "visible": []
+        },
+        {
+          "action": "tunnel-refuel",
+          "scene": "train-at-tunnel",
+          "visible": []
+        },
+        {
+          "action": "tunnel-depart",
+          "scene": "train-at-graystone-yard",
+          "visible": []
+        },
+        {
+          "action": "yard-meet",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-work-pact",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-route-brief",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-stay",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-stay-restored",
+          "scene": "train-at-graystone-yard",
+          "visible": [
+            "mara-raider"
+          ]
+        },
+        {
+          "action": "yard-depart",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-inspect",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-player-watch",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-crew-duty",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-gravel-siding",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-debrief",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-debrief-restored",
+          "scene": "train-at-mountain-pass",
+          "visible": []
+        },
+        {
+          "action": "pass-depart",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-inspect",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-grid-aid",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-public-rules",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-refuel",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-repair",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-route-brief",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-pack-kit",
+          "scene": "train-at-sleeping-town",
+          "visible": []
+        },
+        {
+          "action": "town-depart",
+          "scene": "train-at-flood-bridge",
+          "visible": []
+        },
+        {
+          "action": "bridge-inspect",
+          "scene": "train-at-flood-bridge",
+          "visible": []
+        },
+        {
+          "action": "bridge-kit-survey",
+          "scene": "train-at-flood-bridge",
+          "visible": []
+        },
+        {
+          "action": "bridge-arrange",
+          "scene": "train-at-flood-bridge",
+          "visible": []
+        },
+        {
+          "action": "bridge-arrange-restored",
+          "scene": "train-at-flood-bridge",
+          "visible": []
+        },
+        {
+          "action": "bridge-rail-crossing",
+          "scene": "train-at-dawn-junction",
+          "visible": []
+        },
+        {
+          "action": "junction-review",
+          "scene": "train-at-dawn-junction",
+          "visible": []
+        },
+        {
+          "action": "junction-review-restored",
+          "scene": "train-at-dawn-junction",
+          "visible": []
+        },
+        {
+          "action": "junction-settle-basic",
+          "scene": "train-at-dawn-junction",
+          "visible": []
+        }
+      ],
+      "assets": [
+        "/art/lin-standing-v1.png",
+        "/art/mako-standing-v1.png"
+      ],
+      "endingRetained": true,
+      "errors": [],
+      "externalConnections": 0
+    }
+  ],
+  "reviewedScreenshots": [
+    "production-junction-review-320-zh-local-qa.png",
+    "production-pass-debrief-390-en-local-qa.png"
+  ],
+  "limits": [
+    "Fresh loopback browser, not iPhone hardware or AlterU platform",
+    "Static NPC poses, remaining equipment use interaction markers",
+    "Production browser-origin permission remains pending"
+  ]
+}
