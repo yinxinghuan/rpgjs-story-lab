@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "469f30e3-cd42-4c93-bb6b-aa4b17593ec2",
+  "mode": "edit",
+  "prompt": "Make a standalone 3-state sprite sheet for the ORIGINAL TRAIN STARTER RELAY, using the small square maintenance device in the MIDDLE ROW of the reference ONLY as camera, material and design language reference. Preserve its balanced overhead orthographic camera: broad visible top surface plus readable front, parallel edges, no vanishing point, detailed crisp pixel-painted worn dark metal with restrained brass. Do not copy the ceramic fuse: this is a diesel engine starter contactor with a visible copper coil and metal switching contacts. Exactly THREE EQUAL COLUMNS in ONE row, 960x640, each cell320x640. All three show the SAME compact box, approximately220px wide and260px tall, grounded at local x180,y460. Column 1: CLOSED maintenance cover. Column 2: cover OPEN to the LEFT, exposing a small copper-wound relay coil with blackened/stuck switching contacts. Column 3: IDENTICAL open cover angle, coil, body, wires and position as column2, but contacts repaired with a clean small COPPER BRIDGE reconnecting them. The closed and open versions have identical cabinet dimensions. Keep all doors and parts inside their cell. No loose inventory items, people, ground plane, cast shadow, text, numbers, UI, spark, glow or color-coded lights. Uniform PURE WHITE background for automated cutout; no checkerboard. Three complete separated silhouettes, aligned body baselines and equal body scale. Change ONLY the required cover/relay contact state; keep top panel, bolts, handles and wiring constant.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/public/art/overhead/props.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 640
+  }
+}
