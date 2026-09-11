@@ -735,3 +735,5 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 
 ### 创作者在线归档正式开启（2026-09-11）
 正式handleApi沿用CarriageJourneyAuthority/CARRIAGE_JOURNEYS绑定，开启creator路由，原作及旅途画页开关保持关闭。creator-art-v1前缀隔离制作数据，车厢owner对象名和wire不变；发布标识改为carriage-creator-storage-20260911-2。正式制作页发布后的链接指向同源不可变图片，preflight继续指向原作绑定旅程。没有第二套后台、长期客户端凭据或平台账号身份假设。线上执行结果在发布检查记录中另记。
+
+正式Worker首次上传拒绝：冻结原作cartridge五个浏览器图片/音频地址在模块顶层使用import.meta.url，Cloudflare模块URL不是可用于相对资源解析的文件URL。本机源码测试未覆盖此边界。build-worker.mjs现只在后台编译中将这五个显示地址置空，冻结源文件和前端媒体解析保持不变，故事/规则字段不改；新增opaque data URL模块启动与creator health检查，构建期即捕捉该类错误。71c50ed上传失败，不能登记为主站发布成功。
