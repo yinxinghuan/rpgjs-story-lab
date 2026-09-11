@@ -1,3 +1,5 @@
+import {CreatorSpriteArchive} from '../server/creator-sprites'
+import {spriteArchiveBodyLimit} from '../src/sprite-archive-contract'
 import {OriginalTrainAuthority,originalPresentationUnavailable,type OriginalPresentationGate} from '../server/original-train-runtime'
 import type {OriginalActionInterpreter} from '../server/original-action-interpreter'
 import type {OriginalDialogueGenerator} from '../server/original-dialogue'
@@ -19,10 +21,10 @@ export const PRODUCTION_WRITES_ENABLED=true
 interface Namespace{ idFromName(name:string):unknown;get(id:unknown):{fetch(request:Request):Promise<Response>} }
 interface Environment{CARRIAGE_JOURNEYS?:Namespace}
 const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT}})
-async function body(request:Request){
+async function body(request:Request,limit=6000){
  const reader=request.body?.getReader();if(!reader)return {}
  let size=0;const chunks:Uint8Array[]=[]
- for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>6000){await reader.cancel();throw new LabError('BODY_TOO_LARGE',413)}chunks.push(value)}
+ for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>limit){await reader.cancel();throw new LabError('BODY_TOO_LARGE',413)}chunks.push(value)}
  const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
@@ -54,7 +56,7 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  if(request.headers.get(RUNTIME_HEADER)!==RUNTIME_CONTRACT||original&&request.headers.get(ORIGINAL_RUNTIME_HEADER)!==ORIGINAL_RUNTIME_CONTRACT||creator&&request.headers.get(CREATOR_RUNTIME_HEADER)!==CREATOR_RUNTIME_CONTRACT)return reply({error:'RUNTIME_VERSION_MISMATCH'},409)
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)),owner=Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('')
  try{
-  const payload=request.method==='GET'?undefined:JSON.stringify(await body(request))
+  const payload=request.method==='GET'?undefined:JSON.stringify(await body(request,spriteArchiveBodyLimit(path)))
   const forwarded=new Request(request.url,{method:request.method,headers:{'Content-Type':'application/json','X-Authority-Owner':owner,[RUNTIME_HEADER]:RUNTIME_CONTRACT,...(creator?{[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}:{}),...(original?{[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}:{})},body:payload})
   return await env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName(creator?'creator-art-v1:'+owner:original?'original-v8:'+owner:owner)).fetch(forwarded)
  }catch(e){return reply({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
@@ -65,6 +67,7 @@ export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
  private original?:OriginalTrainAuthority
  private creator?:CreatorArtArchive
+ private sprites?:CreatorSpriteArchive
  private db:AuthorityStorage
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
@@ -86,6 +89,24 @@ export class CarriageJourneyAuthority{
     if(request.headers.get(CREATOR_RUNTIME_HEADER)!==CREATOR_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
     this.creator??=new CreatorArtArchive(this.db,this.artSource)
     const path=url.pathname.slice(CREATOR_API_PATH.length)
+    if(path==='/sprites'||path.startsWith('/sprites/')){
+     this.sprites??=new CreatorSpriteArchive(this.db)
+     if(path==='/sprites'&&request.method==='GET')return respond({sprites:this.sprites.list(owner)})
+     if(path==='/sprites'&&request.method==='POST')return respond(this.sprites.begin(owner,await body(request)))
+     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|file\/(source|candidate|input-0|input-1)))?$/)
+     if(!m)throw new LabError('NOT_FOUND',404)
+     if(request.method==='GET'){
+      if(!m[2])return respond(this.sprites.get(owner,m[1]))
+      if(m[2]==='parts')return respond(this.sprites.progress(owner,m[1]))
+      if(m[3])return new Response(new Uint8Array(await this.sprites.file(owner,m[1],m[3])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+     }
+     if(request.method==='POST'){
+      if(m[2]==='parts')return respond(this.sprites.part(owner,m[1],await body(request,spriteArchiveBodyLimit(url.pathname))))
+      if(m[2]==='finish')return respond(await this.sprites.finish(owner,m[1]))
+      if(m[2]==='cancel')return respond(this.sprites.cancel(owner,m[1]))
+     }
+     throw new LabError('METHOD_NOT_ALLOWED',405)
+    }
     const published=path.match(/^\/releases\/([a-f0-9]{64})\.([a-f0-9-]{36})(\/file)?$/)
     if(published&&request.method==='GET'){
      if(published[1]!==owner)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)

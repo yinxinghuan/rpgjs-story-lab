@@ -1,3 +1,4 @@
+import {spriteArchiveBodyLimit} from '../src/sprite-archive-contract'
 import {originalPreflightModels} from './original-preflight-model'
 // Loopback-only integration harness. This never provisions a cloud namespace.
 import {originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
@@ -43,7 +44,7 @@ export function preflightPlugin(){
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){res.writeHead(403);res.end();return}
   if(mismatchOnce&&url.pathname===prefix+'/api/lab/health'){mismatchOnce=false;res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({ok:true,runtimeContract:'synthetic-previous-runtime'}));return}
   void(async()=>{try{
-   let size=0;const chunks:Buffer[]=[];for await(const chunk of req){size+=chunk.length;if(size>6000){res.writeHead(413);res.end();return}chunks.push(Buffer.from(chunk))}
+   const bodyLimit=spriteArchiveBodyLimit(url.pathname.slice(prefix.length));let size=0;const chunks:Buffer[]=[];for await(const chunk of req){size+=chunk.length;if(size>bodyLimit){res.writeHead(413);res.end();return}chunks.push(Buffer.from(chunk))}
    url.pathname=url.pathname.slice(prefix.length)
    const headers=new Headers();for(const [k,v] of Object.entries(req.headers))if(v)headers.set(k,Array.isArray(v)?v.join(','):v)
    let response=await handler(new Request(url,{method:req.method,headers,body:req.method==='GET'||req.method==='HEAD'?undefined:Buffer.concat(chunks)}),environment)

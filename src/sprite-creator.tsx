@@ -9,6 +9,7 @@ import propSample from '../doc/platform-art-candidates/20260911/props-edit-01/ca
 import starterBeforeSample from '../doc/platform-art-candidates/20260911/starter-edit-02/candidate.png'
 import starterAfterSample from '../doc/platform-art-candidates/20260911/starter-repair-03/candidate.png'
 import {composeRepairFrames} from './sprite-composition'
+import SpriteCloudPanel from './sprite-cloud-panel'
 import './art-creator.css'
 // A fixture is injected only by the separate QA build; the production entry supplies none.
 export default function SpriteCreator({fixture,locale}:{fixture?:()=>Promise<SpritePng>;locale?:'zh'|'en'}={}) {
@@ -81,5 +82,6 @@ export default function SpriteCreator({fixture,locale}:{fixture?:()=>Promise<Spr
  {!draft&&errorNotice}
  {!!history.length&&<section><label htmlFor="sprite-history">{t('已保存记录','Saved records')}</label><select id="sprite-history" value={draft?.id??''} disabled={busy} onChange={e=>{const id=e.target.value;void locked(async()=>{const selected=await repo.current!.get(id);if(!selected)throw Error('SPRITE_CORRUPT');const current=await repo.current!.get();await repo.current!.save(selected,current);setShow(selected.result?'result':'source')})}}>{history.map(d=><option key={d.id} value={d.id}>{d.sourceName} · {d.result?t('候选','candidate'):t('原图/未完成','source/unfinished')} · {new Date(d.createdAt).toLocaleTimeString()}</option>)}</select></section>}
  {draft&&<details><summary>{t('素材记录','Art record')}</summary><dl><dt>{t('记录 ID','Record ID')}</dt><dd>{draft.id}</dd><dt>{t('原图摘要','Source SHA-256')}</dt><dd>{draft.source.sha256}</dd>{draft.composition?.inputs.map((i,n)=><React.Fragment key={n}><dt>{t('保留的原图','Retained original')} {n+1} · {i.sourceName} · {t('选用列','Column')} {i.column+1}/{i.columns}</dt><dd>{i.source.sha256}</dd></React.Fragment>)}{draft.result&&<><dt>{t('候选摘要','Candidate SHA-256')}</dt><dd>{draft.result.png.sha256}</dd><dt>{t('处理版本','Algorithm')}</dt><dd>{draft.result.algorithm}</dd></>}</dl></details>}
+ {ready&&repo.current&&<SpriteCloudPanel repo={repo.current} draft={draft} busy={busy} setBusy={setBusy} locale={zh?'zh':'en'} onRestore={async d=>{apply(d);setShow('result');setHistory(await repo.current!.list())}}/>}
  <footer><p>{t('保存在当前浏览器。透明边缘、四方向和动作仍需实际检查；本页不会发布或替换游戏资产。','Saved in this browser. Alpha edges, directions and animation still need review. This page cannot publish or replace game assets.')}</p></footer></main>
 }

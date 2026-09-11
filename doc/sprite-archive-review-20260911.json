@@ -1,0 +1,45 @@
+{
+  "date": "2026-09-11",
+  "scope": "Private sprite archive and browser restoration through the loopback Worker/SQLite preflight",
+  "productionDeployed": false,
+  "candidateId": "07f75a8a-d1e3-411b-a486-ac710b555cbd",
+  "candidateSha256": "35be79d550309e577c292d128a2dbc70df5903b205d76ca29b8e3c5e6669b7d7",
+  "priorCompositionEvidence": "sprite-composition-review-20260911.json",
+  "browserEvidence": [
+    "saved the existing candidate using the creator UI; one ready server record",
+    "selected the older local original record, then restored the candidate and original sources using the online UI",
+    "same candidate ID, repair settings and map inspection link restored",
+    "after navigation back to creator, expanded DOM record confirms composite, candidate and both original SHA values and selected columns",
+    "320x568 and 390x844 actual DOM dimensions and JPEG dimensions match; no horizontal overflow",
+    "restored candidate loaded in actual RPG-JS north-cape map",
+    "front position logical 104,244 and rendered 104,244",
+    "broken and repaired selectors switch states; cabinet body probe reports impassable"
+  ],
+  "screenshots": [
+    "../_qa/ui/sprite-archive-390-platform-layout.jpg",
+    "../_qa/ui/sprite-archive-320-platform-layout.jpg",
+    "../_qa/ui/sprite-archive-restored-broken-320-platform-layout.jpg",
+    "../_qa/ui/sprite-archive-restored-repaired-320-platform-layout.jpg"
+  ],
+  "automatedTests": {
+    "fullSuitePassed": 554,
+    "newTests": 5,
+    "covers": [
+      "real two-source repair PNGs, source selections and frame anchors preserved exactly",
+      "twelve-frame actor manifest and source/candidate restoration without visual approval",
+      "immutable candidate identity and chunk content",
+      "missing/corrupt chunks cannot become ready",
+      "partial cancellation and six-record quota",
+      "actual HTTP lost chunk response, authority restart, resume without duplicate first chunk",
+      "private identity isolation and unauthenticated file rejection"
+    ]
+  },
+  "newGenerationRequests": 0,
+  "limits": [
+    "Loopback preview evidence, not a production cloud or iPhone hardware test",
+    "Archive ready validates bytes/PNG header/SHA, not alpha edges or correct gait semantics",
+    "No public sprite release or original-journey equipment binding yet",
+    "Creator identity remains an anonymous browser capability; platform account binding is unresolved",
+    "The original single-player production gate remains closed; this does not complete the overall game goal"
+  ]
+}
