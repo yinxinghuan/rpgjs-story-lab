@@ -1,0 +1,12 @@
+{
+  "status": "rejected",
+  "pass": [
+    "No train; brick dispatch building replaces locomotive",
+    "Accepted orthographic view and quiet courtyard material"
+  ],
+  "fail": [
+    "Railway still runs through the building",
+    "Main building extends to about y705 pixels/world264, overlapping companion standing footprint at world y255..270"
+  ],
+  "next": "One targeted removal of rails and building length correction"
+}

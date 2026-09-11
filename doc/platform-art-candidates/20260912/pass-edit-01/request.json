@@ -1,0 +1,13 @@
+{
+  "requestId": "3409f454-0eb6-4921-ab49-4efb1a40d34d",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/9ce202a2500a950313e6afcbeab8feacb3995ade/doc/platform-art-candidates/20260912/yard-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Maintain the accepted orthographic elevated top-down RPG camera: parallel verticals, no horizon or vanishing point, no isometric diagonals. Canvas 1024x1536. Crisp detailed painted pixel materials. Fixed 384x576 world scaled to this canvas. Clear connected service lanes and bottom apron; avoid opaque objects in walking floor. No people, interactive equipment, lettering, symbols, UI or fog. Keep the referenced diesel locomotive exactly in place and same dimensions, occupying x389..629 pixels and from top edge to y661. Keep the small left maintenance shelter within x45..197, y693..1051, with no overhanging roof beyond that. Outer environmental strips x0..160 and x896..1024 are nonwalkable. Rest of the ground must stay clear. Transform the location into a remote mountain railway service shelf before a steep descent. ONLY the outer strips show cropped fractured slate cliffs, stone retaining parapets and a narrow cold misty ravine beyond the right parapet. No deep perspective view. Main floor is flat gritty stone and damp concrete with a flush gravel runoff strip, not boulders or snow piles. Existing shelter becomes an aged stone maintenance hut in the exact footprint. Cool predawn blue and copper locomotive lamps, readable floor. Dark mountain rock is clearly distinct from forest and city. No new track crossing, sharp corner, machinery or cliff entering either side walking lane."
+}

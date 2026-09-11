@@ -1,0 +1,51 @@
+{
+  "status": "admitted-preflight-environment",
+  "sourceSha256": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+  "scene": "train-at-mountain-pass",
+  "pass": [
+    "B orthographic camera, legible floor and stable material family",
+    "No baked people or interactive state assets"
+  ],
+  "limitations": [
+    "Right ravine edge is reserved to x326, slightly inside original x336 boundary.",
+    "Local level service shelf only; descent is an authored transition."
+  ],
+  "validation": {
+    "tests": 595,
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "trainFate": "preserved",
+        "result": {
+          "scene": "train-at-mountain-pass",
+          "hash": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+          "versionedEngineMap": "./map/mountain-pass-e83947a9.tmx",
+          "logicalSceneMatchesRendered": true,
+          "collisionStop": {
+            "x": 62.49999999999998,
+            "y": 230.67299999999997
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "trainFate": "anchored",
+        "result": {
+          "scene": "train-at-mountain-pass",
+          "hash": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+          "versionedEngineMap": "./map/mountain-pass-e83947a9.tmx",
+          "logicalSceneMatchesRendered": true,
+          "collisionStop": {
+            "x": 61.61999999999996,
+            "y": 230.74999999999997
+          }
+        }
+      }
+    ]
+  },
+  "productionArtComplete": false
+}

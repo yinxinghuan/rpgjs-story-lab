@@ -67,3 +67,22 @@ test('real carriage path remains walkable and reaches its destination at both fr
   assert.equal(route.length,0);near(position.x,destination!.x);near(position.y,destination!.y)
  }
 })
+
+test('completed grid waypoints do not retain drift that blocks a tangent corner',()=>{
+ const walk=(p:{x:number;y:number})=>!(p.x+9>146&&p.x<236&&p.y+15>0&&p.y<248)
+ for(const fps of [20,24,30,40,50,59,60,61,75,90,120,144,165,240]){
+  let p={x:112,y:184},route=[...Array.from({length:17},(_,i)=>({x:112,y:184+i*4})),...Array.from({length:41},(_,i)=>({x:112+i*4,y:248}))],distance=0
+  for(let i=0;i<5000&&route.length;i++){const r=advanceRoute(p,route,110/fps,walk);assert.equal(r.blocked,false,`fps=${fps} p=${JSON.stringify(r.position)}`);assert.ok(walk(r.position));p=r.position;route.splice(0,r.consumed);distance+=r.distance}
+  assert.equal(route.length,0);assert.deepEqual(p,{x:272,y:248});assert.ok(Math.abs(distance-224)<1e-5)
+ }
+ const rejected=advanceRoute({x:0,y:0},[{x:1e-8,y:0}],1,p=>p.x===0);assert.equal(rejected.blocked,true);assert.equal(rejected.arrived,false);assert.deepEqual(rejected.position,{x:0,y:0})
+})
+
+test('subpixel starts land exactly on a wall-adjacent node without phantom collision',()=>{
+ const walk=(p:{x:number;y:number})=>p.x>=60&&!(p.x<74&&p.y+15>246)
+ for(const x of [60,60.2,61,62,63.8])for(const y of [228,230,230.5,230.999,231])for(const fps of [30,60,120]){
+  let p={x,y},route=[{x:60,y:228},{x:80,y:228}]
+  for(let i=0;i<100&&route.length;i++){const r=advanceRoute(p,route,110/fps,walk);assert.equal(r.blocked,false,JSON.stringify({x,y,fps,p:r.position}));p=r.position;route.splice(0,r.consumed)}
+  assert.equal(route.length,0);assert.deepEqual(p,{x:80,y:228})
+ }
+})

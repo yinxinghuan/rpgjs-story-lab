@@ -1,3 +1,4 @@
+import {assertOriginalClientHead} from '../src/original-session-client'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID,createHash} from 'node:crypto'
@@ -46,4 +47,28 @@ test('forest route continues through every bound room to the ending, preserving 
   assert.deepEqual(h.assets,assets);assert.deepEqual(r.upgrade(h),h);seen.add(h.sceneId)
  }
  assert.equal(h.save.finale.status,'ready');for(const scene of Object.keys(currentOriginalBackgrounds))if(scene!==north)assert.ok(seen.has(scene),scene)
+})
+
+test('image-bound full geometry opens removed hut floor, blocks guardrail edge and keeps legacy saves unchanged',async()=>{
+ const {environmentStoryRoute}=await import('./environment-story-route'),{originalBoundWorldPlan}=await import('../src/original-world-plan'),r=originalTrainRuntime(()=>true);let h=r.initial('en',randomUUID())
+ for(const action of environmentStoryRoute){if(action==='bridge-inspect')break;const e=originalBoundWorldPlan(h.assets).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;h=(await r.prepare(h,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:e.approach,target:e.id,type:'action',action},()=>true)).head}
+ assert.equal(h.sceneId,'train-at-flood-bridge');const old={...structuredClone(h),assets:oldAssets},floor={x:62,y:275},water={x:62,y:80}
+ assert.equal(originalWorldWalkable(old,floor),false);assert.equal(originalWorldWalkable(h,floor),true);assert.deepEqual(r.position(h,floor),floor)
+ const atFloor={...h,position:floor};assertOriginalClientHead(atFloor);assert.deepEqual(r.upgrade(atFloor),atFloor)
+ assert.equal(originalWorldWalkable(old,water),true);assert.equal(originalWorldWalkable(h,water),false);assert.throws(()=>r.position(h,water),/INVALID_POSITION/);assert.throws(()=>assertOriginalClientHead({...h,position:water}),/UNSUPPORTED/)
+ for(const p of [{x:NaN,y:275},{x:-1,y:275},{x:380,y:275},{x:62,y:570}])assert.throws(()=>r.position(h,p),/INVALID_POSITION/)
+ assert.deepEqual(r.upgrade(old),old)
+})
+
+test('both train fates reach a vehicle-free junction with version-bound safe character placements',async()=>{
+ const {environmentStoryRoute}=await import('./environment-story-route'),{originalBoundWorldPlan}=await import('../src/original-world-plan'),{originalEnvironmentWalkable}=await import('../src/original-environment-layouts'),{originalGameEntities}=await import('../src/original-game-projection'),{originalCharacterBodies}=await import('../src/original-character-space')
+ for(const anchor of [false,true]){const r=originalTrainRuntime(()=>true);let h=r.initial('zh',randomUUID());const steps=environmentStoryRoute.filter(a=>!anchor||a!=='town-repair').map(a=>anchor&&a==='bridge-rail-crossing'?'bridge-anchor-crossing':anchor&&a==='junction-settle-basic'?'junction-bridge-basic':a)
+  for(const action of steps){const e=originalBoundWorldPlan(h.assets).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;h=(await r.prepare(h,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:e.approach,target:e.id,type:'action',action},()=>true)).head}
+  assert.equal(h.save.facts['bridge-train-fate'],anchor?'anchored':'preserved');assert.equal(h.save.finale.status,'ready')
+  const plan=originalBoundWorldPlan(h.assets),scene=h.sceneId,id=originalSceneBackgroundVersion(h.assets,scene),lin=plan.entities.find(e=>e.id===scene+'-lin-scout')!,ren=plan.entities.find(e=>e.id===scene+'-ren-medic')!
+  assert.equal(lin.position.y,300);assert.equal(ren.position.y,300);assert.equal(originalBoundWorldPlan(oldAssets).entities.find(e=>e.id===lin.id)!.position.y,270)
+  const projected=originalGameEntities(h).find(e=>e.id===lin.id)!;assert.deepEqual(projected.position,lin.position);assert.deepEqual(projected.approach,lin.approach)
+  const body=originalCharacterBodies(h).find(b=>b.id==='lin-scout')!;assert.equal(body.y,285);assert.equal(originalEnvironmentWalkable(id,scene,{x:body.x,y:body.y}),true)
+  for(const e of [lin,ren])assert.ok(originalEnvironmentWalkable(id,scene,{x:e.position.x-4.5,y:e.position.y-15}));assert.deepEqual(r.upgrade(h),h)
+ }
 })

@@ -1,7 +1,9 @@
+import {originalEnvironmentWalkable} from './original-environment-layouts'
+import {originalSceneBackgroundVersion} from './original-asset-releases'
 import {assertOriginalActionPlan,type OriginalActionPlan} from './original-action-plan'
 import {RecoverableSessionClient,type SessionLock,type Transport} from './recoverable-session-client'
 import type {OriginalHead} from '../server/original-train-runtime'
-import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable,originalCompatibleMapVersions} from './original-train-spatial-plan'
+import {originalTrainChapterSpatialPlan,originalCompatibleMapVersions} from './original-train-spatial-plan'
 import {originalChapterRejections} from './original-chapters'
 import {originalEndingCartridge} from './original-ending-capabilities'
 import {buildEndingSnapshot} from './vendor/original-train/engine/endingDirector'
@@ -12,7 +14,7 @@ const world=originalTrainChapterSpatialPlan()
 export function assertOriginalClientHead(value:unknown):asserts value is OriginalHead{
  const h=value as OriginalHead,s=h?.save,room=world.scenes.find(r=>r.id===h?.sceneId)
  assertOriginalAssetBindings(h?.assets)
- if(!h||!s||s.version!==8||s.cartridgeId!==world.cartridgeId||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!room||!h.position||!originalTrainPlanWalkable(h.sceneId,h.position)||!Array.isArray(s.map)||s.map.filter(n=>n.current).length!==1||s.map.find(n=>n.current)?.id!==room.storyLocationId)throw Error('ORIGINAL_SAVE_UNSUPPORTED')
+ if(!h||!s||s.version!==8||s.cartridgeId!==world.cartridgeId||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!room||!h.position||!originalEnvironmentWalkable(originalSceneBackgroundVersion(h.assets,h.sceneId),h.sceneId,h.position)||!Array.isArray(s.map)||s.map.filter(n=>n.current).length!==1||s.map.find(n=>n.current)?.id!==room.storyLocationId)throw Error('ORIGINAL_SAVE_UNSUPPORTED')
 }
 /** Instantiate with an original-world namespace and authenticated transport.
  * HTTP transport is supplied separately; no browser reducer or local writer. */

@@ -1,0 +1,10 @@
+{
+  "status": "rejected",
+  "reason": "Left hut roof reaches about x212 image pixels (world x79.5), overlapping the fixed Ada footprint at world x80/y270.",
+  "pass": [
+    "Fixed B camera and train scale",
+    "Floodwater outside main walking platform",
+    "No far-bank arrival shown"
+  ],
+  "next": "One targeted hut width correction, preserve original"
+}

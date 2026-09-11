@@ -1,0 +1,8 @@
+{
+  "phase": "remaining-three-environments",
+  "scene": "train-at-dawn-junction",
+  "initialRequestsThisPhase": 3,
+  "corrections": "At most one targeted correction per successful scene after pixel review. No automatic terminal retries.",
+  "admission": "candidate; actual geometry and route validation required",
+  "storyInvariant": "No baked train: supports preserved and permanently anchored train outcomes"
+}

@@ -18,15 +18,17 @@ export function createDistancePoseSelector(strideDistance: number, poses: readon
 
 export function moveWithCollision(position: Point, delta: Point, canWalk: CanWalk) {
   let next = { ...position }
-  let distance = 0
+  let distance = 0, horizontalSteps = 0, verticalSteps = 0
   // Sweep at most one world pixel per substep, including after a slow frame.
   const steps = Math.max(1, Math.ceil(Math.hypot(delta.x, delta.y)))
   for (let i = 0; i < steps; i++) {
     const before = next
-    const horizontal = { x: next.x + delta.x / steps, y: next.y }
-    if (canWalk(horizontal)) next = horizontal
-    const vertical = { x: next.x, y: next.y + delta.y / steps }
-    if (canWalk(vertical)) next = vertical
+    // Count accepted steps per axis, so blocked motion never accumulates a
+    // jump. Deriving from the frame origin also avoids rounding past a wall.
+    const horizontal = { x: position.x + delta.x * ((horizontalSteps + 1) / steps), y: next.y }
+    if (canWalk(horizontal)) { next = horizontal; horizontalSteps++ }
+    const vertical = { x: next.x, y: position.y + delta.y * ((verticalSteps + 1) / steps) }
+    if (canWalk(vertical)) { next = vertical; verticalSteps++ }
     distance += Math.hypot(next.x - before.x, next.y - before.y)
   }
   return { position: next, distance }
@@ -38,10 +40,13 @@ export function advanceRoute(position: Point, route: readonly Point[], budget: n
   while (consumed < route.length) {
     const target = route[consumed]
     const dx = target.x - next.x, dy = target.y - next.y, remaining = Math.hypot(dx, dy)
-    if (remaining < EPSILON) { consumed++; continue }
+    if (remaining < EPSILON) {
+      if (!canWalk(target)) { blocked = true; break }
+      next = { ...target }; consumed++; continue
+    }
     if (budget < EPSILON) break
     const amount = Math.min(remaining, budget)
-    const intended = { x: dx / remaining * amount, y: dy / remaining * amount }
+    const intended = amount === remaining ? { x: dx, y: dy } : { x: dx / remaining * amount, y: dy / remaining * amount }
     const result = moveWithCollision(next, intended, canWalk)
     const actual = { x: result.position.x - next.x, y: result.position.y - next.y }
     if (result.distance > EPSILON) direction = actual
@@ -52,7 +57,13 @@ export function advanceRoute(position: Point, route: readonly Point[], budget: n
       blocked = true
       break
     }
-    if (amount >= remaining - EPSILON) consumed++
+    if (amount >= remaining - EPSILON) {
+      if (!canWalk(target)) { blocked = true; break }
+      // Finish on the exact checked waypoint. Accumulated subpixel error must
+      // not leave a cardinal turn infinitesimally inside a collision boundary.
+      next = { ...target }
+      consumed++
+    }
   }
   return { position: next, distance, consumed, direction, blocked, arrived: consumed === route.length }
 }

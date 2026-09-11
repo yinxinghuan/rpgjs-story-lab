@@ -1,0 +1,13 @@
+{
+  "requestId": "4d5fb687-ed83-4917-985f-dcf27f8f5ca9",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789148298574965.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Make two precise corrections to this orthographic RPG dispatch courtyard, preserving camera, colors, outer brick buildings and left small hut. FIRST: remove EVERY railway rail and wooden sleeper from the entire image, both above and below the central dispatch house. Replace them with continuous flat matching stone courtyard paving; no track enters or leaves this building. SECOND: shorten and slightly narrow the central brick house so ALL visible solid roof and wall fit entirely inside x389..629 and y0..655 pixels of this 1024x1536 image. Its SOUTH wall/base must end at y655 or earlier; reclaim a broad clear strip below. Extend the house north to the top frame edge instead of making a detached tiny hut. No stairs, porch or protruding eaves outside that rectangle. This is needed to keep people standing safely below the building. Keep a convincing pitched slate roof, short south-facing brick facade and ordinary window; no wheels, buffers, chimney, train or machine. No new objects, people or text. Exactly the same orthographic elevated top-down camera and building style."
+}

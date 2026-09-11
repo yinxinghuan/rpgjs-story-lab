@@ -1,0 +1,248 @@
+{
+  "date": "2026-09-12",
+  "scope": "Final three room backgrounds and image-bound complete geometry in original preflight",
+  "media": [
+    {
+      "folder": "pass-edit-01",
+      "status": "downloaded",
+      "task": "mt_e50b746f2c22ce832c6a970b9d1202ce",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+        "bytes": 2851713,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 13962,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "flood-bridge-edit-01",
+      "status": "downloaded",
+      "task": "mt_2d12201da271f2ea02f5e16975e3f480",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "a894d3f3e790faa723019d50d8dbb6147e92944249da1c3cfdcb37a6faec36d1",
+        "bytes": 2967938,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 12242,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "flood-bridge-edit-02",
+      "status": "downloaded",
+      "task": "mt_1a711a43966e36311c8f7b2cbc94a1cc",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+        "bytes": 2685518,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 12461,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "junction-edit-01",
+      "status": "downloaded",
+      "task": "mt_d2f77fc65ef9ce69d570182b99e181ab",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "4c59f5200971e60751c8ed1aa4ba95a51d7509ae2243ae1616585dd891d4179b",
+        "bytes": 2839831,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 14860,
+      "cost": "not provided by public API"
+    },
+    {
+      "folder": "junction-edit-02",
+      "status": "downloaded",
+      "task": "mt_d4a642fa46a1cb5c82565d28016df02b",
+      "asset": {
+        "file": "candidate.png",
+        "sha256": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+        "bytes": 2472753,
+        "width": 1024,
+        "height": 1536,
+        "pngColorType": 2
+      },
+      "elapsedMs": 39087,
+      "cost": "not provided by public API"
+    }
+  ],
+  "admitted": [
+    {
+      "scene": "train-at-mountain-pass",
+      "version": "mountain-pass-platform-e83947a9",
+      "source": "pass-edit-01",
+      "limits": [
+        "Right ravine edge is reserved to x326, slightly inside original x336 boundary.",
+        "Local level service shelf only; descent is an authored transition."
+      ]
+    },
+    {
+      "scene": "train-at-flood-bridge",
+      "version": "flood-bridge-platform-e38ff237",
+      "source": "flood-bridge-edit-02",
+      "limits": [
+        "Model removed the hut instead of shrinking it; remove old hut collision for this version only.",
+        "Near-bank inspection apron only; background does not assert completed crossing.",
+        "Residual hut-shaped shadow remains, kept walkable; later art cleanup required."
+      ]
+    },
+    {
+      "scene": "train-at-dawn-junction",
+      "version": "dawn-junction-platform-c0b4a545",
+      "source": "junction-edit-02",
+      "limits": [
+        "Central building remains wider/longer than requested; exact version collision reserves its actual envelope.",
+        "Ren and Lin stand 30 world units farther south for this image only.",
+        "No train drawn; preserved train is outside the courtyard, anchored train remains at the bridge."
+      ]
+    }
+  ],
+  "validation": {
+    "tests": 595,
+    "failures": 0,
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "lang": "zh",
+        "checked": [
+          {
+            "scene": "train-at-mountain-pass",
+            "hash": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+            "versionedEngineMap": "./map/mountain-pass-e83947a9.tmx",
+            "logicalSceneMatchesRendered": true,
+            "collisionStop": {
+              "x": 62.49999999999998,
+              "y": 230.67299999999997
+            }
+          },
+          {
+            "scene": "train-at-flood-bridge",
+            "hash": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+            "versionedEngineMap": "./map/flood-bridge-e38ff237.tmx",
+            "logicalSceneMatchesRendered": true,
+            "collisionStop": {
+              "x": 60.13499999999999,
+              "y": 274.61800000000005
+            }
+          },
+          {
+            "scene": "train-at-dawn-junction",
+            "hash": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+            "versionedEngineMap": "./map/dawn-junction-c0b4a545.tmx",
+            "logicalSceneMatchesRendered": true,
+            "collisionStop": {
+              "x": 244.09849999999986,
+              "y": 204.54599999999974
+            }
+          }
+        ],
+        "failedImageDidNotCommit": true,
+        "refreshes": 5,
+        "trainFate": "preserved",
+        "removedHutFloorCheckpointAndReload": true,
+        "fixedAssetsThroughEnding": true,
+        "actions": 39,
+        "finalVersion": 40,
+        "externalConnections": 0,
+        "pageErrors": [],
+        "limits": "Local synthetic run only; complete character and equipment art remains unfinished. Not a platform playthrough."
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "lang": "en",
+        "checked": [
+          {
+            "scene": "train-at-mountain-pass",
+            "hash": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+            "versionedEngineMap": "./map/mountain-pass-e83947a9.tmx",
+            "logicalSceneMatchesRendered": true,
+            "collisionStop": {
+              "x": 61.61999999999996,
+              "y": 230.74999999999997
+            }
+          },
+          {
+            "scene": "train-at-flood-bridge",
+            "hash": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+            "versionedEngineMap": "./map/flood-bridge-e38ff237.tmx",
+            "logicalSceneMatchesRendered": true,
+            "collisionStop": {
+              "x": 60.25049999999995,
+              "y": 274.87099999999987
+            }
+          },
+          {
+            "scene": "train-at-dawn-junction",
+            "hash": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+            "versionedEngineMap": "./map/dawn-junction-c0b4a545.tmx",
+            "logicalSceneMatchesRendered": true,
+            "collisionStop": {
+              "x": 244.07100000000017,
+              "y": 204.35900000000032
+            }
+          }
+        ],
+        "failedImageDidNotCommit": true,
+        "refreshes": 5,
+        "trainFate": "anchored",
+        "removedHutFloorCheckpointAndReload": true,
+        "fixedAssetsThroughEnding": true,
+        "actions": 38,
+        "finalVersion": 39,
+        "externalConnections": 0,
+        "pageErrors": [],
+        "limits": "Local synthetic run only; complete character and equipment art remains unfinished. Not a platform playthrough."
+      }
+    ],
+    "builds": [
+      "cloud",
+      "opaque Worker startup",
+      "clean preflight"
+    ],
+    "audits": [
+      "secrets",
+      "API base",
+      "media",
+      "UI src",
+      "UUID",
+      "storage 145 / 0"
+    ],
+    "normalBuildHasQaProbe": false
+  },
+  "findings": [
+    "Flood hut removed: new version floor is walkable and saveable, old version keeps hut. Residual visual shadow remains; no collision added for shadow.",
+    "Junction has no baked train. Ren and Lin use this image-specific position in authority, UI, body geometry and graphics slots. Stable identity and rules unchanged.",
+    "Real corner stall reproduced at y247.99999999999986 and wall-adjacent start at x59.99999999999999. Per-axis accepted-step geometry and exact legal waypoints fix local motion kernel; 14 fps corner and 75 subpixel-start cases pass."
+  ],
+  "production": {
+    "unchanged": "dff13ecd8e70086082e52940b5c66cd0b3ab2d56",
+    "originalStoryOpen": false
+  },
+  "remaining": [
+    "Final art cleanup including residual flood shadow",
+    "Complete qualified original cast and stateful equipment",
+    "River-valley baseline replacement if platform-only asset source is required",
+    "Platform identity and actual production creator/player full flow"
+  ],
+  "limits": [
+    "9 rooms have preflight background images, not full production art approval",
+    "No iPhone hardware or platform browser test",
+    "No narrative model call or production browser access",
+    "Five public platform media requests, no GPT image tool",
+    "Shared skill motion source not updated yet"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "requestId": "424e93b0-c61b-49fd-9b0f-62ca523948df",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789148271797312.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Correct only the LEFT SMALL HUT in this orthographic flood-bridge approach map. Keep the entire locomotive, bridge platform, water, guardrails, lighting, and all other pixels/composition as close as possible. Shrink the left hut horizontally toward the LEFT edge: ALL of its roof, wall, eaves and solid silhouette must end at image x185 or less (18 percent of total width), never beyond x197. Keep its top around y670 and bottom around y1050; do not grow it vertically. The clear floor immediately to its right is needed for a character at image x213,y720; absolutely no roof or wall may occupy that floor. Fill the reclaimed strip with matching flat concrete. Keep true orthographic B camera, no text, people, new objects, perspective or new shadow masses. Canvas 1024x1536."
+}

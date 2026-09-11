@@ -1,0 +1,13 @@
+{
+  "requestId": "39e5aa44-ca95-4ad1-b229-ed3bbe05a11e",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/0cb7cdbfebc98ef2fc0b30676a918fc59ae04f89/doc/platform-art-candidates/20260912/tunnel-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Maintain the accepted orthographic elevated top-down RPG camera: parallel verticals, no horizon or vanishing point, no isometric diagonals. Canvas 1024x1536. Crisp detailed painted pixel materials. Fixed 384x576 world scaled to this canvas. Clear connected service lanes and bottom apron; avoid opaque objects in walking floor. No people, interactive equipment, lettering, symbols, UI or fog. Keep the referenced diesel locomotive exactly in place and same dimensions, occupying x389..629 pixels and from top edge to y661. Keep the small left maintenance shelter within x45..197, y693..1051, with no overhanging roof beyond that. Outer environmental strips x0..160 and x896..1024 are nonwalkable. Rest of the ground must stay clear. Transform this into the NEAR-BANK inspection apron at a railway flood bridge. The train is stopped before crossing. Retain clear continuous concrete walking strips along both sides and the entire bottom apron on dry solid footing. Outer margins show muddy turbulent floodwater beyond low stone retaining walls and iron parapets, with bridge abutment masonry cropped at the upper edges. All water and gaps remain OUTSIDE x160..896; no flooded walkable lane. The track continues straight out through the top. Existing left shelter is a small weathered masonry pump hut, same footprint. Pale storm dawn light, wet concrete, rusted rail and muddy blue gray water; no arch blocking the screen, bridge crossbar, distant horizon or implied player position on the far bank."
+}

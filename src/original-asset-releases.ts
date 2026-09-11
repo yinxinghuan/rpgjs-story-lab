@@ -1,4 +1,4 @@
-import {PINE_BACKGROUND,TOWN_BACKGROUND,TUNNEL_BACKGROUND,GRAYSTONE_BACKGROUND,originalEnvironmentLayouts} from './original-environment-layouts'
+import {JUNCTION_BACKGROUND,FLOOD_BRIDGE_BACKGROUND,PASS_BACKGROUND,PINE_BACKGROUND,TOWN_BACKGROUND,TUNNEL_BACKGROUND,GRAYSTONE_BACKGROUND,originalEnvironmentLayouts} from './original-environment-layouts'
 import type {SceneResource,SceneResourceManifest} from './scene-readiness'
 import {assertPublishedBackground,backgroundReleasePath,type PublishedBackground} from './background-publication'
 import {assertPublishedDevice,type PublishedDevice} from './device-publication'
@@ -15,6 +15,9 @@ export const originalBackgroundReleases:Record<string,SceneResource&{scene:strin
  [PINE_BACKGROUND]:{scene:'train-at-pine-line',source:'alteru-media',taskId:'mt_6a44b0ee831e9561da1ce32a1776ebe0',kind:'background',path:'./art/approved/pine-line-90af55e7.png',sha256:'90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5',bytes:2736873,width:1024,height:1536},
  [TOWN_BACKGROUND]:{scene:'train-at-sleeping-town',source:'alteru-media',taskId:'mt_815ffc50cff4e47b770f387b6155c849',kind:'background',path:'./art/approved/sleeping-town-f9922760.png',sha256:'f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8',bytes:2807539,width:1024,height:1536},
  [TUNNEL_BACKGROUND]:{scene:'train-at-tunnel',source:'alteru-media',taskId:'mt_29d30413007cb316a2a2e3add9fb7db4',kind:'background',path:'./art/approved/tunnel-b084000a.png',sha256:'b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c',bytes:3068960,width:1024,height:1536},
+ [PASS_BACKGROUND]:{scene:'train-at-mountain-pass',source:'alteru-media',taskId:'mt_e50b746f2c22ce832c6a970b9d1202ce',kind:'background',path:'./art/approved/mountain-pass-e83947a9.png',sha256:'e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f',bytes:2851713,width:1024,height:1536},
+ [FLOOD_BRIDGE_BACKGROUND]:{scene:'train-at-flood-bridge',source:'alteru-media',taskId:'mt_1a711a43966e36311c8f7b2cbc94a1cc',kind:'background',path:'./art/approved/flood-bridge-e38ff237.png',sha256:'e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210',bytes:2685518,width:1024,height:1536},
+ [JUNCTION_BACKGROUND]:{scene:'train-at-dawn-junction',source:'alteru-media',taskId:'mt_d4a642fa46a1cb5c82565d28016df02b',kind:'background',path:'./art/approved/dawn-junction-c0b4a545.png',sha256:'c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893',bytes:2472753,width:1024,height:1536},
 }
 type BackgroundBindings={version:1;backgrounds:Record<string,string>}|{version:2;published:PublishedBackground;additional?:Record<string,string>}
 type LegacyBindings=BackgroundBindings|{version:3;background:BackgroundBindings;starter:PublishedDevice}
@@ -22,7 +25,7 @@ export type OriginalAssetBindings=LegacyBindings|{version:4;base:LegacyBindings;
 export const originalBaseAssets=(a?:OriginalAssetBindings):LegacyBindings|undefined=>a?.version===4?a.base:a
 export const originalActorRelease=(a?:OriginalAssetBindings)=>a?.version===4?a.ada:undefined
 export function originalStarterRelease(a?:OriginalAssetBindings){const base=originalBaseAssets(a);return base?.version===3?base.starter:undefined}
-export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND,'train-at-pine-line':PINE_BACKGROUND,'train-at-sleeping-town':TOWN_BACKGROUND,'train-at-tunnel':TUNNEL_BACKGROUND}
+export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND,'train-at-pine-line':PINE_BACKGROUND,'train-at-sleeping-town':TOWN_BACKGROUND,'train-at-tunnel':TUNNEL_BACKGROUND,'train-at-mountain-pass':PASS_BACKGROUND,'train-at-flood-bridge':FLOOD_BRIDGE_BACKGROUND,'train-at-dawn-junction':JUNCTION_BACKGROUND}
 export const newOriginalAssetBindings=():OriginalAssetBindings=>({version:1,backgrounds:{...currentOriginalBackgrounds}})
 const additionalBackgrounds=()=>Object.fromEntries(Object.entries(currentOriginalBackgrounds).filter(([scene])=>scene!==northCape))
 function publishedBackgroundBinding(published:PublishedBackground):BackgroundBindings{const additional=additionalBackgrounds();return {version:2,published:structuredClone(published),...(Object.keys(additional).length?{additional}:{})}}

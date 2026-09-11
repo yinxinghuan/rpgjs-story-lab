@@ -1,0 +1,52 @@
+{
+  "status": "admitted-preflight-environment",
+  "sourceSha256": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+  "scene": "train-at-flood-bridge",
+  "pass": [
+    "B orthographic camera, legible floor and stable material family",
+    "No baked people or interactive state assets"
+  ],
+  "limitations": [
+    "Model removed the hut instead of shrinking it; remove old hut collision for this version only.",
+    "Near-bank inspection apron only; background does not assert completed crossing.",
+    "Residual hut-shaped lighting/shadow remains; it is NOT a solid obstacle. Requires later art cleanup; current admission is preflight only."
+  ],
+  "validation": {
+    "tests": 595,
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "trainFate": "preserved",
+        "result": {
+          "scene": "train-at-flood-bridge",
+          "hash": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+          "versionedEngineMap": "./map/flood-bridge-e38ff237.tmx",
+          "logicalSceneMatchesRendered": true,
+          "collisionStop": {
+            "x": 60.13499999999999,
+            "y": 274.61800000000005
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "trainFate": "anchored",
+        "result": {
+          "scene": "train-at-flood-bridge",
+          "hash": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+          "versionedEngineMap": "./map/flood-bridge-e38ff237.tmx",
+          "logicalSceneMatchesRendered": true,
+          "collisionStop": {
+            "x": 60.25049999999995,
+            "y": 274.87099999999987
+          }
+        }
+      }
+    ]
+  },
+  "productionArtComplete": false
+}

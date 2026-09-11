@@ -1,3 +1,4 @@
+import {originalEntityLayout} from './original-world-plan'
 import type {OriginalHead} from '../server/original-train-runtime'
 import {lastTrainToDawn,lastTrainToDawnEn} from './vendor/original-train/cartridges/lastTrainToDawn'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
@@ -25,7 +26,7 @@ export function originalActionDestinations(head:OriginalHead,target:string,input
 /** Read-only UI projection. Clicks still require the server's full rule check. */
 export function originalGameEntities(head:OriginalHead){
  const save=head.save,c=save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn,terminal=save.finale.status!=='idle'
- return world.entities.filter(e=>e.scene===head.sceneId).flatMap(e=>{
+ return world.entities.filter(e=>e.scene===head.sceneId).map(e=>originalEntityLayout(head.assets,e)).flatMap(e=>{
   const actor=world.characters.find(p=>p.entities.includes(e.id))
   if(actor&&!originalCharacterPresent(save,actor.id))return []
   const actions=terminal?[]:e.actions.flatMap(id=>{

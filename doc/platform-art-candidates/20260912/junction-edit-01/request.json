@@ -1,0 +1,13 @@
+{
+  "requestId": "ed29a9fb-5e26-4252-a6d0-b2e333db4528",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/0cb7cdbfebc98ef2fc0b30676a918fc59ae04f89/doc/platform-art-candidates/20260912/town-edit-01/candidate.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Maintain the accepted orthographic elevated top-down RPG camera: parallel verticals, no horizon or vanishing point, no isometric diagonals. Canvas 1024x1536. Crisp detailed painted pixel materials. Fixed 384x576 world scaled to this canvas. Clear connected service lanes and bottom apron; avoid opaque objects in walking floor. No people, interactive equipment, lettering, symbols, UI or fog. Create the railway junction dispatch COURTYARD after arrival. Replace the central locomotive with a narrow long brick DISPATCH BUILDING occupying the SAME blocked rectangle x389..629 pixels from the top edge to y661, a slate roof seen from above and a short south-facing wall. It must be a clearly immobile building, not a rail vehicle. No locomotive, carriage or parked vehicle anywhere: the courtyard works whether the party arrived by train or on foot. Replace the tracks BELOW the building with flat unobstructed paving and a subtle flush drainage channel. Preserve wide connected side passages and open lower courtyard. Left small utility hut stays inside x45..197 y693..1051; outer walls/buildings only x0..160 and x896..1024. Warm first sunlight, weathered brick, damp slate, quiet empty gathering space. The blocked geometry should stay identical to the template while its identity becomes an unmistakable dispatch building. No tables, chairs, pillars, freestanding objects, readable signs or decorations blocking walking floor."
+}

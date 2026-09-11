@@ -1,0 +1,52 @@
+{
+  "status": "admitted-preflight-environment",
+  "sourceSha256": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+  "scene": "train-at-dawn-junction",
+  "pass": [
+    "B orthographic camera, legible floor and stable material family",
+    "No baked people or interactive state assets"
+  ],
+  "limitations": [
+    "Central building remains wider/longer than requested; exact version collision reserves its actual envelope.",
+    "Ren and Lin stand 30 world units farther south for this image only.",
+    "No train drawn; preserved train is outside the courtyard, anchored train remains at the bridge."
+  ],
+  "validation": {
+    "tests": 595,
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "trainFate": "preserved",
+        "result": {
+          "scene": "train-at-dawn-junction",
+          "hash": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+          "versionedEngineMap": "./map/dawn-junction-c0b4a545.tmx",
+          "logicalSceneMatchesRendered": true,
+          "collisionStop": {
+            "x": 244.09849999999986,
+            "y": 204.54599999999974
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "trainFate": "anchored",
+        "result": {
+          "scene": "train-at-dawn-junction",
+          "hash": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+          "versionedEngineMap": "./map/dawn-junction-c0b4a545.tmx",
+          "logicalSceneMatchesRendered": true,
+          "collisionStop": {
+            "x": 244.07100000000017,
+            "y": 204.35900000000032
+          }
+        }
+      }
+    ]
+  },
+  "productionArtComplete": false
+}
