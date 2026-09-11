@@ -3,6 +3,7 @@ import {getGameApiBase} from './game-id'
 import type {SessionLock,Transport} from './recoverable-session-client'
 import {assertCloudArtRecord,CREATOR_API_PATH,CREATOR_RUNTIME_HEADER,CREATOR_RUNTIME_CONTRACT,CREATOR_DRAFT_LIMIT,type CloudArtRecord} from './creator-contract'
 import {ART_DRAFT_VERSION,inspectArtCandidate,type ArtDraft} from './art-draft'
+import {assertBackgroundReview,assertPublishedBackground,type PublishedBackground} from './background-publication'
 export function creatorCloudTransport(storage:Storage,lock:SessionLock,request:typeof fetch=fetch,base=getGameApiBase()){
  return cloudTransport(storage,'creator-art-1-',base+CREATOR_API_PATH,lock,request,{header:CREATOR_RUNTIME_HEADER,version:CREATOR_RUNTIME_CONTRACT})
 }
@@ -25,5 +26,12 @@ export class CreatorCloudDrafts{
   const candidate=await inspectArtCandidate(bytes)
   if(candidate.sha256!==record.sha256||bytes.length!==record.bytes)throw Error('ART_SOURCE_MISMATCH')
   return {version:ART_DRAFT_VERSION,lighting:record.lighting,id:record.id,request:structuredClone(record.request),taskId:record.taskId,candidate,state:'candidate',retryable:false,nextAt:0}
+ }
+ async publish(draft:ArtDraft):Promise<PublishedBackground>{
+  if(!draft.candidate)throw Error('ART_NOT_READY');assertBackgroundReview(draft.review,draft.candidate.sha256)
+  await this.save(draft)
+  const release=await this.api('/drafts/'+draft.id+'/publish',{sha256:draft.candidate.sha256,review:draft.review});assertPublishedBackground(release)
+  if(release.id.split('.')[1]!==draft.id||release.sha256!==draft.candidate.sha256||release.bytes!==draft.candidate.bytes.length)throw Error('ART_SOURCE_MISMATCH')
+  return release
  }
 }

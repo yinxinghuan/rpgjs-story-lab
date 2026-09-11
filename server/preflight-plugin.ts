@@ -23,7 +23,7 @@ export function preflightPlugin(){
  const admitOriginal:OriginalPresentationGate=head=>{if(!authoringRooms.has(head.sceneId))throw Error('UNREGISTERED_AUTHORING_ROOM');return true}
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
   const owner=String(id);let object=objects.get(owner)
-  if(!object){object=new CarriageJourneyAuthority(storage.context(owner),undefined,undefined,undefined,admitOriginal,originalModels?.interpreter,originalModels?.dialogue);objects.set(owner,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(owner),environment,undefined,undefined,admitOriginal,originalModels?.interpreter,originalModels?.dialogue);objects.set(owner,object)}
   const authority=object
   return {fetch:async(request:Request)=>{
    const response=await authority.fetch(request)

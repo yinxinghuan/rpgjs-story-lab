@@ -4,6 +4,7 @@ import {getMediaTask} from '../src/vendor/media/client'
 import {inspectArtCandidate} from '../src/art-draft'
 import {allowedImageUrl} from './journal-image'
 import {assertCloudArtInput,CREATOR_RUNTIME_CONTRACT,CREATOR_DRAFT_LIMIT,type CloudArtInput,type CloudArtRecord} from '../src/creator-contract'
+import {assertBackgroundReview,assertPublishedBackground,type PublishedBackground} from '../src/background-publication'
 
 export type ArtArchiveSource=(input:CloudArtInput)=>Promise<Uint8Array>
 const signature=(i:CloudArtInput)=>JSON.stringify([i.id,i.taskId,i.sha256,i.lighting,i.request.requestId,i.request.sessionId,i.request.mode,i.request.prompt,i.request.referenceUrls,i.request.size.width,i.request.size.height])
@@ -24,6 +25,7 @@ export class CreatorArtArchive{
  constructor(private db:AuthorityStorage,private source:ArtArchiveSource=platformArtArchiveSource(),private now=Date.now){
   db.run('CREATE TABLE IF NOT EXISTS creator_art(owner TEXT NOT NULL,id TEXT NOT NULL,metadata TEXT NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_art_bytes(owner TEXT NOT NULL,id TEXT NOT NULL,part INTEGER NOT NULL,data BLOB NOT NULL,PRIMARY KEY(owner,id,part))')
+  db.run('CREATE TABLE IF NOT EXISTS creator_art_publications(owner TEXT NOT NULL,id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
  }
  list(owner:string):CloudArtRecord[]{return this.db.all<{metadata:string}>('SELECT metadata FROM creator_art WHERE owner=? ORDER BY rowid DESC',owner).map(r=>JSON.parse(r.metadata))}
  get(owner:string,id:string):CloudArtRecord{const r=this.db.all<{metadata:string}>('SELECT metadata FROM creator_art WHERE owner=? AND id=?',owner,id)[0];if(!r)throw new LabError('ART_DRAFT_NOT_FOUND',404);return JSON.parse(r.metadata)}
@@ -60,5 +62,21 @@ export class CreatorArtArchive{
   for(let i=0;i<rows.length;i++){const chunk=new Uint8Array(rows[i].data);if(rows[i].part!==i||chunk.length!==Math.min(65536,bytes.length-offset))throw new LabError('ART_STORAGE_INVALID',503);bytes.set(chunk,offset);offset+=chunk.length}
   if(offset!==bytes.length||(await inspectArtCandidate(bytes)).sha256!==record.sha256)throw new LabError('ART_STORAGE_INVALID',503)
   return bytes
+ }
+ async publish(owner:string,id:string,value:any){
+  const record=this.get(owner,id)
+  if(!value||Object.keys(value).sort().join(',')!=='review,sha256'||value.sha256!==record.sha256)throw new LabError('ART_SOURCE_MISMATCH',409)
+  try{assertBackgroundReview(value.review,record.sha256)}catch{throw new LabError('BACKGROUND_REVIEW_REQUIRED',409)}
+  await this.file(owner,id)
+  return this.db.transaction(()=>{
+   const old=this.db.all<{release:string}>('SELECT release FROM creator_art_publications WHERE owner=? AND id=?',owner,id)[0];if(old)return JSON.parse(old.release) as PublishedBackground
+   const release:PublishedBackground={version:1,id:owner+'.'+id,scene:'train-at-dead-station',sha256:record.sha256,bytes:record.bytes,width:1024,height:1536,review:structuredClone(value.review)}
+   this.db.run('INSERT INTO creator_art_publications VALUES(?,?,?)',owner,id,JSON.stringify(release));return release
+  })
+ }
+ published(owner:string,id:string):PublishedBackground{
+  const r=this.db.all<{release:string}>('SELECT release FROM creator_art_publications WHERE owner=? AND id=?',owner,id)[0]
+  if(!r)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)
+  const release=JSON.parse(r.release);assertPublishedBackground(release);return release
  }
 }

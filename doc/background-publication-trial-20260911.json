@@ -1,0 +1,129 @@
+{
+  "date": "2026-09-11",
+  "scope": "Local preflight synthetic creator and original journeys only",
+  "publications": [
+    {
+      "release": {
+        "version": 1,
+        "id": "6ed23b05abd6e56bde87ff8313d9fd618c31db6b9d151d7305d9d100eced1338.85e52bdb-7796-473b-971e-9b9f0af5afcc",
+        "scene": "train-at-dead-station",
+        "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+        "bytes": 2811504,
+        "width": 1024,
+        "height": 1536,
+        "review": {
+          "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+          "layout": "original-train-authoring-2",
+          "checks": [
+            "starter",
+            "brakes",
+            "fuel-shed",
+            "departure-control",
+            "collision"
+          ],
+          "visualAccepted": true
+        }
+      },
+      "chunks": 43,
+      "actualBytes": 2811504,
+      "actualSha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "b89f2586-15d7-4587-a385-1d49c72de41b",
+      "version": 1,
+      "sceneId": "train-at-dead-station",
+      "position": {
+        "x": 112,
+        "y": 184
+      },
+      "stats": {
+        "fuel": 68,
+        "condition": 87,
+        "morale": 58
+      },
+      "assets": {
+        "version": 2,
+        "published": {
+          "version": 1,
+          "id": "6ed23b05abd6e56bde87ff8313d9fd618c31db6b9d151d7305d9d100eced1338.85e52bdb-7796-473b-971e-9b9f0af5afcc",
+          "scene": "train-at-dead-station",
+          "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+          "bytes": 2811504,
+          "width": 1024,
+          "height": 1536,
+          "review": {
+            "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+            "layout": "original-train-authoring-2",
+            "checks": [
+              "starter",
+              "brakes",
+              "fuel-shed",
+              "departure-control",
+              "collision"
+            ],
+            "visualAccepted": true
+          }
+        }
+      },
+      "cursor": 1
+    }
+  ],
+  "browser": {
+    "checks": "Earlier map review recorded all five checks; current browser performed repair and reload",
+    "afterReload": "fuel 68 / condition 87 / morale 58",
+    "imageProcessing": false,
+    "newGenerationRequests": 0,
+    "productionDeployed": false,
+    "afterRiverReload": "fuel 62 / condition 87 / morale 58",
+    "actual320Viewport": {
+      "width": 320,
+      "height": 568,
+      "dpr": 1,
+      "horizontalOverflow": false
+    },
+    "iPhoneHardwareVerified": false
+  },
+  "journeysAfterRiver": [
+    {
+      "id": "b89f2586-15d7-4587-a385-1d49c72de41b",
+      "version": 2,
+      "sceneId": "train-at-river-valley",
+      "position": {
+        "x": 192,
+        "y": 430
+      },
+      "stats": {
+        "fuel": 62,
+        "condition": 87,
+        "morale": 58
+      },
+      "assets": {
+        "version": 2,
+        "published": {
+          "version": 1,
+          "id": "6ed23b05abd6e56bde87ff8313d9fd618c31db6b9d151d7305d9d100eced1338.85e52bdb-7796-473b-971e-9b9f0af5afcc",
+          "scene": "train-at-dead-station",
+          "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+          "bytes": 2811504,
+          "width": 1024,
+          "height": 1536,
+          "review": {
+            "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+            "layout": "original-train-authoring-2",
+            "checks": [
+              "starter",
+              "brakes",
+              "fuel-shed",
+              "departure-control",
+              "collision"
+            ],
+            "visualAccepted": true
+          }
+        }
+      },
+      "cursor": 2
+    }
+  ]
+}

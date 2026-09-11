@@ -11,7 +11,7 @@ export interface SessionResult<H extends SessionHead>{head:H;kind:string;[key:st
 /** One commit/replay implementation; the installed policy owns story semantics.
  * A store belongs to one policy/world. Never reinterpret another world's rows. */
 export interface SessionRuntime<H extends SessionHead>{
- initial(locale:Locale,id:string):H
+ initial(locale:Locale,id:string,options?:unknown):H
  upgrade(value:unknown):H
  assertReadable(value:unknown):void
  scene(head:H):string
@@ -39,9 +39,9 @@ export class SessionAuthority<H extends SessionHead>{
  protected row(owner:string,id:string){const row=this.db.all<Row>('SELECT data,cursor FROM journeys WHERE owner=? AND id=?',owner,id)[0];if(!row)throw new LabError('SESSION_NOT_FOUND',404);return row}
  protected write(owner:string,h:H,cursor:number){this.db.run('UPDATE journeys SET data=?,cursor=?,updated=? WHERE owner=? AND id=?',JSON.stringify(h),cursor,Date.now(),owner,h.id)}
  get(owner:string,id:string){return this.db.transaction(()=>{const row=this.row(owner,id),head=this.runtime.upgrade(JSON.parse(row.data));if(JSON.stringify(head)!==row.data)this.write(owner,head,row.cursor);return head})}
- create(owner:string,enrollment:string,locale:Locale){
+ create(owner:string,enrollment:string,locale:Locale,options?:unknown){
   if(!validId(enrollment))throw new LabError('INVALID_ENROLLMENT')
-  const hash=digest({locale})
+  const hash=digest(options===undefined?{locale}:{locale,options})
   return this.db.transaction(()=>{
    const old=this.db.all<{id:string;enrollment_digest:string}>('SELECT id,enrollment_digest FROM journeys WHERE owner=? AND enrollment=?',owner,enrollment)[0]
    if(old){if(old.enrollment_digest!==hash)throw new LabError('ENROLLMENT_ID_CONFLICT',409);return this.runtime.upgrade(JSON.parse(this.row(owner,old.id).data))}
@@ -51,7 +51,7 @@ export class SessionAuthority<H extends SessionHead>{
    if(sample)this.runtime.assertReadable(JSON.parse(sample.data))
    const count=this.db.all<{n:number}>('SELECT COUNT(*) AS n FROM journeys WHERE owner=?',owner)[0].n
    if(count>=100)throw new LabError('SESSION_LIMIT',429)
-   const head:H=wire(this.runtime.initial(locale,crypto.randomUUID()))
+   const head:H=wire(this.runtime.initial(locale,crypto.randomUUID(),options))
    this.db.run('INSERT INTO journeys VALUES(?,?,?,?,?,?,?)',head.id,owner,enrollment,hash,JSON.stringify(head),0,Date.now());return head
   })
  }

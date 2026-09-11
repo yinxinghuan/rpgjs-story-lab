@@ -11,7 +11,8 @@ test('platform background comparison keeps the same authoritative rooms and coll
   else assert.deepEqual(source,candidate)
  }
  const emitted:any[]=[];originalScenePreviewPlugin().generateBundle.call({emitFile:(file:any)=>emitted.push(file)})
- assert.equal(emitted.length,5)
+ assert.equal(emitted.length,6)
+ assert.ok(emitted.some(f=>f.fileName==='art/approved/north-cape-8fc11a96.png'))
  for(const scene of Object.values(platformResources.scenes))for(const asset of scene.assets){const file=emitted.find(f=>f.fileName===asset.path.slice(2));assert.ok(file);assert.equal(file.source.length,asset.bytes)}
  assert.ok(!emitted.some(f=>/actor|props/.test(f.fileName)))
 })

@@ -11,6 +11,7 @@ import {propose,type ModelRequest} from '../server/model'
 import {RUNTIME_CONTRACT,RUNTIME_HEADER,RELEASE_ID} from '../src/runtime-contract'
 import {CreatorArtArchive,type ArtArchiveSource} from '../server/creator-art'
 import {CREATOR_API_PATH,CREATOR_RUNTIME_HEADER,CREATOR_RUNTIME_CONTRACT} from '../src/creator-contract'
+import {assertPublishedBackground,backgroundReleaseId} from '../src/background-publication'
 // Runtime capability; players opt in separately through an explicit live envelope.
 export const ONLINE_NARRATION_AVAILABLE=true
 // User approved this bounded new-journey capability trial on 2026-09-10.
@@ -33,6 +34,12 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=creator?creatorJson:original?originalJson:json
  if(creator&&!creatorEnabled)return reply({error:'NOT_FOUND'},404)
  if(creator&&path===CREATOR_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,runtimeContract:CREATOR_RUNTIME_CONTRACT,identityMode:'anonymous-capability-v1'})
+ const published=path.match(/^\/api\/creator\/releases\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/file)?$/)
+ if(creator&&published&&request.method==='GET'){
+  if(!backgroundReleaseId(published[1])||!env.CARRIAGE_JOURNEYS)return reply({error:'NOT_FOUND'},404)
+  const owner=published[1].split('.')[0]
+  return env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+owner)).fetch(new Request(request.url,{headers:{'X-Authority-Owner':owner,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
+ }
  if(original&&!originalEnabled)return reply({error:'NOT_FOUND'},404)
  if(original&&path===ORIGINAL_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:false,identityMode:'anonymous-capability-v1',runtimeContract:ORIGINAL_RUNTIME_CONTRACT,liveModelAvailable:originalActionAvailable(),liveDialogueAvailable:originalDialogueAvailable()})
  if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return reply({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:RELEASE_ID,runtimeContract:RUNTIME_CONTRACT})
@@ -62,7 +69,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,_env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
@@ -79,11 +86,20 @@ export class CarriageJourneyAuthority{
     if(request.headers.get(CREATOR_RUNTIME_HEADER)!==CREATOR_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
     this.creator??=new CreatorArtArchive(this.db,this.artSource)
     const path=url.pathname.slice(CREATOR_API_PATH.length)
+    const published=path.match(/^\/releases\/([a-f0-9]{64})\.([a-f0-9-]{36})(\/file)?$/)
+    if(published&&request.method==='GET'){
+     if(published[1]!==owner)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)
+     const release=this.creator.published(owner,published[2])
+     if(!published[3])return respond(release)
+     return new Response(new Uint8Array(await this.creator.file(owner,published[2])),{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+    }
     if(path==='/drafts'&&request.method==='GET')return respond({drafts:this.creator.list(owner)})
     if(path==='/drafts'&&request.method==='POST')return respond(await this.creator.save(owner,await body(request)))
-    const match=path.match(/^\/drafts\/([a-f0-9-]{36})(\/file)?$/)
+    const match=path.match(/^\/drafts\/([a-f0-9-]{36})(\/(?:file|publish))?$/)
+    if(match?.[2]==='/publish'&&request.method==='POST')return respond(await this.creator.publish(owner,match[1],await body(request)))
     if(match&&request.method==='GET'){
      if(!match[2])return respond(this.creator.get(owner,match[1]))
+     if(match[2]!=='/file')throw new LabError('NOT_FOUND',404)
      return new Response(new Uint8Array(await this.creator.file(owner,match[1])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
     }
     throw new LabError('NOT_FOUND',404)
@@ -91,7 +107,12 @@ export class CarriageJourneyAuthority{
   }
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){
    this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter,this.originalDialogue)
-   return handleOriginalSession(request,owner,this.original,body)
+   return handleOriginalSession(request,owner,this.original,body,async id=>{
+    if(!backgroundReleaseId(id)||!this.env?.CARRIAGE_JOURNEYS)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)
+    const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
+    if(!r.ok)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)
+    const release=await r.json();assertPublishedBackground(release);if(release.id!==id)throw new LabError('BACKGROUND_RELEASE_INVALID',409);return release
+   })
   }
   const path=url.pathname.slice('/api/lab'.length)
   if(path==='/sessions'&&request.method==='GET')return json({sessions:this.authority.directory(owner)})

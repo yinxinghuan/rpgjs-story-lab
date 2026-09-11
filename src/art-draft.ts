@@ -1,10 +1,11 @@
 import {generateImageMedia,waitForMediaTask,MediaServiceError,type MediaTask,type GenerateImageMediaRequest} from './vendor/media/client'
 import {GAME_ID} from './game-id'
+import type {BackgroundReview} from './background-publication'
 export const ART_DRAFT_VERSION='north-cape-background-1'
 export const ART_REFERENCE='https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/cfd4cbaf271766eb1d982b2d7bc8c427986d5f2c/doc/original-train-candidates/20260911/north-cape-v2.png'
 export type ArtLighting='cool'|'warm'
 export type ArtCandidate={bytes:Uint8Array;sha256:string;width:number;height:number}
-export type ArtDraft={version:typeof ART_DRAFT_VERSION;id:string;lighting:ArtLighting;request:GenerateImageMediaRequest & {requestId:string};state:'prepared'|'generating'|'failed'|'candidate';source?:'library';taskId?:string;candidate?:ArtCandidate;error?:string;retryable:boolean;nextAt:number}
+export type ArtDraft={version:typeof ART_DRAFT_VERSION;id:string;lighting:ArtLighting;request:GenerateImageMediaRequest & {requestId:string};state:'prepared'|'generating'|'failed'|'candidate';source?:'library';taskId?:string;candidate?:ArtCandidate;review?:BackgroundReview;error?:string;retryable:boolean;nextAt:number}
 export interface ArtDraftRepository {get(id?:string):Promise<ArtDraft|undefined>;put(draft:ArtDraft):Promise<void>}
 export function planArtDraft(lighting:ArtLighting,sessionId=GAME_ID):ArtDraft{
  if(!['cool','warm'].includes(lighting))throw Error('INVALID_LIGHTING')
