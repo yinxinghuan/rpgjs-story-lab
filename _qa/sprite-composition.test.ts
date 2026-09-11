@@ -8,6 +8,7 @@ import {BrowserSpriteDrafts,inspectSpritePng,newSpriteSource,runSpriteDraft,veri
 import {prepareSpritePixels,type PixelRaster} from '../src/sprite-preparation'
 import {inspectDeviceMapCandidate,deviceCandidateSheet} from '../src/device-map-candidate'
 import {deviceGeometry,DEVICE_CHECKS,DEVICE_LAYOUT} from '../src/device-publication'
+import {savedSpriteSources,resolveSavedSpriteSource} from '../src/sprite-source-library'
 const require=createRequire(import.meta.url),{PNG}=require(join(dirname(require.resolve('playwright-core/package.json')),'lib/utilsBundle.js'))
 const encode=async(r:PixelRaster)=>inspectSpritePng(PNG.sync.write({width:r.width,height:r.height,data:Buffer.from(r.rgba)}))
 const decode=async(p:SpritePng)=>{const r=PNG.sync.read(Buffer.from(p.bytes));return {width:r.width,height:r.height,rgba:new Uint8ClampedArray(r.data)}}
@@ -52,5 +53,42 @@ test('two repair states use their actual columns and cannot masquerade as the le
  const reviewed:SpriteDraft={...result,deviceReview:{sha256:result.result!.png.sha256,layout:DEVICE_LAYOUT,geometry:deviceGeometry(checked.cellWidth,checked.cellHeight,checked.foot,checked.bounds),checks:[...DEVICE_CHECKS],visualAccepted:true}}
  await repo.save(reviewed,result);const next=await runSpriteDraft(repo,reviewed,spec,io)
  assert.equal(next.state,'candidate');assert.equal(next.deviceReview,undefined);assert.ok((await repo.get(reviewed.id))!.deviceReview)
+ await repo.close()
+})
+test('retained sources can be selected after reopen and recomposed without downloads, lost columns or generation provenance',async()=>{
+ const {draft,spec,io}=await fixture(),factory=new IDBFactory(),repo=new BrowserSpriteDrafts('source-reuse',factory)
+ draft.composition!.inputs[1].generation={version:1,recipe:'starter-repaired-v1',requestId:crypto.randomUUID(),sessionId:crypto.randomUUID(),taskId:'synthetic-retained-task'}
+ const snapshot=structuredClone(draft)
+ await repo.save(draft,undefined);const first=await runSpriteDraft(repo,draft,spec,io);await repo.close()
+ const reopened=new BrowserSpriteDrafts('source-reuse',factory),choices=savedSpriteSources(await reopened.list())
+ assert.equal(choices.length,2,'processing forks must not duplicate the same original/frame/provenance')
+ assert.deepEqual(choices.map(c=>[c.columns,c.column]),[[3,1],[1,0]])
+ assert.ok(choices.every(c=>!('bytes' in c)&&!('source' in c)),'picker metadata does not copy PNG buffers')
+ const selected=await Promise.all(choices.map(c=>resolveSavedSpriteSource(reopened,c)))
+ assert.deepEqual(selected,snapshot.composition!.inputs)
+ const source=composeRepairFrames(await Promise.all(selected.map(async i=>({raster:await decode(i.source),columns:i.columns,column:i.column}))))
+ const second:SpriteDraft={...newSpriteSource(await encode(source),'reused','states'),deviceStateSet:'repair',composition:{version:1,inputs:selected}}
+ await reopened.save(second,first);const processed=await runSpriteDraft(reopened,second,spec,io)
+ assert.equal(processed.state,'candidate');assert.equal(processed.result!.png.sha256,first.result!.png.sha256)
+ assert.deepEqual(processed.composition!.inputs[1].generation,snapshot.composition!.inputs[1].generation)
+ await verifySpriteComposition(processed,decode);assert.deepEqual(await reopened.get(draft.id),snapshot)
+ selected[0].column=0;selected[1].source.bytes[0]=0
+ assert.deepEqual(await reopened.get(draft.id),snapshot,'selection edits cannot mutate original records')
+ await reopened.close()
+})
+test('source reuse rejects stale selections and corrupt originals; equal pixels from different generation tasks keep separate provenance',async()=>{
+ const {draft}=await fixture(),repo=new BrowserSpriteDrafts('source-reuse-failures',new IDBFactory())
+ await repo.save(draft,undefined);const choice=savedSpriteSources([draft])[0]
+ const changed=structuredClone(draft);changed.revision++;await repo.save(changed,draft)
+ await assert.rejects(resolveSavedSpriteSource(repo,choice),/SPRITE_SOURCE_CHANGED/)
+ const corrupt=structuredClone(changed);corrupt.composition!.inputs[0].source.bytes[0]=0;await repo.save(corrupt,changed)
+ await assert.rejects(resolveSavedSpriteSource(repo,savedSpriteSources([corrupt])[0]),/SPRITE_INVALID_PNG/)
+ const a=newSpriteSource(draft.composition!.inputs[1].source,'after','states'),b=structuredClone(a);b.id=crypto.randomUUID()
+ a.generation={version:1,recipe:'starter-repaired-v1',requestId:crypto.randomUUID(),sessionId:crypto.randomUUID(),taskId:'synthetic-first'}
+ b.generation={...a.generation,requestId:crypto.randomUUID(),taskId:'synthetic-second'}
+ assert.equal(savedSpriteSources([a,b]).length,2)
+ assert.equal(savedSpriteSources([{...a,sourceKind:'actor'}]).length,0)
+ const invalid=structuredClone(draft);invalid.composition!.inputs[0].column=3
+ assert.equal(savedSpriteSources([invalid]).length,1,'invalid columns are not offered')
  await repo.close()
 })
