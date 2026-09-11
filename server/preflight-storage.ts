@@ -22,6 +22,7 @@ export class PreflightStorage {
   const raw=db
   return {storage:{
    sql:{exec:(q:string,...bindings:any[])=>{
+    bindings=bindings.map(v=>v instanceof ArrayBuffer?new Uint8Array(v):v)
     const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...bindings):(stmt.run(...bindings),[])
     return {toArray:()=>rows}
    }},

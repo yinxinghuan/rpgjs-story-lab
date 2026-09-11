@@ -1,0 +1,17 @@
+{
+  "syntheticCreatorIdentity": true,
+  "newGenerations": 0,
+  "service": "loopback with real platform GET task and asset",
+  "records": [
+    {
+      "id": "183a1691-d132-4b89-a012-8144e49ddf6e",
+      "taskId": "mt_2b1ebef848bf93d39fda509cbf78df9d",
+      "sha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+      "storedSha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+      "bytes": 2221448,
+      "parts": 34,
+      "originalPromptPreserved": true,
+      "journeys": 0
+    }
+  ]
+}

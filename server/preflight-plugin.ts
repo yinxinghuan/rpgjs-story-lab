@@ -34,12 +34,12 @@ export function preflightPlugin(){
    return Response.json(await work,{headers:response.headers})
   }}
  }}}
- const handler=createHandler(true,true,true,()=>originalModels?.available()??false,()=>originalModels?.available()??false),prefix='/'+GAME_ID
+ const handler=createHandler(true,true,true,()=>originalModels?.available()??false,()=>originalModels?.available()??false,true),prefix='/'+GAME_ID
  const middleware=(req:IncomingMessage,res:ServerResponse,next:()=>void)=>{
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
   if(delayMs&&!assetDelayed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===delayedAsset&&(delayEngineMap?!url.searchParams.has('scene_asset'):url.searchParams.has('scene_asset'))){assetDelayed=true;setTimeout(next,delayMs);return}
   if(failAsset&&!assetFailed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===failAsset&&url.searchParams.has('scene_asset')){assetFailed=true;res.writeHead(503,{'Cache-Control':'no-store'});res.end('Synthetic scene resource failure');return}
-  if(!url.pathname.startsWith(prefix+'/api/lab')&&!url.pathname.startsWith(prefix+'/api/original'))return next()
+  if(!url.pathname.startsWith(prefix+'/api/lab')&&!url.pathname.startsWith(prefix+'/api/original')&&!url.pathname.startsWith(prefix+'/api/creator'))return next()
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){res.writeHead(403);res.end();return}
   if(mismatchOnce&&url.pathname===prefix+'/api/lab/health'){mismatchOnce=false;res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({ok:true,runtimeContract:'synthetic-previous-runtime'}));return}
   void(async()=>{try{
