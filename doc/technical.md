@@ -731,3 +731,7 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 `rendererNeedsPageReload`将MAP_TRANSFER_TIMEOUT、MAP_RUNTIME_DISPOSED与RPG_RENDERER_ALREADY_CREATED映射为显式页面重载；原作、旧车厢、制作页分别复用该判断。网络/资产/规则错误仍使用原页恢复，绝不自动新建旅程或后台重试刷新。权威请求ID与旅程选择沿原持久客户端合同恢复。
 `RendererTransition.status()`提供当前scene/joined/loaded/pending/disposed，`rpg-renderer`只把有限的地图握手阶段投射到自有host的data-renderer-*属性，不包含玩家资料、凭据或完整存档。这是排错数据，不能替代真实像素验收。
 独立`_qa/renderer-recovery.vite.ts`构建可在明确query下丢弃一次onAfterLoading通知，测试标记写入该QA页面的scoped sessionStorage；正式三种构建不包含故障query、标记或修改。上一轮自然偶发超时的最初触发原因尚未确定；本轮修复的是无法完成加载时恢复按钮无效的问题，不宣称所有启动故障已消失。
+
+
+### 创作者在线归档正式开启（2026-09-11）
+正式handleApi沿用CarriageJourneyAuthority/CARRIAGE_JOURNEYS绑定，开启creator路由，原作及旅途画页开关保持关闭。creator-art-v1前缀隔离制作数据，车厢owner对象名和wire不变；发布标识改为carriage-creator-storage-20260911-2。正式制作页发布后的链接指向同源不可变图片，preflight继续指向原作绑定旅程。没有第二套后台、长期客户端凭据或平台账号身份假设。线上执行结果在发布检查记录中另记。

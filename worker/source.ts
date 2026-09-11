@@ -62,7 +62,9 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
   return await env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName(creator?'creator-art-v1:'+owner:original?'original-v8:'+owner:owner)).fetch(forwarded)
  }catch(e){return reply({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
 }}
-export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED)
+// Creator archives use the existing namespace and separate owner keys. Original
+// story admission remains closed until its complete presentation is released.
+export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED,JOURNAL_IMAGE_RELEASED,false,()=>false,()=>false,true)
 interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority

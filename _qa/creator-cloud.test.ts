@@ -9,12 +9,20 @@ import {PreflightStorage} from '../server/preflight-storage'
 import {CreatorArtArchive,platformArtArchiveSource} from '../server/creator-art'
 import {inspectArtCandidate,planArtDraft,type ArtDraft} from '../src/art-draft'
 import {CreatorCloudDrafts,creatorCloudTransport} from '../src/creator-cloud'
-import {CarriageJourneyAuthority,createHandler} from '../worker/source'
+import {CarriageJourneyAuthority,createHandler,handleApi} from '../worker/source'
 import {CREATOR_RUNTIME_HEADER,CREATOR_RUNTIME_CONTRACT} from '../src/creator-contract'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 const bytes=new Uint8Array(readFileSync(new URL('../doc/platform-art-candidates/20260911/environment-edit-02/candidate.png',import.meta.url)))
 const candidate=await inspectArtCandidate(bytes),taskId='mt_1a1c4492493eaf68a32331d43d91c207'
 const input=()=>{const d=planArtDraft('cool');return {id:d.id,taskId,sha256:candidate.sha256,lighting:'cool' as const,request:d.request}}
+test('deployed handler opens creator archives behind capability auth while original story and journal generation stay closed',async()=>{
+ const env={CARRIAGE_JOURNEYS:{idFromName:()=>{throw Error('unauthenticated request reached namespace')},get:()=>{throw Error('unauthenticated request reached object')}}}
+ const request=(path:string)=>handleApi(new Request('https://game.invalid'+path),env)
+ const health=await request('/api/creator/health');assert.equal(health.status,200);assert.equal((await health.json()).runtimeContract,CREATOR_RUNTIME_CONTRACT)
+ for(const path of ['/api/creator/drafts','/api/creator/sprites'])assert.equal((await request(path)).status,401)
+ assert.equal((await request('/api/original/health')).status,404)
+ assert.equal((await request('/api/lab/sessions/synthetic-journey/image')).status,404)
+})
 function fixture(source=async()=>bytes){
  const dir=mkdtempSync(join(tmpdir(),'creator-cloud-')),pool=new PreflightStorage(dir);let fail=false,calls=0
  const db=()=>{const ctx=pool.context('synthetic-creator');return {all:<T>(s:string,...b:any[])=>ctx.storage.sql.exec(s,...b).toArray() as T[],run:(s:string,...b:any[])=>{if(fail&&s.startsWith('INSERT INTO creator_art_bytes')&&b[2]===1)throw Error('SYNTHETIC_STORAGE_FAILURE');ctx.storage.sql.exec(s,...b)},transaction:<T>(w:()=>T)=>ctx.storage.transactionSync(w)}}
