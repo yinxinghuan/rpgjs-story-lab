@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-11",
+  "trigger": "User observed both backward walking frames leading with the same leg",
+  "source": "public/art/overhead/hero.png",
+  "sourceSha256": "7d07b1e22e9ccbae89ec6da2291fa3898b118f1896330430299d9955ee791793",
+  "result": "public/art/overhead/hero-gait-v2.png",
+  "resultSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+  "scope": {
+    "row": 3,
+    "column": 2,
+    "localY": 266,
+    "frameWidth": 362,
+    "frameHeight": 362,
+    "operation": "horizontal reversal of the lower-leg raster only",
+    "outsideRegion": "pixel identical",
+    "originalRetained": true
+  },
+  "bootEndpointOpaqueCounts": {
+    "originalBackFrame0": [
+      40,
+      511
+    ],
+    "originalBackFrame2": [
+      62,
+      493
+    ],
+    "correctedBackFrame2": [
+      493,
+      62
+    ],
+    "originalFrontFrame0": [
+      49,
+      531
+    ],
+    "originalFrontFrame2": [
+      531,
+      35
+    ]
+  },
+  "review": {
+    "satchelAndTorsoUnchanged": true,
+    "otherElevenFramesUnchanged": true,
+    "runtime": "eight actual RPG-JS screenshots during path walking, including backward walking",
+    "screenshots": "_qa/ui/hero-gait-runtime-0.jpg through hero-gait-runtime-7.jpg",
+    "contactSheet": "_qa/ui/hero-gait-runtime-strip.png",
+    "otherBaselineActors": "mechanic and attendant front/back opposite boot endpoints, visually checked",
+    "iPhoneHardware": false,
+    "productionDeployed": false
+  },
+  "limits": [
+    "Calibrated only for this exact B hero sheet; not a generic anatomical animation repair",
+    "The platform regeneration attempt changed other directions and bag placement and was rejected",
+    "Other candidate sheets still need independent direction and stride semantic review"
+  ]
+}

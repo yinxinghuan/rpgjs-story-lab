@@ -5,7 +5,7 @@ export type ActorArt={path:string;width:number;height:number;columns:3;rows:4;sc
 const centers=()=>Array.from({length:4},()=>[195,181,167])
 const balanced=(name:string):ActorArt=>({path:`./art/overhead/${name}.png`,width:1086,height:1448,columns:3,rows:4,scale:.14,baselines:Array.from({length:4},()=>[330,330,330]),centers:Array.from({length:4},()=>[181,181,181])})
 export const actorArt:Record<'balanced'|'baseline',Record<'hero'|'mechanic'|'attendant',ActorArt>>={
- balanced:{attendant:balanced('attendant'),hero:balanced('hero'),mechanic:balanced('mechanic')},
+ balanced:{attendant:balanced('attendant'),hero:{...balanced('hero'),path:'./art/overhead/hero-gait-v2.png'},mechanic:balanced('mechanic')},
  baseline:{attendant:balanced('attendant'),hero:{path:'./art/hero-study.png',width:1086,height:1448,columns:3,rows:4,scale:.14,centers:centers(),baselines:[[333,330,336],[311,312,311],[302,302,302],[301,295,301]]},mechanic:{path:'./art/mechanic-v2.png',width:1086,height:1448,columns:3,rows:4,scale:.14,centers:centers(),baselines:[[337,337,337],[313,313,313],[302,302,303],[295,295,296]]}}
 }
 export const propsArt:Record<'balanced'|'baseline',{path:string;width:number;height:number;crops:Record<string,number[]>}>={
