@@ -1,0 +1,7 @@
+{
+  "entity": "tunnel-fan",
+  "purpose": "Replace a real story device marker with stopped/running states driven by tunnel-cargo-policy",
+  "limit": "One initial two-state candidate; at most one specific correction after pixel review; retain originals and do not auto-admit",
+  "source": "Public approved starter material and B camera reference",
+  "admission": "Requires state identity, alpha preparation, explicit anchors, original story branches, versioned collision and actual renderer evidence"
+}

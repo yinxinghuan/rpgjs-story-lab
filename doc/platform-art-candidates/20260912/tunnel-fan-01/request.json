@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "6fa956b8-ac29-4ed1-8055-f10d71660a34",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/42370d251a093697a343776c4df387ad266d4a90/public/art/references/starter-open-source-v1.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 640
+  },
+  "prompt": "Create TWO SIDE-BY-SIDE STATE FRAMES of one railway tunnel ventilation fan cabinet, using the reference as the exact material, steep overhead orthographic camera and pixel-painted detail guide. Canvas640x640, two equal320x640 cells. Same squat dark olive metal rectangular housing in both cells, ample visible top plane as in reference, brass corner bolts, weathered crisp texture. Replace the starter interior with one large circular three-bladed industrial ventilation rotor behind a sparse circular safety grille. Remove hinged door and copper coil. It is a freestanding tunnel extractor, not a desk fan. Both states have EXACT same body/feet position, silhouette, grille, materials and scale; about230px wide,350px tall, centered x160/480, bottom contact y480, top near130. LEFT: stopped, three broad rotor blades clearly still, small amber power indicator dark. RIGHT: running, same rotor shown at a different blade angle with a little motion streak only inside the grille, indicator warm amber on. The only differences are rotor motion and indicator state. No added equipment, cable trailing outside cell, shadows, ground, people, words, labels, arrows, checkerboard or dividing line. Uniform pure white background. Preserve strong elevated viewpoint and generous top plane; not front-on, not isometric diagonal, no vanishing point."
+}

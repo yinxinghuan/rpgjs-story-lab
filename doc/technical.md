@@ -812,3 +812,7 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 2026-09-12 原作旅程续玩：记录页增加服务器目录、切回旧旅程和保留旧旅程重新出发。使用既有GET /sessions及POST /sessions，不增加第二套存档或客户端导入。OriginalSessionClient校验目录ID、唯一性、版本/游标、时间和已制作房间。RecoverableSessionClient.selectSession先取回并校验目标Head，在bootstrap及当前session锁内更新续玩指针；任何待确认请求或开户阻止切换。restart也取得当前session锁，明确SESSION_LIMIT拒绝清理该开户意向但保留旧旅程，含糊网络失败仍保留原意向并同ID重试。普通/在线准备/结局提交均拒绝旧窗口的非当前旅程，新页从所选Head的素材/地图版本重建renderer。切换前checkpoint当前位置；失败不覆盖服务端故事或重置存档。所有者边界继续由现有HTTP capability承担，未实现平台账户找回。
 
 验证补充：开发服务器不运行generateBundle，因此原作生成的TMX/背景不存在，返回RESOURCE_SIZE；未因此放松摘要/尺寸门禁。使用npm run build:preflight后的实际预览服务继续验证。测试浏览器均为新建localhost隔离身份，外部请求阻断；不代表正式AlterU或iPhone硬件验收。任医生站姿新候选虽然包含急救箱，但相机过于正面、比例变长，拒绝接入，无后续同批角色生成。
+
+2026-09-12 原作在线对白新增当前美术合同：original-art-identities.ts保存已人工看过的阿达基准PNG摘要和可见服装/配件，原renderer继续引用同一资源声明；server/original-visual-context.ts按Head素材绑定投射当前说话人、背景版本和本场景启动机状态。非基准阿达发布图集没有语义注释时appearance为空，不沿用基准；其他仅有开发标记的角色同样不推断外貌。离开北岬不带出启动机，事实修复后状态改为repaired。上下文不包含原图字节、URL、身份凭据或未来人物，生成和复审读取相同visuals，提示禁止打印内部ID/摘要。此为人工声明的已知外观合同，不是自动看图、发布素材语义注释系统或通用视觉认证。
+
+真实合成模型4请求/2案例记录于original-visual-dialogue-live-20260912.json：正常回复颜色/灯具身份一致，但“放在包里”来源措辞不精确，因此将灯的说明收窄为袋口上方可见上部、固定方式未知；这次精化没有再请求模型。第二个篡改请求被管线拒绝且没有状态变化，未保存生成/复审原始输出，不能据此断言具体拒绝理由一定正确。脚本使用新建原作状态，不读取真实存档；两案例不等同完整平台或开放对白验收。

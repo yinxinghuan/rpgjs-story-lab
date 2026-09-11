@@ -1,0 +1,9 @@
+{
+  "status": "no-image",
+  "admitted": false,
+  "error": "PROVIDER_REJECTED",
+  "retryable": false,
+  "requests": 1,
+  "elapsedMs": 52701,
+  "next": "No automatic resubmission or correction without a returned image. Existing equipment remains unchanged."
+}

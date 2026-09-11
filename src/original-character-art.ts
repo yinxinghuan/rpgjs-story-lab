@@ -7,7 +7,8 @@ import {originalActorRelease,type OriginalAssetBindings} from './original-asset-
 import {actorReleasePath} from './actor-publication'
 import {Direction} from '@rpgjs/common'
 
-export const adaStandingResource:SceneResource={kind:'background',path:'./art/ada-standing-v1.png',sha256:'c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912',bytes:36405,width:320,height:320}
+import {adaStandingResource} from './original-art-identities'
+export {adaStandingResource} from './original-art-identities'
 export const originalStandingArt={characterId:'ada-mechanic',graphic:'original-ada-standing-v1',foot:{x:160,y:300},scale:.16,capability:'front-standing-only' as const}
 const world=originalTrainChapterSpatialPlan()
 export function originalCharacterArtSlots(scene:string,assets?:OriginalAssetBindings){
