@@ -1,4 +1,6 @@
 // Loopback-only integration harness. This never provisions a cloud namespace.
+import {originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
+import type {OriginalPresentationGate} from './original-train-runtime'
 import {DatabaseSync} from 'node:sqlite'
 import type {IncomingMessage,ServerResponse} from 'node:http'
 import {CarriageJourneyAuthority,createHandler} from '../worker/source'
@@ -14,9 +16,12 @@ export function preflightPlugin(){
  const delayEngineMap=process.env.CARRIAGE_QA_DELAY_ENGINE_MAP==='1'
  const delayMs=Math.min(35000,Math.max(0,Number(process.env.CARRIAGE_QA_ASSET_DELAY_MS)||0));let assetDelayed=false
  const databases:DatabaseSync[]=[],objects=new Map<string,CarriageJourneyAuthority>()
+ // Explicit loopback authoring gate: the UI marks all non-admitted art as draft.
+ const authoringRooms=new Set(originalTrainChapterSpatialPlan().scenes.map(s=>s.id))
+ const admitOriginal:OriginalPresentationGate=head=>{if(!authoringRooms.has(head.sceneId))throw Error('UNREGISTERED_AUTHORING_ROOM');return true}
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
   const owner=String(id);let object=objects.get(owner)
-  if(!object){const raw=new DatabaseSync(':memory:');databases.push(raw);object=new CarriageJourneyAuthority({storage:{sql:{exec:(q,...b)=>{const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{raw.exec('BEGIN IMMEDIATE');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}});objects.set(owner,object)}
+  if(!object){const raw=new DatabaseSync(':memory:');databases.push(raw);object=new CarriageJourneyAuthority({storage:{sql:{exec:(q,...b)=>{const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{raw.exec('BEGIN IMMEDIATE');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}},undefined,undefined,undefined,admitOriginal);objects.set(owner,object)}
   const authority=object
   return {fetch:async(request:Request)=>{
    const response=await authority.fetch(request)
@@ -27,12 +32,12 @@ export function preflightPlugin(){
    return Response.json(await work,{headers:response.headers})
   }}
  }}}
- const handler=createHandler(true,true),prefix='/'+GAME_ID
+ const handler=createHandler(true,true,true),prefix='/'+GAME_ID
  const middleware=(req:IncomingMessage,res:ServerResponse,next:()=>void)=>{
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
   if(delayMs&&!assetDelayed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===delayedAsset&&(delayEngineMap?!url.searchParams.has('scene_asset'):url.searchParams.has('scene_asset'))){assetDelayed=true;setTimeout(next,delayMs);return}
   if(failAsset&&!assetFailed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===failAsset&&url.searchParams.has('scene_asset')){assetFailed=true;res.writeHead(503,{'Cache-Control':'no-store'});res.end('Synthetic scene resource failure');return}
-  if(!url.pathname.startsWith(prefix+'/api/lab'))return next()
+  if(!url.pathname.startsWith(prefix+'/api/lab')&&!url.pathname.startsWith(prefix+'/api/original'))return next()
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){res.writeHead(403);res.end();return}
   if(mismatchOnce&&url.pathname===prefix+'/api/lab/health'){mismatchOnce=false;res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({ok:true,runtimeContract:'synthetic-previous-runtime'}));return}
   void(async()=>{try{

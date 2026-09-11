@@ -1,11 +1,12 @@
+import {Resvg} from '@resvg/resvg-js'
 import {readFileSync} from 'node:fs'
 import {createHash} from 'node:crypto'
-import {originalTrainObstaclesFor,originalTrainRoom,originalTrainSpatialPlan} from '../src/original-train-spatial-plan'
+import {originalTrainObstaclesFor,originalTrainRoom,originalTrainSpatialPlan,originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
 import type {SceneResourceManifest} from '../src/scene-readiness'
 const candidates=[{location:'dead-station',file:'north-cape-v2.png',asset:'original-north-cape'},{location:'river-valley',file:'river-valley-v1.png',asset:'original-river-valley'}]
 function platformBackground(){const data=readFileSync(new URL('../doc/platform-art-candidates/20260911/environment-edit-01/candidate.png',import.meta.url));return {kind:'background' as const,path:'./art/platform-north-cape-candidate.png',data,width:data.readUInt32BE(16),height:data.readUInt32BE(20)}}
-function previewAssets(){return candidates.map(c=>{
- const sceneId=originalTrainRoom(c.location),data=readFileSync(new URL('../doc/original-train-candidates/20260911/'+c.file,import.meta.url))
+function previewAssets(authoring=false){const all=authoring?originalTrainChapterSpatialPlan().scenes.map(room=>candidates.find(c=>originalTrainRoom(c.location)===room.id)??{location:room.id.slice('train-at-'.length),file:'',asset:room.id+'-whitebox'}):candidates;return all.map(c=>{
+ const sceneId=originalTrainRoom(c.location),data=c.file?readFileSync(new URL('../doc/original-train-candidates/20260911/'+c.file,import.meta.url)):new Resvg(`<svg xmlns="http://www.w3.org/2000/svg" width="384" height="576"><rect width="384" height="576" fill="#33434a"/>${originalTrainObstaclesFor(sceneId).map(o=>`<rect x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" fill="#18252d" stroke="#718087"/>`).join('')}</svg>`).render().asPng()
  const objects=originalTrainObstaclesFor(sceneId).map((o,i)=>`<object id="${i+1}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}"><properties><property name="collision" type="bool" value="true"/></properties></object>`).join('')
  const map=Buffer.from(`<?xml version="1.0"?><map version="1.10" orientation="orthogonal" renderorder="right-down" width="12" height="18" tilewidth="32" tileheight="32" infinite="0"><tileset firstgid="1" source="carriage.tsx"/><layer id="1" name="floor" width="12" height="18"><data encoding="csv">${Array(216).fill(1).join(',')}</data></layer><objectgroup id="2" name="collision">${objects}</objectgroup></map>`)
  return {sceneId,assets:[{kind:'map' as const,path:'./map/'+sceneId+'.tmx',data:map},{kind:'background' as const,path:'./art/'+c.asset+'.png',data,width:data.readUInt32BE(16),height:data.readUInt32BE(20)}]}
@@ -17,4 +18,5 @@ export function originalScenePreviewDefinition(){
  platformResources.scenes[initialScene].assets=platformResources.scenes[initialScene].assets.map(a=>a.kind==='background'?{...asset,bytes:data.byteLength,sha256:createHash('sha256').update(data).digest('hex')}:a)
  return {initialScene,resources,platformResources}
 }
-export function originalScenePreviewPlugin(){return {name:'original-scene-preview-assets',generateBundle(this:any){for(const s of previewAssets())for(const a of s.assets)this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data});const a=platformBackground();this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data})}}}
+export function originalStoryPreviewDefinition(){const version=originalTrainChapterSpatialPlan().mapVersion;return {version,scenes:Object.fromEntries(previewAssets(true).map(s=>[s.sceneId,{version,assets:s.assets.map(({data,...a})=>({...a,bytes:data.byteLength,sha256:createHash('sha256').update(data).digest('hex')}))}]))}}
+export function originalScenePreviewPlugin(authoring=false){return {name:'original-scene-preview-assets',generateBundle(this:any){for(const s of previewAssets(authoring))for(const a of s.assets)this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data});const a=platformBackground();this.emitFile({type:'asset',fileName:a.path.slice(2),source:a.data})}}}
