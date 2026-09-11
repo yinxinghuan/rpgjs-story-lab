@@ -1,0 +1,54 @@
+{
+  "syntheticOnly": true,
+  "actualModelRequests": 2,
+  "headBefore": {
+    "version": 1,
+    "scene": "train-at-dead-station",
+    "stats": {
+      "fuel": 68,
+      "condition": 87,
+      "morale": 58
+    }
+  },
+  "failure": {
+    "syntheticOnly": true,
+    "version": 1,
+    "scene": "train-at-dead-station",
+    "stats": {
+      "fuel": 68,
+      "condition": 87,
+      "morale": 58
+    },
+    "wholeStoryUnchanged": true,
+    "candidate": {
+      "scene": "train-at-river-valley",
+      "version": 2,
+      "stats": {
+        "fuel": 62,
+        "condition": 87,
+        "morale": 58
+      },
+      "interpretation": {
+        "input": "现在把列车开上河谷支线。",
+        "actionId": "commit-valley-route"
+      },
+      "actionId": "commit-valley-route"
+    }
+  },
+  "headAfter": {
+    "version": 2,
+    "scene": "train-at-river-valley",
+    "stats": {
+      "fuel": 62,
+      "condition": 87,
+      "morale": 58
+    }
+  },
+  "assetBindingUnchanged": true,
+  "preparedRecordsAfterCommit": 0,
+  "journalEvents": 2,
+  "interpretation": {
+    "input": "现在把列车开上河谷支线。",
+    "actionId": "commit-valley-route"
+  }
+}

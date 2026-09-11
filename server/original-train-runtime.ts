@@ -44,7 +44,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
  return {
   initial:(locale,id)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion,assets:newOriginalAssetBindings()};assertOriginalHead(h);check(h);return h},
   upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
-  preserveConcurrent:()=>{},ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
+  preserveConcurrent:()=>{},assertPrepared:(candidate,current,actionId)=>check(candidate,current,actionId),ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body,reserveNarration)=>{
    assertOriginalHead(h);validateAction(body)
    if(['ready','generating','failed','complete'].includes(h.save.finale.status)&&!h.save.finale.epilogueActive)throw new LabError('ORIGINAL_FINALE_PENDING',409)

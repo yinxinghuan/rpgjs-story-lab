@@ -19,6 +19,7 @@ export interface SessionRuntime<H extends SessionHead>{
  validateAction(body:unknown):void
  prepare(head:H,body:any,reserveNarration:()=>boolean):Promise<SessionResult<H>>
  preserveConcurrent(candidate:H,current:H):void
+ assertPrepared?(candidate:H,current:H,actionId?:string):void
  ending?:{validate(body:unknown):void;prepare(head:H,body:any):Promise<SessionResult<H>>;assertCurrent(before:H,current:H):void}
 }
 const validId=(id:unknown)=>typeof id==='string'&&/^[a-zA-Z0-9-]{16,80}$/.test(id)
@@ -29,6 +30,7 @@ type Row={data:string;cursor:number}
 export class SessionAuthority<H extends SessionHead>{
  private inFlight=new Map<string,{hash:string;promise:Promise<any>}>()
  constructor(protected db:AuthorityStorage,protected runtime:SessionRuntime<H>,protected now:()=>number=Date.now){
+  db.run('CREATE TABLE IF NOT EXISTS prepared_actions(owner TEXT NOT NULL, action TEXT NOT NULL, session TEXT NOT NULL, digest TEXT NOT NULL, base TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner,action))')
   db.run('CREATE TABLE IF NOT EXISTS narration_usage(owner TEXT PRIMARY KEY, window_start INTEGER NOT NULL, uses INTEGER NOT NULL)')
   db.run('CREATE TABLE IF NOT EXISTS journeys(id TEXT PRIMARY KEY, owner TEXT NOT NULL, enrollment TEXT NOT NULL, enrollment_digest TEXT NOT NULL, data TEXT NOT NULL, cursor INTEGER NOT NULL DEFAULT 0, updated INTEGER NOT NULL, UNIQUE(owner,enrollment))')
   db.run('CREATE TABLE IF NOT EXISTS receipts(owner TEXT NOT NULL, action TEXT NOT NULL, digest TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner,action))')
@@ -75,6 +77,45 @@ export class SessionAuthority<H extends SessionHead>{
   this.inFlight.set(key,{hash,promise})
   try{return await promise}finally{if(this.inFlight.get(key)?.promise===promise)this.inFlight.delete(key)}
  }
+ /** Compute and persist a candidate without committing the story. Replays of
+  * the same envelope reuse it, including across service restarts. */
+ async prepareAction(owner:string,id:string,body:any){
+  this.runtime.validateAction(body);body=wire(body)
+  const hash=digest({id,body}),cached=this.replay(owner,body.action_id,hash)
+  if(cached)return {status:'committed' as const,result:cached}
+  const old=this.db.all<{digest:string;base:string;response:string}>('SELECT digest,base,response FROM prepared_actions WHERE owner=? AND action=?',owner,body.action_id)[0]
+  if(old){if(old.digest!==hash)throw new LabError('ACTION_ID_CONFLICT',409);const current=this.get(owner,id),base=JSON.parse(old.base);if(current.version!==base.version||current.mapVersion!==base.mapVersion)throw new LabError('VERSION_CONFLICT',409);return {status:'prepared' as const,result:JSON.parse(old.response)}}
+  const key=JSON.stringify([owner,'prepare:'+body.action_id]),running=this.inFlight.get(key)
+  if(running){if(running.hash!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return running.promise}
+  const promise=(async()=>{
+   const head=this.get(owner,id)
+   if(head.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
+   const count=this.db.all<{n:number}>('SELECT COUNT(*) AS n FROM prepared_actions WHERE owner=?',owner)[0].n
+   if(count>=32)throw new LabError('PREPARED_ACTION_LIMIT',429)
+   const response=await this.runtime.prepare(head,body,()=>this.reserveNarration(owner))
+   if(response.kind!=='action'||response.accepted!==true||response.head.id!==id||response.head.version!==head.version+1)throw new LabError('UNSUPPORTED_ACTION',409)
+   this.runtime.assertReadable(response.head)
+   return this.db.transaction(()=>{
+    const committed=this.replay(owner,body.action_id,hash);if(committed)return {status:'committed' as const,result:committed}
+    const current=JSON.parse(this.row(owner,id).data) as H
+    if(current.version!==head.version||current.mapVersion!==head.mapVersion)throw new LabError('VERSION_CONFLICT',409)
+    const raced=this.db.all<{digest:string;response:string}>('SELECT digest,response FROM prepared_actions WHERE owner=? AND action=?',owner,body.action_id)[0]
+    if(raced){if(raced.digest!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return {status:'prepared' as const,result:JSON.parse(raced.response)}}
+    if(this.db.all<{n:number}>('SELECT COUNT(*) AS n FROM prepared_actions WHERE owner=?',owner)[0].n>=32)throw new LabError('PREPARED_ACTION_LIMIT',429)
+    this.db.run('INSERT INTO prepared_actions VALUES(?,?,?,?,?,?)',owner,body.action_id,id,hash,JSON.stringify(head),JSON.stringify(response))
+    return {status:'prepared' as const,result:wire(response)}
+   })
+  })()
+  this.inFlight.set(key,{hash,promise});try{return await promise}finally{if(this.inFlight.get(key)?.promise===promise)this.inFlight.delete(key)}
+ }
+ async commitPreparedAction(owner:string,id:string,body:any){
+  this.runtime.validateAction(body);body=wire(body)
+  const hash=digest({id,body}),cached=this.replay(owner,body.action_id,hash);if(cached)return cached
+  const row=this.db.all<{digest:string;base:string;response:string}>('SELECT digest,base,response FROM prepared_actions WHERE owner=? AND action=?',owner,body.action_id)[0]
+  if(!row)throw new LabError('ACTION_NOT_PREPARED',409)
+  if(row.digest!==hash)throw new LabError('ACTION_ID_CONFLICT',409)
+  return this.commitResponse(owner,id,body,hash,'action',body.action_id,JSON.parse(row.base),JSON.parse(row.response),true)
+ }
  private reserveNarration(owner:string){
   return this.db.transaction(()=>{
    const now=this.now(),old=this.db.all<{window_start:number;uses:number}>('SELECT window_start,uses FROM narration_usage WHERE owner=?',owner)[0]
@@ -86,6 +127,9 @@ export class SessionAuthority<H extends SessionHead>{
  }
  private async prepareAndCommit(owner:string,id:string,body:any,hash:string,operation:'action'|'ending',receiptId:string){
   const head=this.get(owner,id),response=operation==='ending'?await this.runtime.ending!.prepare(head,body):await this.runtime.prepare(head,body,()=>this.reserveNarration(owner))
+  return this.commitResponse(owner,id,body,hash,operation,receiptId,head,response)
+ }
+ private commitResponse(owner:string,id:string,body:any,hash:string,operation:'action'|'ending',receiptId:string,head:H,response:SessionResult<H>,prepared=false){
   // No network await inside transactionSync. Recheck after narrator yields.
   return this.db.transaction(()=>{
    const raced=this.replay(owner,receiptId,hash);if(raced)return raced
@@ -100,11 +144,13 @@ export class SessionAuthority<H extends SessionHead>{
     if(response.kind!=='ending'||this.runtime.scene(response.head)!==this.runtime.scene(current))throw new LabError('INVALID_COMMIT_CANDIDATE',409)
     response.head.position={...current.position}
    }
+   if(prepared)this.runtime.assertPrepared?.(response.head,current,typeof response.actionId==='string'?response.actionId:undefined)
    this.runtime.preserveConcurrent(response.head,current)
    const cursor=row.cursor+(operation==='ending'?0:1),result=wire({...response,cursor}),event={cursor,version:response.head.version,action_id:body.action_id,kind:response.kind}
    this.write(owner,response.head,cursor)
    if(operation==='action')this.db.run('INSERT INTO journal VALUES(?,?,?,?,?)',id,cursor,body.action_id,response.kind,JSON.stringify(event))
    this.db.run('INSERT INTO receipts VALUES(?,?,?,?)',owner,receiptId,hash,JSON.stringify(result))
+   this.db.run('DELETE FROM prepared_actions WHERE owner=? AND session=?',owner,id)
    return result
   })
  }

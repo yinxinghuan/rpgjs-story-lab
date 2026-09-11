@@ -24,11 +24,11 @@ async function body(request:Request){
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
-export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false){return async(request:Request,env:Environment)=>{
+export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
  const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=original?originalJson:json
  if(original&&!originalEnabled)return reply({error:'NOT_FOUND'},404)
- if(original&&path===ORIGINAL_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:false,identityMode:'anonymous-capability-v1',runtimeContract:ORIGINAL_RUNTIME_CONTRACT,liveModelAvailable:false,liveDialogueAvailable:originalDialogueAvailable()})
+ if(original&&path===ORIGINAL_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:false,identityMode:'anonymous-capability-v1',runtimeContract:ORIGINAL_RUNTIME_CONTRACT,liveModelAvailable:originalActionAvailable(),liveDialogueAvailable:originalDialogueAvailable()})
  if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return reply({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:RELEASE_ID,runtimeContract:RUNTIME_CONTRACT})
  if(!original&&!path.startsWith('/api/lab/'))return reply({error:'NOT_FOUND'},404)
  if(!imageEnabled&&/^\/api\/lab\/sessions\/[^/]+\/image(?:\/file)?$/.test(path))return reply({error:'NOT_FOUND'},404)

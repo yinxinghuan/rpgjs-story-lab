@@ -34,7 +34,7 @@ export function preflightPlugin(){
    return Response.json(await work,{headers:response.headers})
   }}
  }}}
- const handler=createHandler(true,true,true,()=>originalModels?.available()??false),prefix='/'+GAME_ID
+ const handler=createHandler(true,true,true,()=>originalModels?.available()??false,()=>originalModels?.available()??false),prefix='/'+GAME_ID
  const middleware=(req:IncomingMessage,res:ServerResponse,next:()=>void)=>{
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
   if(delayMs&&!assetDelayed&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.pathname===delayedAsset&&(delayEngineMap?!url.searchParams.has('scene_asset'):url.searchParams.has('scene_asset'))){assetDelayed=true;setTimeout(next,delayMs);return}

@@ -1,14 +1,14 @@
 import {randomId} from './random-id'
 type Locale='zh'|'en'
 export interface RecoverableHead{id:string;version:number}
-export interface SessionClientPolicy<H extends RecoverableHead>{scene:(head:H)=>string;assertHead:(value:unknown)=>asserts value is H;terminalErrors?:readonly string[];ending?:{request:(head:H)=>{snapshot_id:string;mapVersion:string};assertResult:(result:any,body:Record<string,any>)=>void;terminalErrors:readonly string[]}}
+export interface SessionClientPolicy<H extends RecoverableHead>{scene:(head:H)=>string;assertHead:(value:unknown)=>asserts value is H;terminalErrors?:readonly string[];preparedAction?:{assertPlan:(value:any,body:Record<string,any>,id:string)=>void;ready:(plan:any)=>Promise<void>};ending?:{request:(head:H)=>{snapshot_id:string;mapVersion:string};assertResult:(result:any,body:Record<string,any>)=>void;terminalErrors:readonly string[]}}
 export type Transport=(path:string,body?:unknown)=>Promise<any>
 export type SessionLock=<T>(name:string,work:()=>Promise<T>)=>Promise<T>
-export type Pending={id:string;operation?:'ending';body:Record<string,any>&{expected_version:number;sceneId:string}}
+export type Pending={id:string;operation?:'ending'|'prepared-action';body:Record<string,any>&{expected_version:number;sceneId:string}}
 const pendingId=(p:Pending)=>p.operation==='ending'?'ending:'+p.body.ending_id:p.body.action_id
 const terminal=new Set(['VERSION_CONFLICT','OFF_SCENE_ENTITY','INVALID_ACTION','UNKNOWN_ENTITY','INVALID_POSITION','TOO_FAR','UNSUPPORTED_ACTION','INVALID_TEXT','INVALID_ACTION_TYPE','INVALID_NARRATION_MODE','ACTION_ID_CONFLICT'])
 const idPattern=/^[a-zA-Z0-9-]{16,80}$/
-function parsePending(raw:string):Pending{const p=JSON.parse(raw);if(!p||!idPattern.test(p.id)||!p.body||(p.operation!==undefined&&p.operation!=='ending')||!idPattern.test(p.operation==='ending'?p.body.ending_id:p.body.action_id)||!Number.isSafeInteger(p.body.expected_version)||typeof p.body.sceneId!=='string'||p.operation==='ending'&&(typeof p.body.snapshot_id!=='string'||typeof p.body.mapVersion!=='string'))throw Error('INVALID_PENDING');return p}
+function parsePending(raw:string):Pending{const p=JSON.parse(raw);if(!p||!idPattern.test(p.id)||!p.body||(p.operation!==undefined&&p.operation!=='ending'&&p.operation!=='prepared-action')||!idPattern.test(p.operation==='ending'?p.body.ending_id:p.body.action_id)||!Number.isSafeInteger(p.body.expected_version)||typeof p.body.sceneId!=='string'||p.operation==='ending'&&(typeof p.body.snapshot_id!=='string'||typeof p.body.mapVersion!=='string'))throw Error('INVALID_PENDING');return p}
 export class RecoverableSessionClient<H extends RecoverableHead>{
  constructor(private storage:Storage,private prefix:string,private transport:Transport,private policy:SessionClientPolicy<H>,private lock:SessionLock=async(_name,work)=>work()){}
  private head(value:unknown,expectedId?:string):H{this.policy.assertHead(value);const h=value as H;if(!idPattern.test(h.id)||!Number.isSafeInteger(h.version)||h.version<0||expectedId!==undefined&&h.id!==expectedId)throw Error('SESSION_RESPONSE_MISMATCH');return h}
@@ -47,7 +47,14 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   let result:any,rejected=false
   const ending=p.operation==='ending'
   if(ending&&!this.policy.ending)throw Error('ENDING_UNAVAILABLE')
-  try{result=await this.transport('/sessions/'+p.id+(ending?'/ending':'/actions'),p.body)}catch(e){if(!(e instanceof Error)||!terminal.has(e.message)&&!(ending?this.policy.ending?.terminalErrors:this.policy.terminalErrors)?.includes(e.message))throw e;rejected=true;result={kind:'recovered',text:null,accepted:false,rejectionCode:e.message}}
+  try{
+   if(p.operation==='prepared-action'){
+    const policy=this.policy.preparedAction;if(!policy)throw Error('PREPARED_ACTION_UNAVAILABLE')
+    const plan=await this.transport('/sessions/'+p.id+'/prepare-action',p.body);policy.assertPlan(plan,p.body,p.id)
+    if(plan.status!=='committed')await policy.ready(plan)
+    result=await this.transport('/sessions/'+p.id+'/commit-action',p.body)
+   }else result=await this.transport('/sessions/'+p.id+(ending?'/ending':'/actions'),p.body)
+  }catch(e){if(!(e instanceof Error)||!terminal.has(e.message)&&!(ending?this.policy.ending?.terminalErrors:this.policy.terminalErrors)?.includes(e.message))throw e;rejected=true;result={kind:'recovered',text:null,accepted:false,rejectionCode:e.message}}
   if(ending&&!rejected)this.policy.ending!.assertResult(result,p.body)
   if(result.head)this.head(result.head,p.id)
   const latest=await this.get(p.id)
@@ -61,6 +68,12 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   this.head(head)
   if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
   const p:Pending={id:head.id,body:{...body,sceneId:this.policy.scene(head),action_id:randomId(),expected_version:head.version}}
+  this.put(p);return this.settle(p)
+ })}
+ async sendPrepared(head:H,body:Record<string,unknown>){return this.lock(this.key('session:'+head.id),async()=>{
+  this.head(head);if(!this.policy.preparedAction)throw Error('PREPARED_ACTION_UNAVAILABLE')
+  if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
+  const p:Pending={id:head.id,operation:'prepared-action',body:{...body,sceneId:this.policy.scene(head),action_id:randomId(),expected_version:head.version}}
   this.put(p);return this.settle(p)
  })}
  async sendEnding(head:H){return this.lock(this.key('session:'+head.id),async()=>{
