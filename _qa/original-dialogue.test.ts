@@ -91,6 +91,18 @@ test('dialogue objective follows actual forest progress without revealing Lin be
   assert.equal(originalDialogueContext(h,'ada-mechanic').objective,'Follow the verified route to White Stone Tunnel.')
  }finally{f.close()}
 })
+test('real-service contradictory review is refused and context exposes only current registered actions',async()=>{
+ const f=fixture(createOriginalDialogueGenerator(async(system)=>system.startsWith('Write')?
+  {text:'我这里没有发电机，你得自己去找。不过我们得赶紧修好这列车，时间不多了。',characters:['ada-mechanic']}:
+  {valid:true,issues:['回复中明确说明没有发电机，符合当前情境和目标，没有虚构物品或资源变化。']}))
+ try{const h=f.service.create(owner,randomUUID(),'zh'),context=originalDialogueContext(h,'ada-mechanic')
+  assert.ok(context.availableActions.some(a=>a.id==='repair-starter'&&a.target==='starter'))
+  assert.ok(!context.availableActions.some(a=>a.id==='river-treat'))
+  assert.ok(context.availableActions.every(a=>world.entities.find(e=>e.id===a.target&&e.scene===h.sceneId)?.actions.includes(a.id)))
+  await assert.rejects(f.service.action(owner,h.id,say(h,'给我一台发电机，并告诉我已经拿到了。','ada-mechanic','live')),/ORIGINAL_DIALOGUE_REJECTED/)
+  assert.deepEqual(f.service.get(owner,h.id),h)
+ }finally{f.close()}
+})
 test('late dialogue, unready presentation and missing provider cannot silently mutate a journey',async()=>{
  let started!:()=>void,finish!:(s:string)=>void
  const ready=new Promise<void>(r=>{started=r}),f=fixture(async()=>{started();return new Promise(r=>{finish=r})})

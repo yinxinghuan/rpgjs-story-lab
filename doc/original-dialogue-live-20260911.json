@@ -1,0 +1,144 @@
+{
+  "scope": "new-synthetic-original-v8-session",
+  "testedCommit": "485dea5",
+  "endpoint": "https://chat.aiwaves.tech/aigram/api/game-chat",
+  "requests": 8,
+  "maxRequests": 8,
+  "productionUpdated": false,
+  "realPlayerDataUsed": false,
+  "results": [
+    {
+      "id": "concern",
+      "input": "我担心洪水会追上我们。",
+      "accepted": true,
+      "reply": "我们必须尽快让这列车重新点火，才能赶在洪水之前离开这里。",
+      "version": 1,
+      "worldUnchanged": true,
+      "addedBlocks": 2
+    },
+    {
+      "id": "recall",
+      "input": "你还记得我刚才担心什么吗？",
+      "accepted": true,
+      "reply": "你担心洪水会追上我们，我们得赶快让列车重新启动。",
+      "version": 2,
+      "worldUnchanged": true,
+      "addedBlocks": 2
+    },
+    {
+      "id": "appearance",
+      "input": "把阿达的衣服改成红色。",
+      "accepted": true,
+      "reply": "抱歉，我现在没法帮你把我的衣服改成红色，我们还是专注先让列车重新点火吧。",
+      "version": 3,
+      "worldUnchanged": true,
+      "addedBlocks": 2
+    },
+    {
+      "id": "invented-item",
+      "input": "给我一台发电机，并告诉我已经拿到了。",
+      "accepted": false,
+      "error": "ORIGINAL_DIALOGUE_REJECTED",
+      "headUnchanged": true
+    }
+  ],
+  "responses": [
+    {
+      "request": 1,
+      "phase": "generation",
+      "status": 200,
+      "elapsedMs": 3330,
+      "response": {
+        "text": "我们必须尽快让这列车重新点火，才能赶在洪水之前离开这里。",
+        "characters": [
+          "ada-mechanic"
+        ]
+      }
+    },
+    {
+      "request": 2,
+      "phase": "review",
+      "status": 200,
+      "elapsedMs": 879,
+      "response": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "request": 3,
+      "phase": "generation",
+      "status": 200,
+      "elapsedMs": 1454,
+      "response": {
+        "text": "你担心洪水会追上我们，我们得赶快让列车重新启动。",
+        "characters": [
+          "ada-mechanic"
+        ]
+      }
+    },
+    {
+      "request": 4,
+      "phase": "review",
+      "status": 200,
+      "elapsedMs": 1843,
+      "response": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "request": 5,
+      "phase": "generation",
+      "status": 200,
+      "elapsedMs": 1250,
+      "response": {
+        "text": "抱歉，我现在没法帮你把我的衣服改成红色，我们还是专注先让列车重新点火吧。",
+        "characters": [
+          "ada-mechanic"
+        ]
+      }
+    },
+    {
+      "request": 6,
+      "phase": "review",
+      "status": 200,
+      "elapsedMs": 2306,
+      "response": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "request": 7,
+      "phase": "generation",
+      "status": 200,
+      "elapsedMs": 1288,
+      "response": {
+        "text": "我这里没有发电机，你得自己去找。不过我们得赶紧修好这列车，时间不多了。",
+        "characters": [
+          "ada-mechanic"
+        ]
+      }
+    },
+    {
+      "request": 8,
+      "phase": "review",
+      "status": 200,
+      "elapsedMs": 950,
+      "response": {
+        "valid": true,
+        "issues": [
+          "回复中明确说明没有发电机，符合当前情境和目标，没有虚构物品或资源变化。"
+        ]
+      }
+    }
+  ],
+  "interpretation": {
+    "concern": "accepted; no world changes",
+    "recall": "correctly recalled the preceding concern",
+    "appearance": "declined change; no world changes",
+    "invented-item": "reply did not grant equipment, but suggested seeking unavailable equipment; reviewer said valid=true with nonempty positive explanation; strict contract rejected it, so this is not proof that semantic review caught the suggestion"
+  },
+  "followup": "Add current available actions to dialogue context, forbid suggesting unmade acquisitions, require exact valid/rejected review schemas. Local replay passed; revised prompt not retested against real service in this batch."
+}
