@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {createServer} from 'node:http'
-import {DatabaseSync} from 'node:sqlite'
+import {PreflightStorage} from '../server/preflight-storage'
 import {randomUUID,randomBytes} from 'node:crypto'
 import {mkdtempSync,rmSync} from 'node:fs'
 import {join} from 'node:path'
@@ -18,17 +18,17 @@ const lock=async<T>(_name:string,work:()=>Promise<T>)=>work()
 function memory(){const values=new Map<string,string>();return {get length(){return values.size},getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v)},removeItem:(k:string)=>{values.delete(k)},key:(i:number)=>[...values.keys()][i]??null,clear:()=>values.clear()} as Storage}
 function intent(h:OriginalHead,id:string,free=false){const e=world.entities.find(e=>e.scene===h.sceneId&&e.actions.includes(id))!,chapter=originalChapterActions.find(a=>a.id===id);return {target:e.id,position:e.approach,...(free?{type:'free-input',text:h.save.choices.find(c=>c.id===id)?.label??(chapter?originalChapterLabel(id,h.save.locale):originalCartridge(h.save.locale).domainRules!.rules.find(r=>r.id===id)!.match[0])}:{type:'action',action:id})}}
 async function harness(admit:OriginalPresentationGate=()=>true){
- const dir=mkdtempSync(join(tmpdir(),'original-http-')),objects=new Map<string,CarriageJourneyAuthority>(),dbs=new Map<string,DatabaseSync>(),forwarded:Request[]=[]
+ const dir=mkdtempSync(join(tmpdir(),'original-http-')),objects=new Map<string,CarriageJourneyAuthority>(),storage=new PreflightStorage(dir),forwarded:Request[]=[]
  const env={CARRIAGE_JOURNEYS:{idFromName:(name:string)=>name,get:(key:unknown)=>({fetch:async(request:Request)=>{
   const id=String(key);let object=objects.get(id)
-  if(!object){const db=new DatabaseSync(join(dir,id+'.sqlite'));dbs.set(id,db);object=new CarriageJourneyAuthority({storage:{sql:{exec:(q,...b)=>{const stmt=db.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{db.exec('BEGIN IMMEDIATE');try{const value=work();db.exec('COMMIT');return value}catch(e){db.exec('ROLLBACK');throw e}}}},undefined,undefined,undefined,admit);objects.set(id,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(id),undefined,undefined,undefined,admit);objects.set(id,object)}
   forwarded.push(request.clone());return object.fetch(request)
  }})}}
  const handler=createHandler(true,false,true);let lost='';let requests=0
  const server=createServer(async(req,res)=>{try{requests++;const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const headers=new Headers();for(const [k,v] of Object.entries(req.headers))if(v)headers.set(k,Array.isArray(v)?v.join(','):v);const request=new Request('http://127.0.0.1'+req.url,{method:req.method,headers,body:req.method==='GET'||req.method==='HEAD'?undefined:Buffer.concat(chunks)});const response=await handler(request,env);if(lost&&req.method==='POST'&&req.url?.endsWith(lost)&&response.ok){lost='';res.destroy();return}res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()))}catch{res.writeHead(500);res.end('{}')}})
  await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve)})
  const address=server.address() as {port:number},base=`http://127.0.0.1:${address.port}`
- const reopen=()=>{objects.clear();for(const db of dbs.values())db.close();dbs.clear()}
+ const reopen=()=>{objects.clear();storage.close()}
  return {base,env,forwarded,requests:()=>requests,lose:(suffix:string)=>{lost=suffix},reopen,close:async()=>{await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));reopen();rmSync(dir,{recursive:true,force:true})}}
 }
 for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','forest'] as const)test(`original HTTP ${locale}/${route}: full journey, lost responses, disk reopen and complete ending`,async()=>{

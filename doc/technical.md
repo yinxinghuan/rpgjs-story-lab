@@ -494,7 +494,7 @@ server/original-train-runtime.ts安装原作策略，使用src/vendor/original-t
 
 `src/original-game.tsx`在同一游戏的cloud-preflight构建中，以`?story=original`启用。沿用`originalSessionHttp`、作用域Storage和Web Locks，地图点击与完整句自由输入提交同一原作HTTP权威；UI不执行本地剧情reducer。RPG-JS使用现有B主角、共享碰撞/路径和九房间清单；点击实体先走到approach，服务回执统一刷新地图、资源、人物、选项。累计日志、库存、关系和最终结局从当前head读取。当前自由输入仅支持作者目录的完整句，不宣称开放语义理解。
 
-转场前准备目标资源，收到权威head后验证资源摘要并restore真实renderer；失败保留权威head及客户端pending供重新连接恢复。位置每2秒及页面隐藏时checkpoint。preflight复用现有Worker类及原作隔离对象，显式本机draft gate只接受登记房间。其SQLite仍是进程内存，页面刷新可续玩，服务器重启不保留；文件SQLite跨进程恢复另由HTTP回归验证，不能混为此次浏览器实证。
+转场前准备目标资源，收到权威head后验证资源摘要并restore真实renderer；失败保留权威head及客户端pending供重新连接恢复。位置每2秒及页面隐藏时checkpoint。preflight复用现有Worker类及原作隔离对象，显式本机draft gate只接受登记房间。默认SQLite仍是进程内存，页面刷新可续玩，服务器重启不保留；显式磁盘预演与实际重启证据见后文，旧内存旅程不自动迁移。
 
 `original-scene-preview.ts`为preflight生成九房间TMX和资源摘要：两个只读背景候选，七个由共享碰撞几何生成的诊断PNG。后者只处理合成SVG，不编辑真实图像。原作人物/设备目前仅SVG名牌/编号，无NPC独立碰撞，不能视为已准入角色美术。cloud和Pages构建不包含original-game入口chunk或七张诊断地图素材；正式原作HTTP仍默认关闭。
 
@@ -544,3 +544,20 @@ server/original-train-runtime.ts安装原作策略，使用src/vendor/original-t
 证据在`_qa/original-route-recovery-20260911.json`及`_qa/ui/original-route-{failure,recovered}-platform-layout-*`。最初直接CDP尺寸覆盖的截图比例错误，已改用浏览器viewport能力复拍；以320-fixed和390截图为准，不修改产品布局补偿工具偏差。此轮不等于物理iPhone、服务器重启或正式平台验收；正式主站/Pages仍05db41c，原作完整美术与发布门继续保持。
 
 恢复后继续通过附近列表实际走到断桥，用可见完整句输入“检查断桥承重”提交成功至v3，燃料62/车况87/人心58保持并出现真实承重检查结果。496项全套回归、cloud/Worker/Pages/preflight构建、公开秘密与API base审计通过。
+
+
+### 原作持久预演存储（2026-09-11，开发分支）
+
+`server/preflight-storage.ts`统一了原作HTTP回归和实际Vite预演使用的SQLite适配器。默认仍为内存；显式配置`CARRIAGE_QA_DATABASE_DIR`时，为每个DO对象名以SHA-256文件名保存独立数据库，包括原车厢与original-v8的隔离。事务使用BEGIN IMMEDIATE/COMMIT/ROLLBACK，关闭时释放连接，无法使用目录时明确失败，不退回丢失数据的内存。它只被本机preflight插件导入，生产Worker仍使用既有Durable Object SQLite，Pages不承载另一套后台。
+
+后续长流程的本机启动方式：
+
+```sh
+CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:preflight -- --port 5318
+```
+
+目录位于已忽略的`.data/`，只存本机新建合成旅程；不复制正式玩家存档。保持同端口、同目录和浏览器已有测试身份，重启后可由相同服务协议读取。旧5316/5317内存旅程未改动，不隐式导出或迁移。两个适配器测试覆盖对象隔离、回滚、重开、默认内存及无效目录；六条完整原作HTTP路线现在复用此真实适配器，继续覆盖登记/行动/结局丢响应和磁盘重开。
+
+实际浏览器在5318新建旅程，完成维修、搜油、选择黑松林线与信号检查，至v4/78燃料87车况58人心、位置112,184。只读核验本轮新建SQLite后停止进程90484（已确认退出143），同目录同端口启动新进程91079，再刷新既有浏览器页。唯一旅程的整个head与重启前深度相等，未新建另一条旅程；UI场景/版本/背景绑定/相机位置一致，日志与库存逐字相同。随后实际提交紧急倒车到v5，车况75、人心56，确认恢复后仍能执行真实后果。截图保留390×844下重启前后同一位置；林线仍是明确几何占位，不作美术准入证据。
+
+证据：`_qa/original-restart-disk-proof.json`、`_qa/original-restart-browser-proof.json`与`_qa/ui/original-restart-{before,after}-platform-layout.png`。498项回归与preflight/cloud/Worker构建通过。该实证是本机服务进程终止/重启与浏览器重载，不是断电损坏恢复、云端PITR或正式平台长流程；原作正式发布开关仍关闭。本轮无模型或媒体生成调用、无真实图处理、无生产玩家数据访问。

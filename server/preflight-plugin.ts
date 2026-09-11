@@ -1,7 +1,7 @@
 // Loopback-only integration harness. This never provisions a cloud namespace.
 import {originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
 import type {OriginalPresentationGate} from './original-train-runtime'
-import {DatabaseSync} from 'node:sqlite'
+import {PreflightStorage} from './preflight-storage'
 import type {IncomingMessage,ServerResponse} from 'node:http'
 import {CarriageJourneyAuthority,createHandler} from '../worker/source'
 import {GAME_ID} from '../src/game-id'
@@ -15,13 +15,13 @@ export function preflightPlugin(){
  const delayedAsset=process.env.CARRIAGE_QA_ASSET_DELAY_PATH
  const delayEngineMap=process.env.CARRIAGE_QA_DELAY_ENGINE_MAP==='1'
  const delayMs=Math.min(35000,Math.max(0,Number(process.env.CARRIAGE_QA_ASSET_DELAY_MS)||0));let assetDelayed=false
- const databases:DatabaseSync[]=[],objects=new Map<string,CarriageJourneyAuthority>()
+ const storage=new PreflightStorage(process.env.CARRIAGE_QA_DATABASE_DIR),objects=new Map<string,CarriageJourneyAuthority>()
  // Explicit loopback authoring gate: the UI marks all non-admitted art as draft.
  const authoringRooms=new Set(originalTrainChapterSpatialPlan().scenes.map(s=>s.id))
  const admitOriginal:OriginalPresentationGate=head=>{if(!authoringRooms.has(head.sceneId))throw Error('UNREGISTERED_AUTHORING_ROOM');return true}
  const environment={CARRIAGE_JOURNEYS:{idFromName:(owner:string)=>owner,get:(id:unknown)=>{
   const owner=String(id);let object=objects.get(owner)
-  if(!object){const raw=new DatabaseSync(':memory:');databases.push(raw);object=new CarriageJourneyAuthority({storage:{sql:{exec:(q,...b)=>{const stmt=raw.prepare(q),rows=stmt.columns().length?stmt.all(...b):(stmt.run(...b),[]);return {toArray:()=>rows}}},transactionSync:<T>(work:()=>T)=>{raw.exec('BEGIN IMMEDIATE');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}},undefined,undefined,undefined,admitOriginal);objects.set(owner,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(owner),undefined,undefined,undefined,admitOriginal);objects.set(owner,object)}
   const authority=object
   return {fetch:async(request:Request)=>{
    const response=await authority.fetch(request)
@@ -48,5 +48,5 @@ export function preflightPlugin(){
    res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()))
   }catch{res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'PREFLIGHT_UNAVAILABLE'}))}})()
  }
- return {name:'carriage-cloud-loopback-preflight',configureServer(server:any){server.middlewares.use(middleware);server.httpServer?.once('close',()=>databases.forEach(db=>db.close()))},configurePreviewServer(server:any){server.middlewares.use(middleware);server.httpServer?.once('close',()=>databases.forEach(db=>db.close()))}}
+ return {name:'carriage-cloud-loopback-preflight',configureServer(server:any){server.middlewares.use(middleware);server.httpServer?.once('close',()=>storage.close())},configurePreviewServer(server:any){server.middlewares.use(middleware);server.httpServer?.once('close',()=>storage.close())}}
 }
