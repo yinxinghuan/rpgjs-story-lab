@@ -827,3 +827,13 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 `original-art-identities.ts`新增固定站姿登记：任医生640×640、SHA、脚点、0.08缩放及实际外貌说明。`scripts/prepare-ren-standing.ts`从固定平台原图重现已授权透明处理，不改变原图。背景绑定v1/v2新增可选`standingCast`，v3设备/v4阿达包装仍完整保留它；新开户复制当前登记，旧字段缺失始终表示旧标记，不自动升级旧存档。校验拒绝未知版本或把任医生图绑定给其他身份。原作wire升级为`original-session-10.assets-8`，冻结StorySave与旧车厢协议不改。
 
 `original-character-art.ts`按绑定扩展真实RPG-JS事件和spritesheet，`OriginalGame`校验下载摘要和解码尺寸后加载，失败进入原恢复入口；离开时清理额外纹理。人物是否出现仍来自`originalCharacterPresent`，站位仍来自版本布局，身体碰撞规则不变。任医生外貌上下文只从当前绑定投射，旧无绑定旅程仍不推断服装。发布阿达图集与任医生固定站姿可同时使用；没有新增NPC行走AI或任医生自助发布槽。
+
+### 2026-09-12 分层设备本地制作与真实地图检查
+
+`layered-device.ts`固化两等宽列原图、机壳接地点、叶轮局部轴心、机壳安装轴心、两层独立等比显示尺寸、一转400–10000ms及固定占地的合同；不支持任意骨骼或多活动部件。纯像素整理与原通风机脚本共用实现，固定样本的轮毂孔去底必须匹配原图SHA，上传其他图不沿用专用遮罩。原图不改写，透明结果不重采样。运行纹理36姿态、一转按时间累计；机壳/叶轮分开的RPG-JS事件只有一个实体占地。
+
+`layered-draft.ts`使用独立、按部署隔离的IndexedDB，保留原图、参数、候选及父记录。处理前保存processing，成功另存两张PNG，失败保留可重试记录；每次重做产生新ID并清空新候选review。Navigator Locks与当前ID/revision的事务比较阻止竞争写入。地图载入重新校验PNG摘要并从保留原图重演整理，使用同一编码/解码归一化后逐像素比较结果，避免不同PNG编码器或Canvas半透明量化造成虚假通过或误报。检查签名包含原图、两份结果摘要与完整参数。
+
+`layered-creator.tsx`在creator.html?create_art=layers提供载入既有平台样本/上传、参数、处理、历史恢复、PNG导出和地图链接；SpriteCreator提供入口。`layered-map-trial.tsx`接入现有OriginalScenePreview，在北岬与河谷加载两层真实spritesheet，实际walkable叠加机座并保留原碰撞。机械记录在北岬观察停止、完整一转、前后抵达且逻辑/画面一致、真实walkTo阻挡；转场、暂停或重新运行后完整一转的观察时长重新累计。最后确认重新验证候选签名与revision才写review。本地草稿不创建Story Session，不进入设备云发布合同，未声称平台账户恢复或分层设备线上准入。
+
+`_qa/layered-device.test.ts`重现两份正式PNG、检查源像素未改动、状态纹理与原游戏一致、无效参数/错误遮罩拒绝、失败保留、历史检查及过期写入。`_qa/layered-creator-browser.ts`用独立localhost身份执行320中文/390英文全制作流程、刷新恢复、实际角色碰撞、叶轮静止/转动像素差、机壳不变、河谷切换和改参数检查失效；测试显式点击的画面确认只属于隔离测试草稿，真实截图另行复核。QA只读renderer观察器仅由单独Vite配置注入，普通构建没有观察器。

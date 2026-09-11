@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "date": "2026-09-12",
+  "scope": "Local layered device authoring and actual RPG-JS map review",
+  "sampleSource": "doc/platform-art-candidates/20260912/tunnel-fan-parts-01/candidate.png",
+  "newGenerationRequests": 0,
+  "unitTests": {
+    "passed": 614,
+    "failed": 0,
+    "initialSandboxAttempt": "26 HTTP tests could not listen on loopback (EPERM); all passed in permitted rerun"
+  },
+  "build": {
+    "cloud": true,
+    "opaqueWorkerStartup": true,
+    "normalPreflight": true,
+    "qaReadOnlyHooksExcludedFromNormalBuild": true
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "sourceId": "cc3ef1f1-463b-4492-91ad-0da8f559bfb0",
+      "firstId": "01badb72-e6e8-4498-b05d-5e9afe70a47f",
+      "stopped": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          }
+        ],
+        "changed": 0,
+        "roofChanged": 0
+      },
+      "running": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-9"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-13"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-18"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-22"
+          }
+        ],
+        "changed": 479,
+        "roofChanged": 0
+      },
+      "collision": {
+        "x": 104,
+        "y": 163.44450000000003
+      },
+      "checks": 5,
+      "refreshRestores": true,
+      "changedSpecForksReview": true,
+      "oldReviewRetained": true,
+      "river": true,
+      "errors": [],
+      "blocked": [
+        "https://images.aiwaves.tech"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "sourceId": "03c25d50-637a-4cee-9dd4-25bce57704da",
+      "firstId": "dbedc61c-9363-4e69-8770-0c17f4cd9436",
+      "stopped": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          }
+        ],
+        "changed": 0,
+        "roofChanged": 0
+      },
+      "running": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-9"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-13"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-18"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-22"
+          }
+        ],
+        "changed": 819,
+        "roofChanged": 0
+      },
+      "collision": {
+        "x": 104,
+        "y": 163.48300000000003
+      },
+      "checks": 5,
+      "refreshRestores": true,
+      "changedSpecForksReview": true,
+      "oldReviewRetained": true,
+      "river": true,
+      "errors": [],
+      "blocked": [
+        "https://images.aiwaves.tech"
+      ]
+    }
+  ],
+  "visualReview": {
+    "reviewedBy": "assistant",
+    "files": [
+      "layered-creator-320-zh-running-local-qa.png",
+      "layered-creator-390-en-review-local-qa.png",
+      "layered-creator-320-zh-cutouts-local-qa.png",
+      "layered-creator-390-en-river-local-qa.png"
+    ],
+    "observations": [
+      "机壳与叶轮透明结果保持已准入样本像素；源图未修改",
+      "机壳顶部在四帧对照中无变化，叶轮独立旋转",
+      "前后人物遮挡与机座阻挡一致",
+      "小屏检查区可滚动，保留上方地图"
+    ]
+  },
+  "limits": [
+    "Only one fixed housing and one rotating part",
+    "Local browser drafts; no layered cloud publication yet",
+    "Fresh localhost browser identities; no account/session data or production browser access",
+    "Not an iPhone hardware or AlterU platform playtest",
+    "Test confirmation records are synthetic; screenshot review is separate",
+    "Existing production main and Pages remain unchanged"
+  ]
+}
