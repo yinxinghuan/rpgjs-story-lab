@@ -7,6 +7,7 @@ import {composeRepairFrames} from '../src/sprite-composition'
 import {BrowserSpriteDrafts,inspectSpritePng,newSpriteSource,runSpriteDraft,verifySpriteComposition,type SpritePng,type SpriteDraft} from '../src/sprite-draft'
 import {prepareSpritePixels,type PixelRaster} from '../src/sprite-preparation'
 import {inspectDeviceMapCandidate,deviceCandidateSheet} from '../src/device-map-candidate'
+import {deviceGeometry,DEVICE_CHECKS,DEVICE_LAYOUT} from '../src/device-publication'
 const require=createRequire(import.meta.url),{PNG}=require(join(dirname(require.resolve('playwright-core/package.json')),'lib/utilsBundle.js'))
 const encode=async(r:PixelRaster)=>inspectSpritePng(PNG.sync.write({width:r.width,height:r.height,data:Buffer.from(r.rgba)}))
 const decode=async(p:SpritePng)=>{const r=PNG.sync.read(Buffer.from(p.bytes));return {width:r.width,height:r.height,rgba:new Uint8ClampedArray(r.data)}}
@@ -48,5 +49,8 @@ test('two repair states use their actual columns and cannot masquerade as the le
  assert.deepEqual(Object.keys(sheet.textures),['stand','broken','repaired'])
  assert.equal((sheet.textures as any).repaired.animations()[0][0].frameX,1)
  await assert.rejects(inspectDeviceMapCandidate({...result,deviceStateSet:undefined},result.id,decode))
+ const reviewed:SpriteDraft={...result,deviceReview:{sha256:result.result!.png.sha256,layout:DEVICE_LAYOUT,geometry:deviceGeometry(checked.cellWidth,checked.cellHeight,checked.foot,checked.bounds),checks:[...DEVICE_CHECKS],visualAccepted:true}}
+ await repo.save(reviewed,result);const next=await runSpriteDraft(repo,reviewed,spec,io)
+ assert.equal(next.state,'candidate');assert.equal(next.deviceReview,undefined);assert.ok((await repo.get(reviewed.id))!.deviceReview)
  await repo.close()
 })

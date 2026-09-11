@@ -1,5 +1,6 @@
 import type {AuthorityStorage} from './session-authority'
 import {LabError} from '../src/journey-runtime'
+import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from '../src/device-publication'
 import {inspectSpritePng} from '../src/sprite-draft'
 import {assertSpriteManifest,spriteManifestSignature,spritePartBytes,SPRITE_ARCHIVE_LIMIT,SPRITE_ARCHIVE_PART,type SpriteArchiveRecord,type SpriteFile} from '../src/sprite-archive-contract'
 
@@ -8,6 +9,7 @@ export class CreatorSpriteArchive{
  constructor(private db:AuthorityStorage,private now=Date.now){
   db.run('CREATE TABLE IF NOT EXISTS creator_sprites(owner TEXT NOT NULL,id TEXT NOT NULL,manifest TEXT NOT NULL,state TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_parts(owner TEXT NOT NULL,id TEXT NOT NULL,role TEXT NOT NULL,part INTEGER NOT NULL,data BLOB NOT NULL,PRIMARY KEY(owner,id,role,part))')
+  db.run('CREATE TABLE IF NOT EXISTS creator_sprite_releases(owner TEXT NOT NULL,id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
  }
  list(owner:string):SpriteArchiveRecord[]{return this.db.all<{manifest:string;state:'uploading'|'ready';created_at:number}>('SELECT manifest,state,created_at FROM creator_sprites WHERE owner=? ORDER BY created_at DESC',owner).map(r=>({manifest:JSON.parse(r.manifest),state:r.state,createdAt:r.created_at}))}
  get(owner:string,id:string){const r=this.list(owner).find(r=>r.manifest.id===id);if(!r)throw new LabError('SPRITE_ARCHIVE_NOT_FOUND',404);return r}
@@ -62,4 +64,14 @@ export class CreatorSpriteArchive{
  }
  async file(owner:string,id:string,role:string){const r=this.get(owner,id),f=r.manifest.files.find(f=>f.role===role);if(r.state!=='ready'||!f)throw new LabError('SPRITE_ARCHIVE_NOT_READY',409);return this.checked(owner,id,f)}
  cancel(owner:string,id:string){return this.db.transaction(()=>{const r=this.get(owner,id);if(r.state!=='uploading')throw new LabError('SPRITE_ARCHIVE_ALREADY_READY',409);this.db.run('DELETE FROM creator_sprite_parts WHERE owner=? AND id=?',owner,id);this.db.run('DELETE FROM creator_sprites WHERE owner=? AND id=?',owner,id);return {id,cancelled:true}})}
+ publication(owner:string,id:string):PublishedDevice|null{const row=this.db.all<{release:string}>('SELECT release FROM creator_sprite_releases WHERE owner=? AND id=?',owner,id)[0];if(!row)return null;const r=JSON.parse(row.release);assertPublishedDevice(r);return r}
+ async publish(owner:string,id:string,value:any){
+  const record=this.get(owner,id),d=record.manifest.draft,f=record.manifest.files.find(f=>f.role==='candidate')!
+  if(record.state!=='ready'||d.deviceStateSet!=='repair'||d.spec.kind!=='states')throw new LabError('DEVICE_NOT_READY',409)
+  try{if(!value||Object.keys(value).join(',')!=='review')throw Error();assertDeviceReview(value.review,f.sha256);const g=value.review.geometry;if(g.cellWidth!==d.spec.cellWidth||g.cellHeight!==d.spec.cellHeight||g.foot.x!==d.spec.foot.x||g.foot.y!==d.spec.foot.y)throw Error()}catch{throw new LabError('DEVICE_REVIEW_REQUIRED',409)}
+  await this.file(owner,id,'candidate')
+  const release:PublishedDevice={version:1,id:owner+'.'+id,slot:'starter',sha256:f.sha256,bytes:f.bytes,width:f.width,height:f.height,review:structuredClone(value.review)}
+  assertPublishedDevice(release)
+  return this.db.transaction(()=>{const old=this.publication(owner,id);if(old){if(JSON.stringify(old)!==JSON.stringify(release))throw new LabError('DEVICE_RELEASE_CONFLICT',409);return old}this.db.run('INSERT INTO creator_sprite_releases VALUES(?,?,?)',owner,id,JSON.stringify(release));return release})
+ }
 }

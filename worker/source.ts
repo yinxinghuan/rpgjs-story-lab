@@ -1,3 +1,4 @@
+import {assertPublishedDevice,deviceReleaseId} from '../src/device-publication'
 import {CreatorSpriteArchive} from '../server/creator-sprites'
 import {spriteArchiveBodyLimit} from '../src/sprite-archive-contract'
 import {OriginalTrainAuthority,originalPresentationUnavailable,type OriginalPresentationGate} from '../server/original-train-runtime'
@@ -36,7 +37,7 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=creator?creatorJson:original?originalJson:json
  if(creator&&!creatorEnabled)return reply({error:'NOT_FOUND'},404)
  if(creator&&path===CREATOR_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,runtimeContract:CREATOR_RUNTIME_CONTRACT,identityMode:'anonymous-capability-v1'})
- const published=path.match(/^\/api\/creator\/releases\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/file)?$/)
+ const published=path.match(/^\/api\/creator\/(?:releases|device-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/file)?$/)
  if(creator&&published&&request.method==='GET'){
   if(!backgroundReleaseId(published[1])||!env.CARRIAGE_JOURNEYS)return reply({error:'NOT_FOUND'},404)
   const owner=published[1].split('.')[0]
@@ -89,19 +90,29 @@ export class CarriageJourneyAuthority{
     if(request.headers.get(CREATOR_RUNTIME_HEADER)!==CREATOR_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
     this.creator??=new CreatorArtArchive(this.db,this.artSource)
     const path=url.pathname.slice(CREATOR_API_PATH.length)
+    const devicePublished=path.match(/^\/device-releases\/([a-f0-9]{64})\.([a-f0-9-]{36})(\/file)?$/)
+    if(devicePublished&&request.method==='GET'){
+     if(devicePublished[1]!==owner)throw new LabError('DEVICE_NOT_PUBLISHED',404)
+     this.sprites??=new CreatorSpriteArchive(this.db)
+     const release=this.sprites.publication(owner,devicePublished[2]);if(!release)throw new LabError('DEVICE_NOT_PUBLISHED',404)
+     if(!devicePublished[3])return respond(release)
+     return new Response(new Uint8Array(await this.sprites.file(owner,devicePublished[2],'candidate')),{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+    }
     if(path==='/sprites'||path.startsWith('/sprites/')){
      this.sprites??=new CreatorSpriteArchive(this.db)
      if(path==='/sprites'&&request.method==='GET')return respond({sprites:this.sprites.list(owner)})
      if(path==='/sprites'&&request.method==='POST')return respond(this.sprites.begin(owner,await body(request)))
-     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|file\/(source|candidate|input-0|input-1)))?$/)
+     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|file\/(source|candidate|input-0|input-1)))?$/)
      if(!m)throw new LabError('NOT_FOUND',404)
      if(request.method==='GET'){
       if(!m[2])return respond(this.sprites.get(owner,m[1]))
+      if(m[2]==='release'){this.sprites.get(owner,m[1]);return respond({release:this.sprites.publication(owner,m[1])})}
       if(m[2]==='parts')return respond(this.sprites.progress(owner,m[1]))
       if(m[3])return new Response(new Uint8Array(await this.sprites.file(owner,m[1],m[3])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
      }
      if(request.method==='POST'){
       if(m[2]==='parts')return respond(this.sprites.part(owner,m[1],await body(request,spriteArchiveBodyLimit(url.pathname))))
+      if(m[2]==='publish')return respond(await this.sprites.publish(owner,m[1],await body(request)))
       if(m[2]==='finish')return respond(await this.sprites.finish(owner,m[1]))
       if(m[2]==='cancel')return respond(this.sprites.cancel(owner,m[1]))
      }
@@ -133,6 +144,11 @@ export class CarriageJourneyAuthority{
     const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
     if(!r.ok)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)
     const release=await r.json();assertPublishedBackground(release);if(release.id!==id)throw new LabError('BACKGROUND_RELEASE_INVALID',409);return release
+   },async id=>{
+    if(!deviceReleaseId(id)||!this.env?.CARRIAGE_JOURNEYS)throw new LabError('DEVICE_NOT_PUBLISHED',404)
+    const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/device-releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
+    if(!r.ok)throw new LabError('DEVICE_NOT_PUBLISHED',404)
+    const release=await r.json();assertPublishedDevice(release);if(release.id!==id)throw new LabError('DEVICE_RELEASE_INVALID',409);return release
    })
   }
   const path=url.pathname.slice('/api/lab'.length)

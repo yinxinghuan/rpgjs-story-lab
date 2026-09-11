@@ -1,0 +1,58 @@
+{
+  "date": "2026-09-11",
+  "scope": "Existing platform device candidate -> explicit creator review -> immutable version -> original story journey",
+  "environment": "Loopback preflight using the same Worker handler and file-backed SQLite authority",
+  "productionDeployed": false,
+  "candidateId": "07f75a8a-d1e3-411b-a486-ac710b555cbd",
+  "releaseId": "e81fac7c76c6f74933d0a1976c0608cd9e1a1e9d5b3d797f4bfbbe33c0499d14.07f75a8a-d1e3-411b-a486-ac710b555cbd",
+  "candidateSha256": "35be79d550309e577c292d128a2dbc70df5903b205d76ca29b8e3c5e6669b7d7",
+  "browserEvidence": [
+    "Same existing candidate; no new processing or generation request",
+    "Publish button disabled until map review",
+    "Actual north-cape device slot 110,160 and 40-unit body height",
+    "Front logical/rendered position 104,168; back 104,124",
+    "Broken/repaired states inspected; stable body probe refused; five checks complete",
+    "Explicit visual confirmation saved in IndexedDB, then creator publication succeeded",
+    "New original journey DOM exposes the same device release at version 0",
+    "Actual repair button completes version 1 and condition 82->87; repaired copper-coil frame displayed",
+    "Actual 390x844 and 320x568 repaired gameplay screenshots and DOM dimensions match",
+    "Server restart plus exact-device one-shot PNG failure: recoverable EQUIPMENT_ART_UNAVAILABLE, head remains version 1 with same release",
+    "Reconnect loads repaired device and retains fuel 68, condition 87, morale 58",
+    "Actual river transition and reload retain version 2, fuel 62, condition 87, morale 58, and same device release",
+    "Default original journey separately restores old north-cape version 1, baseline device and fuel 68/condition 87/morale 58",
+    "Reloaded creator lists the existing published device and retains the same journey link"
+  ],
+  "screenshots": [
+    "../_qa/ui/device-publish-broken-390-platform-layout.jpg",
+    "../_qa/ui/device-publish-repaired-390-platform-layout.jpg",
+    "../_qa/ui/device-bound-repaired-390-platform-layout.jpg",
+    "../_qa/ui/device-bound-repaired-320-platform-layout.jpg",
+    "../_qa/ui/device-bound-failure-320-external-guest.jpg",
+    "../_qa/ui/device-bound-recovered-320-platform-layout.jpg",
+    "../_qa/ui/device-bound-river-restored-platform-layout.jpg",
+    "../_qa/ui/device-published-creator-platform-layout.jpg"
+  ],
+  "automatedTests": {
+    "fullSuitePassed": 558,
+    "focusedAfterCombinationAssertion": 8,
+    "covers": [
+      "Private originals and explicit-only public candidate bytes",
+      "Incomplete review, changed geometry and unpublished references rejected",
+      "Lost publish/enrollment/action responses and authority restart",
+      "Matching preview and authority collision across a grid around the starter",
+      "Actual PNG bounds recomputed before renderer admission",
+      "Published background and device can coexist in version 3 bindings",
+      "Two complete zh/en valley journeys to ending preserve device bindings every turn",
+      "Old default journey remains unchanged; reused enrollment with changed assets rejected",
+      "Reprocessing removes old visual confirmation while retaining original record"
+    ]
+  },
+  "limits": [
+    "Creator visual confirmation is an observation attestation, not automatic semantic art certification",
+    "Failure screenshot retains external guest banner and is labeled external-guest",
+    "River reload changed host zoom: actual viewport 246x437; that screenshot is not a 320/390 mobile gate",
+    "Creator list DOM calibrated to 320x568 at host 130% zoom with no overflow; its compositor capture has mismatched scale and is diagnostic only",
+    "No iPhone hardware test or formal deployment this turn",
+    "Character publication, remaining story art, platform account binding and formal platform playthrough remain unfinished"
+  ]
+}

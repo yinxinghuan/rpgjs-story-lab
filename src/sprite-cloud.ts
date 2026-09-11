@@ -1,4 +1,5 @@
 import type {Transport} from './recoverable-session-client'
+import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from './device-publication'
 import {verifySpritePng,type SpriteDraft} from './sprite-draft'
 import {assertSpriteArchiveRecord,restoreSpriteManifest,spriteManifest,spriteManifestSignature,spritePartText,SPRITE_ARCHIVE_LIMIT,SPRITE_ARCHIVE_PART,type SpriteArchiveRecord} from './sprite-archive-contract'
 export class SpriteCloudArchive{
@@ -29,4 +30,10 @@ export class SpriteCloudArchive{
   return restoreSpriteManifest(r.manifest,async f=>{const bytes=await this.api('/sprites/'+r.manifest.id+'/file/'+f.role);if(!(bytes instanceof Uint8Array))throw Error('SPRITE_ARCHIVE_CORRUPT');return bytes})
  }
  async cancel(record:SpriteArchiveRecord){assertSpriteArchiveRecord(record);if(record.state!=='uploading')throw Error('SPRITE_ARCHIVE_ALREADY_READY');const r=await this.api('/sprites/'+record.manifest.id+'/cancel',{});if(r?.id!==record.manifest.id||r.cancelled!==true)throw Error('SPRITE_ARCHIVE_CONFLICT')}
+ async publication(id:string){const r=await this.api('/sprites/'+id+'/release');if(r?.release===null)return null;assertPublishedDevice(r?.release);if(r.release.id.split('.')[1]!==id)throw Error('DEVICE_RELEASE_INVALID');return r.release as PublishedDevice}
+ async publish(draft:SpriteDraft){
+  if(!draft.result)throw Error('DEVICE_NOT_READY');assertDeviceReview(draft.deviceReview,draft.result.png.sha256)
+  await this.save(draft);const r=await this.api('/sprites/'+draft.id+'/publish',{review:draft.deviceReview});assertPublishedDevice(r)
+  if(r.id.split('.')[1]!==draft.id||r.sha256!==draft.result.png.sha256||r.bytes!==draft.result.png.bytes.length)throw Error('DEVICE_RELEASE_INVALID');return r
+ }
 }

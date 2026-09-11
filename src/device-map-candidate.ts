@@ -2,6 +2,7 @@ import type {SpriteDraft,SpritePng} from './sprite-draft'
 import {verifySpritePng,verifySpriteComposition} from './sprite-draft'
 import type {PixelRaster} from './sprite-preparation'
 import {originalTrainRoom} from './original-train-spatial-plan'
+import {deviceGeometry,sameDeviceGeometry,assertPublishedDevice,type PublishedDevice} from './device-publication'
 export const DEVICE_STATES=['closed','open','empty'] as const
 export const REPAIR_STATES=['broken','repaired'] as const
 export type DeviceState=typeof DEVICE_STATES[number]|typeof REPAIR_STATES[number]
@@ -16,12 +17,14 @@ export async function inspectDeviceMapCandidate(draft:SpriteDraft,id:string,deco
  if(!Number.isInteger(s.cellWidth)||!Number.isInteger(s.cellHeight)||s.cellWidth<8||s.cellHeight<8||r.png.width!==s.cellWidth*columns||r.png.height!==s.cellHeight||r.frames.length!==columns||s.sourceAnchors?.length!==columns)return invalid()
  if(!Number.isInteger(s.foot.x)||!Number.isInteger(s.foot.y)||s.foot.x<1||s.foot.x>=s.cellWidth-1||s.foot.y<4||s.foot.y>=s.cellHeight)return invalid()
  await verifySpritePng(draft.source);await verifySpriteComposition(draft,decode);await verifySpritePng(r.png)
- const p=await decode(r.png)
- if(p.width!==r.png.width||p.height!==r.png.height||p.rgba.length!==p.width*p.height*4)return invalid()
+ for(let col=0;col<columns;col++){const f=r.frames[col],a=s.sourceAnchors[col];if(f.column!==col||f.row!==0||f.sourceAnchor.x!==a.x||f.sourceAnchor.y!==a.y||f.sourceAnchor.x+f.offset.x!==s.foot.x||f.sourceAnchor.y+f.offset.y!==s.foot.y)return invalid()}
+ return inspectDeviceImage(r.png,s,states,decode,'creator-device-'+id)
+}
+export async function inspectDeviceImage(png:SpritePng,s:{cellWidth:number;cellHeight:number;foot:{x:number;y:number}},states:readonly DeviceState[],decode:(png:SpritePng)=>Promise<PixelRaster>,id:string):Promise<DevicePreview>{
+ await verifySpritePng(png);const p=await decode(png),columns=states.length
+ if(p.width!==png.width||p.height!==png.height||p.rgba.length!==p.width*p.height*4||p.width!==s.cellWidth*columns||p.height!==s.cellHeight)return invalid()
  const bounds:DevicePreview['bounds']=[]
  for(let col=0;col<columns;col++){
-  const f=r.frames[col],a=s.sourceAnchors[col]
-  if(f.column!==col||f.row!==0||f.sourceAnchor.x!==a.x||f.sourceAnchor.y!==a.y||f.sourceAnchor.x+f.offset.x!==s.foot.x||f.sourceAnchor.y+f.offset.y!==s.foot.y)return invalid()
   let left=s.cellWidth,top=s.cellHeight,right=0,bottom=0,clear=0,solid=0,contact=0
   for(let y=0;y<s.cellHeight;y++)for(let x=0;x<s.cellWidth;x++){
    const alpha=p.rgba[(y*p.width+col*s.cellWidth+x)*4+3]
@@ -32,6 +35,7 @@ export async function inspectDeviceMapCandidate(draft:SpriteDraft,id:string,deco
   if(!solid||!contact||clear<s.cellWidth*s.cellHeight*.2||s.foot.y-top<4)return invalid()
   bounds.push([left,top,right,bottom])
  }
+ if(states===REPAIR_STATES||states.join(',')==='broken,repaired')return {id,states,png,...deviceGeometry(s.cellWidth,s.cellHeight,s.foot,bounds)}
  const height=s.foot.y-bounds[0][1],scale=50/height
  if(bounds.some(b=>s.foot.y-b[1]<height*.75||s.foot.y-b[1]>height*1.25)||!Number.isFinite(scale))return invalid()
  // Reserve the whole door swing across all states. State changes never trap a
@@ -40,14 +44,21 @@ export async function inspectDeviceMapCandidate(draft:SpriteDraft,id:string,deco
  const front=Math.ceil(Math.max(0,...bounds.map(b=>b[3]-s.foot.y))*scale)
  const footprint={width:Math.ceil(extent*2),depth:12+front,front}
  if(footprint.width<8||footprint.width>64||footprint.depth>40)return invalid()
- return {id:'creator-device-'+id,states,png:r.png,cellWidth:s.cellWidth,cellHeight:s.cellHeight,foot:{...s.foot},scale,bounds,footprint}
+ return {id,states,png,cellWidth:s.cellWidth,cellHeight:s.cellHeight,foot:{...s.foot},scale,bounds,footprint}
 }
 export function deviceCandidateSheet(c:DevicePreview,image:string){
  const texture=(column:number)=>({animations:()=>[[{frameX:column,frameY:0,time:0,anchor:[c.foot.x/c.cellWidth,c.foot.y/c.cellHeight],scale:[c.scale,c.scale],x:0,y:1}]]})
  return {id:c.id,image,width:c.png.width,height:c.png.height,framesWidth:c.states.length,framesHeight:1,textures:{stand:texture(0),...Object.fromEntries(c.states.map((s,i)=>[s,texture(i)]))}}
 }
-export function deviceCandidatePlacement(scene:string){if(scene===originalTrainRoom('river-valley'))return {x:280,y:420};if(scene===originalTrainRoom('dead-station'))return {x:110,y:235};throw Error('DEVICE_MAP_SCENE_UNAVAILABLE')}
+export async function verifyPublishedDevicePixels(release:PublishedDevice,png:SpritePng,decode:(png:SpritePng)=>Promise<PixelRaster>){
+ assertPublishedDevice(release)
+ if(png.sha256!==release.sha256||png.bytes.length!==release.bytes||png.width!==release.width||png.height!==release.height)return invalid()
+ const c=await inspectDeviceImage(png,release.review.geometry,REPAIR_STATES,decode,'published-device')
+ if(!sameDeviceGeometry(c,release.review.geometry))throw Error('DEVICE_GEOMETRY_MISMATCH')
+ return c
+}
+export function deviceCandidatePlacement(scene:string,c?:Pick<DevicePreview,'states'>){if(scene===originalTrainRoom('river-valley'))return {x:280,y:420};if(scene===originalTrainRoom('dead-station'))return {x:110,y:c?.states[0]==='broken'?160:235};throw Error('DEVICE_MAP_SCENE_UNAVAILABLE')}
 export function deviceCandidateBlocks(c:DevicePreview,scene:string,p:{x:number;y:number}){
- const a=deviceCandidatePlacement(scene),left=a.x-c.footprint.width/2,top=a.y-c.footprint.depth+c.footprint.front
+ const a=deviceCandidatePlacement(scene,c),left=a.x-c.footprint.width/2,top=a.y-c.footprint.depth+c.footprint.front
  return p.x+9>left&&p.x<left+c.footprint.width&&p.y+15>top&&p.y<a.y+c.footprint.front
 }

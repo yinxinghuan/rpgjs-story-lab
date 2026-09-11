@@ -1,5 +1,4 @@
 import {originalWorldWalkable,originalWorldSafePosition} from '../src/original-world-space'
-import {assertPublishedBackground} from '../src/background-publication'
 import {LabError,validateAction} from '../src/journey-runtime'
 import {executeBoundStoryTurn} from '../src/bound-story-turn'
 import {compileSpatialBinding} from '../src/spatial-binding'
@@ -15,7 +14,7 @@ import {resolveDomainAction} from '../src/vendor/original-train/engine/domainRul
 import type {StorySave,Locale} from '../src/vendor/original-train/types'
 import {originalEndingPolicy,type OriginalEndingGenerator} from './original-ending'
 import {SessionAuthority,type AuthorityStorage,type SessionRuntime} from './session-authority'
-import {assertOriginalAssetBindings,newOriginalAssetBindings,type OriginalAssetBindings} from '../src/original-asset-releases'
+import {assertOriginalAssetBindings,originalEnrollmentAssets,type OriginalAssetBindings} from '../src/original-asset-releases'
 import {originalActionIntentIssues,originalIsAuthoredAction} from '../src/original-action-intent'
 import {originalGameEntities,originalGameObjective} from '../src/original-game-projection'
 import type {OriginalActionInterpreter} from './original-action-interpreter'
@@ -44,7 +43,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
  const check=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>{if(admit(clone(head),previous?clone(previous):undefined,actionId)!==true)throw new LabError('ORIGINAL_PRESENTATION_NOT_READY',409)}
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindings[h.save.locale].validPosition(h.sceneId,p)||!originalWorldWalkable(h,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
  return {
-  initial:(locale,id,options)=>{if(options!==undefined)assertPublishedBackground(options);const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion,assets:options===undefined?newOriginalAssetBindings():{version:2,published:clone(options)}};assertOriginalHead(h);check(h);return h},
+  initial:(locale,id,options)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion,assets:originalEnrollmentAssets(options)};assertOriginalHead(h);check(h);return h},
   upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion,position:originalWorldSafePosition(value,value.position)}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
   preserveConcurrent:()=>{},assertPrepared:(candidate,current,actionId)=>check(candidate,current,actionId),ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body,reserveNarration)=>{

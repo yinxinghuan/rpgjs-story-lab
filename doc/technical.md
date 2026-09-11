@@ -703,3 +703,15 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 `sprite-cloud-panel.tsx`提供保存、列出、取回、清除未完成上传；取回前验证摘要与真实浏览器解码，组合素材重建像素核对来源列，之后才用既有IndexedDB版本锁切换本地候选。可继续既有设备地图检查。Pages明确只提供主站入口，不偷偷连接另一套身份/数据库；原作和creator正式生产开关保持关闭。
 
 归档ready只证明文件完整，不证明透明边缘、姿态语义、左右脚交替或可入场。人物12帧阿达候选仍方向不合格，允许私有保存但不准入。设备公开版本、地图检查记录和新旅程固定设备版本尚未实现；本轮不宣称整套制作/发布流程完成。真实浏览器操作与截图见`sprite-archive-review-20260911.json`。
+
+### 设备版本发布与原作旅程绑定（2026-09-11）
+
+`device-publication.ts`固定starter-slot-1、broken/repaired两状态、40世界单位主体高度和最多48宽/12前伸的几何合同。检查页使用原作启动装置110/160脚点；旧三状态柜体仍保持旧检查尺度与位置。真实renderer位置与逻辑位置一致且到达柜前/柜后才记入检查，状态观察与柜体阻挡合计5项；最后由创作者显式确认画面，保存绑定PNG摘要与几何的`deviceReview`。这是创作者观察声明，不是服务端自动审美识别。重新处理时删除确认，原候选记录保留。
+
+`CreatorSpriteArchive.publish`要求归档ready、修复设备类别、同PNG摘要和处理脚点、完整检查与有界几何，再核验已保存候选字节，写入不可变`creator_sprite_releases`。私有原图继续鉴权；只有显式发布的candidate PNG经`/<GAME_ID>/api/creator/device-releases/<owner-hash>.<candidate-id>/file`公开，按摘要固定并设immutable缓存，不公开组合源或来源文件名。发布重试/丢回执返回原版本，不重新生成或复制素材。在线列表可读取已发布状态并进入/续玩独立旅程。
+
+原作wire升级为original-session-5/assets-3，车厢及creator旧合同保持。新绑定版本3包含原背景绑定与已发布starter；旧版本1、2和无绑定Head继续原语义。新开户只接收release ID，服务端从creator authority解析发布记录，不信任前端传来的图片URL/占地。device_release使用独立待提交/续玩key，仍共享原作身份；既有默认/背景旅程key保持。SessionAuthority的enrollment digest拒绝同开户编号换素材版本。
+
+`originalEquipmentBodies`从同一固定几何生成服务端和客户端碰撞；状态改变不改变占地。原作renderer在载入候选前核验PNG摘要/尺寸/实际alpha像素、重新计算bbox与几何并和发布记录比较，然后使用相同脚点/尺度创建两帧事件。repair-starter仍由原作规则改变事实和车况，图形只读取starter-repaired，不授予新物品；刷新与后续章节保留asset绑定。缺图沿用可恢复错误，不退回另一张图。已有Head仍先做静态地图校验再恢复合法站位，避免新增碰撞破坏旧旅程读取。
+
+新HTTP测试覆盖显式发布、私有来源、不可变/错误几何、未发布引用拒绝、丢发布/开户/维修回执及SQLite重开；中英文两条完整河谷路线到结局逐回合保持设备绑定与旧默认旅程。生产creator/原作开关仍关闭，完整人物图集、其他场景素材、平台账户绑定和正式全流程继续属于大目标。
