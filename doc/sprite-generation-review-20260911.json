@@ -74,5 +74,14 @@
     "Published original single-player/creator production gates remain closed; formal main/Pages still 05db41c.",
     "Production URL creation and final full single-player platform playthrough remain required.",
     "No iPhone hardware validation this round."
-  ]
+  ],
+  "postServerRestart": {
+    "database": ".data/starter-20260911",
+    "retainedMainCreatorCandidate": "07f75a8a-d1e3-411b-a486-ac710b555cbd",
+    "initialResult": "MAP_TRANSFER_TIMEOUT twice; reconnect alone did not recover in those observations",
+    "fullPageReload": "Recovered same river-valley journey: fuel62 condition87 morale58; actual path walk to Ada and dialogue panel opened",
+    "screenshot": "_qa/ui/generation-update-original-restored-platform-layout.jpg",
+    "rootCause": "Not established; investigate renderer initial readiness before formal original release",
+    "codeChangeForTimeout": false
+  }
 }
