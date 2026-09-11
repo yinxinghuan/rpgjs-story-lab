@@ -1,3 +1,5 @@
+import {CreatorLayerArchive} from '../server/creator-layers'
+import {assertPublishedLayer,layerReleaseId} from '../src/layered-archive-contract'
 import {assertPublishedActor,actorReleaseId} from '../src/actor-publication'
 import {assertPublishedDevice,deviceReleaseId} from '../src/device-publication'
 import {CreatorSpriteArchive} from '../server/creator-sprites'
@@ -38,7 +40,7 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=creator?creatorJson:original?originalJson:json
  if(creator&&!creatorEnabled)return reply({error:'NOT_FOUND'},404)
  if(creator&&path===CREATOR_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,runtimeContract:CREATOR_RUNTIME_CONTRACT,identityMode:'anonymous-capability-v1'})
- const published=path.match(/^\/api\/creator\/(?:releases|device-releases|actor-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/file)?$/)
+ const published=path.match(/^\/api\/creator\/(?:releases|device-releases|actor-releases|layer-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/(?:file|housing|rotor))?$/)
  if(creator&&published&&request.method==='GET'){
   if(!backgroundReleaseId(published[1])||!env.CARRIAGE_JOURNEYS)return reply({error:'NOT_FOUND'},404)
   const owner=published[1].split('.')[0]
@@ -72,6 +74,7 @@ export class CarriageJourneyAuthority{
  private original?:OriginalTrainAuthority
  private creator?:CreatorArtArchive
  private sprites?:CreatorSpriteArchive
+ private layers?:CreatorLayerArchive
  private db:AuthorityStorage
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
@@ -108,6 +111,34 @@ export class CarriageJourneyAuthority{
      const release=this.sprites.actorPublication(owner,actorPublished[2]);if(!release)throw new LabError('ACTOR_NOT_PUBLISHED',404)
      if(!actorPublished[3])return respond(release)
      return new Response(new Uint8Array(await this.sprites.file(owner,actorPublished[2],'candidate')),{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+    }
+    const layerPublished=path.match(/^\/layer-releases\/([a-f0-9]{64})\.([a-f0-9-]{36})(?:\/(housing|rotor))?$/)
+    if(layerPublished&&request.method==='GET'){
+     this.layers??=new CreatorLayerArchive(this.db);const release=this.layers.publication(owner,layerPublished[2]);if(!release)throw new LabError('LAYER_NOT_PUBLISHED',404)
+     if(!layerPublished[3])return respond(release)
+     return new Response(new Uint8Array(await this.layers.file(owner,layerPublished[2],layerPublished[3])),{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+    }
+    if(path==='/layers'||path.startsWith('/layers/')){
+     this.layers??=new CreatorLayerArchive(this.db)
+     if(path==='/layers'&&request.method==='GET')return respond({layers:this.layers.list(owner)})
+     if(path==='/layers'&&request.method==='POST')return respond(this.layers.begin(owner,await body(request)))
+     const m=path.match(/^\/layers\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|review|release|publish|file\/(source|housing|rotor)))?$/)
+     if(!m)throw new LabError('NOT_FOUND',404)
+     if(request.method==='GET'){
+      if(!m[2])return respond(this.layers.get(owner,m[1]))
+      if(m[2]==='parts')return respond(this.layers.progress(owner,m[1]))
+      if(m[2]==='review')return respond({review:this.layers.review(owner,m[1])})
+      if(m[2]==='release'){this.layers.get(owner,m[1]);return respond({release:this.layers.publication(owner,m[1])})}
+      if(m[3])return new Response(new Uint8Array(await this.layers.file(owner,m[1],m[3])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+     }
+     if(request.method==='POST'){
+      if(m[2]==='parts')return respond(this.layers.part(owner,m[1],await body(request,spriteArchiveBodyLimit(url.pathname))))
+      if(m[2]==='finish')return respond(await this.layers.finish(owner,m[1]))
+      if(m[2]==='cancel')return respond(this.layers.cancel(owner,m[1]))
+      if(m[2]==='review')return respond(await this.layers.saveReview(owner,m[1],await body(request)))
+      if(m[2]==='publish')return respond(await this.layers.publish(owner,m[1],await body(request)))
+     }
+     throw new LabError('METHOD_NOT_ALLOWED',405)
     }
     if(path==='/sprites'||path.startsWith('/sprites/')){
      this.sprites??=new CreatorSpriteArchive(this.db)
@@ -169,6 +200,11 @@ export class CarriageJourneyAuthority{
     const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/actor-releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
     if(!r.ok)throw new LabError('ACTOR_NOT_PUBLISHED',404)
     const release=await r.json();assertPublishedActor(release);if(release.id!==id)throw new LabError('ACTOR_RELEASE_INVALID',409);return release
+  },async id=>{
+    if(!layerReleaseId(id)||!this.env?.CARRIAGE_JOURNEYS)throw new LabError('LAYER_NOT_PUBLISHED',404)
+    const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/layer-releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
+    if(!r.ok)throw new LabError('LAYER_NOT_PUBLISHED',404)
+    const release=await r.json();assertPublishedLayer(release);if(release.id!==id)throw new LabError('LAYER_RELEASE_INVALID',409);return release
    })
   }
   const path=url.pathname.slice('/api/lab'.length)

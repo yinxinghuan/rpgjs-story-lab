@@ -1,5 +1,5 @@
 import type {OriginalHead} from './original-train-runtime'
-import {originalActorRelease,originalSceneBackgroundVersion,originalStarterRelease,originalStandingCast} from '../src/original-asset-releases'
+import {originalFanRelease,originalActorRelease,originalSceneBackgroundVersion,originalStarterRelease,originalStandingCast} from '../src/original-asset-releases'
 import {adaStandingAppearance,adaStandingResource,fixedStandingReleases} from '../src/original-art-identities'
 import {originalEquipmentResource,originalStarterState,originalEquipmentHasArt} from '../src/original-equipment-art'
 import {fanArt,originalFanState} from '../src/original-fan-art'
@@ -18,8 +18,8 @@ export function originalVisualContext(h:OriginalHead,speakerId:string){
   id:'starter',state:originalStarterState(h.save),assetSha256:originalEquipmentResource(h.assets).sha256,
   appearance:originalStarterRelease(h.assets)?{}:{housing:'dark metal cabinet with an open left cover',interior:'exposed copper-wound starter coil'},
  }]:h.sceneId===fanArt.scene&&originalEquipmentHasArt('tunnel-fan',h.assets)?[{
-  id:'tunnel-fan',state:originalFanState(h.save),assetSha256:fanArt.housing.sha256,
-  appearance:{housing:'fixed dark olive metal enclosure with a round dark opening',interior:'three charcoal-gray fan blades and a brass hub'},
+  id:'tunnel-fan',state:originalFanState(h.save),assetSha256:originalFanRelease(h.assets)?.housing.sha256??fanArt.housing.sha256,
+  appearance:originalFanRelease(h.assets)?{}:{housing:'fixed dark olive metal enclosure with a round dark opening',interior:'three charcoal-gray fan blades and a brass hub'},
  }]:[]
  return {version:1,backgroundVersion:originalSceneBackgroundVersion(h.assets,h.sceneId)??'legacy-scene',speaker,equipment}
 }

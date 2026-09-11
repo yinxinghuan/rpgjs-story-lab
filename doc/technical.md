@@ -837,3 +837,15 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 `layered-creator.tsx`在creator.html?create_art=layers提供载入既有平台样本/上传、参数、处理、历史恢复、PNG导出和地图链接；SpriteCreator提供入口。`layered-map-trial.tsx`接入现有OriginalScenePreview，在北岬与河谷加载两层真实spritesheet，实际walkable叠加机座并保留原碰撞。机械记录在北岬观察停止、完整一转、前后抵达且逻辑/画面一致、真实walkTo阻挡；转场、暂停或重新运行后完整一转的观察时长重新累计。最后确认重新验证候选签名与revision才写review。本地草稿不创建Story Session，不进入设备云发布合同，未声称平台账户恢复或分层设备线上准入。
 
 `_qa/layered-device.test.ts`重现两份正式PNG、检查源像素未改动、状态纹理与原游戏一致、无效参数/错误遮罩拒绝、失败保留、历史检查及过期写入。`_qa/layered-creator-browser.ts`用独立localhost身份执行320中文/390英文全制作流程、刷新恢复、实际角色碰撞、叶轮静止/转动像素差、机壳不变、河谷切换和改参数检查失效；测试显式点击的画面确认只属于隔离测试草稿，真实截图另行复核。QA只读renderer观察器仅由单独Vite配置注入，普通构建没有观察器。
+
+### 2026-09-12 分层设备在线档案、发布与原作旅程
+
+`layered-archive-contract.ts`定义三文件manifest（source/housing/rotor）、严格参数白名单、原图与结果尺寸关系、SHA和独立地图确认签名。上传源快照不含会随地图确认改变的本地revision，因此先保存、后检查、再保存不会误报原图版本冲突。每份确认绑定完整参数和三个摘要；已保存确认固定，不把再次重放排成新版本。源图、参数或图像变化必须用新候选ID。
+
+`CreatorLayerArchive`在现有creator-art-v1所有者对象与同一个DO命名空间内增加分层档案/分块/确认/发布表，不新建故事数据库。沿用49152字节分块，三文件合计24MiB、每身份6份，支持进度查询、相同分块重放、完成校验与未完成上传清除。异步digest后再次比对事务内分块；完成记录不可覆盖/删除。`/layers/:id/review`私有保存已确认记录；`publish`同时要求已保存且完全匹配的确认与ready文件，公开固定两层PNG和运行元数据。原始上传文件仅经有身份的私有路径取回；制作页内置演示样本原本就是公开素材，不属于保密上传。
+
+`layered-cloud.ts`与`LayeredCloudPanel`使用同一creatorCloudTransport和浏览器制作身份，处理续传、恢复、显式发布以及返回固定版本。取回时复验原始PNG、两层结果和像素重演，再保存到本地；同ID与本地内容冲突时拒绝覆盖，保留本地旧历史。发布后生产制作页显示固定版本信息，preflight另提供选用新旅程的入口。平台账户跨浏览器身份仍未实现，Pages只引导到主站，不伪造另一套API。
+
+背景绑定v1/v2新增可选fan固定发布记录，既有v3设备与v4人物包装可组合，不给旧旅程补字段。开户只从公开发布解析器取固定版本，不能直接提供任意图像或参数；fan_release使用独立续玩/待确认键，保留原故事身份与历史目录。原作wire变为original-session-13.assets-11，旧车厢及creator主wire保持。`originalFanResources`、`originalBoundFanSheets`和权威机座占地读取同一发布记录，时间步态读取其中periodMs；剧情事实继续独立决定运行/停止。自定义发布没有外观语义注释时对白上下文appearance为空，不沿用原始机壳颜色或叶片描述。
+
+617项回归与cloud/Worker/preflight构建通过。新增真实HTTP测试覆盖分块、确认、发布、开户、关键行动和结局丢回执，后台重启后恢复，zh排烟/en卸物两完整原作路线、旧旅程保持、匿名外人隔离与私有源图拒绝。浏览器320中文/390英文从真实PNG制作页完成地图确认、上传断线续传、发布丢回执重试、取回，再进入同一原作游戏走到隧道，实际加载公开版本两张PNG（含scene_asset摘要参数），1.6秒转速保存、排烟/卸物与刷新状态保持。截图另行复核，不将测试草稿的确认点击当作自动语义鉴定。该增量尚未部署正式主站/Pages，不代表完整游戏生产准入或AlterU平台验收完成。

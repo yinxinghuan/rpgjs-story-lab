@@ -4,11 +4,11 @@ export type LayeredSpec={housingFoot:{x:number;y:number};rotorCenter:{x:number;y
 export const fanPartsSpec:LayeredSpec={housingFoot:{x:160,y:486},rotorCenter:{x:153,y:340},housingCenter:{x:160,y:353},housingScale:.11,rotorScale:.046,periodMs:1200,body:{width:26,depth:12,front:3},reviewedFanAperture:true}
 const invalid=()=>{throw Error('LAYER_SPEC_INVALID')}
 export function validateLayeredSpec(s:LayeredSpec,width:number,height:number,sourceSha:string){
- if(!s||!Number.isInteger(width)||width<32||width>1536||width%2||!Number.isInteger(height)||height<32||height>1536||width*height>1572864)invalid()
- for(const p of [s.housingFoot,s.rotorCenter,s.housingCenter])if(!p||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<1||p.x>=width/2-1||p.y<1||p.y>=height-1)invalid()
+ if(!s||Object.keys(s).sort().join(',')!=='body,housingCenter,housingFoot,housingScale,periodMs,reviewedFanAperture,rotorCenter,rotorScale'||!Number.isInteger(width)||width<32||width>1536||width%2||!Number.isInteger(height)||height<32||height>1536||width*height>1572864)invalid()
+ for(const p of [s.housingFoot,s.rotorCenter,s.housingCenter])if(!p||Object.keys(p).sort().join(',')!=='x,y'||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<1||p.x>=width/2-1||p.y<1||p.y>=height-1)invalid()
  for(const n of [s.housingScale,s.rotorScale])if(!Number.isFinite(n)||n<.01||n>.5)invalid()
  if(!Number.isInteger(s.periodMs)||s.periodMs<400||s.periodMs>10000||typeof s.reviewedFanAperture!=='boolean')invalid()
- if(!s.body||!Number.isFinite(s.body.width)||s.body.width<8||s.body.width>64||!Number.isFinite(s.body.depth)||s.body.depth<4||s.body.depth>32||!Number.isFinite(s.body.front)||s.body.front<0||s.body.front>8)invalid()
+ if(!s.body||Object.keys(s.body).sort().join(',')!=='depth,front,width'||!Number.isFinite(s.body.width)||s.body.width<8||s.body.width>64||!Number.isFinite(s.body.depth)||s.body.depth<4||s.body.depth>32||!Number.isFinite(s.body.front)||s.body.front<0||s.body.front>8)invalid()
  if(s.reviewedFanAperture&&(sourceSha!==FAN_PARTS_SOURCE||width!==640||height!==640))throw Error('LAYER_APERTURE_SOURCE_MISMATCH')
 }
 /** Pixel-only preparation. No resampling, painting or replacement of the retained source. */

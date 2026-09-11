@@ -1,7 +1,7 @@
 import {inspectSpritePng,type SpriteDraft,type SpritePng} from './sprite-draft'
 import {assertSpriteGenerationSource} from './sprite-generation-recipe'
 export const SPRITE_ARCHIVE_LIMIT=6,SPRITE_ARCHIVE_PART=49152,SPRITE_ARCHIVE_BYTES=24*1024*1024
-export const spriteArchiveBodyLimit=(path:string)=>/^\/api\/creator\/sprites\/[a-f0-9-]{36}\/parts$/.test(path)?70000:6000
+export const spriteArchiveBodyLimit=(path:string)=>/^\/api\/creator\/(?:sprites|layers)\/[a-f0-9-]{36}\/parts$/.test(path)?70000:6000
 export const SPRITE_FILE_ROLES=['source','candidate','input-0','input-1'] as const
 export type SpriteFileRole=typeof SPRITE_FILE_ROLES[number]
 export type SpriteFile={role:SpriteFileRole;sha256:string;bytes:number;width:number;height:number}

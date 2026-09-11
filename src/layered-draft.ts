@@ -15,7 +15,8 @@ export class BrowserLayeredDrafts{
  async close(){(await this.db).close()}
 }
 export function newLayeredSource(source:SpritePng,name:string,spec:LayeredSpec):LayeredDraft{validateLayeredSpec(spec,source.width,source.height,source.sha256);return{version:'layered-draft-1',id:crypto.randomUUID(),revision:0,createdAt:Date.now(),source,sourceName:name.slice(0,100),spec:structuredClone(spec),state:'source'}}
-export async function layerSignature(d:LayeredDraft){if(!d.result)throw Error('LAYER_NOT_READY');return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify({algorithm:'layer-parts-1',source:d.source.sha256,housing:d.result.housing.sha256,rotor:d.result.rotor.sha256,spec:d.spec})))),v=>v.toString(16).padStart(2,'0')).join('')}
+export async function layerContentSignature(source:string,housing:string,rotor:string,spec:LayeredSpec){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify({algorithm:'layer-parts-1',source,housing,rotor,spec})))),v=>v.toString(16).padStart(2,'0')).join('')}
+export async function layerSignature(d:LayeredDraft){if(!d.result)throw Error('LAYER_NOT_READY');return layerContentSignature(d.source.sha256,d.result.housing.sha256,d.result.rotor.sha256,d.spec)}
 export async function inspectLayeredDraft(d:LayeredDraft,id:string,io:LayerIO){
  if(d.version!=='layered-draft-1'||d.id!==id||d.state!=='candidate'||!d.result)throw Error('LAYER_NOT_READY')
  await verifySpritePng(d.source);validateLayeredSpec(d.spec,d.source.width,d.source.height,d.source.sha256)

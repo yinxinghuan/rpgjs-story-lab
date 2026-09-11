@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "scope": "Layered creator archive/publication and original single-player binding",
+  "date": "2026-09-12",
+  "tests": {
+    "passed": 617,
+    "failed": 0,
+    "httpFullStory": [
+      "zh retained cargo, ending and old journey coexistence",
+      "en discarded cargo, ending and old journey coexistence"
+    ],
+    "responseLoss": [
+      "part upload",
+      "review save",
+      "publication",
+      "enrollment",
+      "tunnel action",
+      "ending"
+    ]
+  },
+  "builds": {
+    "cloud": true,
+    "opaqueWorkerStartup": true,
+    "preflight": true
+  },
+  "browser": [
+    {
+      "cloud": {
+        "releaseId": "959ceb700b5d05a1dd14b93985a48bd577909131c3e215e7c68a0799b7b2d7b4.190ef22d-fa11-40f4-b904-5e50a29a000f",
+        "loaded": [
+          "http://127.0.0.1:5347/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/959ceb700b5d05a1dd14b93985a48bd577909131c3e215e7c68a0799b7b2d7b4.190ef22d-fa11-40f4-b904-5e50a29a000f/housing?scene_asset=b9d1c2c26ebc1050f06d110ff66133166948b22d6eca4b5d889e05a9b390667d",
+          "http://127.0.0.1:5347/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/959ceb700b5d05a1dd14b93985a48bd577909131c3e215e7c68a0799b7b2d7b4.190ef22d-fa11-40f4-b904-5e50a29a000f/rotor?scene_asset=f8e11bf109c19253419b4616900244281e045743cb780615a43737611eae11fb"
+        ],
+        "lostPartRecovered": true,
+        "lostPublishRecovered": true,
+        "restoredSettings": true,
+        "sessionId": "cd438ee2-9092-4498-87d2-0ab40e41f543",
+        "storyVersion": 9,
+        "fuel": 48,
+        "state": "retained",
+        "initial": {
+          "art-starter": {
+            "layer": "starter",
+            "animation": "repaired"
+          },
+          "art-fan-housing": {
+            "layer": "housing",
+            "animation": "stand"
+          },
+          "art-fan-rotor": {
+            "layer": "rotor",
+            "animation": "spin-0"
+          }
+        },
+        "later": {
+          "art-starter": {
+            "layer": "starter",
+            "animation": "repaired"
+          },
+          "art-fan-housing": {
+            "layer": "housing",
+            "animation": "stand"
+          },
+          "art-fan-rotor": {
+            "layer": "rotor",
+            "animation": "spin-5"
+          }
+        },
+        "requestCount": 16
+      },
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "sourceId": "a0313c66-f360-4e63-a415-79a1c6770b76",
+      "firstId": "190ef22d-fa11-40f4-b904-5e50a29a000f",
+      "stopped": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          }
+        ],
+        "changed": 0,
+        "roofChanged": 0
+      },
+      "running": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-4"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-8"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-11"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-15"
+          }
+        ],
+        "changed": 459,
+        "roofChanged": 0
+      },
+      "collision": {
+        "x": 104,
+        "y": 163.175
+      },
+      "checks": 5,
+      "refreshRestores": true,
+      "changedSpecForksReview": true,
+      "oldReviewRetained": true,
+      "river": true,
+      "errors": [],
+      "blocked": [
+        "https://images.aiwaves.tech"
+      ]
+    },
+    {
+      "cloud": {
+        "releaseId": "8bbc5e12b845a8a82c84decdc3e78ab734f35cfd909c3f77a1a20fccf268df67.9f4c0f31-9909-4c64-b80f-609d00985fae",
+        "loaded": [
+          "http://127.0.0.1:5347/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/8bbc5e12b845a8a82c84decdc3e78ab734f35cfd909c3f77a1a20fccf268df67.9f4c0f31-9909-4c64-b80f-609d00985fae/housing?scene_asset=b9d1c2c26ebc1050f06d110ff66133166948b22d6eca4b5d889e05a9b390667d",
+          "http://127.0.0.1:5347/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/8bbc5e12b845a8a82c84decdc3e78ab734f35cfd909c3f77a1a20fccf268df67.9f4c0f31-9909-4c64-b80f-609d00985fae/rotor?scene_asset=f8e11bf109c19253419b4616900244281e045743cb780615a43737611eae11fb"
+        ],
+        "lostPartRecovered": true,
+        "lostPublishRecovered": true,
+        "restoredSettings": true,
+        "sessionId": "b2bfff3c-ca28-4db5-aaad-9feeea651839",
+        "storyVersion": 9,
+        "fuel": 56,
+        "state": "abandoned",
+        "initial": {
+          "art-starter": {
+            "layer": "starter",
+            "animation": "repaired"
+          },
+          "art-fan-housing": {
+            "layer": "housing",
+            "animation": "stand"
+          },
+          "art-fan-rotor": {
+            "layer": "rotor",
+            "animation": "stopped"
+          }
+        },
+        "later": {
+          "art-starter": {
+            "layer": "starter",
+            "animation": "repaired"
+          },
+          "art-fan-housing": {
+            "layer": "housing",
+            "animation": "stand"
+          },
+          "art-fan-rotor": {
+            "layer": "rotor",
+            "animation": "stopped"
+          }
+        },
+        "requestCount": 16
+      },
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "sourceId": "ce6b7f35-4358-4de9-95a7-b544a5c3d55e",
+      "firstId": "9f4c0f31-9909-4c64-b80f-609d00985fae",
+      "stopped": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "stopped"
+          }
+        ],
+        "changed": 0,
+        "roofChanged": 0
+      },
+      "running": {
+        "names": [
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-4"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-7"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-11"
+          },
+          {
+            "train-at-dead-station:housing": "stand",
+            "train-at-dead-station:rotor": "spin-14"
+          }
+        ],
+        "changed": 808,
+        "roofChanged": 0
+      },
+      "collision": {
+        "x": 104,
+        "y": 163.03199999999998
+      },
+      "checks": 5,
+      "refreshRestores": true,
+      "changedSpecForksReview": true,
+      "oldReviewRetained": true,
+      "river": true,
+      "errors": [],
+      "blocked": [
+        "https://images.aiwaves.tech"
+      ]
+    }
+  ],
+  "visualReview": {
+    "files": [
+      "layered-cloud-320-zh-story-local-qa.png",
+      "layered-cloud-390-en-story-local-qa.png"
+    ],
+    "observations": [
+      "B方向及角色/设备比例保留",
+      "发布版本机壳固定，1.6秒叶轮运行参数实际随旅程读取",
+      "中文排烟运行，英文卸物停止，刷新同旅程不重复扣油"
+    ]
+  },
+  "initialHarnessFailure": "The image request matcher omitted the scene_asset query suffix; fixed to inspect URL pathname. No game resource checks were relaxed.",
+  "limits": [
+    "Local preflight HTTP and fresh browser identities only; no production logged browser or real saves",
+    "No new media generation requests",
+    "Original upload API is private; built-in demonstration source is already public",
+    "Appearance metadata for custom published fan remains undescribed; no inherited baseline colors",
+    "Main and Pages deployments unchanged",
+    "Full original-game production/AlterU admission remains pending"
+  ]
+}
