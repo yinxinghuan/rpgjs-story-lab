@@ -7,6 +7,7 @@ import {SceneReadiness,loadBrowserSceneResource,type SceneResourceManifest} from
 import {originalSessionHttp} from './original-session-http'
 import {originalGameEntities,originalReadingBlocks,originalGameObjective} from './original-game-projection'
 import {originalPlaceLabel} from './original-place-presentation'
+import {originalBoundSceneResources,originalBackgroundVersion} from './original-asset-releases'
 import type {OriginalHead} from '../server/original-train-runtime'
 import './original-game.css'
 declare const __ORIGINAL_STORY_PREVIEW__:SceneResourceManifest|null
@@ -16,7 +17,8 @@ type Panel='nearby'|'log'|'bag'|'people'|'ending'|'action'|null
 /** Same game, explicitly loopback-only until every asset category is admitted. */
 export default function OriginalGame(){
  const [connection]=useState(()=>originalSessionHttp(window.alteruLocalStorage,async(name,work)=>{if(!navigator.locks)throw Error('CLOUD_LOCKS_UNAVAILABLE');return navigator.locks.request(name,work)}))
- const [loader]=useState(()=>new SceneReadiness(__ORIGINAL_STORY_PREVIEW__!,loadBrowserSceneResource))
+ const loaders=useRef(new Map<string,SceneReadiness>())
+ function loaderFor(h:OriginalHead){const id=originalBackgroundVersion(h.assets);let loader=loaders.current.get(id);if(!loader){loader=new SceneReadiness(originalBoundSceneResources(__ORIGINAL_STORY_PREVIEW__!,h.assets),loadBrowserSceneResource);loaders.current.set(id,loader)}return loader}
  const [head,setHead]=useState<OriginalHead|null>(null),headRef=useRef(head);headRef.current=head
  const [position,setPosition]=useState<RendererPoint>({x:192,y:430}),pos=useRef(position);pos.current=position
  const [background,setBackground]=useState(''),[destination,setDestination]=useState<RendererPoint|null>(null),[ready,setReady]=useState(false),[busy,setBusy]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState(''),[input,setInput]=useState(''),[panel,setPanel]=useState<Panel>(null),[selected,setSelected]=useState<string|null>(null)
@@ -29,13 +31,13 @@ export default function OriginalGame(){
  useEffect(()=>{const o=new ResizeObserver(camera);for(const el of [frame.current,frame.current?.parentElement,hud.current,footer.current])if(el)o.observe(el);return()=>o.disconnect()},[])
  async function restore(next:OriginalHead){
   runtime.current?.pause(true);setReady(false);headRef.current=next;setHead(next)
-  const prepared=await loader.prepare(next.sceneId,true);if(!mounted.current)return
+  const loader=loaderFor(next),prepared=await loader.prepare(next.sceneId,true);if(!mounted.current)return
   if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet],mapEvents:()=>[],walkable:(p,s)=>originalTrainPlanWalkable(s,p),safePosition:(p,s)=>originalTrainPlanWalkable(s,p)?p:world.scenes.find(r=>r.id===s)!.spawn,findPath:(a,b,s)=>findGridPath(a,b,p=>originalTrainPlanWalkable(s,p)),onPosition:p=>{pos.current=p;setPosition(p)},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
   await runtime.current!.restore(next.position,next.sceneId);if(!mounted.current)return
   loader.activate(next.sceneId);setBackground(prepared.background);setPosition(runtime.current!.position());setReady(true)
  }
  async function init(){setWorking(true);setError('');runtime.current?.pause(true);try{const h=await connection.client.enroll(locale);const recovered=await connection.client.recover();const next=recovered?.head??h;await restore(next);setPanel(next.version===0?'log':next.save.finale.status==='complete'?'ending':null)}catch(e){setError(e instanceof Error?e.message:'NETWORK_ERROR')}finally{setWorking(false)}}
- useEffect(()=>{mounted.current=true;void init();return()=>{mounted.current=false;runtime.current?.destroy();for(const s of world.scenes){const blob=loader.background(s.id);if(blob)URL.revokeObjectURL(blob)}}},[])
+ useEffect(()=>{mounted.current=true;void init();return()=>{mounted.current=false;runtime.current?.destroy();for(const loader of loaders.current.values())for(const s of world.scenes){const blob=loader.background(s.id);if(blob)URL.revokeObjectURL(blob)}}},[])
  useEffect(()=>{runtime.current?.pause(busy||!ready||Boolean(panel)||Boolean(error))},[busy,ready,panel,error])
  useEffect(()=>{const checkpoint=()=>{const h=headRef.current;if(h&&runtime.current&&!busyRef.current&&runtime.current.renderedScene()===h.sceneId)void connection.api('/sessions/'+h.id+'/position',{position:pos.current,sceneId:h.sceneId,expected_version:h.version}).catch(()=>{})};const timer=setInterval(checkpoint,2000);const hide=()=>{if(document.hidden){runtime.current?.move(0,0);checkpoint()}};document.addEventListener('visibilitychange',hide);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',hide)}},[])
  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!busyRef.current)setPanel(null)};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[])
@@ -43,13 +45,13 @@ export default function OriginalGame(){
  useLayoutEffect(()=>{if(panel==='log'){const scroll=document.querySelector<HTMLElement>('.og-scroll');if(scroll)scroll.scrollTop=scroll.scrollHeight}},[panel,head?.version])
  function open(e:Entity){if(busyRef.current||!ready)return;setNotice(t('正在走近…','Walking closer…'));const h=headRef.current!;const arrive=()=>{if(headRef.current?.version!==h.version)return;setSelected(e.id);setInput('');setNotice('');setPanel('action')};if(Math.hypot(pos.current.x-e.approach.x,pos.current.y-e.approach.y)<8)arrive();else if(!runtime.current?.walkTo(e.approach,arrive))setNotice(t('这里暂时无法到达。','This point cannot be reached.'))}
  async function submit(choice?:{id:string;label:string}){const h=headRef.current,e=entity;if(!h||!e||busyRef.current)return;setWorking(true);setError('');runtime.current?.pause(true);try{
-  for(const portal of world.portals.filter(p=>p.fromScene===h.sceneId&&world.entities.find(x=>x.id===e.id)?.actions.includes(p.actionId)))await loader.prepare(portal.scene,true)
+  for(const portal of world.portals.filter(p=>p.fromScene===h.sceneId&&world.entities.find(x=>x.id===e.id)?.actions.includes(p.actionId)))await loaderFor(h).prepare(portal.scene,true)
   const r=await connection.client.send(h,{target:e.id,position:pos.current,...(choice?{type:'action',action:choice.id}:{type:'free-input',text:input})});await restore(r.head);setPanel('log');setInput('');setNotice(r.accepted===false?t('这项行动当前未能执行。','This action could not be performed.'):t('进度已保存','Progress saved'))
  }catch(err){setError(err instanceof Error?err.message:'NETWORK_ERROR')}finally{setWorking(false)}}
  async function finish(){const h=headRef.current;if(!h||busyRef.current)return;setWorking(true);setError('');try{const r=await connection.client.sendEnding(h);await restore(r.head);setPanel('ending')}catch(e){setError(e instanceof Error?e.message:'NETWORK_ERROR')}finally{setWorking(false)}}
  function ground(e:React.MouseEvent){if(busyRef.current||!ready||panel)return;const r=frame.current!.getBoundingClientRect();setNotice('');runtime.current?.walkTo({x:(e.clientX-r.left)*384/r.width-4.5,y:(e.clientY-r.top)*576/r.height-15})}
  const latest=save?originalReadingBlocks(save).at(-1):undefined
- return <main className="og-game" data-scene={scene??''} data-version={head?.version??-1}>
+ return <main className="og-game" data-scene={scene??''} data-version={head?.version??-1} data-background-version={head?originalBackgroundVersion(head.assets):undefined}>
   <section className="og-world" aria-label={t('原作地图','Original map')}><div ref={frame} className="og-map" onClick={ground}>
    {background&&<img className="og-background" src={background} alt="" draggable={false}/>}<div id="rpg"/>
    {ready&&entities.map((e,i)=><button className="og-marker" key={e.id} aria-label={e.person?.name??e.actions[0]?.label} style={{left:e.position.x/384*100+'%',top:e.position.y/576*100+'%'}} onClick={ev=>{ev.stopPropagation();open(e)}} disabled={busy}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M7 12h10"/></svg><span>{e.person?.name??String(i+1)}</span></button>)}

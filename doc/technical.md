@@ -516,3 +516,18 @@ server/original-train-runtime.ts安装原作策略，使用src/vendor/original-t
 原始运行证据保存在本机`_qa/original-browser-route-20260911.json`、`_qa/ui/original-bridge-platform-layout-fixed.png`和`_qa/ui/original-ending-platform-layout.png`。它们是合成旅程可见UI记录，不含capability、登录或真实玩家数据。该完整路线属于中文本机作者流程，地图和NPC仍有明确占位，不等于正式美术、开放语义、iPhone或AlterU生产全流程通过。正式主站/Pages仍05db41c，无新增媒体/模型请求或正式部署；完整单人与平台生产链目标保持。
 
 本轮最终cloud前端/Worker、Pages、preflight构建均通过，秘密/API base审计与diff检查通过；只推送开发分支，不触发正式部署。
+
+
+### 原作固定背景准入与旅程版本绑定（2026-09-11，开发分支）
+
+`original-asset-releases.ts`登记两个不可变北岬背景版本：旧e8e36bba基准与平台8fc11a96候选。后者对应公共媒体任务mt_1a1c4492493eaf68a32331d43d91c207、原始1024×1536/2811504字节及完整SHA，沿用已完成的固定布局实景评审；本次只读复查并原字节接入，没有重新生图、去底或编辑真实图片。此目录是工程审核过的资源登记，尚不是创作者账号云端发布服务。其他地图、人物和设备不因背景通过而获准入。
+
+新建原作Head增加`assets:{version:1,backgrounds:{train-at-dead-station:releaseId}}`，服务选择已登记的平台背景；已有不带assets的Head保持旧基准，upgrade不偷偷补新绑定。原v8 StorySave不变。服务与客户端同时拒绝未知版本、任意URL、不匹配场景、空或额外绑定；当前行动/结局没有切换资源入口，保存和回执通过原Head保留绑定。独立原作协议升级为original-session-2.assets-1.story-8，防止不理解绑定的旧客户端继续写入；线上车厢协议不变，原作正式发布门仍关闭。
+
+原作地图界面按权威绑定选择`SceneReadiness`，只替换北岬background描述，TMX/碰撞与其他房间不变；旧基准仍可加载。构建在读取两份源PNG时核对固定摘要、尺寸和字节数；新平台图输出到preflight的`art/approved/north-cape-8fc11a96.png`。下载仍核对大小、SHA和真实解码，失败不尝试另一版本。当前并未给全部九地图、人物或道具做完整版本发布系统，也没有改变已有生产旅程。
+
+新增六项测试覆盖真实源文件摘要、旧档升级/行动不换图、资源清单只改背景、双端拒绝伪造绑定、合成错误字节拒绝且不回退、SQLite实例重建/回执重放保留绑定。原有六条中英三路线实际HTTP测试另逐回合及结局检查同绑定，并覆盖登记/行动/结局丢回执与文件SQLite重开。494全套回归通过；补充断言后8项HTTP测试再次通过，cloud前端/Worker、Pages、preflight构建及秘密/API base/媒体集成审计通过。
+
+保留原5316进程，另在同游戏5317端口创建新合成旅程。实际北岬读到platform背景，走到左侧启动机、维修车况82→87、刷新后版本1和绑定保持；Network响应确认请求的是带8fc11a96完整SHA的已登记相对资源，HTTP200。390×844截图与实际CSS尺寸一致、车体点击无穿越；320×568从附近列表走到右侧制动点、面板按钮44px、无横向溢出。此轮新隐藏测试页的尺寸截图正常，不沿用此前另一页的缩放偏差结论。尚不是物理iPhone性能或正式平台试玩。
+
+证据：`doc/platform-art-candidates/20260911/background-binding-review.json`和`_qa/ui/original-platform-background-{390,320}.png`。这证明一张已审查平台背景进入原作Story Session并按旅程固定，不等于用户任意生成图自动合格、创作者跨设备云草稿/发布或游玩动态激活已完成。生成计数仍7次意向/6张图片，无新增外发；正式主站与Pages保持05db41c。

@@ -13,7 +13,8 @@ import {resolveDomainAction} from '../src/vendor/original-train/engine/domainRul
 import type {StorySave,Locale} from '../src/vendor/original-train/types'
 import {originalEndingPolicy,type OriginalEndingGenerator} from './original-ending'
 import {SessionAuthority,type AuthorityStorage,type SessionRuntime} from './session-authority'
-export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string}
+import {assertOriginalAssetBindings,newOriginalAssetBindings,type OriginalAssetBindings} from '../src/original-asset-releases'
+export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
 const world=originalTrainChapterSpatialPlan()
 const bindingFor=(c:ReturnType<typeof originalCartridge>)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},world,originalTrainPlanWalkable)
@@ -27,6 +28,7 @@ export function assertOriginalHead(value:unknown):asserts value is OriginalHead{
  const h=value as OriginalHead,s=h?.save
  if(!h||!s||s.version!==8||s.cartridgeId!=='last-train-to-dawn'||!['zh','en'].includes(s.locale)||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!Number.isSafeInteger(h.version)||h.version<0||typeof h.id!=='string'||!/^[a-zA-Z0-9-]{16,80}$/.test(h.id)||!h.position||!s.finale||!['idle','ready','generating','complete','failed'].includes(s.finale.status)||!Array.isArray(s.blocks)||!Array.isArray(s.inventory)||!Array.isArray(s.characters)||!Array.isArray(s.relationships)||!Array.isArray(s.partyMemberIds)||!s.facts||!s.danger)throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
  const binding=bindings[s.locale]
+ try{assertOriginalAssetBindings(h.assets)}catch{throw new LabError('ORIGINAL_ASSET_VERSION_UNSUPPORTED',409)}
  try{binding.locate(s,h.sceneId)}catch{throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)}
  if(!binding.validPosition(h.sceneId,h.position)||originalCartridge(s.locale).statDefinitions.some(d=>!Number.isFinite(s.stats?.[d.id])||s.stats[d.id]<d.min||s.stats[d.id]>d.max))throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
 }
@@ -35,7 +37,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
  const check=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>{if(admit(clone(head),previous?clone(previous):undefined,actionId)!==true)throw new LabError('ORIGINAL_PRESENTATION_NOT_READY',409)}
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindings[h.save.locale].validPosition(h.sceneId,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
  return {
-  initial:(locale,id)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion};assertOriginalHead(h);check(h);return h},
+  initial:(locale,id)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion,assets:newOriginalAssetBindings()};assertOriginalHead(h);check(h);return h},
   upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
   preserveConcurrent:()=>{},ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body)=>{

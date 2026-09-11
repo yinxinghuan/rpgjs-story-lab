@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-11",
+  "category": "fixed-layout-background",
+  "release": "north-cape-platform-8fc11a96",
+  "sourceTask": "mt_1a1c4492493eaf68a32331d43d91c207",
+  "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+  "priorVisualReview": "environment-edit-02/review.json",
+  "status": "admitted-for-fixed-north-cape-background",
+  "storyRuntime": "loopback original Story Session only",
+  "productionGameActivated": false,
+  "newGenerationCalls": 0,
+  "realImageProcessing": false,
+  "checks": {
+    "immutableSourceBytes": true,
+    "newJourneyBinding": true,
+    "legacyBindingPreserved": "SQLite/runtime tests",
+    "actionAndRefreshPreserved": true,
+    "actualResourceResponse": 200,
+    "wrongBytesFailClosed": true,
+    "fullHttpRoutesPreserveBinding": 6,
+    "viewportCssAndScreenshot": [
+      [
+        390,
+        844
+      ],
+      [
+        320,
+        568
+      ]
+    ],
+    "actualWalk": [
+      "left starter",
+      "right brakes"
+    ],
+    "carBodyBlocked": true,
+    "regressionTests": 494
+  },
+  "limits": [
+    "One reviewed background, not general generation quality",
+    "Actor and device categories remain unadmitted",
+    "No cloud account drafts, user-generated version publication or in-play arbitrary activation",
+    "Not physical iPhone performance or production AlterU validation"
+  ]
+}

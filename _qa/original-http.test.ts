@@ -35,17 +35,17 @@ for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','
  const h=await harness(),store=memory();let connection=originalSessionHttp(store,lock,fetch,h.base),head:OriginalHead
  try{
   h.lose('/sessions');await assert.rejects(connection.client.enroll(locale));h.reopen();connection=originalSessionHttp(store,lock,fetch,h.base);head=await connection.client.enroll(locale)
-  const id=head.id
+  const id=head.id,assetBindings=structuredClone(head.assets)
   const steps=['repair-starter',`commit-${route}-route`,...(route==='valley'?['river-survey','river-rescue-manual','river-treat','river-depart']:route==='forest'?['pine-inspect','pine-reverse','pine-meet','pine-survey-route','pine-invite','pine-depart']:['yard-meet','yard-work-pact','yard-first-exit']),'tunnel-inspect',route==='valley'?'tunnel-doctor-led':'tunnel-captain-led','tunnel-ventilate','tunnel-depart',...(route==='quarry'?[]:['yard-meet',route==='valley'?'yard-medical-pact':'yard-work-pact']),'yard-route-brief','yard-invite','yard-depart','pass-inspect',route==='forest'?'pass-lin-watch':'pass-player-watch','pass-mako-duty','pass-gravel-siding','pass-debrief','pass-depart','town-inspect','town-grid-aid','town-public-rules','town-refuel','town-repair','town-rest','town-route-brief','town-pack-kit','town-depart','bridge-inspect','bridge-kit-survey','bridge-arrange','bridge-rail-crossing','junction-review','junction-settle-basic']
   for(const [i,action] of steps.entries()){
    if(i===0){h.lose('/actions');await assert.rejects(connection.client.send(head,intent(head,action)));assert.equal(connection.client.hasPending(),true);h.reopen();connection=originalSessionHttp(store,lock,fetch,h.base);head=(await connection.client.recover()).head}
    else head=(await connection.client.send(head,intent(head,action,i%2===1))).head
-   assert.equal(head.id,id);assert.equal(head.version,i+1)
+   assert.equal(head.id,id);assert.equal(head.version,i+1);assert.deepEqual(head.assets,assetBindings)
   }
   assert.equal(head.save.finale.status,'ready');const before=structuredClone(head)
   h.lose('/ending');await assert.rejects(connection.client.sendEnding(head));assert.equal(connection.client.hasPending(),true);h.reopen();connection=originalSessionHttp(store,lock,fetch,h.base)
   const ending=await connection.client.recover();head=ending.head;assert.equal(head.save.finale.status,'complete');assert.equal(head.save.finale.ending?.anchorFamily,'settle-basic');assert.equal(ending.cursor,steps.length);assert.equal(head.version,steps.length+1);assert.deepEqual({...head.save,finale:before.save.finale},before.save)
-  assert.equal(connection.client.hasPending(),false);assert.deepEqual(await connection.client.enroll(locale),head)
+  assert.equal(connection.client.hasPending(),false);assert.deepEqual(await connection.client.enroll(locale),head);assert.deepEqual(head.assets,assetBindings)
   const events=await connection.api(`/sessions/${id}/events?after=0`),directory=await connection.api('/sessions');assert.equal(events.events.length,steps.length);assert.equal(directory.sessions[0].cursor,steps.length)
   await assert.rejects(connection.api(`/sessions/${id}/position`,{expected_version:0,sceneId:head.sceneId,position:head.position}),/STALE_POSITION/)
   assert.deepEqual(await connection.api(`/sessions/${id}/position`,{expected_version:head.version,sceneId:head.sceneId,position:head.position}),{position:head.position})

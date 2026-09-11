@@ -5,10 +5,12 @@ import {originalChapterRejections} from './original-chapters'
 import {originalEndingCartridge} from './original-ending-capabilities'
 import {buildEndingSnapshot} from './vendor/original-train/engine/endingDirector'
 import {lastTrainToDawn,lastTrainToDawnEn} from './vendor/original-train/cartridges/lastTrainToDawn'
+import {assertOriginalAssetBindings} from './original-asset-releases'
 const world=originalTrainChapterSpatialPlan()
 /** Wire validation only: the server retains sole ownership of original rules. */
 export function assertOriginalClientHead(value:unknown):asserts value is OriginalHead{
  const h=value as OriginalHead,s=h?.save,room=world.scenes.find(r=>r.id===h?.sceneId)
+ assertOriginalAssetBindings(h?.assets)
  if(!h||!s||s.version!==8||s.cartridgeId!==world.cartridgeId||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!room||!h.position||!originalTrainPlanWalkable(h.sceneId,h.position)||!Array.isArray(s.map)||s.map.filter(n=>n.current).length!==1||s.map.find(n=>n.current)?.id!==room.storyLocationId)throw Error('ORIGINAL_SAVE_UNSUPPORTED')
 }
 /** Instantiate with an original-world namespace and authenticated transport.
