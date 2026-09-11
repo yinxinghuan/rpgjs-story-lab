@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {originalGameEntities,originalReadingBlocks,originalGameObjective} from '../src/original-game-projection'
+import {originalGameEntities,originalReadingBlocks,originalGameObjective,originalActionDestinations} from '../src/original-game-projection'
 import {originalTrainRuntime} from '../server/original-train-runtime'
 import {originalTrainRoom} from '../src/original-train-spatial-plan'
 import {randomUUID} from 'node:crypto'
@@ -60,4 +60,27 @@ for(const locale of ['zh','en'] as const)test(`near-bank ${locale} display corre
  assert.equal(visible.find(b=>b.id==='effect-32-3')!.text,arrived+destination)
  assert.equal(originalPlaceLabel('train-at-dawn-junction',h.save),destination)
  assert.equal(JSON.stringify(h),before)
+})
+
+for(const locale of ['zh','en'] as const)test(`route preparation ${locale} isolates the selected branch for buttons and free input`,async()=>{
+ const r=runtime();let h=r.initial(locale,randomUUID())
+ h=(await r.prepare(h,{action_id:randomUUID(),expected_version:0,sceneId:h.sceneId,position:{x:110,y:185},target:'starter',type:'action',action:'repair-starter'},()=>true)).head
+ const before=JSON.stringify(h),e=originalGameEntities(h).find(e=>e.id==='departure-control')!
+ assert.equal(e.actions.length,3)
+ for(const a of e.actions){
+  const expected=({'commit-valley-route':'river-valley','commit-quarry-route':'graystone-yard','commit-forest-route':'pine-line'} as Record<string,string>)[a.id]
+  assert.deepEqual(originalActionDestinations(h,e.id,{action:a.id}),[originalTrainRoom(expected)])
+  assert.deepEqual(originalActionDestinations(h,e.id,{text:'  '+a.label+'  '}),[originalTrainRoom(expected)])
+  assert.deepEqual(originalActionDestinations(h,'brakes',{action:a.id}),[])
+ }
+ assert.deepEqual(originalActionDestinations(h,'brakes',{action:'inspect-brakes'}),[])
+ assert.deepEqual(originalActionDestinations(h,e.id,{text:'???'}),[])
+ assert.equal(JSON.stringify(h),before)
+ // The non-selected branches must never even be prepared. A failure there
+ // would prevent a valid turn despite all its own resources being available.
+ const loaded:string[]=[]
+ for(const scene of originalActionDestinations(h,e.id,{action:'commit-valley-route'})){
+  loaded.push(scene);if(scene!==originalTrainRoom('river-valley'))throw Error('UNRELATED_SCENE_FAILED')
+ }
+ assert.deepEqual(loaded,[originalTrainRoom('river-valley')])
 })
