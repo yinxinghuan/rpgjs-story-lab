@@ -29,9 +29,11 @@ test('twelve-frame actor archive fits the same bounded manifest without declarin
  const source=await inspectSpritePng(new Uint8Array(readFileSync(new URL('../doc/platform-art-candidates/20260911/actor-edit-03/candidate.png',import.meta.url))))
  const spec={kind:'actor' as const,columns:3,rows:4,cellWidth:320,cellHeight:320,foot:{x:160,y:300},backgroundMode:'pale-neutral' as const,neutralMin:200,chromaMax:20}
  const p=prepareSpritePixels(await decode(source),spec),d:SpriteDraft={...newSpriteSource(source,'阿达候选：方向未通过','actor'),spec,state:'candidate',result:{algorithm:'neutral-matte-unmix-1',png:await encode(p.raster),frames:p.frames,metrics:p.metrics}}
+ d.generation={version:1,recipe:'ada-walk-v1',requestId:crypto.randomUUID(),sessionId:'cb90357b-fe01-48ab-b14b-0620eb0d556e',taskId:'synthetic-archive-provenance'}
  const {manifest,payload}=spriteManifest(d);assert.equal(manifest.files.length,2);assert.equal(manifest.draft.result.frames.length,12);assert.ok(Buffer.byteLength(JSON.stringify(manifest))<6000)
  assert.deepEqual(await restoreSpriteManifest(manifest,async f=>payload.get(f.role)!.bytes),d)
  assert.equal('visualApproved' in manifest.draft,false)
+ const invalid=structuredClone(manifest);invalid.draft.generation.taskId='../../private';assert.throws(()=>assertSpriteManifest(invalid),/SPRITE_GENERATION_INVALID/)
 })
 function fixture(){const dir=mkdtempSync(join(tmpdir(),'sprite-cloud-')),pool=new PreflightStorage(dir)
  const db=()=>{const ctx=pool.context('synthetic-sprite');return {all:<T>(s:string,...b:any[])=>ctx.storage.sql.exec(s,...b).toArray() as T[],run:(s:string,...b:any[])=>{ctx.storage.sql.exec(s,...b)},transaction:<T>(w:()=>T)=>ctx.storage.transactionSync(w)}}
@@ -43,7 +45,7 @@ function upload(archive:CreatorSpriteArchive,d:SpriteDraft,owner='alice'){
  return manifest
 }
 test('real platform repair art retains all source PNGs, selections and foot alignment after archive restoration',async()=>{
- const f=fixture();try{const d=draft(),m=upload(f.archive,d);assertSpriteManifest(m);assert.equal(m.files.length,4);assert.ok(Buffer.byteLength(JSON.stringify(m))<6000)
+ const f=fixture();try{const d=draft();d.composition!.inputs.forEach((i,n)=>i.generation={version:1,recipe:n===0?'starter-broken-v1':'starter-repaired-v1',requestId:crypto.randomUUID(),sessionId:'cb90357b-fe01-48ab-b14b-0620eb0d556e',taskId:'synthetic-composition-'+n});const m=upload(f.archive,d);assertSpriteManifest(m);assert.equal(m.files.length,4);assert.ok(Buffer.byteLength(JSON.stringify(m))<6000)
   await assert.rejects(f.archive.file('alice',d.id,'source'),/NOT_READY/)
   const ready=await f.archive.finish('alice',d.id);f.restart();assert.deepEqual(f.archive.get('alice',d.id),ready)
   const restored=await restoreSpriteManifest(m,file=>f.archive.file('alice',d.id,file.role));assert.deepEqual(restored,d);await verifySpriteComposition(restored,decode)

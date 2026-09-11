@@ -715,3 +715,12 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 `originalEquipmentBodies`从同一固定几何生成服务端和客户端碰撞；状态改变不改变占地。原作renderer在载入候选前核验PNG摘要/尺寸/实际alpha像素、重新计算bbox与几何并和发布记录比较，然后使用相同脚点/尺度创建两帧事件。repair-starter仍由原作规则改变事实和车况，图形只读取starter-repaired，不授予新物品；刷新与后续章节保留asset绑定。缺图沿用可恢复错误，不退回另一张图。已有Head仍先做静态地图校验再恢复合法站位，避免新增碰撞破坏旧旅程读取。
 
 新HTTP测试覆盖显式发布、私有来源、不可变/错误几何、未发布引用拒绝、丢发布/开户/维修回执及SQLite重开；中英文两条完整河谷路线到结局逐回合保持设备绑定与旧默认旅程。生产creator/原作开关仍关闭，完整人物图集、其他场景素材、平台账户绑定和正式全流程继续属于大目标。
+
+
+### 人物/设备在线生成原图（2026-09-11）
+- `sprite-generation-recipe.ts` 定义不可变v1配方：Ada 960×1280四向图集、启动机修复前/后320×640单帧。前者固定引用已修正背向步态的完整commit PNG，后两者引用铜线圈启动机原图。每条英文提示词低于2400字符，只有一个公开HTTPS参考。配方调整必须另建版本，不能修改已发布配方导致旧记录无法复原。
+- `sprite-generation.ts` 经现有公开媒体客户端请求/轮询；IndexedDB按部署UUID隔离，生成历史与SpriteDraft、玩家存档分别保存。一次意向固定requestId，任务ID先落盘，刷新后先GET旧任务。8秒最短重试等待，限流遵守服务retryAfter，ORIGIN_NOT_ALLOWED关闭继续按钮，不伪造Origin或换服务绕过。下载限8MiB、指定平台CDN、HTTPS/无凭据/拒绝跳转，PNG头/尺寸/SHA和浏览器真实解码通过才保存ready。
+- `sprite-generation-panel.tsx` 与准备页共用Web Lock，尚有不明确结果的任务只能续接，成功不会自动改当前原图。明确导入时以生成ID幂等保存新的source草稿；重复导入取回同一原图，旧候选仍在历史。原图尚未处理时只保存在本浏览器；处理候选可沿用现有在线归档。
+- `generation` 紧凑来源字段为version/recipe/requestId/sessionId/taskId。配方可复原完整请求；该记录是创作者提交的来源声明，服务未独立查询媒体任务证明其真实性。来源随子候选和两帧组合中的每个input保留，在线清单仍在5500字符/6000字节HTTP限制内，仍是2或4个PNG，不公开原图或生成记录。
+- 两张设备单帧通过已保存素材选择器进入同尺寸组合，不经下载再上传；单帧禁止直接按三状态图集处理。去背景结果不等于方向/步态准入；人物发布与完整四方向质量仍未完成。
+- `_qa/sprite-creator.html?generation=resume` 仅独立QA构建存在：合成媒体响应回放既有PNG，首次下载503，刷新后续接GET；`generation=origin`模拟明确来源拒绝。正常creator入口不传替身，不识别这些QA参数。QA页已补齐与生产相同的显式存储adapter，修复最初在线归档因测试页缺adapter失败。没有新增真实生图。

@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-11",
+  "scope": "Creator actor/equipment source generation through existing AlterU public client; original single-player goal remains active",
+  "realNewGenerationRequests": 0,
+  "firstTrialQuotaExpanded": false,
+  "transport": "QA-only synthetic tasks replay prior platform PNGs; normal creator uses public media client",
+  "recipes": [
+    "ada-walk-v1",
+    "starter-broken-v1",
+    "starter-repaired-v1"
+  ],
+  "correctedHeroReferenceHttp": 200,
+  "copperStarterReferenceHttp": 200,
+  "checks": {
+    "fullTests": 564,
+    "finalFocusedTests": 11,
+    "builds": [
+      "cloud + Worker",
+      "pages",
+      "preflight"
+    ],
+    "secretAudit": "pass",
+    "apiBaseAudit": "pass",
+    "mediaClientAudit": "pass",
+    "sourceUiAudit": "pass",
+    "rootUiAudit": "flags compiled vendor glyph tables; source audit has no findings"
+  },
+  "browser": {
+    "url": "http://127.0.0.1:5325/_qa/sprite-creator.html?generation=resume",
+    "actorRequest": "9f208e65-533c-431e-9577-3b79c1c3fa02",
+    "actorTask": "qa-9f208e65-533c-431e-9577-3b79c1c3fa02",
+    "processedDraft": "4a5c89fd-1700-4a10-902b-325a6b228858",
+    "sourceSha256": "43ba101c2bc5903ae6df9efef0067c1a753c44df2079285a74e7d3a3fb6144dd",
+    "candidateSha256": "1671149f6e83d43284b54c6519428deb110aa81b77c17390358d466893cda742",
+    "actions": [
+      "generation response then PNG 503",
+      "reload with original request/task retained",
+      "resume same task",
+      "explicit source adoption",
+      "prepare at foot y300",
+      "archive through actual local Worker",
+      "restore same candidate, provenance and SHA",
+      "generate and adopt two equipment sources",
+      "select both saved sources and compose 640x640",
+      "English origin rejection disables new generation but retains saved art"
+    ],
+    "compositeDraft": "72646008-8f57-47ef-a7b1-caac9a9fd9dd",
+    "deviceBeforeRequest": "6087180c-55a6-48d9-8db5-28192d54fc54",
+    "deviceAfterRequest": "cc6d271b-9fdd-4589-a44d-c0e8201c8f91",
+    "devicePixelFixture": "Both synthetic states intentionally replay the same prior repaired PNG; this verifies transport/composition/provenance, not state semantics or visual approval.",
+    "viewportEvidence": [
+      {
+        "size": "390x844",
+        "dpr": 1,
+        "horizontalOverflow": false
+      },
+      {
+        "size": "320x568",
+        "dpr": 1,
+        "horizontalOverflow": false
+      }
+    ],
+    "screenshots": [
+      "_qa/ui/generation-restored-provenance-390-platform-layout.jpg",
+      "_qa/ui/generation-download-failure-320-platform-layout.jpg",
+      "_qa/ui/generation-origin-rejected-320-en-platform-layout.jpg"
+    ],
+    "testHarnessFix": "Standalone QA HTML lacked the explicit scoped storage adapter; first online save failed without losing local source. Added same adapter as normal creator and repeated save/restore successfully."
+  },
+  "limits": [
+    "No new recipe has actual generated-pixel quality evidence yet.",
+    "Ada replay sheet remains rejected as a complete walk atlas.",
+    "Generation sources are local until processed and explicitly archived; platform account binding is still pending.",
+    "Published original single-player/creator production gates remain closed; formal main/Pages still 05db41c.",
+    "Production URL creation and final full single-player platform playthrough remain required.",
+    "No iPhone hardware validation this round."
+  ]
+}

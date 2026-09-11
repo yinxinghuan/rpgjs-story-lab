@@ -2,13 +2,15 @@ import {artDraftDatabaseName} from './art-draft'
 import type {PixelRaster, PreparedSprite, SpritePreparationSpec} from './sprite-preparation'
 import {composeRepairFrames} from './sprite-composition'
 import type {DeviceReview} from './device-publication'
+import type {SpriteGenerationSource} from './sprite-generation-recipe'
 export type SpritePng = {bytes: Uint8Array; sha256: string; width: number; height: number}
-export type SpriteCompositionInput={source:SpritePng;sourceName:string;columns:number;column:number}
+export type SpriteCompositionInput={source:SpritePng;sourceName:string;columns:number;column:number;generation?:SpriteGenerationSource}
 export type SpriteDraft = {
   version: 'sprite-draft-1'; id: string; revision: number; parentId?: string; createdAt: number;
   source: SpritePng; sourceName: string; sourceKind?: 'actor'|'states'; spec?: SpritePreparationSpec;
   deviceStateSet?: 'repair'; composition?: {version:1;inputs:SpriteCompositionInput[]};
   deviceReview?: DeviceReview;
+  generation?: SpriteGenerationSource;
   state: 'source'|'processing'|'candidate'|'failed'; error?: string;
   result?: {png: SpritePng; frames: PreparedSprite['frames']; metrics: PreparedSprite['metrics']; algorithm: PreparedSprite['algorithm']}
 }
