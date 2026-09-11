@@ -2,6 +2,9 @@
 export const RENDERER_TRANSITION_TIMEOUT_MS = 30000
 const failures=new Set(['MAP_TRANSFER_TIMEOUT','MAP_TRANSFER_REJECTED','MAP_TRANSFER_BUSY','MAP_RUNTIME_DISPOSED'])
 export function rendererFailure(error:unknown){return error instanceof Error&&failures.has(error.message)?error.message:'RENDERER_RESTORE'}
+// This RPG-JS beta has page-global providers. Reconnecting Story Session cannot
+// recreate a renderer whose initial load never acknowledged completion.
+export function rendererNeedsPageReload(code:string){return ['MAP_TRANSFER_TIMEOUT','MAP_RUNTIME_DISPOSED','RPG_RENDERER_ALREADY_CREATED'].includes(code)}
 type Port<S, P> = {
   changeMap: (scene: S, position: P) => Promise<boolean>
   teleport: (position: P) => Promise<unknown>
@@ -17,6 +20,7 @@ export class RendererTransition<S, P> {
   constructor(initial:S, private port:Port<S,P>, private timeoutMs=RENDERER_TRANSITION_TIMEOUT_MS) { this.current=initial }
   joinedScene(scene:S) { this.joined=scene; this.notify() }
   loadedScene(scene:S) { this.loaded=scene; this.notify() }
+  status(){return {scene:this.current,joined:this.joined,loaded:this.loaded,pendingScene:this.flight?.scene??null,disposed:this.disposed}}
   private notify() { for (const check of [...this.waiters]) check() }
   private ready(scene:S):Promise<void> {
     return new Promise((resolve,reject)=>{

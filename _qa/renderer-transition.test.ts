@@ -1,10 +1,14 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {RendererTransition,rendererFailure} from '../src/renderer-transition'
+import {RendererTransition,rendererFailure,rendererNeedsPageReload} from '../src/renderer-transition'
 const flush=()=>new Promise(resolve=>setTimeout(resolve,0))
 test('renderer diagnostics preserve known causes without arbitrary exception details',()=>{
  assert.equal(rendererFailure(Error('MAP_TRANSFER_TIMEOUT')),'MAP_TRANSFER_TIMEOUT')
  assert.equal(rendererFailure(Error('private URL or player details')),'RENDERER_RESTORE')
+})
+test('only unrecoverable renderer-instance failures choose page reload; authority and asset errors stay on their existing recovery path',()=>{
+ for(const code of ['MAP_TRANSFER_TIMEOUT','MAP_RUNTIME_DISPOSED','RPG_RENDERER_ALREADY_CREATED'])assert.equal(rendererNeedsPageReload(code),true)
+ for(const code of ['NETWORK_ERROR','SCENE_NOT_READY:EQUIPMENT_ART_UNAVAILABLE','ORIGINAL_MODEL_TEST_BUDGET_EXHAUSTED','MAP_TRANSFER_BUSY','MAP_TRANSFER_REJECTED','unknown'])assert.equal(rendererNeedsPageReload(code),false)
 })
 function setup(timeout=25){
  const changes:string[]=[],commits:string[]=[],teleports:number[]=[]
@@ -32,8 +36,10 @@ test('slow initial renderer keeps one pending restore and cannot teleport early'
  const r=new RendererTransition<string,number>('carriage',{changeMap:async()=>true,teleport:async()=>{calls.push('teleport')},commit:()=>calls.push('commit')},15)
  r.joinedScene('carriage')
  await assert.rejects(r.restore('carriage',1),/TIMEOUT/);assert.deepEqual(calls,[])
+ assert.deepEqual(r.status(),{scene:'carriage',joined:'carriage',loaded:null,pendingScene:'carriage',disposed:false})
  const retry=r.restore('carriage',1);r.loadedScene('carriage');await retry
  assert.deepEqual(calls,['teleport','commit'])
+ assert.deepEqual(r.status(),{scene:'carriage',joined:'carriage',loaded:'carriage',pendingScene:null,disposed:false})
 })
 test('slow engine transfer is bounded for caller, coalesced for retry, and commits only when ready',async()=>{
  let finish!:(ok:boolean)=>void,calls=0,commits=0

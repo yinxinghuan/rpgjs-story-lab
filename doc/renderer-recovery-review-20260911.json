@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-11",
+  "scope": "Recovery from a missing RPG-JS map-loaded acknowledgement, not proof that all initial loading failures are eliminated",
+  "causeOfIneffectiveRetry": "Story reconnection reused a still-pending map operation in a page-global renderer instance",
+  "change": "Known renderer instance failures offer full page reload; ordinary asset and service failures retain their existing retry paths",
+  "faultHarness": "_qa/renderer-recovery.vite.ts; separate build drops one completed-map notification, keeps the real 30000ms timeout",
+  "normalBuildsContainFaultHarness": false,
+  "originalJourney": {
+    "beforeFault": {"version": 1, "fuel": 68, "condition": 87, "morale": 58},
+    "fault": {"client": "started", "joined": "train-at-dead-station", "loaded": "", "pending": "train-at-dead-station"},
+    "reloadRecoveredSameVersion": true,
+    "continuedThroughActualMovementAndRiverTransfer": true,
+    "afterTransfer": {"version": 2, "scene": "train-at-river-valley", "fuel": 62, "condition": 87, "morale": 58},
+    "repairRewardAppliedOnce": true
+  },
+  "carriage": {
+    "forcedTimeoutShowsReload": true,
+    "reloadRestoresMapHandshake": true,
+    "actualWalkAndOpenCabinetAfterRecovery": true,
+    "cabinetStatePersistsAcrossFurtherReload": true
+  },
+  "creatorPreview": {
+    "forcedTimeoutShowsReload": true,
+    "reloadRestoresMapHandshake": true,
+    "actualMovement": "192,430 to 112,184; rendered position agrees",
+    "sourceQueryPreserved": true
+  },
+  "screenshots": [
+    "_qa/ui/renderer-reload-fault-320-external-guest.jpg",
+    "_qa/ui/renderer-reload-restored-320-platform-layout.jpg",
+    "_qa/ui/renderer-reload-river-390-platform-layout.jpg",
+    "_qa/ui/renderer-reload-preview-390-platform-layout.jpg"
+  ],
+  "validation": {"fullTests": 565, "focusedGaitAndRendererTests": 8, "builds": ["cloud", "pages", "preflight"], "audits": ["public-secrets", "game-api-base", "media-integration", "src-ui"]},
+  "limits": [
+    "Original sporadic startup trigger remains unconfirmed; diagnostics report handshake phases, not visible pixels",
+    "Two initial screenshots after background-tab viewport changes were blank despite ready diagnostics; foreground reload and delayed screenshot showed the scene. They are not accepted visual evidence",
+    "Desktop browser viewport checks are not iPhone hardware tests",
+    "No production deployment, new media generation or real-model calls in this increment"
+  ]
+}

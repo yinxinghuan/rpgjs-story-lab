@@ -1,3 +1,4 @@
+import {rendererNeedsPageReload} from './renderer-transition'
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react'
 import {createRpgRenderer,type RpgRendererRuntime,type RendererPoint} from './rpg-renderer'
 import {Assets} from 'pixi.js'
@@ -28,7 +29,7 @@ export default function OriginalScenePreview(){
  function walkable(p:RendererPoint,s:string){return originalTrainPlanWalkable(s,p)&&(!device.current||!deviceCandidateBlocks(device.current,s,p))}
  const rawConfig=__ORIGINAL_SCENE_PREVIEW__!,config={...rawConfig,resources:platform?rawConfig.platformResources:rawConfig.resources},world=originalTrainSpatialPlan(),spawn=world.scenes.find(s=>s.id===config.initialScene)!.spawn
  const checks=useRef<HTMLElement>(null),frame=useRef<HTMLDivElement>(null),runtime=useRef<RpgRendererRuntime|null>(null),readiness=useRef<SceneReadiness|null>(null),mounted=useRef(true),busy=useRef(false)
- const [position,setPosition]=useState(spawn),[destination,setDestination]=useState<RendererPoint|null>(null),[ready,setReady]=useState(false),[error,setError]=useState(''),[background,setBackground]=useState(''),[notice,setNotice]=useState(''),[rendered,setRendered]=useState<RendererPoint|null>(null),[scene,setScene]=useState(config.initialScene),[requested,setRequested]=useState(config.initialScene),[engineReady,setEngineReady]=useState(false),[switching,setSwitching]=useState(true)
+ const [position,setPosition]=useState(spawn),[destination,setDestination]=useState<RendererPoint|null>(null),[ready,setReady]=useState(false),[error,setError]=useState(''),[background,setBackground]=useState(''),[notice,setNotice]=useState(''),[rendered,setRendered]=useState<RendererPoint|null>(null),[scene,setScene]=useState(config.initialScene),[requested,setRequested]=useState(config.initialScene),[engineReady,setEngineReady]=useState(false),[switching,setSwitching]=useState(true),[reloadRequired,setReloadRequired]=useState(false)
  const zh=navigator.language.startsWith('zh'),t=(a:string,b:string)=>zh?a:b
  const names:Record<string,string>={[originalTrainRoom('dead-station')]:t('北岬站检修区','North Cape apron'),[originalTrainRoom('river-valley')]:t('河谷断桥近岸','River Valley near bank')}
  const positionRef=useRef(position);positionRef.current=position
@@ -57,14 +58,14 @@ export default function OriginalScenePreview(){
  useEffect(()=>{const f=frame.current!;const observer=new ResizeObserver(camera);observer.observe(f);observer.observe(f.parentElement!);if(checks.current)observer.observe(checks.current);return()=>observer.disconnect()},[])
  async function enterScene(id:string){
   const r=runtime.current,loader=readiness.current;if(!r||!loader||busy.current)return
-  busy.current=true;setSwitching(true);setReady(false);setError('');setNotice('');setRequested(id);r.pause(true)
+  busy.current=true;setSwitching(true);setReady(false);setError('');setReloadRequired(false);setNotice('');setRequested(id);r.pause(true)
   try{
    const prepared=await loader.prepare(id,true);if(!mounted.current){URL.revokeObjectURL(prepared.background);return}
    const next=world.scenes.find(s=>s.id===id)!.spawn
    await r.restore(next,id);if(!mounted.current)return
    const equipment=deviceEvents.current.get(id);if(equipment)applyDevice(equipment,deviceStateRef.current)
    loader.activate(id);setBackground(prepared.background);setScene(id);setPosition(r.position());setReady(true);r.pause(false)
-  }catch{if(mounted.current)setError(t('场景尚未准备好，请重试。','The scene is not ready. Retry to continue.'))}
+  }catch(e){if(mounted.current){const reload=rendererNeedsPageReload(e instanceof Error?e.message:'');setReloadRequired(reload);setError(reload?t('地图没有完成加载，请重新载入。','The map did not finish loading. Reload to continue.'):t('场景尚未准备好，请重试。','The scene is not ready. Retry to continue.'))}}
   finally{busy.current=false;if(mounted.current)setSwitching(false)}
  }
  useEffect(()=>{
@@ -121,6 +122,6 @@ export default function OriginalScenePreview(){
    {deviceReviewing&&<details className="cl-background-review"><summary>{t('设备检查','Device checks')} {reviewChecks.length}/5</summary><p>{t('看过修复前后，走到柜前和柜后，再检查柜体阻挡。确认铜线圈身份、透明边缘、比例与当前俯视角度一致。','Observe both repair states, walk in front and behind, then check body collision. Confirm the copper-coil identity, alpha edges, scale and overhead angle.')}</p><p>{DEVICE_CHECKS.filter(c=>!reviewChecks.includes(c)).map(c=>({broken:t('修复前','Before repair'),repaired:t('修复后','After repair'),front:t('柜前','Front'),back:t('柜后','Back'),collision:t('阻挡','Collision')}[c])).join(' · ')}</p><button disabled={!ready||!DEVICE_CHECKS.every(c=>reviewChecks.includes(c))||reviewBusy} onClick={()=>void saveDeviceReview()}>{reviewSaved?t('设备检查已保存','Device review saved'):t('确认设备画面并保存检查','Confirm device visuals and save review')}</button>{reviewSaved&&<a href="./creator.html?create_art=sprite">{t('返回制作页发布设备','Return to publish the device')}</a>}</details>}
    <output aria-label={t('运行位置','Runtime position')} data-scene={runtime.current?.renderedScene()??''}>{Math.round(position.x)},{Math.round(position.y)} · {t('画面','Rendered')} {rendered?`${Math.round(rendered.x)},${Math.round(rendered.y)}`:'—'}</output>
   </footer>
-  {error&&<aside className="cl-error" role="alert"><p>{error}</p>{(actorDraftId||deviceDraftId)&&<a href="./creator.html?create_art=sprite">{t('返回人物准备检查候选','Inspect the candidate in sprite preparation')}</a>}{draftMode&&<a href="./creator.html?create_art=north-cape">{t('返回制作页选择候选','Choose a candidate in the creator')}</a>}<button onClick={()=>engineReady?void enterScene(requested):location.reload()}>{engineReady?t('重试','Retry'):t('重新载入','Reload')}</button></aside>}
+  {error&&<aside className="cl-error" role="alert"><p>{error}</p>{(actorDraftId||deviceDraftId)&&<a href="./creator.html?create_art=sprite">{t('返回人物准备检查候选','Inspect the candidate in sprite preparation')}</a>}{draftMode&&<a href="./creator.html?create_art=north-cape">{t('返回制作页选择候选','Choose a candidate in the creator')}</a>}<button onClick={()=>engineReady&&!reloadRequired?void enterScene(requested):location.reload()}>{engineReady&&!reloadRequired?t('重试','Retry'):t('重新载入','Reload')}</button></aside>}
  </main>
 }

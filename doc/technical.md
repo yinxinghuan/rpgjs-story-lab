@@ -724,3 +724,10 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 - `generation` 紧凑来源字段为version/recipe/requestId/sessionId/taskId。配方可复原完整请求；该记录是创作者提交的来源声明，服务未独立查询媒体任务证明其真实性。来源随子候选和两帧组合中的每个input保留，在线清单仍在5500字符/6000字节HTTP限制内，仍是2或4个PNG，不公开原图或生成记录。
 - 两张设备单帧通过已保存素材选择器进入同尺寸组合，不经下载再上传；单帧禁止直接按三状态图集处理。去背景结果不等于方向/步态准入；人物发布与完整四方向质量仍未完成。
 - `_qa/sprite-creator.html?generation=resume` 仅独立QA构建存在：合成媒体响应回放既有PNG，首次下载503，刷新后续接GET；`generation=origin`模拟明确来源拒绝。正常creator入口不传替身，不识别这些QA参数。QA页已补齐与生产相同的显式存储adapter，修复最初在线归档因测试页缺adapter失败。没有新增真实生图。
+
+
+### 地图超时后的有效恢复（2026-09-11）
+`RendererTransition` 原有逻辑会保留超时后的引擎Promise，避免重复转场；迟到加载通知可完成同一操作，这部分继续保留。但如果完成通知永远不来，重复调用restore只会再次等待同一Promise，重连叙事服务不能重建当前RPG-JS实例。
+`rendererNeedsPageReload`将MAP_TRANSFER_TIMEOUT、MAP_RUNTIME_DISPOSED与RPG_RENDERER_ALREADY_CREATED映射为显式页面重载；原作、旧车厢、制作页分别复用该判断。网络/资产/规则错误仍使用原页恢复，绝不自动新建旅程或后台重试刷新。权威请求ID与旅程选择沿原持久客户端合同恢复。
+`RendererTransition.status()`提供当前scene/joined/loaded/pending/disposed，`rpg-renderer`只把有限的地图握手阶段投射到自有host的data-renderer-*属性，不包含玩家资料、凭据或完整存档。这是排错数据，不能替代真实像素验收。
+独立`_qa/renderer-recovery.vite.ts`构建可在明确query下丢弃一次onAfterLoading通知，测试标记写入该QA页面的scoped sessionStorage；正式三种构建不包含故障query、标记或修改。上一轮自然偶发超时的最初触发原因尚未确定；本轮修复的是无法完成加载时恢复按钮无效的问题，不宣称所有启动故障已消失。

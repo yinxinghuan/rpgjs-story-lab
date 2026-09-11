@@ -27,6 +27,10 @@ const transitions=new RendererTransition<SceneId,Position>(initialScene,{
  teleport:async p=>player!.teleport(p),
  commit:(scene,p)=>{activeScene=scene;pos=p;player!.syncChanges();project();reportPosition(pos)},
 })
+// Bounded, non-player diagnostics on our own renderer host. These report the
+// handshake, not a visual quality or texture-readiness certification.
+function reportHandshake(){const s=transitions.status();host.dataset.rendererJoined=s.joined??'';host.dataset.rendererLoaded=s.loaded??'';host.dataset.rendererPending=s.pendingScene??'';host.dataset.rendererClient=client?'started':'waiting'}
+reportHandshake()
 let paused=true,stick={x:0,y:0},pos={...initialPosition},last=0,frame=0,strideDistance=0
 let route:Position[]=[],arrive:(()=>void)|undefined
 const keys=new Set<string>()
@@ -48,15 +52,15 @@ function renderResolution(){return Math.min(5.2,Math.max(1,Math.ceil(frameBox.cl
 function syncViewport(){const scale=frameBox.clientWidth/options.width;host.style.transform=`scale(${scale})`;frameBox.style.setProperty('--world-scale',String(scale));const renderer=client?.renderer,resolution=renderResolution();if(renderer&&Math.abs(renderer.resolution-resolution)>.001)renderer.resize(options.width,options.height,resolution)}
 const resize=new ResizeObserver(syncViewport);resize.observe(frameBox)
 window.addEventListener('resize',syncViewport)
-const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;transitions.joinedScene(map.id.replace(/^map-/, '') as SceneId)},async onConnected(p){
+const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;transitions.joinedScene(map.id.replace(/^map-/, '') as SceneId);reportHandshake()},async onConnected(p){
  player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;await p.changeMap(initialScene,pos)
  bindSpace({position:()=>({...pos}),renderedPosition:()=>{const s=client?.getCurrentPlayer();return s?{x:s.x(),y:s.y()}:null},
   move:(x,y)=>{stick={x,y};if(x||y)cancelRoute()},walkTo:(p,callback)=>{if(paused||changing)return false;const path=findPath(pos,p,activeScene);if(!path.length)return false;route=path;arrive=callback;reportDestination(path[path.length-1]);return true},
   pause:v=>{paused=v;keys.clear();stick={x:0,y:0};if(v){cancelRoute();stand()}},
-  scene:()=>activeScene,renderedScene:()=>loadedScene,renderedEvents:()=>Object.keys(loadedMap?.events()??{}),restore:async(p,scene=initialScene)=>{changing=true;cancelRoute();keys.clear();stick={x:0,y:0};stand();try{await transitions.restore(scene,safePosition(p,scene))}finally{changing=false}},
+  scene:()=>activeScene,renderedScene:()=>loadedScene,renderedEvents:()=>Object.keys(loadedMap?.events()??{}),restore:async(p,scene=initialScene)=>{changing=true;cancelRoute();keys.clear();stick={x:0,y:0};stand();try{const restoring=transitions.restore(scene,safePosition(p,scene));reportHandshake();await restoring}finally{changing=false;reportHandshake()}},
   destroy:()=>{transitions.dispose();cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener('resize',syncViewport);window.removeEventListener('keydown',down);window.removeEventListener('keyup',up);window.removeEventListener('blur',clearInput);document.removeEventListener('visibilitychange',visibilityChanged)}})
  }},maps:sceneIds.map(id=>({id,events:options.mapEvents(id)}))}])]})
-startGame({providers:[provideClientGlobalConfig({prediction:{enabled:false},bootstrapCanvasOptions:{antialias:false,backgroundAlpha:0,autoDensity:true,resolution:renderResolution()}}),tiledClient({basePath:'./map'}),provideClientModules([{sceneMap:{onAfterLoading(map){const id=client?.activeRoom()?.name?.replace(/^map-/, '') as SceneId;if(sceneIds.includes(id)){loadedScene=id;loadedMap=map as unknown as {events:()=>Record<string,unknown>};transitions.loadedScene(id)}}},spritesheets:options.spritesheets,engine:{onStart(engine){client=engine;options.onEngine?.(engine);engine.width.set(String(options.width));engine.height.set(String(options.height));engine.stopProcessingInput=true;engine.renderer.background.alpha=0;syncViewport()}}}]),provideRpg(server)]})
+startGame({providers:[provideClientGlobalConfig({prediction:{enabled:false},bootstrapCanvasOptions:{antialias:false,backgroundAlpha:0,autoDensity:true,resolution:renderResolution()}}),tiledClient({basePath:'./map'}),provideClientModules([{sceneMap:{onAfterLoading(map){const id=client?.activeRoom()?.name?.replace(/^map-/, '') as SceneId;if(sceneIds.includes(id)){loadedScene=id;loadedMap=map as unknown as {events:()=>Record<string,unknown>};transitions.loadedScene(id);reportHandshake()}}},spritesheets:options.spritesheets,engine:{onStart(engine){client=engine;reportHandshake();options.onEngine?.(engine);engine.width.set(String(options.width));engine.height.set(String(options.height));engine.stopProcessingInput=true;engine.renderer.background.alpha=0;syncViewport()}}}]),provideRpg(server)]})
 function tick(time:number){
  const dt=Math.min((time-last)/1000,.04);last=time
  if(player&&!paused&&!changing){
