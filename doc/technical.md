@@ -751,3 +751,13 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 正式handleApi沿用CarriageJourneyAuthority/CARRIAGE_JOURNEYS绑定，开启creator路由，原作及旅途画页开关保持关闭。creator-art-v1前缀隔离制作数据，车厢owner对象名和wire不变；发布标识改为carriage-creator-storage-20260911-2。正式制作页发布后的链接指向同源不可变图片，preflight继续指向原作绑定旅程。没有第二套后台、长期客户端凭据或平台账号身份假设。线上执行结果在发布检查记录中另记。
 
 正式Worker首次上传拒绝：冻结原作cartridge五个浏览器图片/音频地址在模块顶层使用import.meta.url，Cloudflare模块URL不是可用于相对资源解析的文件URL。本机源码测试未覆盖此边界。build-worker.mjs现只在后台编译中将这五个显示地址置空，冻结源文件和前端媒体解析保持不变，故事/规则字段不改；新增opaque data URL模块启动与creator health检查，构建期即捕捉该类错误。71c50ed上传失败，不能登记为主站发布成功。
+
+### 人物检查的私有在线版本（2026-09-11）
+
+`actor-review-archive.ts` 将图集检查绑定到草稿编号、原图/候选SHA、处理参数和帧信息。在线保存先完成不可变PNG归档，再把检查追加到同一creator DO的`creator_actor_reviews`表；原素材清单和像素不变。`GET/POST /api/creator/sprites/:id/actor-reviews`沿用制作身份鉴权和private/no-store，仅ready人物素材可用，每份最多64版。检查内容是创作者观察声明，保存不代表姿态合格或自动准入。
+
+检查内容的固定字段摘要作为请求编号；丢失回执、刷新及服务器重启后重试返回原版号。旧请求晚到也不会成为最新记录；到达64版上限后仍允许原请求重试。服务端在异步摘要前复制并验证输入，事务内复核素材绑定。取回人物时客户端验证检查内容摘要、绑定及连续版本顺序，再恢复最新版；失败时不覆盖本地记录。重新处理仍清空新候选检查，旧素材记录保留。
+
+`SpriteCloudArchive.saveWithReview`保留分段上传进度，区分“文件已保存但检查回执未确认”与文件上传失败。原图归档与检查不是同一事务，界面明确允许同一检查重试。没有平台账号跨设备身份、新的公开人物图片接口或人物发布功能。
+
+`_qa/actor-review-cloud.test.ts`覆盖真实HTTP/SQLite重开、丢回执、旧重试、64版上限、篡改/跨素材绑定和私有访问；`_qa/actor-review-cloud-browser.ts`用新建无登录态的本机浏览器实际点击保存、刷新、重试、二次检查、重新处理及在线取回。320×568中文与390×844英文均得到版本序列1/1/2，无页面错误及横向溢出。这里只验证记录流程，所用阿达旧图集仍因背向同腿和右向错误拒绝；不等于iPhone硬件或生产平台内试玩。

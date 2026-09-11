@@ -2,6 +2,8 @@ import type {AuthorityStorage} from './session-authority'
 import {LabError} from '../src/journey-runtime'
 import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from '../src/device-publication'
 import {inspectSpritePng} from '../src/sprite-draft'
+import {assertActorSheetReview,type ActorSheetReview} from '../src/actor-sheet-review'
+import {ACTOR_REVIEW_LIMIT,actorReviewId,actorReviewTarget,type ArchivedActorReview} from '../src/actor-review-archive'
 import {assertSpriteManifest,spriteManifestSignature,spritePartBytes,SPRITE_ARCHIVE_LIMIT,SPRITE_ARCHIVE_PART,type SpriteArchiveRecord,type SpriteFile} from '../src/sprite-archive-contract'
 
 /** Private immutable source archive. Byte validation is not visual admission. */
@@ -10,6 +12,7 @@ export class CreatorSpriteArchive{
   db.run('CREATE TABLE IF NOT EXISTS creator_sprites(owner TEXT NOT NULL,id TEXT NOT NULL,manifest TEXT NOT NULL,state TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_parts(owner TEXT NOT NULL,id TEXT NOT NULL,role TEXT NOT NULL,part INTEGER NOT NULL,data BLOB NOT NULL,PRIMARY KEY(owner,id,role,part))')
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_releases(owner TEXT NOT NULL,id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
+  db.run('CREATE TABLE IF NOT EXISTS creator_actor_reviews(owner TEXT NOT NULL,id TEXT NOT NULL,review_id TEXT NOT NULL,revision INTEGER NOT NULL,record TEXT NOT NULL,PRIMARY KEY(owner,id,review_id),UNIQUE(owner,id,revision))')
  }
  list(owner:string):SpriteArchiveRecord[]{return this.db.all<{manifest:string;state:'uploading'|'ready';created_at:number}>('SELECT manifest,state,created_at FROM creator_sprites WHERE owner=? ORDER BY created_at DESC',owner).map(r=>({manifest:JSON.parse(r.manifest),state:r.state,createdAt:r.created_at}))}
  get(owner:string,id:string){const r=this.list(owner).find(r=>r.manifest.id===id);if(!r)throw new LabError('SPRITE_ARCHIVE_NOT_FOUND',404);return r}
@@ -65,6 +68,25 @@ export class CreatorSpriteArchive{
  async file(owner:string,id:string,role:string){const r=this.get(owner,id),f=r.manifest.files.find(f=>f.role===role);if(r.state!=='ready'||!f)throw new LabError('SPRITE_ARCHIVE_NOT_READY',409);return this.checked(owner,id,f)}
  cancel(owner:string,id:string){return this.db.transaction(()=>{const r=this.get(owner,id);if(r.state!=='uploading')throw new LabError('SPRITE_ARCHIVE_ALREADY_READY',409);this.db.run('DELETE FROM creator_sprite_parts WHERE owner=? AND id=?',owner,id);this.db.run('DELETE FROM creator_sprites WHERE owner=? AND id=?',owner,id);return {id,cancelled:true}})}
  publication(owner:string,id:string):PublishedDevice|null{const row=this.db.all<{release:string}>('SELECT release FROM creator_sprite_releases WHERE owner=? AND id=?',owner,id)[0];if(!row)return null;const r=JSON.parse(row.release);assertPublishedDevice(r);return r}
+ actorReviews(owner:string,id:string):ArchivedActorReview[]{
+  const r=this.get(owner,id);if(r.state!=='ready'||r.manifest.draft.spec.kind!=='actor')throw new LabError('SPRITE_ACTOR_REVIEW_NOT_READY',409)
+  return this.db.all<{record:string}>('SELECT record FROM creator_actor_reviews WHERE owner=? AND id=? ORDER BY revision DESC',owner,id).map(r=>JSON.parse(r.record))
+ }
+ async saveActorReview(owner:string,id:string,value:any){
+  const source=this.get(owner,id)
+  if(source.state!=='ready'||source.manifest.draft.spec.kind!=='actor')throw new LabError('SPRITE_ACTOR_REVIEW_NOT_READY',409)
+  let identity:string,review:ActorSheetReview
+  try{if(!value||Object.keys(value).sort().join(',')!=='id,review')throw Error();const input=structuredClone(value);assertActorSheetReview(input.review,actorReviewTarget(source.manifest));review=input.review;identity=await actorReviewId(review);if(input.id!==identity)throw Error()}catch{throw new LabError('SPRITE_ACTOR_REVIEW_INVALID')}
+  return this.db.transaction(()=>{
+   const current=this.get(owner,id);if(current.state!=='ready'||spriteManifestSignature(current.manifest)!==spriteManifestSignature(source.manifest))throw new LabError('SPRITE_ARCHIVE_CONFLICT',409)
+   const records=this.actorReviews(owner,id),existing=records.find(r=>r.id===identity)
+   // A delayed retry returns its original version; it cannot become latest again.
+   if(existing)return existing
+   if(records.length>=ACTOR_REVIEW_LIMIT)throw new LabError('SPRITE_ACTOR_REVIEW_LIMIT',429)
+   const record:ArchivedActorReview={version:1,id:identity,revision:records.length+1,createdAt:this.now(),review}
+   this.db.run('INSERT INTO creator_actor_reviews VALUES(?,?,?,?,?)',owner,id,identity,record.revision,JSON.stringify(record));return record
+  })
+ }
  async publish(owner:string,id:string,value:any){
   const record=this.get(owner,id),d=record.manifest.draft,f=record.manifest.files.find(f=>f.role==='candidate')!
   if(record.state!=='ready'||d.deviceStateSet!=='repair'||d.spec.kind!=='states')throw new LabError('DEVICE_NOT_READY',409)

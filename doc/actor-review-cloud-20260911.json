@@ -1,0 +1,126 @@
+{
+  "date": "2026-09-11",
+  "scope": "人物检查私有在线版本；不代表人物美术准入",
+  "mode": "new isolated headless contexts, local real Worker/SQLite API, retained platform PNG, no external requests",
+  "evidence": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "lang": "zh",
+      "originalId": "afe87011-6d69-4bba-b182-8d5e4fd8b2e2",
+      "requests": [
+        "428d020e309ed4ee706b3fd9f3df7b04a373004dcee11d15f36b85c50238add5",
+        "428d020e309ed4ee706b3fd9f3df7b04a373004dcee11d15f36b85c50238add5",
+        "bd93c52ddfe39fcda60a8daa1308e092374f67bcf1f5d8a6c7d963e2c5b1f650"
+      ],
+      "revisions": [
+        1,
+        1,
+        2
+      ],
+      "firstResponseLost": true,
+      "retryAfterReload": true,
+      "latestReviewRestored": true,
+      "restoredReviewSurvivesReload": true,
+      "layout": {
+        "overflow": false,
+        "buttons": [
+          {
+            "width": 288,
+            "height": 48
+          },
+          {
+            "width": 288,
+            "height": 48
+          },
+          {
+            "width": 288,
+            "height": 48
+          },
+          {
+            "width": 288,
+            "height": 48
+          },
+          {
+            "width": 288,
+            "height": 48
+          },
+          {
+            "width": 288,
+            "height": 48
+          }
+        ]
+      },
+      "externalRequests": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "en",
+      "originalId": "651e90ae-5074-479f-8b06-753cb344132b",
+      "requests": [
+        "9ebf86f74c51c13edac5ce28bac59d621b7a569bde27a81ba2df80e095ef8858",
+        "9ebf86f74c51c13edac5ce28bac59d621b7a569bde27a81ba2df80e095ef8858",
+        "7c6ec1dd21ae17eafc6cd8abddb788dfd5a027ec162bea43c8a9a0856c1963e4"
+      ],
+      "revisions": [
+        1,
+        1,
+        2
+      ],
+      "firstResponseLost": true,
+      "retryAfterReload": true,
+      "latestReviewRestored": true,
+      "restoredReviewSurvivesReload": true,
+      "layout": {
+        "overflow": false,
+        "buttons": [
+          {
+            "width": 358,
+            "height": 48
+          },
+          {
+            "width": 358,
+            "height": 48
+          },
+          {
+            "width": 358,
+            "height": 48
+          },
+          {
+            "width": 358,
+            "height": 48
+          },
+          {
+            "width": 358,
+            "height": 48
+          },
+          {
+            "width": 358,
+            "height": 48
+          }
+        ]
+      },
+      "externalRequests": [],
+      "pageErrors": []
+    }
+  ],
+  "screenshots": [
+    "_qa/ui/actor-cloud-320-zh-lost-reply-local-qa.png",
+    "_qa/ui/actor-cloud-320-zh-restored-local-qa.png",
+    "_qa/ui/actor-cloud-390-en-lost-reply-local-qa.png",
+    "_qa/ui/actor-cloud-390-en-restored-local-qa.png"
+  ],
+  "visualInspection": "四张实际视口截图已检查；无横向溢出，错误及未通过状态清晰。",
+  "limits": [
+    "本机新建无登录态浏览器，不是生产来源操作或iPhone硬件验收",
+    "阿达旧候选仍未通过方向及步态检查",
+    "没有新的生成调用、人物发布或平台账号身份接入"
+  ],
+  "progressCallback": "代码复查补上saveWithReview的分段上传进度转发；真实HTTP回归核验最后进度等于总数。"
+}
