@@ -27,7 +27,7 @@ export const originalBaseAssets=(a?:OriginalAssetBindings):LegacyBindings|undefi
 export const originalActorRelease=(a?:OriginalAssetBindings)=>a?.version===4?a.ada:undefined
 export function originalStarterRelease(a?:OriginalAssetBindings){const base=originalBaseAssets(a);return base?.version===3?base.starter:undefined}
 export const currentOriginalBackgrounds:Readonly<Record<string,string>>={[northCape]:ORIGINAL_BACKGROUND_PLATFORM,'train-at-graystone-yard':GRAYSTONE_BACKGROUND,'train-at-pine-line':PINE_BACKGROUND,'train-at-sleeping-town':TOWN_BACKGROUND,'train-at-tunnel':TUNNEL_BACKGROUND,'train-at-mountain-pass':PASS_BACKGROUND,'train-at-flood-bridge':FLOOD_BRIDGE_BACKGROUND,'train-at-dawn-junction':JUNCTION_BACKGROUND}
-const currentStandingCast=():FixedStandingBindings=>({'ren-medic':'ren-standing-v1'})
+const currentStandingCast=():FixedStandingBindings=>({'ren-medic':'ren-standing-v1','lin-scout':'lin-standing-v1','mara-raider':'mako-standing-v1'})
 export const newOriginalAssetBindings=():OriginalAssetBindings=>({version:1,backgrounds:{...currentOriginalBackgrounds},standingCast:currentStandingCast()})
 const additionalBackgrounds=()=>Object.fromEntries(Object.entries(currentOriginalBackgrounds).filter(([scene])=>scene!==northCape))
 function publishedBackgroundBinding(published:PublishedBackground):BackgroundBindings{const additional=additionalBackgrounds();return {version:2,published:structuredClone(published),standingCast:currentStandingCast(),...(Object.keys(additional).length?{additional}:{})}}

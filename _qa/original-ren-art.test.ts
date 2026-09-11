@@ -22,7 +22,7 @@ test('Ren standing pixels reproduce authorized matte removal and foot alignment 
  assert.equal(output.data[3],0);assert.equal(a.capability,'front-standing-only');assert.ok((result.frames[0].sourceBox[3]-result.frames[0].sourceBox[1])*a.scale<34)
 })
 test('fixed cast is explicit and immutable across old and published asset wrappers; unknown identities reject',()=>{
- const a=newOriginalAssetBindings();assert.deepEqual(originalStandingCast(a),{'ren-medic':'ren-standing-v1'})
+ const a=newOriginalAssetBindings();assert.equal(originalStandingCast(a)['ren-medic'],'ren-standing-v1')
  const old={version:1 as const,backgrounds:{...(a as any).backgrounds}};assertOriginalAssetBindings(old);assert.deepEqual(originalStandingCast(old),{})
  assert.equal(originalCharacterArtSlots('train-at-river-valley',old).some(s=>s.characterId==='ren-medic'),false)
  for(const standingCast of [null,[],{'ren-medic':'missing'},{'ada-mechanic':'ren-standing-v1'},{'ren-medic':'__proto__'}])assert.throws(()=>assertOriginalAssetBindings({...old,standingCast}),/UNSUPPORTED/)

@@ -19,7 +19,8 @@ test('replacement art and development markers never inherit the baseline appeara
  h.assets={version:4,base:h.assets as any,ada:{version:1,id:'a'.repeat(64)+'.'+randomUUID(),slot:'ada-mechanic',sha256:'a'.repeat(64),bytes:100,width:72,height:96,foot:{x:12,y:20},review:{version:1,layout:'north-cape-river-actor-1',scale:236*.14/16,bounds:Array.from({length:12},()=>[7,4,17,20] as [number,number,number,number]),checks:['down','left','right','up','stand','collision','river','return'],visualAccepted:true}}}
  const replacement=originalVisualContext(h,'ada-mechanic').speaker
  assert.equal(replacement.assetSha256,'a'.repeat(64));assert.deepEqual(replacement.appearance,{});assert.equal(replacement.appearanceStatus,'not-described')
- const marker=originalVisualContext(h,'lin-scout').speaker;assert.equal(marker.representation,'development-marker');assert.deepEqual(marker.appearance,{})
+ const old=structuredClone(h);delete (old.assets as any).base.standingCast
+ const marker=originalVisualContext(old,'lin-scout').speaker;assert.equal(marker.representation,'development-marker');assert.deepEqual(marker.appearance,{})
 })
 test('generator and reviewer receive the same actual visual contract; a rejected contradiction cannot become dialogue',async()=>{
  const c=originalDialogueContext(initial(),'ada-mechanic'),calls:any[]=[]

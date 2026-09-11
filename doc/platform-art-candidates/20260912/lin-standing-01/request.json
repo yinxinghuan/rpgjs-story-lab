@@ -1,0 +1,8 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "7e2383db-3bc1-42c3-a20b-90de19c96be1",
+  "mode": "edit",
+  "referenceUrls": ["https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/0baf71b/public/art/ren-standing-v1.png"],
+  "size": {"width": 640, "height": 640},
+  "prompt": "The reference is the CAMERA, PIXEL STYLE AND BODY-SHAPE MASTER. Edit this exact standing map sprite into Lin, a male railway track inspector. Preserve the exact high downward orthographic view, big visible oval hair crown, tiny face tucked under the hair with eyes mostly hidden by the brow, visible TOPS of both shoulders, foreshortened torso and legs, silhouette scale and both boots standing level. Do not make a frontal portrait or tilt his face toward the camera. Keep crown near y185 and soles y600, foot center x320, generous empty margins. Change gray hair to short black hair. Change gray-green jacket to a rain-darkened slate-blue railway inspection jacket with a narrow muted ochre trim on each cuff, dark charcoal trousers, brown work boots. Remove the medical case. Instead let him hold one small closed maroon route notebook against his hip on image right, with a small plain dark radio clipped at the other hip. No medical case, lamp, white coat, hat, badges, readable text or logos. Preserve the reference crisp painted pixel blocks and dark edging, same lighting, same body height and same overhead camera. SINGLE stationary whole-body character in one 640-square cell, not a sheet. Uniform white background, no ground shadow, scenery or checkerboard. Camera match is more important than a recognizable facial portrait."
+}

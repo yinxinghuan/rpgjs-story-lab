@@ -1,0 +1,24 @@
+{
+  "status": "standing-admitted-preflight",
+  "sourceSha256": "c9dc59436248818e2755e26f58c7352f08b8ba620889e6cd5f285b5784f75b11",
+  "resultSha256": "28e8686d170119af59a7020801bee50f036ac6811fddbfb62721c70d0d7d0265",
+  "taskId": "mt_2b7a85220fa555dd34894dd8b7d0a32f",
+  "capability": "front-standing-only",
+  "foot": {
+    "x": 320,
+    "y": 600
+  },
+  "scale": 0.068,
+  "sourceRetained": true,
+  "review": [
+    "High downward view retains crown and shoulder tops",
+    "Identity props visible and distinct from other cast",
+    "Neutral matte removed with original retained; no repaint or nonuniform stretching",
+    "320 and 390 actual renderer introduction, body collision and full-story presence/absence checked"
+  ],
+  "limits": [
+    "Simpler hair shading than early baseline",
+    "No four-direction walking claim",
+    "Existing unbound saves retain their previous markers"
+  ]
+}
