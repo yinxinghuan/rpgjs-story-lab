@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-11",
+  "resource": "public/art/starter-states-v1.png",
+  "sha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+  "sourceFrames": [
+    "starter-edit-02 column 1",
+    "starter-repair-03 column 0"
+  ],
+  "excluded": "starter-edit-02 column 2 ceramic fuse",
+  "preparation": {
+    "algorithm": "neutral-matte-unmix-1",
+    "sourceContacts": [
+      [
+        173,
+        463
+      ],
+      [
+        173,
+        468
+      ]
+    ],
+    "targetContact": [
+      160,
+      544
+    ],
+    "perFrameScaling": false,
+    "worldScale": 0.12269938650306748,
+    "body": [
+      40,
+      18
+    ],
+    "originalsRetained": true
+  },
+  "browser": {
+    "url": "http://127.0.0.1:5324/?story=original",
+    "syntheticDatabase": ".data/starter-20260911",
+    "actions": [
+      "nearby starter -> actual path arrival",
+      "repair-starter -> condition 82 to 87",
+      "close journal -> repaired frame visible and device remains",
+      "reload -> version 1 and condition 87 retained",
+      "390x844 and 320x568 actual DOM; no horizontal overflow",
+      "walk behind device with actual RPG-JS depth",
+      "block starter PNG -> SCENE_NOT_READY:EQUIPMENT_ART_UNAVAILABLE",
+      "unblock and recover same journey"
+    ],
+    "screenshots": "_qa/ui/starter-*-platform-layout.jpg",
+    "guestShell": "production script loaded; visible banner closed using its own Close button",
+    "iphoneHardware": false
+  },
+  "tests": {
+    "total": 545,
+    "passed": 545,
+    "failed": 0,
+    "builds": [
+      "preflight",
+      "cloud + worker",
+      "pages"
+    ],
+    "secretAudit": "pass",
+    "apiBaseAudit": "pass"
+  },
+  "productionDeployed": false,
+  "limits": [
+    "Device two-state self-service assembly and cloud publication still incomplete",
+    "Original production gate remains closed",
+    "Remaining original character/scene art and actual AlterU full playthrough remain outstanding",
+    "Slight repaired cabinet shape drift accepted for preflight only"
+  ]
+}

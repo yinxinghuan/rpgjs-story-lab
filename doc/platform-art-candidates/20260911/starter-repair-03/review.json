@@ -1,0 +1,16 @@
+{
+  "status": "admitted-to-original-preflight-only",
+  "originalRetained": true,
+  "operation": "public platform edit of copper-coil reference frame",
+  "semanticReview": {
+    "coilIdentityRetained": true,
+    "ceramicFuseExcluded": true,
+    "brokenLooseWiresVsReconnectedState": true
+  },
+  "limits": [
+    "Cabinet body height differs by about 4.6%; contact points aligned without per-frame rescaling",
+    "Connection geometry is illustrative, not an engineering diagram",
+    "Not a self-service multi-source creator publication",
+    "Production original gate remains closed"
+  ]
+}

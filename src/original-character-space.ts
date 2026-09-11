@@ -16,9 +16,9 @@ export function originalCharacterWalkable(head:Presence,p:Point){
  return originalTrainPlanWalkable(head.sceneId,p)&&!originalCharacterBodies(head).some(b=>p.x+9>b.x&&p.x<b.x+b.w&&p.y+15>b.y&&p.y<b.y+b.h)
 }
 /** Only occupied legacy positions are moved; all story fields stay untouched. */
-export function originalCharacterSafePosition(head:Presence,p:Point):Point{
- if(originalCharacterWalkable(head,p))return {...p}
- // One-unit rings retain subpixel phase and choose the closest legal point.
+export function originalCharacterSafePosition(head:Presence,p:Point,walkable=(q:Point)=>originalCharacterWalkable(head,q)):Point{
+ if(walkable(p))return {...p}
+ // Retain subpixel phase; choose the nearest legal point in the first legal ring.
  for(let radius=1;radius<=48;radius++){
   const ring:Point[]=[]
   for(let offset=-radius;offset<=radius;offset++){
@@ -26,7 +26,7 @@ export function originalCharacterSafePosition(head:Presence,p:Point):Point{
    if(Math.abs(offset)<radius)ring.push({x:p.x-radius,y:p.y+offset},{x:p.x+radius,y:p.y+offset})
   }
   ring.sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))
-  const safe=ring.find(q=>originalCharacterWalkable(head,q));if(safe)return safe
+  const safe=ring.find(walkable);if(safe)return safe
  }
  throw Error('ORIGINAL_CHARACTER_POSITION_UNAVAILABLE')
 }

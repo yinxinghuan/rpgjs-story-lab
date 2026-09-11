@@ -677,3 +677,11 @@ CARRIAGE_QA_DATABASE_DIR=.data/original-persistence-20260911 npm run preview:pre
 原作客户端在创建renderer前核验人物PNG大小/SHA/解码，显式加载blob纹理。九个地图的阿达节点从原作共享实体站位派生；使用1×1穿透事件作为图形节点，以`y+1`回到同一脚底深度，实际9×15身体碰撞继续读取`original-character-space.ts`。固定graphic只切换stand/hidden透明帧，每次权威head恢复后投影当前人物是否在场，不新增独立NPC存档或关系。按钮改为透明人物触控区，保持原接近点/交谈动作。
 
 缺图中止场景准备、保留权威旅程并用既有恢复入口重试。完整四向动作、其他角色、创作者自助人物版本发布/激活及正式视觉验收仍未完成，原作生产开关保持关闭。浏览器实证与尺寸偏差见`ada-standing-review-20260911.json`。
+
+### 原作启动继电器实体（2026-09-11）
+
+`scripts/prepare-starter-states.ts`固定两张平台原图SHA，选择02第1列与03单帧，调用制作页同一`prepareSpritePixels`去底和显式脚点平移，输出640×640的`starter-states-v1.png`。未修改输入，也未采用02的错误保险丝状态。该脚本是固定候选的可复现装配；多来源状态组合尚未做成创作者自助UI，不称为设备云发布完成。
+
+`original-equipment-art.ts`从原场景实体starter派生脚点和固定40×18占地，提供两帧纹理、资源摘要及`starter-repaired`事实投影。原作renderer创建独立1×1穿透图形节点，实体动作消失后设备仍存在；每次权威Head恢复后更新图形，故事不由画面驱动。`original-world-space.ts`组合原场景、在场人物与设备占位，客户端寻路和服务端位置校验共用；旧Head仍先按原静态地图校验，再在组合占位下恢复合法点，不改动StorySave。PNG在renderer前验证摘要/解码，缺图使用既有恢复界面。
+
+本轮545项测试、preflight/cloud+worker/Pages构建、公开秘密与API base扫描通过。真实新建浏览器旅程完成检修、82→87车况、刷新版本1、390×844与320×568布局及柜后行走；缺少设备PNG时明确恢复提示，恢复正常加载后继续。详见`starter-entity-review-20260911.json`。未正式部署，不等于完整原作发布完成。

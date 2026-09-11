@@ -1,0 +1,40 @@
+{
+  "source": "props-edit-01",
+  "sourceSha256": "fdcbd8562b9c9d2b3669922553b2c25f1af213fbbd9e3a109daa30603e71fa0e",
+  "candidateId": "b61c262b-7f36-4353-9e25-4429f50c1437",
+  "outputSha256": "4ad08a6e369122400b4842d31f9ecfe45a85ef1cb96844ec54ec51ab86423e4b",
+  "sourceAnchors": [
+    [
+      160,
+      443
+    ],
+    [
+      167,
+      441
+    ],
+    [
+      167,
+      440
+    ]
+  ],
+  "targetAnchor": [
+    160,
+    544
+  ],
+  "browserWorkerPrepared": true,
+  "browserSaved": true,
+  "realMapChecked": [
+    "closed",
+    "open with item",
+    "open empty",
+    "walk front logical/rendered 104,236",
+    "walk behind logical/rendered 104,200",
+    "cabinet collision rejected"
+  ],
+  "notVerifiedThisTrial": [
+    "file export",
+    "cross-scene recovery",
+    "refresh"
+  ],
+  "admission": "fuse cabinet candidate only; not original diesel starter"
+}
