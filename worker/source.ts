@@ -1,5 +1,6 @@
 import {OriginalTrainAuthority,originalPresentationUnavailable,type OriginalPresentationGate} from '../server/original-train-runtime'
 import type {OriginalActionInterpreter} from '../server/original-action-interpreter'
+import type {OriginalDialogueGenerator} from '../server/original-dialogue'
 import {originalJson,handleOriginalSession} from '../server/original-http'
 import {ORIGINAL_API_PATH,ORIGINAL_RUNTIME_HEADER,ORIGINAL_RUNTIME_CONTRACT} from '../src/original-runtime-contract'
 import {createJournalImageProducer,readJournalImageAsset,type ImageProducer} from '../server/journal-image'
@@ -54,7 +55,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,_env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter){
+ constructor(ctx:DurableContext,_env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
@@ -66,7 +67,7 @@ export class CarriageJourneyAuthority{
   if(request.headers.get(RUNTIME_HEADER)!==RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url)
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){
-   this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter)
+   this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter,this.originalDialogue)
    return handleOriginalSession(request,owner,this.original,body)
   }
   const path=url.pathname.slice('/api/lab'.length)

@@ -17,6 +17,8 @@ import {assertOriginalAssetBindings,newOriginalAssetBindings,type OriginalAssetB
 import {originalActionIntentIssues,originalIsAuthoredAction} from '../src/original-action-intent'
 import {originalGameEntities,originalGameObjective} from '../src/original-game-projection'
 import type {OriginalActionInterpreter} from './original-action-interpreter'
+import {originalDialogueContext,originalLocalDialogue,type OriginalDialogueGenerator} from './original-dialogue'
+import {originalConversationBlocks} from '../src/original-conversation'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
 const world=originalTrainChapterSpatialPlan()
@@ -35,7 +37,7 @@ export function assertOriginalHead(value:unknown):asserts value is OriginalHead{
  try{binding.locate(s,h.sceneId)}catch{throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)}
  if(!binding.validPosition(h.sceneId,h.position)||originalCartridge(s.locale).statDefinitions.some(d=>!Number.isFinite(s.stats?.[d.id])||s.stats[d.id]<d.min||s.stats[d.id]>d.max))throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
 }
-export function originalTrainRuntime(admit:OriginalPresentationGate=originalPresentationUnavailable,generator:StoryTurnGenerator=authoredOnly,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter):SessionRuntime<OriginalHead>{
+export function originalTrainRuntime(admit:OriginalPresentationGate=originalPresentationUnavailable,generator:StoryTurnGenerator=authoredOnly,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter,dialogue?:OriginalDialogueGenerator):SessionRuntime<OriginalHead>{
  const clone=<T>(value:T):T=>structuredClone(value)
  const check=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>{if(admit(clone(head),previous?clone(previous):undefined,actionId)!==true)throw new LabError('ORIGINAL_PRESENTATION_NOT_READY',409)}
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindings[h.save.locale].validPosition(h.sceneId,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
@@ -49,13 +51,27 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    if(body.expected_version!==h.version)throw new LabError('VERSION_CONFLICT',409)
    if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
    if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
-   if(body.mode==='live'&&!interpreter)throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
+   if(body.mode==='live'&&!(body.type==='dialogue'?dialogue:interpreter))throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
    const c=originalCartridge(h.save.locale),binding=bindings[h.save.locale],pos=position(h,body.position)
    const entity=world.entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
    if(!entity)throw new LabError('UNKNOWN_ENTITY')
    if(!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('TOO_FAR')
    const person=world.characters.find(p=>p.entities.includes(entity.id))
    if(person&&!originalCharacterPresent(h.save,person.id))throw new LabError('CHARACTER_NOT_PRESENT')
+   if(body.type==='dialogue'){
+    if(!person)throw new LabError('ORIGINAL_DIALOGUE_TARGET_REQUIRED',409)
+    if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
+    check({...h,position:pos})
+    const text=body.text.trim(),context=originalDialogueContext(h,person.id)
+    if(body.mode==='live'&&!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+    const reply=body.mode==='live'?await dialogue!(text,clone(context)):originalLocalDialogue(text,context)
+    if(typeof reply!=='string'||!reply.trim()||reply.length>900)throw new LabError('ORIGINAL_DIALOGUE_REJECTED',409)
+    // Conversation appends paired visible blocks to the existing v8 archive.
+    // Story scene, danger, resources, choices and relationships remain identical.
+    const next:OriginalHead={...h,version:h.version+1,position:pos,save:{...h.save,blocks:[...h.save.blocks,...originalConversationBlocks(h.save,person.id,body.action_id,text,reply.trim())]}}
+    assertOriginalHead(next);check(next,h,null)
+    return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:body.mode==='live'?'model':'author'}
+   }
    const actions=originalGameEntities(h).find(e=>e.id===entity.id)?.actions.map(a=>({id:a.id,label:a.label}))??[]
    const authoredLabels=[...entity.actions.flatMap(id=>c.domainRules?.rules.find(r=>r.id===id)?.match??[]),...actions.map(a=>a.label)]
    let input:string,interpretedAction:string|undefined
@@ -108,5 +124,5 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
 /** Same SQLite transaction/replay implementation as the live carriage. This is
  * guarded by the original release switch and mandatory presentation admission. */
 export class OriginalTrainAuthority extends SessionAuthority<OriginalHead>{
- constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter){super(db,originalTrainRuntime(admit,generator,endingGenerator,interpreter))}
+ constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter,dialogue?:OriginalDialogueGenerator){super(db,originalTrainRuntime(admit,generator,endingGenerator,interpreter,dialogue))}
 }

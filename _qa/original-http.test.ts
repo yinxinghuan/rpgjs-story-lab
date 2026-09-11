@@ -83,6 +83,22 @@ test('original browser client clears a refused input without losing progress or 
   assert.equal(accepted.accepted,true);assert.equal(accepted.head.version,1);assert.equal(accepted.head.save.stats.condition,87)
  }finally{await h.close()}
 })
+test('original dialogue client recovers lost replies and recalls the same speaker after disk reopen',async()=>{
+ const h=await harness(),store=memory();let c=originalSessionHttp(store,lock,fetch,h.base)
+ try{
+  const start=await c.client.enroll('zh'),e=world.entities.find(e=>e.scene===start.sceneId&&world.characters.find(p=>p.id==='ada-mechanic')!.entities.includes(e.id))!
+  const b={type:'dialogue',target:e.id,position:e.approach,text:'我担心乘客们睡不好。'}
+  h.lose('/actions');await assert.rejects(c.client.send(start,b));assert.equal(c.client.hasPending(),true)
+  h.reopen();c=originalSessionHttp(store,lock,fetch,h.base);const recovered=await c.client.recover()
+  assert.equal(recovered.head.version,1);assert.equal(recovered.head.save.scene,0);assert.equal(c.client.hasPending(),false)
+  assert.deepEqual({...recovered.head.save,blocks:start.save.blocks},start.save)
+  const recalled=await c.client.send(recovered.head,{...b,text:'你还记得我刚才说什么吗？'})
+  assert.ok(recalled.head.save.blocks.at(-1)!.text.includes(b.text));assert.equal(recalled.head.version,2);assert.equal(recalled.head.save.scene,0)
+  const repaired=await c.client.send(recalled.head,intent(recalled.head,'repair-starter'))
+  assert.equal(repaired.head.version,3);assert.equal(repaired.head.save.scene,1);assert.equal(repaired.head.save.stats.condition,87)
+  h.reopen();assert.deepEqual(await c.client.enroll('zh'),repaired.head)
+ }finally{await h.close()}
+})
 test('original HTTP isolates owners and cartridges while existing carriage route remains functional',async()=>{
  const h=await harness(),auth=headers();const call=async(path:string,b?:unknown,hs=auth)=>{const r=await fetch(h.base+path,{method:b===undefined?'GET':'POST',headers:hs,body:b===undefined?undefined:JSON.stringify(b)});return {status:r.status,data:await r.json()}}
  try{
