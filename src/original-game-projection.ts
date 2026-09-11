@@ -5,6 +5,7 @@ import {originalCharacterPresent} from './original-character-presence'
 import {originalTrainChapterSpatialPlan} from './original-train-spatial-plan'
 import {assertPassSourceAction} from './original-pass-chapter'
 import {assertPineSourceAction} from './original-pine-chapter'
+import {originalPlaceBlocks} from './original-place-presentation'
 const world=originalTrainChapterSpatialPlan()
 /** Read-only UI projection. Clicks still require the server's full rule check. */
 export function originalGameEntities(head:OriginalHead){
@@ -27,7 +28,7 @@ export function originalGameEntities(head:OriginalHead){
  * Suppress only identical same-turn prose; keep changes and later repetition. */
 export function originalReadingBlocks(save:OriginalHead['save']){
  const seen=new Set<string>()
- return save.blocks.filter(block=>{
+ return originalPlaceBlocks(save.blocks,save.locale).filter(block=>{
   if(block.id.startsWith('action-')){seen.clear();return true}
   if(block.kind==='image')return false
   // Reducer fact receipts remain in the authoritative history, not player prose.

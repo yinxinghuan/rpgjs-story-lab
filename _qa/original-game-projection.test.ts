@@ -4,6 +4,7 @@ import {originalGameEntities,originalReadingBlocks,originalGameObjective} from '
 import {originalTrainRuntime} from '../server/original-train-runtime'
 import {originalTrainRoom} from '../src/original-train-spatial-plan'
 import {randomUUID} from 'node:crypto'
+import {originalPlaceLabel} from '../src/original-place-presentation'
 const runtime=()=>originalTrainRuntime(()=>true)
 test('original map offers real opening actions without future character markers and does not mutate the save',()=>{
  const h=runtime().initial('zh',randomUUID()),before=JSON.stringify(h),entities=originalGameEntities(h)
@@ -46,4 +47,17 @@ test('reading projection hides internal fact receipts while preserving real narr
  const before=JSON.stringify(h.save)
  assert.deepEqual(originalReadingBlocks(h.save).map(b=>b.id),['body-3','change-3'])
  assert.equal(JSON.stringify(h.save),before)
+})
+
+for(const locale of ['zh','en'] as const)test(`near-bank ${locale} display corrects only its old automatic arrival, without rewriting source regions or later arrival`,()=>{
+ const h=runtime().initial(locale,randomUUID()),destination=locale==='zh'?'黎明枢纽':'Dawn Junction',arrived=locale==='zh'?'抵达：':'Arrived: '
+ h.sceneId='train-at-flood-bridge';h.save.location=destination
+ h.save.blocks=[{id:'action-28',kind:'event',text:'Depart'},{id:'transition-28',kind:'narration',text:'Arrive at the junction.',data:{destination}},{id:'town-28-town-depart',kind:'event',text:'The wheels stop on the near bank.'},{id:'effect-28-3',kind:'event',text:arrived+destination},{id:'action-32',kind:'event',text:'Cross'},{id:'effect-32-3',kind:'event',text:arrived+destination}]
+ const before=JSON.stringify(h),visible=originalReadingBlocks(h.save)
+ assert.match(originalPlaceLabel(h.sceneId,h.save),locale==='zh'?/近岸/:/Near-bank/)
+ assert.ok(!visible.some(b=>b.id==='transition-28'))
+ assert.match(visible.find(b=>b.id==='effect-28-3')!.text,locale==='zh'?/近岸/:/Near-bank/)
+ assert.equal(visible.find(b=>b.id==='effect-32-3')!.text,arrived+destination)
+ assert.equal(originalPlaceLabel('train-at-dawn-junction',h.save),destination)
+ assert.equal(JSON.stringify(h),before)
 })

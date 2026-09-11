@@ -1,6 +1,7 @@
 import type {Locale,ParsedCommand,StoryCartridge,StorySave} from './vendor/original-train/types'
 import {applyParsedScene} from './vendor/original-train/engine/reducer'
 import {LabError} from './journey-runtime'
+import {originalPlaceBlocks} from './original-place-presentation'
 export const townActions=[
  {id:'town-inspect',zh:'检查小城站台与广播电源',en:'Inspect the town platform and broadcast power'},
  {id:'town-grid-aid',zh:'供油恢复小城应急广播（燃料−6，人心+8）',en:'Fuel the town emergency broadcast (Fuel −6, Morale +8)'},
@@ -108,5 +109,6 @@ export function executeTownTurn(save:StorySave,c:StoryCartridge,id:TownActionId)
  }
  if(objective)commands.push({type:'state',value:objective})
  const next=applyParsedScene(structuredClone(save),{blocks:[{id:`town-${save.scene+1}-${id}`,kind:'event',text}],commands,raw:text},c,townLabel(id,c.locale));next.choices=availableTownActions(next).map(a=>({id:a,label:townLabel(a,c.locale)}))
+ if(id==='town-depart')next.blocks=[...next.blocks.slice(0,save.blocks.length),...originalPlaceBlocks(next.blocks.slice(save.blocks.length),c.locale)]
  return {save:next,source:'author' as const,acceptedActionId:id}
 }
