@@ -1,0 +1,247 @@
+{
+  "commit": "0314f47037858fbcff991ae1916821b4aa9ba9a3",
+  "at": "2026-09-11T12:45:56.415Z",
+  "sites": [
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "assets": [
+        {
+          "path": "index.html",
+          "bytes": 1251,
+          "sha256": "a2e7850415374b9abd4815d7d81567bebeb80cc4e6266c861a0e1109d0c31c6d"
+        },
+        {
+          "path": "creator.html",
+          "bytes": 1410,
+          "sha256": "b94718197de8c86cd0f328233d8b8e4aaeac6c4c2d1557ff44c7f5bc3c9c2175"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.txt",
+          "bytes": 107869,
+          "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+        },
+        {
+          "path": "art/overhead/hero-gait-v2.png",
+          "bytes": 460181,
+          "sha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842"
+        },
+        {
+          "path": "assets/index-BRvbfBE5.js",
+          "bytes": 67246,
+          "sha256": "e0e416616879f956ac276574050943b2abaeea8fb7222d862f91f35d7d68b8f5"
+        },
+        {
+          "path": "assets/rolldown-runtime-QTnfLwEv.js",
+          "bytes": 694,
+          "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75"
+        },
+        {
+          "path": "assets/style-CGecqlBH.js",
+          "bytes": 357363,
+          "sha256": "830874ddb8e549dfde2455557b58dd3961b78640b222be22b90a15be0d42dd8c"
+        },
+        {
+          "path": "assets/canvasengine-CCC-_bmI.js",
+          "bytes": 1504206,
+          "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3"
+        },
+        {
+          "path": "assets/style-NUDpuPK2.css",
+          "bytes": 26711,
+          "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d"
+        },
+        {
+          "path": "assets/creator-Civ6x8a-.js",
+          "bytes": 190234,
+          "sha256": "9f3b4c619b6ae7e68d79b6155701322485a2ed668f662bace44c58627b03a774"
+        },
+        {
+          "path": "assets/sprite-config-BbgBeDsW.js",
+          "bytes": 1093293,
+          "sha256": "263ca7b30e507aa1a81e6f5cacf6d2c9a24850df0e87db58d219877e27bd57e5"
+        },
+        {
+          "path": "assets/creator-xw7loqfI.css",
+          "bytes": 4247,
+          "sha256": "a81ac47679a8c89d9c57889328caf33fa0df313cae27f1311a1d5435d915d3d1"
+        }
+      ]
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "assets": [
+        {
+          "path": "index.html",
+          "bytes": 1251,
+          "sha256": "a2e7850415374b9abd4815d7d81567bebeb80cc4e6266c861a0e1109d0c31c6d"
+        },
+        {
+          "path": "creator.html",
+          "bytes": 1410,
+          "sha256": "b94718197de8c86cd0f328233d8b8e4aaeac6c4c2d1557ff44c7f5bc3c9c2175"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.txt",
+          "bytes": 107869,
+          "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+        },
+        {
+          "path": "art/overhead/hero-gait-v2.png",
+          "bytes": 460181,
+          "sha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842"
+        },
+        {
+          "path": "assets/index-BRvbfBE5.js",
+          "bytes": 67246,
+          "sha256": "e0e416616879f956ac276574050943b2abaeea8fb7222d862f91f35d7d68b8f5"
+        },
+        {
+          "path": "assets/rolldown-runtime-QTnfLwEv.js",
+          "bytes": 694,
+          "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75"
+        },
+        {
+          "path": "assets/style-CGecqlBH.js",
+          "bytes": 357363,
+          "sha256": "830874ddb8e549dfde2455557b58dd3961b78640b222be22b90a15be0d42dd8c"
+        },
+        {
+          "path": "assets/canvasengine-CCC-_bmI.js",
+          "bytes": 1504206,
+          "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3"
+        },
+        {
+          "path": "assets/style-NUDpuPK2.css",
+          "bytes": 26711,
+          "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d"
+        },
+        {
+          "path": "assets/creator-Civ6x8a-.js",
+          "bytes": 190234,
+          "sha256": "9f3b4c619b6ae7e68d79b6155701322485a2ed668f662bace44c58627b03a774"
+        },
+        {
+          "path": "assets/sprite-config-BbgBeDsW.js",
+          "bytes": 1093293,
+          "sha256": "263ca7b30e507aa1a81e6f5cacf6d2c9a24850df0e87db58d219877e27bd57e5"
+        },
+        {
+          "path": "assets/creator-xw7loqfI.css",
+          "bytes": 4247,
+          "sha256": "a81ac47679a8c89d9c57889328caf33fa0df313cae27f1311a1d5435d915d3d1"
+        }
+      ]
+    }
+  ],
+  "api/creator/health": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "runtimeContract": "creator-background-1",
+      "identityMode": "anonymous-capability-v1"
+    }
+  },
+  "api/creator/sprites": {
+    "status": 401,
+    "body": {
+      "error": "AUTH_REQUIRED"
+    }
+  },
+  "api/original/health": {
+    "status": 404,
+    "body": {
+      "error": "NOT_FOUND"
+    }
+  },
+  "api/lab/health": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "storage": "durable-object-sqlite",
+      "identity_mode": "anonymous-capability-v1",
+      "runtime": "durable-object-sqlite",
+      "production": true,
+      "identityMode": "anonymous-capability-v1",
+      "liveModelAvailable": true,
+      "narrationMode": "opt-in",
+      "release": "carriage-creator-storage-20260911-2",
+      "runtimeContract": "carriage-session-2.train-scenes-3.story-10.relay-1.image-1"
+    }
+  },
+  "pagesRun": 34600414769,
+  "fullTests": 566,
+  "workerStartup": "opaque data URL import + actual creator health passed",
+  "portability": {
+    "ok": true,
+    "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "page": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "health": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/health",
+    "remix": "https://github.com/yinxinghuan/rpgjs-story-lab/archive/refs/heads/main.zip",
+    "storage": "durable-object-sqlite",
+    "identity_mode": "anonymous-capability-v1"
+  },
+  "existingCarriageRoutes": {
+    "at": "2026-09-11T12:50:05.013Z",
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "health": {
+      "ok": true,
+      "storage": "durable-object-sqlite",
+      "identity_mode": "anonymous-capability-v1",
+      "runtime": "durable-object-sqlite",
+      "production": true,
+      "identityMode": "anonymous-capability-v1",
+      "liveModelAvailable": true,
+      "narrationMode": "opt-in",
+      "release": "carriage-creator-storage-20260911-2",
+      "runtimeContract": "carriage-session-2.train-scenes-3.story-10.relay-1.image-1"
+    },
+    "calls": 204,
+    "endings": [
+      {
+        "backupRestored": true,
+        "route": "radio",
+        "actions": 41,
+        "version": 41,
+        "scene": "walkway",
+        "rescueSent": true,
+        "journeyComplete": true,
+        "relayCompleted": true
+      },
+      {
+        "backupRestored": true,
+        "route": "lights",
+        "actions": 46,
+        "version": 46,
+        "scene": "walkway",
+        "rescueSent": true,
+        "journeyComplete": true,
+        "relayCompleted": true
+      }
+    ],
+    "checks": [
+      "enrollment-replay",
+      "enrollment-conflict",
+      "action-replay",
+      "action-id-conflict",
+      "stale-version",
+      "stale-position",
+      "owner-isolation",
+      "event-cursors",
+      "head-reopen",
+      "two-complete-routes",
+      "relay-and-relationships",
+      "walkway-return",
+      "consumed-inventory",
+      "cloud-backup-to-fresh-sqlite",
+      "restored-receipt-replay",
+      "no-http-import"
+    ],
+    "result": "pass"
+  },
+  "deploymentFailureBeforeFix": {
+    "commit": "71c50ed170555a5d42aa2d94058af4a62d3365cd",
+    "result": "Cloudflare rejected module startup; previous Worker retained",
+    "error": "Invalid URL string at browser-media import.meta.url initializer",
+    "resolution": "Worker-only build projection omits five unused presentation URLs; frozen source and frontend retain original URLs"
+  }
+}

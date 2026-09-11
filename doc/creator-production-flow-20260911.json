@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-11",
+  "releaseCommit": "0314f47037858fbcff991ae1916821b4aa9ba9a3",
+  "entry": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/creator.html?create_art=sprite",
+  "source": "ordinary production UI with real AlterU media transport; no injected fixture",
+  "attempts": [
+    {
+      "recipe": "starter-broken-v1",
+      "requestId": "e72223f2-4038-4b7d-8fac-95953f4d7231",
+      "taskId": "mt_003f93e6968e01c7d79f88e966adb0c2",
+      "result": "source saved and explicitly imported in creator",
+      "dimensions": [
+        320,
+        640
+      ],
+      "visualObservation": "single open dark cabinet with exposed copper winding on white matte; not a transparency or state-pair approval"
+    },
+    {
+      "recipe": "starter-repaired-v1",
+      "requestId": "186a720c-3ad9-4891-b979-6be3aa5a4ad6",
+      "result": "PROVIDER_REJECTED",
+      "taskId": null,
+      "existingImportedSourcePreserved": true,
+      "automaticNewGeneration": false
+    }
+  ],
+  "fallback": "Existing two-state starter sample loaded successfully; no new generation in sample load",
+  "nextAction": "Select new broken source plus already generated repaired source, prepare in browser, archive online, reload and restore",
+  "blockedBrowserAction": {
+    "selector": "#sprite-part-saved-0",
+    "value": "e72223f2-4038-4b7d-8fac-95953f4d7231",
+    "automaticApprovalRejections": 2,
+    "reason": "Browser tool requires explicit game.aiwaves.tech origin access; potential existing login/session exposure",
+    "specificOriginQuestionPending": true,
+    "filesUploaded": false
+  },
+  "newMediaIntents": 2,
+  "newPngSuccesses": 1,
+  "cost": "unknown",
+  "onlinePostprocessingAndArchiveVerified": false,
+  "assetPublished": false,
+  "originalStoryProductionReleased": false
+}
