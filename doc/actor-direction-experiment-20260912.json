@@ -1,0 +1,235 @@
+{
+  "date": "2026-09-12",
+  "strategy": "One direction per generation, one correction only, approved Ada front standing reference",
+  "result": "Both UP rows rejected; remaining directions not generated. No assets activated.",
+  "cases": [
+    {
+      "name": "ada-up-row-01",
+      "state": {
+        "version": 1,
+        "requestSha256": "0daebc6f66a4123165f76f71ae012d3f3b32234d4246616bcfec14ba37201121",
+        "requestId": "03fe09b4-ad90-4058-8319-6c01e55428b5",
+        "status": "downloaded",
+        "startedAt": "2026-09-11T18:23:52.540Z",
+        "attempts": 1,
+        "task": {
+          "task_id": "mt_cbb57b3e378ce2e6cece652de289a2c9",
+          "request_id": "03fe09b4-ad90-4058-8319-6c01e55428b5",
+          "status": "succeeded",
+          "type": "image",
+          "media": {
+            "type": "image",
+            "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789151036998974.png",
+            "width": 960,
+            "height": 320,
+            "format": "png"
+          },
+          "timing_ms": 2202
+        },
+        "asset": {
+          "file": "candidate.png",
+          "sha256": "bd0333d82f69b54fac75f33c1f5f216e3c298342c356886fa4e7c80a5b08bafc",
+          "bytes": 149260,
+          "width": 960,
+          "height": 320,
+          "pngColorType": 2
+        },
+        "elapsedMs": 9366,
+        "cost": "not provided by public API",
+        "admission": "not-reviewed"
+      },
+      "review": {
+        "status": "rejected",
+        "sha256": "bd0333d82f69b54fac75f33c1f5f216e3c298342c356886fa4e7c80a5b08bafc",
+        "findings": [
+          "First frame is front-facing, although all three must face away.",
+          "Middle frame loses both diagonal strap and hip lamp/pouch.",
+          "Smooth outlined cartoon rendering departs from the painted pixel baseline.",
+          "Opposite back walking phases cannot be verified with a front-facing first frame."
+        ],
+        "admitted": false
+      }
+    },
+    {
+      "name": "ada-up-row-02",
+      "state": {
+        "version": 1,
+        "requestSha256": "3dea3eed35d16137ef5aa8fbcf4d784a4d3f9611348e5651825cb986881c108d",
+        "requestId": "62ee7c70-8fea-4b8e-9852-d818c362f64e",
+        "status": "downloaded",
+        "startedAt": "2026-09-11T18:28:46.885Z",
+        "attempts": 1,
+        "task": {
+          "task_id": "mt_54d5d16259953faa3753a925e4f0fedc",
+          "request_id": "62ee7c70-8fea-4b8e-9852-d818c362f64e",
+          "status": "succeeded",
+          "type": "image",
+          "media": {
+            "type": "image",
+            "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789151330140268.png",
+            "width": 960,
+            "height": 320,
+            "format": "png"
+          },
+          "timing_ms": 1665
+        },
+        "asset": {
+          "file": "candidate.png",
+          "sha256": "3bf47c49a5abff7f9a21be0103726f986738dad16d002cf34d697b64b70159d5",
+          "bytes": 124589,
+          "width": 960,
+          "height": 320,
+          "pngColorType": 2
+        },
+        "elapsedMs": 7717,
+        "cost": "not provided by public API",
+        "admission": "not-reviewed"
+      },
+      "review": {
+        "status": "rejected",
+        "sha256": "3bf47c49a5abff7f9a21be0103726f986738dad16d002cf34d697b64b70159d5",
+        "findings": [
+          "All three now face away.",
+          "Middle cell is another raised-leg walking pose, not feet-level standing.",
+          "Brass lamp missing; hip and strap differ from the reference contract.",
+          "Rendering is still substantially smoother and camera less elevated than approved standing reference."
+        ],
+        "admitted": false,
+        "next": "UP correction budget exhausted; do not generate other directions or activate this candidate. Add motion inspection to creator instead."
+      }
+    }
+  ],
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "reducedMotion": "reduce",
+      "sequences": [
+        {
+          "direction": "up",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "direction": "left",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "direction": "right",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "direction": "down",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        }
+      ],
+      "pauseStable": true,
+      "directionReset": true,
+      "closeStops": true,
+      "noAutomaticApproval": true,
+      "rejectedObservationRestored": true,
+      "noOverflow": true,
+      "errors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "reducedMotion": "reduce",
+      "sequences": [
+        {
+          "direction": "up",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "direction": "left",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "direction": "right",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "direction": "down",
+          "poses": [
+            2,
+            1,
+            0,
+            1
+          ]
+        }
+      ],
+      "pauseStable": true,
+      "directionReset": true,
+      "closeStops": true,
+      "noAutomaticApproval": true,
+      "rejectedObservationRestored": true,
+      "noOverflow": true,
+      "errors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ]
+    }
+  ],
+  "limitations": [
+    "Local desktop Chromium at mobile viewport sizes, not physical iPhone or AlterU production browser.",
+    "Browser playback inspected existing approved hero texture, not new rejected UP rows.",
+    "No four-row assembly implemented because prerequisite row experiment failed.",
+    "Playback records no semantic approval; sheet observations and map review remain required.",
+    "Page-hidden stop implemented but not exercised by this browser run."
+  ],
+  "validation": {
+    "testsPassed": 595,
+    "testsFailed": 0,
+    "cloudBuild": true,
+    "opaqueWorkerStartup": true,
+    "preflightBuild": true,
+    "secretAudit": true,
+    "apiBaseAudit": true,
+    "mediaAudit": true,
+    "uiSourceAudit": true,
+    "storageAudit": {
+      "games": 145,
+      "problems": 0
+    },
+    "uuidAudit": true
+  }
+}

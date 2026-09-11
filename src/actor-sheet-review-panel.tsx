@@ -1,19 +1,22 @@
 import React,{useEffect,useState} from 'react'
+import ActorGaitPreview from './actor-gait-preview'
 import type {SpriteDraft} from './sprite-draft'
 import {ACTOR_DIRECTIONS,ACTOR_ROW_CHECKS,currentActorReview,emptyActorAnswers,actorReviewStatus,type ActorAnswers,type ActorDirection,type ActorVerdict} from './actor-sheet-review'
 
 export default function ActorSheetReviewPanel({draft,imageUrl,busy,locale,onSave}:{draft:SpriteDraft;imageUrl:string;busy:boolean;locale:'zh'|'en';onSave:(answers:ActorAnswers)=>void}){
  const t=(a:string,b:string)=>locale==='zh'?a:b,review=currentActorReview(draft)
+ const [open,setOpen]=useState(false)
  const [direction,setDirection]=useState<ActorDirection>('up'),[light,setLight]=useState(false),[answers,setAnswers]=useState<ActorAnswers>(()=>structuredClone(review?.answers??emptyActorAnswers()))
  useEffect(()=>setAnswers(structuredClone(currentActorReview(draft)?.answers??emptyActorAnswers())),[draft.id,draft.revision,draft.actorReview])
  const dirty=JSON.stringify(answers)!==JSON.stringify(review?.answers??emptyActorAnswers()),status=actorReviewStatus(answers),row=ACTOR_DIRECTIONS.indexOf(direction)
  const names={down:t('向下 · 面向镜头','Down · Toward camera'),left:t('向左','Left'),right:t('向右','Right'),up:t('向上 · 背对镜头','Up · Away from camera')}
- const labels={facing:t('三帧朝向一致，站立帧也正确','All three frames face this direction, including standing'),alternatingSteps:t('第1与第3帧由不同的腿领先','Frames 1 and 3 lead with opposite legs'),attachments:t('背包、灯具等配件没有跳边或变形','Bag, lamp and other attachments stay consistent')}
- return <section className="cl-actor-review" aria-label={t('人物图集检查','Actor sheet review')}><details><summary>{t('逐方向检查动作','Review each direction')}</summary>
+ const labels={facing:t('三帧朝向一致，中间站立帧双脚落地','All frames face this direction; both feet are grounded in the middle standing frame'),alternatingSteps:t('第1与第3帧由不同的腿领先','Frames 1 and 3 lead with opposite legs'),attachments:t('背包、灯具等配件没有跳边或变形','Bag, lamp and other attachments stay consistent')}
+ return <section className="cl-actor-review" aria-label={t('人物图集检查','Actor sheet review')}><details onToggle={e=>setOpen(e.currentTarget.open)}><summary>{t('逐方向检查动作','Review each direction')}</summary>
   <p>{t('先看背向两步是否重复同一条腿，再检查其余方向。这里只记录你的判断，处理成功不会自动判为通过。','Start by comparing the two back-facing strides, then inspect the other directions. These are your observations; processing success never marks a check as passed.')}</p>
   <label htmlFor="actor-review-direction">{t('查看方向','Direction')}</label><select id="actor-review-direction" value={direction} disabled={busy} onChange={e=>setDirection(e.target.value as ActorDirection)}>{ACTOR_DIRECTIONS.map(d=><option key={d} value={d}>{names[d]}</option>)}</select>
   <label htmlFor="actor-review-background">{t('检查底色','Review background')}</label><select id="actor-review-background" value={light?'light':'dark'} disabled={busy} onChange={e=>setLight(e.target.value==='light')}><option value="dark">{t('深色','Dark')}</option><option value="light">{t('浅色','Light')}</option></select>
   <div className={`cl-actor-review__frames cl-sprite__preview--${light?'light':'dark'}`}>{[0,1,2].map(col=><figure key={col}><div role="img" aria-label={names[direction]+' · '+t(`第${col+1}帧`,`Frame ${col+1}`)} style={{aspectRatio:`${draft.spec!.cellWidth} / ${draft.spec!.cellHeight}`,backgroundImage:`url("${imageUrl}")`,backgroundSize:'300% 400%',backgroundPosition:`${col*50}% ${row*100/3}%`}}/><figcaption>{col===1?t('站立','Standing'):t(`第${col+1}帧`,`Frame ${col+1}`)}</figcaption></figure>)}</div>
+  <ActorGaitPreview imageUrl={imageUrl} row={row} cellWidth={draft.spec!.cellWidth} cellHeight={draft.spec!.cellHeight} active={open} busy={busy} locale={locale}/>
   {ACTOR_ROW_CHECKS.map(check=><React.Fragment key={check}><label htmlFor={'actor-review-'+check}>{labels[check]}</label><select id={'actor-review-'+check} value={answers[direction][check]} disabled={busy} onChange={e=>{const verdict=e.target.value as ActorVerdict;setAnswers(old=>({...old,[direction]:{...old[direction],[check]:verdict}}))}}><option value="unchecked">{t('未检查','Not checked')}</option><option value="pass">{t('通过','Pass')}</option><option value="fail">{t('不通过','Fail')}</option></select></React.Fragment>)}
   <ul>{ACTOR_DIRECTIONS.map(d=><li key={d}>{names[d]} · {t('通过','Passed')} {ACTOR_ROW_CHECKS.filter(c=>answers[d][c]==='pass').length}/3{ACTOR_ROW_CHECKS.some(c=>answers[d][c]==='fail')?' · '+t('有问题','Issue found'):''}</li>)}</ul>
   <p role="status">{status==='rejected'?t('发现问题，不能作为合格行走图集。','Issues found. This is not a qualified walking sheet.'):status==='sheet-reviewed'?t('图集检查已填写，仍需地图、遮挡、比例和手机运行检查。','Sheet checks filled in. Map, occlusion, scale and mobile runtime checks are still required.'):t('尚有方向未检查，可以先保存当前记录。','Some directions remain unchecked. You can save your progress.')}{review&&!dirty?' '+t('当前记录已保存。','The current record is saved.'):dirty?' '+t('修改尚未保存。','Changes are not saved.') :''}</p>

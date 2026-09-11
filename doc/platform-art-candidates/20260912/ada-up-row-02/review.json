@@ -1,0 +1,12 @@
+{
+  "status": "rejected",
+  "sha256": "3bf47c49a5abff7f9a21be0103726f986738dad16d002cf34d697b64b70159d5",
+  "findings": [
+    "All three now face away.",
+    "Middle cell is another raised-leg walking pose, not feet-level standing.",
+    "Brass lamp missing; hip and strap differ from the reference contract.",
+    "Rendering is still substantially smoother and camera less elevated than approved standing reference."
+  ],
+  "admitted": false,
+  "next": "UP correction budget exhausted; do not generate other directions or activate this candidate. Add motion inspection to creator instead."
+}

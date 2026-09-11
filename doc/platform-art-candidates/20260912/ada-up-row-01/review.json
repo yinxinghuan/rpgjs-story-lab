@@ -1,0 +1,11 @@
+{
+  "status": "rejected",
+  "sha256": "bd0333d82f69b54fac75f33c1f5f216e3c298342c356886fa4e7c80a5b08bafc",
+  "findings": [
+    "First frame is front-facing, although all three must face away.",
+    "Middle frame loses both diagonal strap and hip lamp/pouch.",
+    "Smooth outlined cartoon rendering departs from the painted pixel baseline.",
+    "Opposite back walking phases cannot be verified with a front-facing first frame."
+  ],
+  "admitted": false
+}

@@ -1,0 +1,13 @@
+{
+  "requestId": "03fe09b4-ad90-4058-8319-6c01e55428b5",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/63809670005b4552a73e8a3c624fb3625a0896e2/public/art/ada-standing-v1.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 320
+  },
+  "prompt": "Create ONE HORIZONTAL ROW of exactly THREE sprite animation frames of the same Ada from the reference, all facing UP/AWAY from the viewer. This is not a full multi-direction sprite sheet. Preserve her short dark brown hair, navy work coat, cream collar, dark teal trousers, brown boots, diagonal strap and small brown tool pouch with brass lamp attached at her right hip. No handheld lamp. Preserve the strong elevated orthographic top-down B camera: lots of crown and shoulder tops, foreshortened torso. ONLY backs of hair/coat are visible, absolutely no face, nose, cheek or eye. Canvas960x320, equal320x320 cells, foot anchors centered at x160/480/800 and y300. Full figures about210 pixels tall, generous empty margins. The three frames must form LEFT STEP / STANDING / RIGHT STEP, not repeated poses. FIRST cell: screen-LEFT leg leads forward toward the TOP of the image, its boot visibly higher; screen-RIGHT leg trails backward toward the BOTTOM, boot lower. CENTER cell: both boots level, standing still. THIRD cell: screen-RIGHT leg leads toward the TOP, visibly higher; screen-LEFT leg trails toward the BOTTOM, visibly lower. The first and third lower-body silhouettes must clearly be opposite walking phases. Keep head, coat, pouch/lamp fixed on the same anatomical sides in every frame; never mirror the entire figure to make a stride. Sharp painted-pixel detail matching reference. Uniform pure white background outside figures, no checkerboard, floor shadow, scenery, grid lines, text, labels or extra figures."
+}

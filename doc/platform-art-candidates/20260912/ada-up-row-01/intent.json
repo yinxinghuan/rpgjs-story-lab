@@ -1,0 +1,8 @@
+{
+  "phase": "direction-by-direction-character-test",
+  "character": "ada-mechanic",
+  "direction": "up",
+  "source": "approved front standing only",
+  "initialRequestBudget": "one up row first; at most one up-row correction after actual pixel review. Remaining three directions only if up row passes.",
+  "admission": "candidate only; gait, identity, alpha, row assembly and actual renderer all required"
+}

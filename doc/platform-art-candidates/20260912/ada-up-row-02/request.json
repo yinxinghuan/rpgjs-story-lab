@@ -1,0 +1,13 @@
+{
+  "requestId": "62ee7c70-8fea-4b8e-9852-d818c362f64e",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/63809670005b4552a73e8a3c624fb3625a0896e2/public/art/ada-standing-v1.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 320
+  },
+  "prompt": "Three BACK VIEW frames ONLY of the same short-haired mechanic from the reference. Rotate the reference person 180 degrees: NO FACE IN ANY CELL. Match the reference pixel-art texture, fine pixel edges, palette, costume and steep elevated orthographic camera; do not redraw as a smooth cartoon. Navy coat, dark teal trousers, brown boots, short dark brown hair. Back of coat has a diagonal brown strap from screen RIGHT shoulder to screen LEFT hip; small brown pouch and brass lamp stay at screen LEFT hip in ALL THREE cells. No handheld objects. Exactly 3 equal cells in a 960x320 horizontal strip. Each figure is about 210px high, centered at x160/480/800, feet near y300, top near y90. Cell 1 BACK LEFT STEP: screen-left boot higher, screen-right boot lower. Cell 2 BACK IDLE: boots side by side at same height. Cell 3 BACK RIGHT STEP: screen-right boot higher, screen-left boot lower. Clearly opposite leg phases in cells 1 and 3; head/coat/accessories stay unchanged. All three show ONLY back of hair and back of coat, NO eyes, nose, cheek, shirtfront or coat front buttons. Plain white background, no floor, shadows, checkerboard, labels, lines or extra figures."
+}

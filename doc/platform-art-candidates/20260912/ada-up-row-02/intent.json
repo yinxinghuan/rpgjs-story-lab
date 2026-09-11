@@ -1,0 +1,8 @@
+{
+  "phase": "direction-by-direction-character-test",
+  "character": "ada-mechanic",
+  "direction": "up",
+  "correctionOf": "ada-up-row-01",
+  "limit": "This is the one permitted correction; no further UP-row requests in this experiment.",
+  "admission": "candidate-only; inspect actual identity, all back directions, alternating gait and baseline style before generating other rows"
+}
