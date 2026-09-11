@@ -808,3 +808,7 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 后续贴墙起步还复现 `x=59.99999999999999` 导致最后子步被拒绝。运动核按每轴已接受的子步数从帧起点计算位置；被阻挡的轴不累计位移，因此仍不会穿墙或在滑动后补跳。抵达完整节点时直接使用剩余向量并精确落点；25种贴墙起点×30/60/120fps共75组回归通过，原30/60/120fps速度/步态与薄墙拒绝继续通过。
 
 2026-09-12 人物动作检查：新增 actor-gait-preview.tsx，通过 walking-motion.ts 的 walkingPose/STRIDE_DISTANCE 取同一0/1/2/1列序列，时间驱动仅供静止预览，不替换距离驱动的RPG-JS运行时。默认暂停；换图/换方向回第2帧，关闭details、busy和页面hidden停止；下一帧及查看站立均暂停。现有逐方向观察、候选摘要绑定、独立云评审和地图准入协议不变。_qa/actor-gait-browser.ts在全新隔离本机浏览器用已通过黄色主角作预览输入，320中文/390英文检查四向逐帧、播放暂停、换方向、关闭重开、不自动通过及拒绝记录刷新恢复。真实新生成两张背向三帧均拒绝，见actor-direction-experiment-20260912.json。
+
+2026-09-12 原作旅程续玩：记录页增加服务器目录、切回旧旅程和保留旧旅程重新出发。使用既有GET /sessions及POST /sessions，不增加第二套存档或客户端导入。OriginalSessionClient校验目录ID、唯一性、版本/游标、时间和已制作房间。RecoverableSessionClient.selectSession先取回并校验目标Head，在bootstrap及当前session锁内更新续玩指针；任何待确认请求或开户阻止切换。restart也取得当前session锁，明确SESSION_LIMIT拒绝清理该开户意向但保留旧旅程，含糊网络失败仍保留原意向并同ID重试。普通/在线准备/结局提交均拒绝旧窗口的非当前旅程，新页从所选Head的素材/地图版本重建renderer。切换前checkpoint当前位置；失败不覆盖服务端故事或重置存档。所有者边界继续由现有HTTP capability承担，未实现平台账户找回。
+
+验证补充：开发服务器不运行generateBundle，因此原作生成的TMX/背景不存在，返回RESOURCE_SIZE；未因此放松摘要/尺寸门禁。使用npm run build:preflight后的实际预览服务继续验证。测试浏览器均为新建localhost隔离身份，外部请求阻断；不代表正式AlterU或iPhone硬件验收。任医生站姿新候选虽然包含急救箱，但相机过于正面、比例变长，拒绝接入，无后续同批角色生成。

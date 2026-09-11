@@ -91,3 +91,55 @@ test('original exhausted model budget clears pending without losing the journey 
   const next=await client.send(h,input(h,'repair-starter'));assert.equal(next.head.save.stats.condition,h.save.stats.condition+5)
  }finally{raw.close()}
 })
+
+test('saved journey selection preserves both original stories, refuses unknown ownership and stops stale-tab writes',async()=>{
+ const {raw,client,service,owner,storage,transport}=setup()
+ try{let a=await client.enroll('zh');a=(await client.send(a,input(a,'repair-starter'))).head
+ const old=structuredClone(service.get(owner,a.id)),b=await client.enroll('en',true)
+ assert.notEqual(a.id,b.id);assert.deepEqual(service.get(owner,a.id),old)
+ const selected=await client.selectSession(a.id);assert.deepEqual(selected,old)
+ await assert.rejects(client.send(b,input(b,'repair-starter')),/SESSION_SELECTION_CHANGED/)
+ assert.equal(service.get(owner,b.id).version,0);assert.equal(client.pending().length,0)
+ const foreign=service.create('another-owner',randomUUID(),'zh')
+ await assert.rejects(client.selectSession(foreign.id));assert.equal(client.read('session',''),a.id)
+ const offline=new OriginalSessionClient(storage,'original-',async(path,body)=>{if(path==='/sessions/'+b.id)throw Error('OFFLINE');return transport(path,body)})
+ await assert.rejects(offline.selectSession(b.id),/OFFLINE/);assert.equal(client.read('session',''),a.id)
+ const resumed=await new OriginalSessionClient(storage,'original-',transport).enroll('en');assert.equal(resumed.id,a.id);assert.equal(resumed.save.locale,'zh')
+ }finally{raw.close()}
+})
+test('selection cannot abandon an unconfirmed action or lost new-journey enrollment',async()=>{
+ const {raw,client,storage,transport,service,owner}=setup()
+ try{const a=await client.enroll('zh'),b=await client.enroll('en',true);await client.selectSession(a.id)
+ let fail=true
+ const flaky=new OriginalSessionClient(storage,'original-',async(p,b)=>{const r=await transport(p,b);if(p.endsWith('/actions')&&fail){fail=false;throw Error('LOST')};return r})
+ await assert.rejects(flaky.send(a,input(a,'repair-starter')),/LOST/)
+ await assert.rejects(flaky.selectSession(b.id),/PENDING_ACTION/);assert.equal(flaky.read('session',''),a.id)
+ await flaky.recover();await flaky.selectSession(b.id)
+ let lose=true
+ const restart=new OriginalSessionClient(storage,'original-',async(p,b)=>{const r=await transport(p,b);if(p==='/sessions'&&lose){lose=false;throw Error('LOST_NEW')};return r})
+ await assert.rejects(restart.enroll('zh',true),/LOST_NEW/)
+ await assert.rejects(restart.selectSession(a.id),/PENDING_ACTION/)
+ const restored=await restart.enroll('en');assert.equal(restored.save.locale,'zh');assert.equal(service.directory(owner).length,3);assert.equal(restored.version,0)
+ }finally{raw.close()}
+})
+
+test('directory rejects foreign schema, invalid rooms and duplicate journey ids',async()=>{
+ const {inspectOriginalDirectory}=await import('../src/original-session-client'),{raw,service,owner,client}=setup()
+ try{await client.enroll('en');const rows=service.directory(owner)
+ assert.deepEqual(inspectOriginalDirectory({sessions:rows}),rows)
+ assert.throws(()=>inspectOriginalDirectory({sessions:[...rows,...rows]}),/DIRECTORY/)
+ assert.throws(()=>inspectOriginalDirectory({sessions:[{...rows[0],scene:'unmade-room'}]}),/DIRECTORY/)
+ assert.throws(()=>inspectOriginalDirectory({sessions:[{...rows[0],cursor:9}]}),/DIRECTORY/)
+ assert.throws(()=>inspectOriginalDirectory({sessions:[{...rows[0],id:'../bad'}]}),/DIRECTORY/)
+ }finally{raw.close()}
+})
+
+test('definite new-journey quota refusal retains current story and does not lock out saved journey selection',async()=>{
+ const {raw,client,storage,transport}=setup()
+ try{const a=await client.enroll('zh'),b=await client.enroll('en',true)
+ const capped=new OriginalSessionClient(storage,'original-',async(p,body)=>{if(p==='/sessions')throw Error('SESSION_LIMIT');return transport(p,body)})
+ await assert.rejects(capped.enroll('zh',true),/SESSION_LIMIT/)
+ assert.equal(capped.read('session',''),b.id);assert.equal(capped.read('enrollment-pending','missing'),null)
+ assert.equal((await capped.selectSession(a.id)).id,a.id)
+ }finally{raw.close()}
+})

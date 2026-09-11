@@ -1,0 +1,11 @@
+{
+  "status": "rejected",
+  "sha256": "d56ecaeb75bdff5952d8982cfc4ceeab90fa938088e23aa306ef64f58a8b2c96",
+  "findings": [
+    "Gray hair, field jacket and medical case present.",
+    "Camera changed to near-front with little crown visible.",
+    "Figure fills almost full cell height rather than preserving reference ~210px silhouette; body proportions too long."
+  ],
+  "admitted": false,
+  "next": "No remaining cast requests submitted; standing image cannot replace accepted B perspective. Continue core playable journey management while character generation remains unresolved."
+}

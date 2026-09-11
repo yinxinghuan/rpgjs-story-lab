@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "e0577243-65d7-4e39-98d2-29da41548456",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/c0dcd9b/public/art/ada-standing-v1.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Edit the reference sprite IN PLACE to depict Doctor Ren, a middle-aged male rural emergency doctor. Preserve the exact reference body scale, standing pose with both boots level, pixel-painted rendering, crisp pixel edges, steep elevated orthographic camera, visible crown and shoulder tops, and foot anchor at x160 y300. Single full-body character in one 320x320 cell, no other figures. Change short brown hair to short salt-and-pepper hair, navy coat to a worn muted gray-green field medical jacket over cream shirt, dark trousers and brown boots. Replace the hip pouch and brass lamp with one compact dark brown medical case carried at his side by a short handle. No lamp, stethoscope, white lab coat, logos, readable text or cross symbols. Tired but composed rural doctor, distinct from the young mechanic. About210 pixels from crown to soles, generous blank margins. Preserve the reference fine painted pixel texture; no smooth cartoon outlines, no realism, no change of camera. Uniform pure white background, no floor shadow, checkerboard or scenery."
+}

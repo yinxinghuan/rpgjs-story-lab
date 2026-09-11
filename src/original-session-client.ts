@@ -25,3 +25,12 @@ export class OriginalSessionClient extends RecoverableSessionClient<OriginalHead
   assertResult:(r,b)=>{const f=r?.head?.save?.finale;if(r?.kind!=='ending'||r.endingId!==b.ending_id||r.snapshotId!==b.snapshot_id||r.head.version!==b.expected_version+1||r.head.sceneId!==b.sceneId||r.head.mapVersion!==b.mapVersion||f?.status!=='complete'||f.snapshot?.id!==b.snapshot_id||f.ending?.snapshotId!==b.snapshot_id)throw Error('ENDING_RESPONSE_MISMATCH')},
  }},lock)}
 }
+
+export type OriginalJourneyEntry={id:string;version:number;cursor:number;scene:string;updated:number}
+export function inspectOriginalDirectory(value:unknown):OriginalJourneyEntry[]{
+ const rows=(value as any)?.sessions
+ if(!Array.isArray(rows)||rows.length>100)throw Error('INVALID_SESSION_DIRECTORY')
+ const seen=new Set<string>()
+ for(const r of rows){if(!r||!/^[a-zA-Z0-9-]{16,80}$/.test(r.id)||seen.has(r.id)||!Number.isSafeInteger(r.version)||r.version<0||r.cursor!==r.version||!Number.isFinite(r.updated)||r.updated<0||!world.scenes.some(s=>s.id===r.scene))throw Error('INVALID_SESSION_DIRECTORY');seen.add(r.id)}
+ return rows.map(({id,version,cursor,scene,updated})=>({id,version,cursor,scene,updated}))
+}

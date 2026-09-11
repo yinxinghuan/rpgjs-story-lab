@@ -1,0 +1,64 @@
+{
+  "date": "2026-09-12",
+  "scope": "Original single-player saved-journey directory, switch and restart without overwriting progress",
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "twoJourneys": true,
+      "lostEnrollmentRecovered": true,
+      "enrollmentRequests": 3,
+      "saveAndAssetBindingsPreserved": true,
+      "continuedMovementCheckpoint": true,
+      "refreshContinuesSelection": true,
+      "actualMaps": [
+        "/map/train-at-dead-station.tmx",
+        "/map/train-at-river-valley.tmx",
+        "/map/pine-line-90af55e7.tmx"
+      ],
+      "errors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "twoJourneys": true,
+      "lostEnrollmentRecovered": true,
+      "enrollmentRequests": 3,
+      "saveAndAssetBindingsPreserved": true,
+      "continuedMovementCheckpoint": true,
+      "refreshContinuesSelection": true,
+      "actualMaps": [
+        "/map/train-at-dead-station.tmx",
+        "/map/train-at-river-valley.tmx",
+        "/map/pine-line-90af55e7.tmx"
+      ],
+      "errors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ]
+    }
+  ],
+  "validation": {
+    "unitTests": 599,
+    "failed": 0,
+    "cloudBuild": true,
+    "workerStartup": true,
+    "preflightBuild": true
+  },
+  "limitations": [
+    "Local Chromium mobile viewport tests, not iPhone hardware or logged AlterU production.",
+    "Uses current anonymous browser capability; platform account recovery is not implemented.",
+    "No client backup import or cross-owner state migration.",
+    "Ren candidate rejected; this gameplay change does not complete character art or full production admission."
+  ],
+  "developmentServerFailure": {
+    "code": "SCENE_NOT_READY:RESOURCE_SIZE",
+    "cause": "Original scene assets are emitted by generateBundle only; raw Vite dev does not provide them.",
+    "resolution": "Used actual cloud-preflight build and preview; integrity checks unchanged."
+  }
+}

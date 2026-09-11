@@ -12,6 +12,7 @@ function parsePending(raw:string):Pending{const p=JSON.parse(raw);if(!p||!idPatt
 export class RecoverableSessionClient<H extends RecoverableHead>{
  constructor(private storage:Storage,private prefix:string,private transport:Transport,private policy:SessionClientPolicy<H>,private lock:SessionLock=async(_name,work)=>work()){}
  private head(value:unknown,expectedId?:string):H{this.policy.assertHead(value);const h=value as H;if(!idPattern.test(h.id)||!Number.isSafeInteger(h.version)||h.version<0||expectedId!==undefined&&h.id!==expectedId)throw Error('SESSION_RESPONSE_MISMATCH');return h}
+ private assertSelected(id:string){const current=this.read('session','');if(current&&current!==id)throw Error('SESSION_SELECTION_CHANGED')}
  private async get(id:string){return this.head(await this.transport('/sessions/'+id),id)}
  private key(name:string){return this.prefix+name}
  read<T>(name:string,fallback:T):T{const raw=this.storage.getItem(this.key(name));return raw===null?fallback:JSON.parse(raw)}
@@ -32,7 +33,8 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
  hasPending(){const session=this.read('session','');return this.pending().some(p=>p.id===session)}
  async enroll(locale:Locale,restart=false):Promise<H>{return this.lock(this.key('bootstrap'),async()=>{
   const current=this.read('session','')
-  if(restart&&this.hasPending())throw Error('PENDING_ACTION')
+  const work=async()=>{
+  if(restart&&this.pending().length)throw Error('PENDING_ACTION')
   let pending=this.read<{enrollment_id:string;locale:Locale}|null>('enrollment-pending',null)
   if(current&&!restart&&!pending)return this.get(current)
   // A lost restart response must finish that enrollment before resuming the old session.
@@ -41,7 +43,15 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
    pending??={enrollment_id:restart?randomId():this.read('enrollment','')||randomId(),locale}
    this.write('enrollment-pending',pending);this.write('enrollment-request',pending);this.write('enrollment',pending.enrollment_id)
   }
-  const head=this.head(await this.transport('/sessions',pending));this.write('session',head.id);this.write('enrollment-pending',null);return head
+  let response:unknown
+  try{response=await this.transport('/sessions',pending)}catch(e){
+   // A definite quota refusal creates no journey. Do not strand selection behind it.
+   if(restart&&e instanceof Error&&e.message==='SESSION_LIMIT'){this.write('enrollment-pending',null);this.write('enrollment-request',null)}
+   throw e
+  }
+  const head=this.head(response);this.write('session',head.id);this.write('enrollment-pending',null);return head
+  }
+  return restart?this.lock(this.key('session:'+current),work):work()
  })}
  private async settle(p:Pending){
   let result:any,rejected=false
@@ -64,20 +74,33 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   if(!result.head||latest.version!==result.head.version)result={kind:'recovered',text:null,accepted:false,...(result.rejectionCode?{rejectionCode:result.rejectionCode}:{})}
   this.ack(p);return {...result,head:latest}
  }
+ /** Selection changes only the continuation pointer; server state is never imported or rewritten. */
+ async selectSession(id:string):Promise<H>{
+  if(!idPattern.test(id))throw Error('INVALID_SESSION_ID')
+  return this.lock(this.key('bootstrap'),async()=>{
+   const current=this.read('session','')
+   return this.lock(this.key('session:'+current),async()=>{
+    if(this.pending().length||this.read('enrollment-pending',null))throw Error('PENDING_ACTION')
+    const selected=await this.get(id)
+    this.write('session',selected.id)
+    return selected
+   })
+  })
+ }
  async send(head:H,body:Record<string,unknown>){return this.lock(this.key('session:'+head.id),async()=>{
-  this.head(head)
+  this.head(head);this.assertSelected(head.id)
   if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
   const p:Pending={id:head.id,body:{...body,sceneId:this.policy.scene(head),action_id:randomId(),expected_version:head.version}}
   this.put(p);return this.settle(p)
  })}
  async sendPrepared(head:H,body:Record<string,unknown>){return this.lock(this.key('session:'+head.id),async()=>{
-  this.head(head);if(!this.policy.preparedAction)throw Error('PREPARED_ACTION_UNAVAILABLE')
+  this.head(head);this.assertSelected(head.id);if(!this.policy.preparedAction)throw Error('PREPARED_ACTION_UNAVAILABLE')
   if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
   const p:Pending={id:head.id,operation:'prepared-action',body:{...body,sceneId:this.policy.scene(head),action_id:randomId(),expected_version:head.version}}
   this.put(p);return this.settle(p)
  })}
  async sendEnding(head:H){return this.lock(this.key('session:'+head.id),async()=>{
-  this.head(head)
+  this.head(head);this.assertSelected(head.id)
   if(!this.policy.ending)throw Error('ENDING_UNAVAILABLE')
   if(this.pending().some(p=>p.id===head.id))throw Error('PENDING_ACTION')
   const p:Pending={id:head.id,operation:'ending',body:{...this.policy.ending.request(head),sceneId:this.policy.scene(head),ending_id:randomId(),expected_version:head.version}}
