@@ -4,9 +4,10 @@ import {originalEquipmentResource,starterArt,originalStarterSheet,originalEquipm
 import {Assets} from 'pixi.js'
 import {inspectSpritePng} from './sprite-draft'
 import {decodeSpritePixels} from './sprite-browser-io'
+import {verifyPublishedActorPixels} from './sprite-map-candidate'
 import {verifyPublishedDevicePixels} from './device-map-candidate'
 import type {RpgPlayer} from '@rpgjs/server'
-import {adaStandingResource,originalStandingArt,originalStandingSheet,originalCharacterArtSlots,originalCharacterArtAnimation} from './original-character-art'
+import {originalActorResource,originalActorDirection,originalStandingArt,originalStandingSheet,originalCharacterArtSlots,originalCharacterArtAnimation} from './original-character-art'
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react'
 import {createRpgRenderer,type RpgRendererRuntime,type RendererPoint} from './rpg-renderer'
 import {heroSheet} from './sprite-config'
@@ -16,7 +17,7 @@ import {SceneReadiness,ScenePreparationError,loadBrowserSceneResource,type Scene
 import {originalSessionHttp} from './original-session-http'
 import {originalGameEntities,originalReadingBlocks,originalGameObjective,originalActionDestinations} from './original-game-projection'
 import {originalPlaceLabel} from './original-place-presentation'
-import {originalBoundSceneResources,originalBackgroundVersion} from './original-asset-releases'
+import {originalBoundSceneResources,originalBackgroundVersion,originalActorRelease,originalStarterRelease} from './original-asset-releases'
 import type {OriginalHead} from '../server/original-train-runtime'
 import './original-game.css'
 declare const __ORIGINAL_STORY_PREVIEW__:SceneResourceManifest|null
@@ -25,7 +26,7 @@ type Entity=ReturnType<typeof originalGameEntities>[number]
 type Panel='nearby'|'log'|'bag'|'people'|'ending'|'action'|null
 /** Same game, explicitly loopback-only until every asset category is admitted. */
 export default function OriginalGame(){
- const [connection]=useState(()=>originalSessionHttp(window.alteruLocalStorage,async(name,work)=>{if(!navigator.locks)throw Error('CLOUD_LOCKS_UNAVAILABLE');return navigator.locks.request(name,work)},undefined,undefined,async plan=>{await loaderFor(plan).prepare(plan.destinationScene,true)},new URLSearchParams(location.search).get('background_release')??undefined,new URLSearchParams(location.search).get('device_release')??undefined))
+ const [connection]=useState(()=>originalSessionHttp(window.alteruLocalStorage,async(name,work)=>{if(!navigator.locks)throw Error('CLOUD_LOCKS_UNAVAILABLE');return navigator.locks.request(name,work)},undefined,undefined,async plan=>{await loaderFor(plan).prepare(plan.destinationScene,true)},new URLSearchParams(location.search).get('background_release')??undefined,new URLSearchParams(location.search).get('device_release')??undefined,new URLSearchParams(location.search).get('actor_release')??undefined))
  const loaders=useRef(new Map<string,SceneReadiness>())
  function loaderFor(h:Pick<OriginalHead,'assets'>){const id=originalBackgroundVersion(h.assets);let loader=loaders.current.get(id);if(!loader){loader=new SceneReadiness(originalBoundSceneResources(__ORIGINAL_STORY_PREVIEW__!,h.assets),loadBrowserSceneResource);loaders.current.set(id,loader)}return loader}
  const [head,setHead]=useState<OriginalHead|null>(null),headRef=useRef(head);headRef.current=head
@@ -35,18 +36,27 @@ export default function OriginalGame(){
  const equipmentBlob=useRef(''),equipmentKey=useRef(''),equipmentEvents=useRef(new Map<string,RpgPlayer>())
  function projectEquipment(){const h=headRef.current;if(!h)return;for(const event of equipmentEvents.current.values()){const animation=originalStarterState(h.save);if(event.animationName()!==animation){event.animationName.set(animation);event.syncChanges()}}}
  async function prepareEquipment(h:OriginalHead){
-  const resource=originalEquipmentResource(h.assets),key=h.assets?.version===3?h.assets.starter.id:'baseline'
+  const resource=originalEquipmentResource(h.assets),key=originalStarterRelease(h.assets)?.id??'baseline'
   if(equipmentBlob.current){if(equipmentKey.current!==key)throw new ScenePreparationError('equipment','EQUIPMENT_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!
-   if(h.assets?.version===3){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedDevicePixels(h.assets.starter,png,decodeSpritePixels)}
+   const release=originalStarterRelease(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedDevicePixels(release,png,decodeSpritePixels)}
    const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');equipmentBlob.current=blob;equipmentKey.current=key
   }catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','EQUIPMENT_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
 
- const actorBlob=useRef(''),actorEvents=useRef(new Map<string,{event:RpgPlayer;characterId:string}>())
- function projectActors(){const h=headRef.current;if(!h)return;for(const {event,characterId} of actorEvents.current.values()){const animation=originalCharacterArtAnimation(h.save,characterId);if(event.animationName()!==animation){event.animationName.set(animation);event.syncChanges()}}}
- async function prepareActors(){if(actorBlob.current)return;const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob='';try{blob=(await loadBrowserSceneResource(adaStandingResource,abort.signal))!;const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==320||texture?.height!==320)throw Error('RESOURCE_DECODE');actorBlob.current=blob}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}}
+ const actorBlob=useRef(''),actorKey=useRef(''),actorEvents=useRef(new Map<string,{event:RpgPlayer;characterId:string;position:RendererPoint}>())
+ function projectActors(){const h=headRef.current;if(!h)return;for(const {event,characterId,position} of actorEvents.current.values()){const animation=originalCharacterArtAnimation(h.save,characterId),direction=originalActorDirection({x:position.x,y:position.y+1},{x:pos.current.x+4.5,y:pos.current.y+15});if(event.animationName()!==animation||event.direction()!==direction){event.animationName.set(animation);event.direction.set(direction);event.syncChanges()}}}
+ async function prepareActors(h:OriginalHead){
+  const release=originalActorRelease(h.assets),key=release?.id??'baseline',resource=originalActorResource(h.assets)
+  if(actorBlob.current){if(actorKey.current!==key)throw new ScenePreparationError('characters','ACTOR_VERSION_CHANGED');return}
+  const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
+  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!
+   if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedActorPixels(release,png,decodeSpritePixels)}
+   const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');actorBlob.current=blob;actorKey.current=key
+  }catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
+ }
+
  const runtime=useRef<RpgRendererRuntime|null>(null),frame=useRef<HTMLDivElement>(null),hud=useRef<HTMLElement>(null),footer=useRef<HTMLElement>(null),busyRef=useRef(true),mounted=useRef(true)
  const scene=head?.sceneId,locale=head?.save.locale??(navigator.language.startsWith('zh')?'zh':'en'),t=(zh:string,en:string)=>locale==='zh'?zh:en
  const entities=head?originalGameEntities(head):[],entity=entities.find(e=>e.id===selected),save=head?.save
@@ -56,8 +66,8 @@ export default function OriginalGame(){
  useEffect(()=>{const o=new ResizeObserver(camera);for(const el of [frame.current,frame.current?.parentElement,hud.current,footer.current])if(el)o.observe(el);return()=>o.disconnect()},[])
  async function restore(next:OriginalHead){
   runtime.current?.pause(true);setReady(false);headRef.current=next;setHead(next)
-  const loader=loaderFor(next),prepared=await loader.prepare(next.sceneId,true);await prepareActors();await prepareEquipment(next);if(!mounted.current)return
-  if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet,originalStandingSheet(actorBlob.current),originalStarterSheet(equipmentBlob.current,next.assets)],mapEvents:s=>[...originalCharacterArtSlots(s).map(slot=>({id:slot.id,x:slot.x,y:slot.y,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;this.animationFixed=true;this.setGraphic(originalStandingArt.graphic);this.animationName.set(originalCharacterArtAnimation(headRef.current!.save,slot.characterId));actorEvents.current.set(slot.id,{event:this,characterId:slot.characterId});this.syncChanges()}}})),...originalEquipmentSlots(s).map(slot=>({id:slot.id,x:slot.x,y:slot.y,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;this.animationFixed=true;this.setGraphic(starterArt.graphic);this.animationName.set(originalStarterState(headRef.current!.save));equipmentEvents.current.set(slot.id,this);this.syncChanges()}}}))],walkable:(p,s)=>originalWorldWalkable({...headRef.current!,sceneId:s},p),safePosition:(p,s)=>originalWorldSafePosition({...headRef.current!,sceneId:s},p),findPath:(a,b,s)=>findGridPath(a,b,p=>originalWorldWalkable({...headRef.current!,sceneId:s},p)),onPosition:p=>{pos.current=p;setPosition(p)},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
+  const loader=loaderFor(next),prepared=await loader.prepare(next.sceneId,true);await prepareActors(next);await prepareEquipment(next);if(!mounted.current)return
+  if(!runtime.current)await new Promise<void>((resolve,reject)=>{try{createRpgRenderer({host:document.getElementById('rpg')!,width:384,height:576,sceneIds:world.scenes.map(s=>s.id),initialScene:next.sceneId,initialPosition:next.position,heroGraphic:'hero',spritesheets:[heroSheet,originalStandingSheet(actorBlob.current,next.assets),originalStarterSheet(equipmentBlob.current,next.assets)],mapEvents:s=>[...originalCharacterArtSlots(s).map(slot=>({id:slot.id,x:slot.x,y:slot.y,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;this.animationFixed=true;this.setGraphic(originalStandingArt.graphic);this.animationName.set(originalCharacterArtAnimation(headRef.current!.save,slot.characterId));actorEvents.current.set(slot.id,{event:this,characterId:slot.characterId,position:{x:slot.x,y:slot.y}});this.syncChanges()}}})),...originalEquipmentSlots(s).map(slot=>({id:slot.id,x:slot.x,y:slot.y,event:{onInit(this:RpgPlayer){this.setHitbox(1,1);this.through=true;this.animationFixed=true;this.setGraphic(starterArt.graphic);this.animationName.set(originalStarterState(headRef.current!.save));equipmentEvents.current.set(slot.id,this);this.syncChanges()}}}))],walkable:(p,s)=>originalWorldWalkable({...headRef.current!,sceneId:s},p),safePosition:(p,s)=>originalWorldSafePosition({...headRef.current!,sceneId:s},p),findPath:(a,b,s)=>findGridPath(a,b,p=>originalWorldWalkable({...headRef.current!,sceneId:s},p)),onPosition:p=>{pos.current=p;setPosition(p);projectActors()},onDestination:setDestination,onReady:r=>{runtime.current=r;resolve()}})}catch(e){reject(e)}})
   await runtime.current!.restore(next.position,next.sceneId);projectActors();projectEquipment();if(!mounted.current)return
   loader.activate(next.sceneId);setBackground(prepared.background);setPosition(runtime.current!.position());setReady(true)
  }
@@ -76,7 +86,7 @@ export default function OriginalGame(){
  async function finish(){const h=headRef.current;if(!h||busyRef.current||!ready||error)return;setWorking(true);setError('');try{const r=await connection.client.sendEnding(h);await restore(r.head);setPanel('ending')}catch(e){setError(e instanceof Error?e.message:'NETWORK_ERROR')}finally{setWorking(false)}}
  function ground(e:React.MouseEvent){if(busyRef.current||!ready||panel||error)return;const r=frame.current!.getBoundingClientRect();setNotice('');runtime.current?.walkTo({x:(e.clientX-r.left)*384/r.width-4.5,y:(e.clientY-r.top)*576/r.height-15})}
  const latest=save?originalReadingBlocks(save).at(-1):undefined
- return <main className="og-game" data-scene={scene??''} data-version={head?.version??-1} data-background-version={head?originalBackgroundVersion(head.assets):undefined} data-device-version={head?.assets?.version===3?head.assets.starter.id:'baseline'}>
+ return <main className="og-game" data-scene={scene??''} data-version={head?.version??-1} data-background-version={head?originalBackgroundVersion(head.assets):undefined} data-device-version={originalStarterRelease(head?.assets)?.id??'baseline'} data-actor-version={originalActorRelease(head?.assets)?.id??'baseline'}>
   <section className="og-world" aria-label={t('原作地图','Original map')}><div ref={frame} className="og-map" onClick={ground}>
    {background&&<img className="og-background" src={background} alt="" draggable={false}/>}<div id="rpg"/>
    {ready&&entities.map((e,i)=><button className={"og-marker"+(e.person?.id===originalStandingArt.characterId?" og-person":e.id==='starter'?" og-equipment":"")} data-entity={e.id} key={e.id} aria-label={e.person?.name??e.actions[0]?.label} style={{left:e.position.x/384*100+'%',top:e.position.y/576*100+'%'}} onClick={ev=>{ev.stopPropagation();open(e)}} disabled={busy||Boolean(error)}>{e.person?.id!==originalStandingArt.characterId&&e.id!=='starter'&&<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M7 12h10"/></svg>}<span>{e.person?.name??String(i+1)}</span></button>)}
@@ -93,6 +103,6 @@ export default function OriginalGame(){
    {panel==='people'&&save.characters.map(c=><article key={c.id}><h3>{c.name}{save.partyMemberIds.includes(c.id)?t(' · 同行',' · Traveling'):''}</h3><p>{c.detail}</p>{save.relationships.filter(r=>r.characterId===c.id).map((r,i)=><p key={i}>{r.source} {r.delta>0?'+':''}{r.delta}</p>)}</article>)}
    {panel==='ending'&&save.finale.ending&&<><h3>{save.finale.ending.title}</h3><p>{save.finale.ending.thesis}</p>{save.finale.ending.finaleScenes.map((s,i)=><p key={i}>{s}</p>)}<h3>{t('承担的代价','Costs accepted')}</h3>{save.finale.ending.irreversibleCosts.map((s,i)=><p key={i}>{s}</p>)}{save.finale.ending.characterEpilogues.map(e=><article key={e.characterId}><h3>{save.characters.find(c=>c.id===e.characterId)?.name}</h3><p>{e.text}</p></article>)}{save.finale.ending.regionalEpilogues.map(e=><article key={e.regionId}><h3>{save.map.find(m=>m.id===e.regionId)?.label}</h3><p>{e.text}</p></article>)}</>}
   </div></section></div>}
-  {error&&<aside className="og-error" role="alertdialog" aria-modal="true" aria-label={t('恢复旅程','Recover journey')}><p>{rendererNeedsPageReload(error)?t('地图没有完成加载。重新载入页面后，将恢复同一旅程和已保存的操作。','The map did not finish loading. Reload the page to recover this journey and saved actions.'):(error.startsWith('BACKGROUND_')||error.startsWith('DEVICE_'))?t('这个素材版本尚不可用。可以返回默认旅程，原进度不会被覆盖。','This art version is unavailable. Return to the default journey without overwriting progress.'):error.startsWith('SCENE_NOT_READY:')?t('场景素材暂时无法加载。已保存的进度会保留，恢复后继续。','Scene assets could not load. Saved progress is preserved; recover to continue.'):t('操作尚未确认，进度与待确认请求会保留。','The operation is not confirmed. Progress and pending requests are preserved.')}</p><small>{error}</small><button disabled={busy} onClick={()=>{if(rendererNeedsPageReload(error))location.reload();else void init()}}>{rendererNeedsPageReload(error)?t('重新载入地图并恢复','Reload map and recover'):t('重新连接并恢复','Reconnect and recover')}</button>{(new URLSearchParams(location.search).has('background_release')||new URLSearchParams(location.search).has('device_release'))&&<a href="./?story=original">{t('返回默认旅程','Return to the default journey')}</a>}</aside>}
+  {error&&<aside className="og-error" role="alertdialog" aria-modal="true" aria-label={t('恢复旅程','Recover journey')}><p>{rendererNeedsPageReload(error)?t('地图没有完成加载。重新载入页面后，将恢复同一旅程和已保存的操作。','The map did not finish loading. Reload the page to recover this journey and saved actions.'):(error.startsWith('BACKGROUND_')||error.startsWith('DEVICE_')||error.startsWith('ACTOR_'))?t('这个素材版本尚不可用。可以返回默认旅程，原进度不会被覆盖。','This art version is unavailable. Return to the default journey without overwriting progress.'):error.startsWith('SCENE_NOT_READY:')?t('场景素材暂时无法加载。已保存的进度会保留，恢复后继续。','Scene assets could not load. Saved progress is preserved; recover to continue.'):t('操作尚未确认，进度与待确认请求会保留。','The operation is not confirmed. Progress and pending requests are preserved.')}</p><small>{error}</small><button disabled={busy} onClick={()=>{if(rendererNeedsPageReload(error))location.reload();else void init()}}>{rendererNeedsPageReload(error)?t('重新载入地图并恢复','Reload map and recover'):t('重新连接并恢复','Reconnect and recover')}</button>{(new URLSearchParams(location.search).has('background_release')||new URLSearchParams(location.search).has('device_release')||new URLSearchParams(location.search).has('actor_release'))&&<a href="./?story=original">{t('返回默认旅程','Return to the default journey')}</a>}</aside>}
  </main>
 }

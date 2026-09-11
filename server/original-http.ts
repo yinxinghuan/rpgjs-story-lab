@@ -4,21 +4,24 @@ import {ORIGINAL_API_PATH,ORIGINAL_RUNTIME_HEADER,ORIGINAL_RUNTIME_CONTRACT} fro
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 import type {PublishedDevice} from '../src/device-publication'
 import type {PublishedBackground} from '../src/background-publication'
+import type {PublishedActor} from '../src/actor-publication'
 export const originalJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}})
 /** Runs behind the existing capability boundary, in an original-only object. */
-export async function handleOriginalSession(request:Request,owner:string,authority:OriginalTrainAuthority,readBody:(request:Request)=>Promise<any>,resolveBackground?:(id:string)=>Promise<PublishedBackground>,resolveDevice?:(id:string)=>Promise<PublishedDevice>){
+export async function handleOriginalSession(request:Request,owner:string,authority:OriginalTrainAuthority,readBody:(request:Request)=>Promise<any>,resolveBackground?:(id:string)=>Promise<PublishedBackground>,resolveDevice?:(id:string)=>Promise<PublishedDevice>,resolveActor?:(id:string)=>Promise<PublishedActor>){
  try{
   if(request.headers.get(ORIGINAL_RUNTIME_HEADER)!==ORIGINAL_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(ORIGINAL_API_PATH.length)
   if(path==='/sessions'&&request.method==='GET')return originalJson({sessions:authority.directory(owner)})
   if(path==='/sessions'&&request.method==='POST'){
    const b=await readBody(request)
-   if(Object.keys(b).some(k=>!['enrollment_id','locale','backgroundRelease','deviceRelease'].includes(k))||!['zh','en'].includes(b.locale))throw new LabError('INVALID_ENROLLMENT')
+   if(Object.keys(b).some(k=>!['enrollment_id','locale','backgroundRelease','deviceRelease','actorRelease'].includes(k))||!['zh','en'].includes(b.locale))throw new LabError('INVALID_ENROLLMENT')
    let release:PublishedBackground|undefined
    if(b.backgroundRelease!==undefined){if(typeof b.backgroundRelease!=='string'||!resolveBackground)throw new LabError('BACKGROUND_NOT_PUBLISHED',404);release=await resolveBackground(b.backgroundRelease)}
    let device:PublishedDevice|undefined
    if(b.deviceRelease!==undefined){if(typeof b.deviceRelease!=='string'||!resolveDevice)throw new LabError('DEVICE_NOT_PUBLISHED',404);device=await resolveDevice(b.deviceRelease)}
-   return originalJson(authority.create(owner,b.enrollment_id,b.locale,device?{starter:device,...(release?{background:release}:{})}:release))
+   let actor:PublishedActor|undefined
+   if(b.actorRelease!==undefined){if(typeof b.actorRelease!=='string'||!resolveActor)throw new LabError('ACTOR_NOT_PUBLISHED',404);actor=await resolveActor(b.actorRelease)}
+   return originalJson(authority.create(owner,b.enrollment_id,b.locale,device||actor?{...(device?{starter:device}:{}),...(actor?{actor}:{}),...(release?{background:release}:{})}:release))
   }
   if(path==='/sessions')throw new LabError('METHOD_NOT_ALLOWED',405)
   const m=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|ending|prepare-action|commit-action))?$/)

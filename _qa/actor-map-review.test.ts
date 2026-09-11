@@ -48,6 +48,12 @@ test('standing confirmation requires a correct stop in every direction, not one 
  assert.equal(t.result().includes('stand'),false)
  walk(t,'down',home,undefined,4400);assert.ok(t.result().includes('stand'))
 })
+test('duplicate moving frames before stand preserve completed motion but earn no movement',()=>{
+ const t=new ActorMapTrial();let time=0
+ for(const direction of ACTOR_DIRECTIONS){let previous:RendererMotion|undefined;walk(t,direction,home,(s,i)=>{if(previous)t.sample(previous,time+i*40-10);if(i===25&&previous){s.position={...previous.position};s.renderedPosition={...previous.position}}previous=structuredClone(s)},time);time+=1100}
+ assert.deepEqual(t.result(),['down','left','right','up','stand'])
+ const still=new ActorMapTrial();walk(still,'up',home,s=>{s.position={x:180,y:430};s.renderedPosition={...s.position}});assert.deepEqual(still.result(),[])
+})
 async function fixture(){
  const width=60,height=112,rgba=new Uint8ClampedArray(width*height*4).fill(255)
  for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(x%20>=6&&x%20<15&&y%28>=6&&y%28<24)rgba.set([20,40,90,255],(y*width+x)*4)

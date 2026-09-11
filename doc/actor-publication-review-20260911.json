@@ -1,0 +1,105 @@
+{
+  "date": "2026-09-11",
+  "scope": "reviewed actor publication and original single-player journey binding",
+  "tests": {
+    "total": 588,
+    "passed": 588,
+    "failed": 0,
+    "fullStory": "zh/en complete scripted route and ending with SQLite restart and lost replies"
+  },
+  "build": "cloud frontend and opaque Worker startup passed",
+  "audits": [
+    "secrets",
+    "API base",
+    "media integration",
+    "src UI",
+    "UUID",
+    "145 games storage scope"
+  ],
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "releaseId": "ce260ae2dd3a9833ed4f1a38a446c1884fb9994dba4dafb4f0d2a00b4e6dd410.c6ceea2e-aa68-44d0-9fbc-ed09213b07a1",
+      "publishReplies": 2,
+      "lostPublishReplyRecovered": true,
+      "missingActorRecovered": true,
+      "actorFileRequests": 3,
+      "originalVersion": 2,
+      "originalScene": "train-at-river-valley",
+      "actorVersionRetained": true,
+      "syntheticDiagnosticOnly": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "syntheticDraftId": "c6ceea2e-aa68-44d0-9fbc-ed09213b07a1",
+      "checks": 8,
+      "onlineRestoreWithMap": true,
+      "reloadRetainsMap": true,
+      "adaNotApproved": true,
+      "visualApproval": "synthetic fixture only; no real actor admitted",
+      "externalConnections": 0,
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "pageErrors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "releaseId": "7c75fbba8504a434bc7df2d01442c7f35144f2dd32298bcf78285ccf69bda267.9a3c01fe-7294-4ba9-ae46-bcde74aacaf8",
+      "publishReplies": 2,
+      "lostPublishReplyRecovered": true,
+      "missingActorRecovered": true,
+      "actorFileRequests": 3,
+      "originalVersion": 2,
+      "originalScene": "train-at-river-valley",
+      "actorVersionRetained": true,
+      "syntheticDiagnosticOnly": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "syntheticDraftId": "9a3c01fe-7294-4ba9-ae46-bcde74aacaf8",
+      "checks": 8,
+      "onlineRestoreWithMap": true,
+      "reloadRetainsMap": true,
+      "adaNotApproved": true,
+      "visualApproval": "synthetic fixture only; no real actor admitted",
+      "externalConnections": 0,
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "pageErrors": []
+    }
+  ],
+  "visualEvidence": {
+    "kind": "new headless localhost contexts, synthetic diagnostic PNG only",
+    "sizes": [
+      "320x568 zh",
+      "390x844 en"
+    ],
+    "actualStandingDirections": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ],
+    "method": "each actual viewport PNG must contain >50 matching row-color pixels and >4x each other row color; source mapping assertions are additional only",
+    "paths": "_qa/ui/actor-published-*-local-qa.png",
+    "externalConnections": 0
+  },
+  "limitations": [
+    "No real actor sheet admitted; existing Ada remains rejected for repeated rear stride, wrong right-facing stand and moving attachments.",
+    "No new media or model requests.",
+    "NPC uses four standing frames; walking/following behavior is not implemented here.",
+    "Production origin browser permission remains pending; localhost tests do not replace production platform or iPhone hardware evidence.",
+    "Full original game production gate remains closed; remaining scenes and qualified cast art are unfinished."
+  ],
+  "deployment": "pending"
+}

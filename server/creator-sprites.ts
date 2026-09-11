@@ -3,6 +3,7 @@ import {LabError} from '../src/journey-runtime'
 import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from '../src/device-publication'
 import {inspectSpritePng} from '../src/sprite-draft'
 import {assertActorSheetReview,type ActorSheetReview} from '../src/actor-sheet-review'
+import {assertPublishedActor,type PublishedActor} from '../src/actor-publication'
 import {ACTOR_REVIEW_LIMIT,actorReviewId,actorReviewTarget,type ArchivedActorReview} from '../src/actor-review-archive'
 import {assertSpriteManifest,spriteManifestSignature,spritePartBytes,SPRITE_ARCHIVE_LIMIT,SPRITE_ARCHIVE_PART,type SpriteArchiveRecord,type SpriteFile} from '../src/sprite-archive-contract'
 
@@ -13,6 +14,7 @@ export class CreatorSpriteArchive{
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_parts(owner TEXT NOT NULL,id TEXT NOT NULL,role TEXT NOT NULL,part INTEGER NOT NULL,data BLOB NOT NULL,PRIMARY KEY(owner,id,role,part))')
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_releases(owner TEXT NOT NULL,id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_actor_reviews(owner TEXT NOT NULL,id TEXT NOT NULL,review_id TEXT NOT NULL,revision INTEGER NOT NULL,record TEXT NOT NULL,PRIMARY KEY(owner,id,review_id),UNIQUE(owner,id,revision))')
+  db.run('CREATE TABLE IF NOT EXISTS creator_actor_releases(owner TEXT NOT NULL,id TEXT NOT NULL,review_id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
  }
  list(owner:string):SpriteArchiveRecord[]{return this.db.all<{manifest:string;state:'uploading'|'ready';created_at:number}>('SELECT manifest,state,created_at FROM creator_sprites WHERE owner=? ORDER BY created_at DESC',owner).map(r=>({manifest:JSON.parse(r.manifest),state:r.state,createdAt:r.created_at}))}
  get(owner:string,id:string){const r=this.list(owner).find(r=>r.manifest.id===id);if(!r)throw new LabError('SPRITE_ARCHIVE_NOT_FOUND',404);return r}
@@ -95,5 +97,28 @@ export class CreatorSpriteArchive{
   const release:PublishedDevice={version:1,id:owner+'.'+id,slot:'starter',sha256:f.sha256,bytes:f.bytes,width:f.width,height:f.height,review:structuredClone(value.review)}
   assertPublishedDevice(release)
   return this.db.transaction(()=>{const old=this.publication(owner,id);if(old){if(JSON.stringify(old)!==JSON.stringify(release))throw new LabError('DEVICE_RELEASE_CONFLICT',409);return old}this.db.run('INSERT INTO creator_sprite_releases VALUES(?,?,?)',owner,id,JSON.stringify(release));return release})
+ }
+ actorPublication(owner:string,id:string):PublishedActor|null{
+  const row=this.db.all<{release:string}>('SELECT release FROM creator_actor_releases WHERE owner=? AND id=?',owner,id)[0]
+  if(!row)return null;const release=JSON.parse(row.release);assertPublishedActor(release);return release
+ }
+ async publishActor(owner:string,id:string,value:any){
+  if(!value||Object.keys(value).join(',')!=='reviewId'||typeof value.reviewId!=='string'||!/^[a-f0-9]{64}$/.test(value.reviewId))throw new LabError('ACTOR_REVIEW_REQUIRED',409)
+  const reviewId=value.reviewId as string,record=this.get(owner,id),d=record.manifest.draft,f=record.manifest.files.find(f=>f.role==='candidate')!
+  if(record.state!=='ready'||d.spec.kind!=='actor')throw new LabError('ACTOR_NOT_READY',409)
+  const existing=()=>{const old=this.db.all<{review_id:string}>('SELECT review_id FROM creator_actor_releases WHERE owner=? AND id=?',owner,id)[0];if(!old)return null;if(old.review_id!==reviewId)throw new LabError('ACTOR_RELEASE_CONFLICT',409);return this.actorPublication(owner,id)!}
+  const old=existing();if(old)return old
+  const latest=this.actorReviews(owner,id)[0]
+  if(!latest||latest.id!==reviewId||!latest.review.map)throw new LabError('ACTOR_REVIEW_REQUIRED',409)
+  try{assertActorSheetReview(latest.review,actorReviewTarget(record.manifest))}catch{throw new LabError('ACTOR_REVIEW_REQUIRED',409)}
+  await this.file(owner,id,'candidate')
+  const release:PublishedActor={version:1,id:owner+'.'+id,slot:'ada-mechanic',sha256:f.sha256,bytes:f.bytes,width:f.width,height:f.height,foot:structuredClone(d.spec.foot),review:structuredClone(latest.review.map)}
+  assertPublishedActor(release)
+  return this.db.transaction(()=>{
+   const old=existing();if(old)return old
+   // A newer rejection arriving during async PNG verification invalidates this intent.
+   if(this.actorReviews(owner,id)[0]?.id!==reviewId)throw new LabError('ACTOR_REVIEW_REQUIRED',409)
+   this.db.run('INSERT INTO creator_actor_releases VALUES(?,?,?,?)',owner,id,reviewId,JSON.stringify(release));return release
+  })
  }
 }
