@@ -1,0 +1,30 @@
+{
+  "status": "local-ui-verified-platform-pending",
+  "tests": 11,
+  "typecheck": true,
+  "build": true,
+  "ui": "http://127.0.0.1:5394/",
+  "observation": {
+    "scene": "train-at-dead-station",
+    "connected": true,
+    "graphics": 1,
+    "sheets": 1,
+    "projected": [
+      192,
+      430
+    ],
+    "viewport": [
+      0,
+      0
+    ],
+    "nodes": 114,
+    "textures": 9
+  },
+  "privacy": "only bounded numeric/boolean display tree; no texture URLs, credentials or arbitrary node fields",
+  "limits": [
+    "not a renderer fix",
+    "native platform defect remains open",
+    "not final full-game acceptance"
+  ],
+  "touchTarget": "summary minimum 44px added after first visual inspection"
+}

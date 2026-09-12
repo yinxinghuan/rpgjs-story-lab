@@ -1,3 +1,4 @@
+import {inspectDisplayTree} from './render-diagnostics'
 import {RendererTransition} from './renderer-transition'
 import {keepWholeMapCamera} from './fixed-map-camera'
 import {Direction} from '@rpgjs/common'
@@ -10,7 +11,7 @@ export type RendererPoint={x:number;y:number}
 type Position=RendererPoint
 type SceneId=string
 export type RendererMotion={scene:string;renderedScene:string|null;position:Position;renderedPosition:Position|null;direction:string;renderedDirection:string|null;animation:string;renderedAnimation:string|null;paused:boolean}
-export type RpgRendererRuntime={position:()=>Position;renderedPosition:()=>Position|null;motion?:()=>RendererMotion|null;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(v:boolean)=>void;restore:(p:Position,scene?:string)=>Promise<void>;scene:()=>string;renderedScene:()=>string|null;renderedEvents:()=>string[];destroy:()=>void}
+export type RpgRendererRuntime={position:()=>Position;renderedPosition:()=>Position|null;motion?:()=>RendererMotion|null;diagnostics?:()=>unknown;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(v:boolean)=>void;restore:(p:Position,scene?:string)=>Promise<void>;scene:()=>string;renderedScene:()=>string|null;renderedEvents:()=>string[];destroy:()=>void}
 export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void}
 // This RPG-JS beta owns page-global providers. A second instance needs a page
 // reload until complete provider/client disposal has been proven.
@@ -59,6 +60,7 @@ window.addEventListener('resize',syncViewport)
 const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;transitions.joinedScene(sceneForMap(map.id));reportHandshake()},async onConnected(p){
  player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;await p.changeMap(mapId(initialScene),pos)
  bindSpace({position:()=>({...pos}),renderedPosition:()=>{const s=client?.getCurrentPlayer();return s?{x:s.x(),y:s.y()}:null},
+  diagnostics:()=>{const s=client?.getCurrentPlayer();const canvas=host.querySelector('canvas');const rect=host.getBoundingClientRect();return {scene:activeScene,loaded:loadedScene,pending:transitions.status().pendingScene,position:{...pos},projected:s?{x:s.x(),y:s.y()}:null,connected:s?.isConnected(),graphics:s?.graphics().length,sheets:s?.graphicsSignals().length,canvas:canvas?{width:canvas.width,height:canvas.height}:null,host:{x:Math.round(rect.x),y:Math.round(rect.y),width:Math.round(rect.width),height:Math.round(rect.height)},tree:inspectDisplayTree((client as unknown as {canvasApp?:{stage?:unknown}})?.canvasApp?.stage)}},
   motion:()=>{const s=client?.getCurrentPlayer();return player?{scene:activeScene,renderedScene:loadedScene,position:{...pos},renderedPosition:s?{x:s.x(),y:s.y()}:null,direction:String(player.direction()),renderedDirection:s?String(s.direction()):null,animation:String(player.animationName()),renderedAnimation:s?String(s.animationName()):null,paused:paused||changing}:null},
   move:(x,y)=>{stick={x,y};if(x||y)cancelRoute()},walkTo:(p,callback)=>{if(paused||changing)return false;const path=findPath(pos,p,activeScene);if(!path.length)return false;route=path;arrive=callback;reportDestination(path[path.length-1]);return true},
   pause:v=>{paused=v;keys.clear();stick={x:0,y:0};if(v){cancelRoute();stand()}},

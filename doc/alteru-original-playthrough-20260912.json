@@ -89,5 +89,15 @@
     },
     "rendering": "After next continuous transition to graystone yard, hero absent again. Background and HUD visible. Viewport cache fix did not establish resolution of platform defect.",
     "evidence": "_qa/alteru-native-20260912/yard-actor-missing-after-fix.png"
+  },
+  "yardGateFollowup": {
+    "action": "在栅门前说明列车来意",
+    "nativePlatform": true,
+    "saved": true,
+    "fuel": 38,
+    "condition": 87,
+    "morale": 61,
+    "firstIntroduction": "可见雨衣与泵房钥匙 → 玛柯自报守卫队长 → 伤员和油泵交换条件",
+    "fullPlaythrough": false
   }
 }

@@ -1119,3 +1119,6 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 活跃地图视口
 
 相机适配器从当前 canvas stage 查找 viewport，与固定 RPG-JS 版本的查找方式一致，不再跨地图持有 viewport 缓存。场景树已脱离但未销毁的旧 viewport 会使新地图偏移漏清；新增回归先复现再修复。此缺陷已获单元实证，但尚不能认定它就是 Telegram 平台角色缺失的原因，仍需实际平台复验。
+
+### 当前画面诊断增量（2026-09-12）
+`src/render-diagnostics.ts` 对当前显示树只采集有限数值和布尔值，最多遍历 2048 节点/32 层，最多显示 32 项视口或纹理几何。排除纹理地址、节点标识及任意附加属性；循环引用不会递归。`RpgRendererRuntime.diagnostics()` 同时读取当前地图握手、玩家坐标、isConnected、graphics/graphicsSignals 数量和画布尺寸。原作记录面板用折叠的“画面显示帮助”按需呈现；无网络、存档写入或自动恢复动作。该读数只帮助定位连续转场人物缺失，不能证明实际像素可见。
