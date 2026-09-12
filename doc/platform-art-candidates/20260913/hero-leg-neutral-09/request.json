@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "4c520add-c76c-458b-836e-be78d7c489d3",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789236856459974.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 320
+  },
+  "prompt": "Create a coherent TWO-POSE lower-body sprite layer based on the LEFT cell of the reference. Preserve its dark teal trousers, brown work boots, black outlines, pixel texture, overhead BACK VIEW camera angle and light direction. Output 640x320, two equal 320x320 cells side by side. LEFT CELL: the same small walking contact pose as the reference left cell, screen-left boot lower and screen-right boot higher. RIGHT CELL: the SAME legs and SAME boots in a neutral passing/standing pose with the two heels level, feet close together below the hips. Both boots must retain exactly the same width, ankle cuff shape, brown panels and dark sole thickness as the walking pose. Do not replace boots with round shoes. No changes to leg length, material, pixel density or hip width between poses. Both cells have hips centered at x155 within each cell, a flat horizontal hip cutoff at y20, and lowest boot sole at y300. Generous empty side margins. Only trousers and boots, no jacket, bag, body, arms, head, belt or shadow. Plain solid white background, no checkerboard, grid, labels or text. This is a walk-contact and neutral pose pair, NOT two walking contacts. Keep reference visual identity, with no new details or restyling."
+}

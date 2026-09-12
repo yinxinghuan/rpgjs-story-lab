@@ -42,7 +42,7 @@
     {
       "requirement": "Platform character production with consistent four-direction gait",
       "state": "unverified",
-      "latest": "Transparent first-cell leg layer plus original standing inspected; opposite contacts work but boot shape/shading changes at neutral transitions. Candidate remains rejected; see leg-layer-playback-review-20260913.json alphaFourBeatFollowup."
+      "latest": "hero-leg-neutral-09 returns a contact and neutral pair from the same reference. External matte prepared, but an enclosed white gap remains in the contact pose. New layer-family comparison is prepared; playback not observed because Mac locked and automatic unlock failed. No production admission."
     },
     {
       "requirement": "Trusted platform identity and account recovery",

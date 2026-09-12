@@ -1,0 +1,75 @@
+{
+  "path": "doc/platform-art-candidates/20260913/hero-leg-neutral-09/candidate-alpha.png",
+  "sha256": "2cba69b88b7ac72327af663927d3ff707893b8086e422db0237f9df84b6a4763",
+  "sourceSha256": "e342a40ebc4d72dd87ad952a3d1d8d232c3a0e2fb516581233db95da88c12518",
+  "bytes": 67364,
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 320,
+    "cellHeight": 320,
+    "foot": {
+      "x": 155,
+      "y": 305
+    },
+    "sourceAnchors": [
+      {
+        "x": 152,
+        "y": 306
+      },
+      {
+        "x": 168,
+        "y": 306
+      }
+    ],
+    "kind": "states",
+    "backgroundMode": "pale-neutral",
+    "neutralMin": 200,
+    "chromaMax": 20
+  },
+  "metrics": {
+    "removed": 130162,
+    "edgeCorrected": 1913,
+    "corePreserved": 69733
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        77,
+        6,
+        225,
+        309
+      ],
+      "sourceAnchor": {
+        "x": 152,
+        "y": 306
+      },
+      "offset": {
+        "x": 3,
+        "y": -1
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        413,
+        6,
+        561,
+        310
+      ],
+      "sourceAnchor": {
+        "x": 168,
+        "y": 306
+      },
+      "offset": {
+        "x": -13,
+        "y": -1
+      }
+    }
+  ],
+  "sourceUnchanged": true,
+  "admitted": false
+}

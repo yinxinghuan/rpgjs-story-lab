@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-13",
+  "taskId": "mt_45e431b14a80a98d04c67b0d7bfc2c35",
+  "sourceSha256": "e342a40ebc4d72dd87ad952a3d1d8d232c3a0e2fb516581233db95da88c12518",
+  "request": "request.json",
+  "source": "candidate.png",
+  "processed": "candidate-alpha.png",
+  "preparation": "preparation.json",
+  "observations": [
+    "Reference-style contact and neutral/feet-level poses are both present, instead of two repeated same-leg contacts.",
+    "Trouser and boot material broadly follows the reference, but cuff geometry and leg silhouettes still require playback comparison.",
+    "External white matte removed; the contact pose retains a narrow enclosed white gap between the legs.",
+    "Anchors align hip centers by explicit per-cell translations; no scaling, mirroring or repainting is baked into the PNG."
+  ],
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "browser": {
+    "fixture": "_qa/leg-layer-review.html",
+    "comparison": "Old generated contact + original full standing versus new generated contact + same-sheet neutral; opposite contact mirrors only lower layer.",
+    "status": "not-observed",
+    "blocker": "CUA reports Mac locked and automatic unlock failed."
+  },
+  "next": [
+    "Explicitly clean the verified enclosed matte gap without erasing pale costume details.",
+    "Inspect neutral/contact boot shape, cuffs, hem seam and soles during playback before actual-map trial."
+  ],
+  "generationRequests": 1,
+  "platformCost": "not provided by public API"
+}
