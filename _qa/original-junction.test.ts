@@ -13,6 +13,7 @@ import {OriginalSessionClient} from '../src/original-session-client'
 import {originalEndingCartridge} from '../src/original-ending-capabilities'
 import {originalEndingOptionIds,originalEndingSpec,originalEndingCosts,availableOriginalEndingOptions,authoredOriginalEnding} from '../src/original-ending-options'
 import {buildEndingSnapshot,validateEndingCandidate} from '../src/vendor/original-train/engine/endingDirector'
+import {originalGameEntities} from '../src/original-game-projection'
 const world=originalTrainChapterSpatialPlan(),owner='synthetic-junction-owner'
 function storage(raw:DatabaseSync):AuthorityStorage{return {all:(q,...b)=>raw.prepare(q).all(...b) as any,run:(q,...b)=>{raw.prepare(q).run(...b)},transaction:work=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}}
 function setup(gate:OriginalPresentationGate=()=>true){const raw=new DatabaseSync(':memory:'),db=storage(raw);return {raw,db,s:new OriginalTrainAuthority(db,gate)}}
@@ -56,6 +57,29 @@ test('junction basic bridge ending does not grant a rescue network to a hostile 
  h=await steps(s,h,['junction-bridge-basic']);const r=await s.ending(owner,h.id,endingRequest(h)),ending=r.head.save.finale.ending
  assert.deepEqual(ending.capabilitiesUsed,['sacrifice-train']);assert.ok(!r.head.save.facts['aid-network-known']);assert.match(ending.characterEpilogues.find((e:any)=>e.characterId==='mara-raider').text,/seizure/);raw.close()
 })
+
+for(const locale of ['zh','en'] as const)test(`anchored rescue costs match the offered choice in ${locale}; fixed cartridge and completed history stay unchanged`,async()=>{
+ const {raw,db,s}=setup();const source=originalCartridge(locale),frozen=structuredClone(source)
+ try{
+  let h=await arrive(s,locale,false,true,true);h=await steps(s,h,['junction-review'])
+  const adapted=originalEndingCartridge(h.save,source),cost=adapted.endingDirector!.capabilities.find(c=>c.id==='rescue-network')!.mandatoryCosts[0]
+  assert.match(cost,locale==='zh'?/维护步行通道/:/maintain the foot crossing/)
+  assert.ok(h.save.choices.find(c=>c.id==='junction-the-last-bridge')!.label.includes(cost))
+  const oldMenu=structuredClone(h);oldMenu.save.choices.find(c=>c.id==='junction-the-last-bridge')!.label='Legacy train carriage-space cost'
+  assert.ok(originalGameEntities(oldMenu).flatMap(e=>e.actions).find(c=>c.id==='junction-the-last-bridge')!.label.includes(cost))
+  assert.equal(oldMenu.save.choices.find(c=>c.id==='junction-the-last-bridge')!.label,'Legacy train carriage-space cost')
+  h=await steps(s,h,['junction-the-last-bridge']);const result=await s.ending(owner,h.id,endingRequest(h)),ending=result.head.save.finale.ending
+  assert.ok(ending.irreversibleCosts.includes(cost));assert.ok(!ending.irreversibleCosts.some((c:string)=>/预留车厢|reserve carriage space/.test(c)))
+  assert.deepEqual(source,frozen)
+  const preserved=originalEndingCartridge({facts:{'bridge-train-fate':'preserved'}},source)
+  assert.deepEqual(preserved.endingDirector!.capabilities.find(c=>c.id==='rescue-network')!.mandatoryCosts,source.endingDirector!.capabilities.find(c=>c.id==='rescue-network')!.mandatoryCosts)
+  // Historical complete save fixture: do not silently rewrite an already
+  // recorded ending when a wording bug is corrected for future conclusions.
+  const legacy=structuredClone(result.head);legacy.save.finale.ending.irreversibleCosts=legacy.save.finale.ending.irreversibleCosts.map((v:string)=>v===cost?source.endingDirector!.capabilities.find(c=>c.id==='rescue-network')!.mandatoryCosts[0]:v)
+  db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(legacy),legacy.id)
+  assert.deepEqual(s.get(owner,legacy.id).save,legacy.save)
+ }finally{raw.close()}
+})
 test('junction low-morale damaged train keeps basic settlement without inventing autonomy',async()=>{
  const {raw,db,s}=setup();let h=await arrive(s);h.save.stats.morale=0;h.save.stats.condition=0;db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(h),h.id)
  h=await steps(s,h,['junction-review']);assert.ok(h.save.choices.some(c=>c.id==='junction-settle-basic'));assert.ok(!h.save.choices.some(c=>c.id==='junction-many-hands'))
@@ -68,10 +92,10 @@ test('junction missing ending presentation does not commit ownership; v9 upgrade
  const old={...h,mapVersion:'original-train-authoring-9'};db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(old),h.id);assert.equal(s.get(owner,h.id).mapVersion,originalChapterMapVersion);assert.deepEqual(s.get(owner,h.id).save,old.save)
  fail='original-finale';h=await steps(s,h,['junction-common-line']);await assert.rejects(s.ending(owner,h.id,endingRequest(h)),/SYNTHETIC_JUNCTION_ART_GAP/);assert.deepEqual(s.get(owner,h.id),h);raw.close()
 })
-test('selected ending rejects another available ending, omitted extra cost and an absent doctor',async()=>{
- for(const corruption of ['choice','cost','doctor']){
+test('selected ending rejects another ending, missing or unaccepted cost and an absent doctor',async()=>{
+ for(const corruption of ['choice','cost','cost-extra','doctor']){
   const {raw,db,s}=setup();let h=await arrive(s);h=await steps(s,h,['junction-review','junction-common-line'])
-  const service=new OriginalTrainAuthority(db,()=>true,undefined,async(snapshot,c)=>{const candidate=authoredOriginalEnding(snapshot,c)!;if(corruption==='choice')candidate.anchorFamily='quiet-platform';if(corruption==='cost')candidate.irreversibleCosts.pop();if(corruption==='doctor')candidate.finaleScenes[1]='Doctor Ren opens a clinic.';return {candidate,generated:false}})
+  const service=new OriginalTrainAuthority(db,()=>true,undefined,async(snapshot,c)=>{const candidate=authoredOriginalEnding(snapshot,c)!;if(corruption==='choice')candidate.anchorFamily='quiet-platform';if(corruption==='cost')candidate.irreversibleCosts.pop();if(corruption==='cost-extra')candidate.irreversibleCosts.push('The crew must acquire a new train.');if(corruption==='doctor')candidate.finaleScenes[1]='Doctor Ren opens a clinic.';return {candidate,generated:false}})
   await assert.rejects(service.ending(owner,h.id,endingRequest(h)),/ENDING_RESULT_MISMATCH/);assert.deepEqual(service.get(owner,h.id),h);raw.close()
  }
 })

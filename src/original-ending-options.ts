@@ -53,7 +53,7 @@ export function authoredOriginalEnding(snapshot:StoryEndingSnapshot,c:StoryCartr
 export function validateSelectedOriginalEnding(candidate:StoryEndingCandidate,snapshot:StoryEndingSnapshot,c:StoryCartridge){
  const spec=selectedOriginalEnding(snapshot,c);if(!spec)return
  const same=(a:string[],b:string[])=>a.length===b.length&&a.every(id=>b.includes(id))&&new Set(a).size===a.length
- if(candidate.anchorFamily!==spec.id||!same(candidate.capabilitiesUsed,spec.capabilityIds)||!originalEndingCosts(spec,c).every(cost=>candidate.irreversibleCosts.includes(cost))||!same(candidate.characterEpilogues.map(e=>e.characterId),snapshot.characters.map(p=>p.id))||!same(candidate.regionalEpilogues.map(e=>e.regionId),snapshot.map.filter(m=>m.visited).map(m=>m.id)))throw Error('ORIGINAL_ENDING_CHOICE_MISMATCH')
+ if(candidate.anchorFamily!==spec.id||!same(candidate.capabilitiesUsed,spec.capabilityIds)||!same(candidate.irreversibleCosts,originalEndingCosts(spec,c))||!same(candidate.characterEpilogues.map(e=>e.characterId),snapshot.characters.map(p=>p.id))||!same(candidate.regionalEpilogues.map(e=>e.regionId),snapshot.map.filter(m=>m.visited).map(m=>m.id)))throw Error('ORIGINAL_ENDING_CHOICE_MISMATCH')
  const prose=[candidate.title,candidate.thesis,...candidate.finaleScenes,...candidate.preserved,...candidate.lost,...candidate.unresolved,...candidate.characterEpilogues.map(e=>e.text),...candidate.regionalEpilogues.map(e=>e.text),candidate.finalImagePrompt].join('\n')
  for(const person of c.characters)if(!snapshot.characters.some(p=>p.id===person.id)&&new RegExp(/^[\x00-\x7F]+$/.test(person.name)?`\\b${person.name}\\b`:person.name,'i').test(prose))throw Error('ORIGINAL_ENDING_UNKNOWN_CHARACTER')
 }

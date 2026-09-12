@@ -1,0 +1,20 @@
+{
+  "status": "rejected",
+  "reviewedAt": "2026-09-12",
+  "taskId": "mt_bca72bbef66480888373ad5249f917a2",
+  "sourceSha256": "9da37d54767b6677e593f781d229a186d21c9893c7600c94ad9462a1fc47116c",
+  "reasons": [
+    "Strong reference identity leakage: retained copper starter coil and electrical cabinet rather than a distinctive fuel pump station.",
+    "Broken and repaired columns both expose the same internal cavity; hatch closure/pressure change is not clearly readable.",
+    "Forced column changes two doors and frame silhouette, not only the low barrier.",
+    "Image is RGB with pale background, not transparent; no alpha preparation attempted after semantic rejection."
+  ],
+  "camera": "Steep B-like top surface retained; angle alone is insufficient.",
+  "accepted": false,
+  "originalRetained": true,
+  "productionChanged": false,
+  "newRequests": 1,
+  "furtherAutomaticGeneration": false,
+  "cost": "not supplied by public API",
+  "nextRecipeDirection": "Use environment/material-only reference or text-only device identity; separate common pump body and state-specific parts rather than changing full casing. This is a future recipe, not an already approved candidate."
+}

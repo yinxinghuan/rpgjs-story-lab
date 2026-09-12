@@ -1,0 +1,642 @@
+{
+  "status": "local-verified",
+  "release": "carriage-anchored-ending-20260912-1",
+  "originalWire": "original-session-17.assets-13.story-8.original-train-authoring-10",
+  "sourceFailure": "doc/original-forced-bridge-before-20260912.json",
+  "changes": [
+    "Anchored rescue-network cost now binds foot-crossing maintenance plus people, supplies and remaining fuel.",
+    "Selected ending costs must exactly match the offered specification.",
+    "Junction menus project current costs without rewriting saved history.",
+    "Completed legacy ending prose is retained; original frozen cartridge is unchanged."
+  ],
+  "tests": {
+    "allPassed": 657,
+    "failed": 0,
+    "targetedBeforeMenuProjection": 60,
+    "build": true,
+    "resourceHashes": 27,
+    "workerStartup": true
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "aid": false,
+      "ending": "bridge-basic",
+      "steps": [
+        {
+          "action": "repair-starter",
+          "scene": "train-at-dead-station",
+          "stats": {
+            "fuel": 68,
+            "condition": 87,
+            "morale": 58
+          }
+        },
+        {
+          "action": "commit-quarry-route",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 63,
+            "condition": 87,
+            "morale": 58
+          }
+        },
+        {
+          "action": "yard-meet",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 63,
+            "condition": 87,
+            "morale": 58
+          }
+        },
+        {
+          "action": "yard-force-pump",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 83,
+            "condition": 75,
+            "morale": 50
+          }
+        },
+        {
+          "action": "yard-first-exit",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 79,
+            "condition": 75,
+            "morale": 50
+          }
+        },
+        {
+          "action": "tunnel-inspect",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 79,
+            "condition": 75,
+            "morale": 50
+          }
+        },
+        {
+          "action": "tunnel-captain-led",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 79,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "tunnel-ventilate",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 71,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "tunnel-depart",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 67,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "yard-route-brief",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 67,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "yard-stay",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 67,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "yard-depart",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-inspect",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-player-watch",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-crew-duty",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-gravel-siding",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 59,
+            "morale": 41
+          }
+        },
+        {
+          "action": "pass-debrief",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 59,
+            "morale": 43
+          }
+        },
+        {
+          "action": "pass-depart",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 55,
+            "condition": 59,
+            "morale": 43
+          }
+        },
+        {
+          "action": "town-inspect",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 55,
+            "condition": 59,
+            "morale": 43
+          }
+        },
+        {
+          "action": "town-keep-reserve",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 55,
+            "condition": 59,
+            "morale": 40
+          }
+        },
+        {
+          "action": "town-public-rules",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 55,
+            "condition": 59,
+            "morale": 48
+          }
+        },
+        {
+          "action": "town-refuel",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 71,
+            "condition": 59,
+            "morale": 48
+          }
+        },
+        {
+          "action": "town-rest",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 71,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "town-route-brief",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 71,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "town-pack-kit",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 71,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "town-depart",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "bridge-inspect",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "bridge-kit-survey",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "bridge-arrange",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 54
+          }
+        },
+        {
+          "action": "bridge-anchor-crossing",
+          "scene": "train-at-dawn-junction",
+          "stats": {
+            "fuel": 65,
+            "condition": 39,
+            "morale": 54
+          }
+        },
+        {
+          "action": "junction-review",
+          "scene": "train-at-dawn-junction",
+          "stats": {
+            "fuel": 65,
+            "condition": 39,
+            "morale": 54
+          }
+        },
+        {
+          "action": "junction-bridge-basic",
+          "scene": "train-at-dawn-junction",
+          "stats": {
+            "fuel": 65,
+            "condition": 39,
+            "morale": 54
+          }
+        }
+      ],
+      "endingRetained": true,
+      "forcedCostsRetained": true,
+      "castCorrect": true,
+      "externalConnections": 0,
+      "errors": [],
+      "visualReview": "Final arrival and ending screenshots inspected: no resurrected train, readable costs, no horizontal overflow; English updated foot-crossing cost matches option."
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "aid": true,
+      "ending": "the-last-bridge",
+      "steps": [
+        {
+          "action": "repair-starter",
+          "scene": "train-at-dead-station",
+          "stats": {
+            "fuel": 68,
+            "condition": 87,
+            "morale": 58
+          }
+        },
+        {
+          "action": "commit-quarry-route",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 63,
+            "condition": 87,
+            "morale": 58
+          }
+        },
+        {
+          "action": "yard-meet",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 63,
+            "condition": 87,
+            "morale": 58
+          }
+        },
+        {
+          "action": "yard-force-pump",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 83,
+            "condition": 75,
+            "morale": 50
+          }
+        },
+        {
+          "action": "yard-first-exit",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 79,
+            "condition": 75,
+            "morale": 50
+          }
+        },
+        {
+          "action": "tunnel-inspect",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 79,
+            "condition": 75,
+            "morale": 50
+          }
+        },
+        {
+          "action": "tunnel-captain-led",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 79,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "tunnel-ventilate",
+          "scene": "train-at-tunnel",
+          "stats": {
+            "fuel": 71,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "tunnel-depart",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 67,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "yard-route-brief",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 67,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "yard-stay",
+          "scene": "train-at-graystone-yard",
+          "stats": {
+            "fuel": 67,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "yard-depart",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-inspect",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-player-watch",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-crew-duty",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 75,
+            "morale": 47
+          }
+        },
+        {
+          "action": "pass-gravel-siding",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 59,
+            "morale": 41
+          }
+        },
+        {
+          "action": "pass-debrief",
+          "scene": "train-at-mountain-pass",
+          "stats": {
+            "fuel": 61,
+            "condition": 59,
+            "morale": 43
+          }
+        },
+        {
+          "action": "pass-depart",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 55,
+            "condition": 59,
+            "morale": 43
+          }
+        },
+        {
+          "action": "town-inspect",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 55,
+            "condition": 59,
+            "morale": 43
+          }
+        },
+        {
+          "action": "town-grid-aid",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 49,
+            "condition": 59,
+            "morale": 51
+          }
+        },
+        {
+          "action": "town-public-rules",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 49,
+            "condition": 59,
+            "morale": 59
+          }
+        },
+        {
+          "action": "town-refuel",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 59
+          }
+        },
+        {
+          "action": "town-rest",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "town-route-brief",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "town-pack-kit",
+          "scene": "train-at-sleeping-town",
+          "stats": {
+            "fuel": 65,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "town-depart",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 59,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "bridge-inspect",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 59,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "bridge-kit-survey",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 59,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "bridge-arrange",
+          "scene": "train-at-flood-bridge",
+          "stats": {
+            "fuel": 59,
+            "condition": 59,
+            "morale": 65
+          }
+        },
+        {
+          "action": "bridge-anchor-crossing",
+          "scene": "train-at-dawn-junction",
+          "stats": {
+            "fuel": 59,
+            "condition": 39,
+            "morale": 65
+          }
+        },
+        {
+          "action": "junction-review",
+          "scene": "train-at-dawn-junction",
+          "stats": {
+            "fuel": 59,
+            "condition": 39,
+            "morale": 65
+          }
+        },
+        {
+          "action": "junction-the-last-bridge",
+          "scene": "train-at-dawn-junction",
+          "stats": {
+            "fuel": 59,
+            "condition": 39,
+            "morale": 65
+          }
+        }
+      ],
+      "endingRetained": true,
+      "forcedCostsRetained": true,
+      "castCorrect": true,
+      "externalConnections": 0,
+      "errors": [],
+      "visualReview": "Final arrival and ending screenshots inspected: no resurrected train, readable costs, no horizontal overflow; English updated foot-crossing cost matches option."
+    }
+  ],
+  "imageProbe": {
+    "requests": 1,
+    "taskId": "mt_bca72bbef66480888373ad5249f917a2",
+    "elapsedMs": 14267,
+    "admission": "rejected",
+    "review": "platform-art-candidates/20260912/yard-pump-states-01/review.json",
+    "productionAssetChange": false
+  },
+  "limits": [
+    "Local Chromium 320/390 is not actual iPhone hardware or logged AlterU acceptance.",
+    "No narrative model requests this turn.",
+    "Pump remains a development marker after rejected art; full art/creator workflow is not complete.",
+    "Production deployment pending."
+  ]
+}

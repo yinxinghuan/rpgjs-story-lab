@@ -11,6 +11,7 @@ import {assertPineSourceAction,pineSidingOpened} from './original-pine-chapter'
 import {originalPlaceBlocks} from './original-place-presentation'
 import {resolveOriginalChapter} from './original-chapters'
 import {originalActionIntentIssues} from './original-action-intent'
+import {junctionChoices} from './original-junction-chapter'
 const world=originalTrainChapterSpatialPlan()
 /** Preparation follows the same action resolver as authority, but never commits
  * a turn. An unrelated branch must not prevent the selected route loading. */
@@ -28,12 +29,13 @@ export function originalActionDestinations(head:OriginalHead,target:string,input
 /** Read-only UI projection. Clicks still require the server's full rule check. */
 export function originalGameEntities(head:OriginalHead){
  const save=head.save,c=save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn,terminal=save.finale.status!=='idle'
+ const choices=head.sceneId==='train-at-dawn-junction'&&!terminal?junctionChoices(save,c):save.choices
  return world.entities.filter(e=>e.scene===head.sceneId).map(e=>originalEntityLayout(head.assets,e)).flatMap(e=>{
   const actor=world.characters.find(p=>p.entities.includes(e.id))
   if(actor&&!originalCharacterPresent(save,actor.id))return []
   const actions=terminal?[]:e.actions.flatMap(id=>{
    try{assertOriginalEquipmentAction(save,id)}catch{return []}
-   const choice=save.choices.find(a=>a.id===id);if(choice)return [choice]
+   const choice=choices.find(a=>a.id===id);if(choice)return [choice]
    const rule=c.domainRules?.rules.find(r=>r.id===id);if(!rule||resolveDomainAction(save,c,rule.match[0])?.status!=='accepted')return []
    try{assertPassSourceAction(save,id);assertPineSourceAction(save,id)}catch{return []}
    return [{id,label:rule.match[0]}]

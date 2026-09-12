@@ -2,4 +2,4 @@
 // This is a runtime compatibility ID, not a save migration or an authentication token.
 export const RUNTIME_CONTRACT='carriage-session-2.train-scenes-3.story-10.relay-1.image-1'
 export const RUNTIME_HEADER='X-Carriage-Runtime'
-export const RELEASE_ID='carriage-visual-uncertainty-20260912-1'
+export const RELEASE_ID='carriage-anchored-ending-20260912-1'

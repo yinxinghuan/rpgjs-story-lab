@@ -1,0 +1,12 @@
+{
+  "purpose": "Replace original Graystone yard-pump development marker with asset-grounded broken/repaired/forced states.",
+  "maximumNewRequests": 1,
+  "source": "platform public image edit; no player reference",
+  "states": {
+    "broken": "before pact and medical pact",
+    "repaired": "yard-agreement=work",
+    "forced": "yard-agreement=forced"
+  },
+  "admission": "candidate only; inspect alignment, camera, transparency, map collision and all three routes before binding; old journeys unchanged",
+  "retry": "same request only after ambiguous transport; terminal failure is recorded without another automatic generation"
+}

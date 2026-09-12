@@ -1,0 +1,13 @@
+{
+  "requestId": "a04d5d67-4587-4ed5-b1d4-b0b4810d9df4",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "prompt": "Create a game-ready 3-column, 1-row equipment sprite sheet, 960x640 pixels. Use the reference ONLY for the dark industrial pixel-art material style and steep orthographic RPG camera. Create a new compact diesel fuel pump station, NOT the reference electrical starter cabinet. Camera looks downward about 60 degrees above the ground; show a large top surface and shortened front; vertical front edges, no isometric rotation, no vanishing point.\nEach column is exactly 320x640. The SAME pump is centered at x=160 within each cell, feet/base at y=520, entire silhouette within x=50..270 and y=220..530. Identical scale, camera, position, casing, roof, gauge, hose and footprint across all three columns. Pump is a waist-high worn dark olive metal pedestal with brass fittings, a small round pressure gauge, a short black fuel hose coiled on its right side, and a low horizontal safety rail in front. Pump width around 160px, pump height around 220px; rail fits the same footprint. Warm restrained highlights, crisp readable pixel edges, clear silhouette. No people, floor, scenery, lettering, labels, numbers, divider lines, grids or checkerboard. Solid clean pure white background for later alpha extraction; no cast shadow outside the object.\nLeft: broken pump, small service hatch ajar, gauge needle at zero; safety rail intact.\nMiddle: the exact same pump repaired, only service hatch closed and gauge needle lifted; same casing shape and intact rail. Do not add an electric glow, screen or extra parts.\nRight: the exact same broken pump, same ajar hatch and zero gauge, but the low safety rail visibly bent outward by impact. Keep pump casing, roof, hose, gauge and all other geometry unchanged. This is the forced-access consequence, NOT an explosion or destroyed pump.\nAll three must remain one equipment identity. Do not make three different pumps.",
+  "size": {
+    "width": 960,
+    "height": 640
+  },
+  "referenceUrls": [
+    "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/starter-states-v1.png?v=f0b1da9"
+  ]
+}
