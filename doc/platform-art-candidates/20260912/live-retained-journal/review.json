@@ -1,0 +1,78 @@
+{
+  "release": "4bfad43f8b8da54663ca595eedb7ab1954beef11",
+  "recovery": {
+    "outcome": {
+      "ok": true
+    },
+    "job": {
+      "id": "61855f13-1e91-4133-8b33-6556001a88fa",
+      "scene": "train-at-dead-station",
+      "sourceVersion": 0,
+      "referenceVersion": "north-cape-platform-8fc11a96",
+      "reference": {
+        "url": "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png",
+        "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+      },
+      "state": "candidate",
+      "attempt": 1,
+      "recoverable": false,
+      "nextAt": 1789215373463,
+      "asset": {
+        "sha256": "2885edc996c9d053a7b0a7a79563171b351b363c4ab63351652e826277c8b7f3",
+        "bytes": 1666947,
+        "width": 768,
+        "height": 1024
+      }
+    },
+    "sameJob": true,
+    "sameAttempt": true,
+    "storyUnchanged": true,
+    "artReviewed": false
+  },
+  "retention": {
+    "job": {
+      "id": "61855f13-1e91-4133-8b33-6556001a88fa",
+      "scene": "train-at-dead-station",
+      "sourceVersion": 0,
+      "referenceVersion": "north-cape-platform-8fc11a96",
+      "reference": {
+        "url": "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png",
+        "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+      },
+      "state": "active",
+      "attempt": 1,
+      "recoverable": false,
+      "nextAt": 0,
+      "asset": {
+        "sha256": "2885edc996c9d053a7b0a7a79563171b351b363c4ab63351652e826277c8b7f3",
+        "bytes": 1666947,
+        "width": 768,
+        "height": 1024
+      },
+      "decision": {
+        "verdict": "kept",
+        "sha256": "2885edc996c9d053a7b0a7a79563171b351b363c4ab63351652e826277c8b7f3",
+        "at": 1789215758130
+      }
+    },
+    "sameStory": true,
+    "reopenedBytesMatch": true,
+    "review": "Accepted as optional journey illustration: orthographic rainy station and existing structures retained; stronger rain and brighter teal than source, not a gameplay map replacement."
+  },
+  "scope": "Own synthetic production journey only. Authenticated AlterU full playthrough still pending.",
+  "causality": "credentials removal alone did not resolve failure; switching to manual redirect rejection was followed by successful recovery. No 3xx response observed on successful recovery, so exact original runtime exception remains unproven.",
+  "dualDeployment": {
+    "main": {
+      "commit": "4bfad43f8b8da54663ca595eedb7ab1954beef11",
+      "files": 58,
+      "sameLocalBuild": true,
+      "at": "2026-09-12T12:23:36.858Z"
+    },
+    "pages": {
+      "commit": "4bfad43f8b8da54663ca595eedb7ab1954beef11",
+      "files": 58,
+      "sameLocalBuild": true,
+      "at": "2026-09-12T12:23:50.586Z"
+    }
+  }
+}
