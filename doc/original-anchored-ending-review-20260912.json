@@ -1,5 +1,5 @@
 {
-  "status": "local-verified",
+  "status": "released",
   "release": "carriage-anchored-ending-20260912-1",
   "originalWire": "original-session-17.assets-13.story-8.original-train-authoring-10",
   "sourceFailure": "doc/original-forced-bridge-before-20260912.json",
@@ -636,7 +636,7 @@
   "limits": [
     "Local Chromium 320/390 is not actual iPhone hardware or logged AlterU acceptance.",
     "No narrative model requests this turn.",
-    "Pump remains a development marker after rejected art; full art/creator workflow is not complete.",
-    "Production deployment pending."
-  ]
+    "Pump remains a development marker after rejected art; full art/creator workflow is not complete."
+  ],
+  "releaseEvidence": "original-anchored-ending-release-20260912.json"
 }

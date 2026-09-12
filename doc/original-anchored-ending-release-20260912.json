@@ -1,0 +1,327 @@
+{
+  "commit": "d9962ed70c13c97da355e315f0b75d24ce2d0fe9",
+  "release": "carriage-anchored-ending-20260912-1",
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "commit": "d9962ed70c13c97da355e315f0b75d24ce2d0fe9",
+    "files": [
+      {
+        "path": "art/ada-standing-v1.png",
+        "bytes": 36405,
+        "sha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912"
+      },
+      {
+        "path": "art/approved/dawn-junction-c0b4a545.png",
+        "bytes": 2472753,
+        "sha256": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893"
+      },
+      {
+        "path": "art/approved/flood-bridge-e38ff237.png",
+        "bytes": 2685518,
+        "sha256": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210"
+      },
+      {
+        "path": "art/approved/graystone-yard-78f22e9b.png",
+        "bytes": 3346737,
+        "sha256": "78f22e9b4bf42265be03e5db8462ff732b7ed46706f5cea8cf297d0dd3aa2129"
+      },
+      {
+        "path": "art/approved/mountain-pass-e83947a9.png",
+        "bytes": 2851713,
+        "sha256": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f"
+      },
+      {
+        "path": "art/approved/north-cape-8fc11a96.png",
+        "bytes": 2811504,
+        "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+      },
+      {
+        "path": "art/approved/pine-line-90af55e7.png",
+        "bytes": 2736873,
+        "sha256": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5"
+      },
+      {
+        "path": "art/approved/sleeping-town-f9922760.png",
+        "bytes": 2807539,
+        "sha256": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8"
+      },
+      {
+        "path": "art/approved/tunnel-b084000a.png",
+        "bytes": 3068960,
+        "sha256": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c"
+      },
+      {
+        "path": "art/brake-parts-v1.png",
+        "bytes": 167950,
+        "sha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3"
+      },
+      {
+        "path": "art/fan-housing-v1.png",
+        "bytes": 74600,
+        "sha256": "b21bbe6f95f3fa982c980a975a1133c2fcf904c96cb3c5e15820dca3fb4f107b"
+      },
+      {
+        "path": "art/fan-rotor-v1.png",
+        "bytes": 36046,
+        "sha256": "8e07f4c8a840678f11e9c44f253d7584c4a12563b67113299e42ace1e6867c3f"
+      },
+      {
+        "path": "art/lin-standing-v1.png",
+        "bytes": 86794,
+        "sha256": "cbd6ebd698ee794403b2669b71d65a9c654864f55aaeca005641155a889a92d9"
+      },
+      {
+        "path": "art/mako-standing-v1.png",
+        "bytes": 121059,
+        "sha256": "28e8686d170119af59a7020801bee50f036ac6811fddbfb62721c70d0d7d0265"
+      },
+      {
+        "path": "art/original-river-valley.png",
+        "bytes": 3016350,
+        "sha256": "22a37437b47703bb4b5e27557145e3f80f9898137b13d881f54079725aae71fd"
+      },
+      {
+        "path": "art/overhead/hero-gait-v2.png",
+        "bytes": 460181,
+        "sha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842"
+      },
+      {
+        "path": "art/ren-standing-v1.png",
+        "bytes": 106450,
+        "sha256": "48e9a626cec744373f209007605a69f9f62716c1788c0419d03fcf6cbea6cade"
+      },
+      {
+        "path": "art/starter-states-v1.png",
+        "bytes": 294319,
+        "sha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe"
+      },
+      {
+        "path": "assets/actor-sheet-CHaWjl2n.js",
+        "bytes": 1093679,
+        "sha256": "92405c07ad65ee232cc67fdfb312df08d02affda55d44788a6fc49edbd780978"
+      },
+      {
+        "path": "assets/browser-journey-CG7j6wQV.js",
+        "bytes": 3736,
+        "sha256": "1a7a6f2298ec2227dc74931a8d9ba2c09584bf618ee3299977abe9602d43d5ed"
+      },
+      {
+        "path": "assets/canvasengine-CCC-_bmI.js",
+        "bytes": 1504206,
+        "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3"
+      },
+      {
+        "path": "assets/creator-DsieHYEJ.js",
+        "bytes": 130490,
+        "sha256": "25fdbce25e33f459a7c44fd019014578e6bc61e532e2503dc9d218c5e83bf566"
+      },
+      {
+        "path": "assets/device-map-candidate-C-B3AVUQ.js",
+        "bytes": 146088,
+        "sha256": "06061b8d776d4e8fd62e53e3017906435de35587e3486f17ea90d2004f96467c"
+      },
+      {
+        "path": "assets/index-Dyfo6kTO.js",
+        "bytes": 69662,
+        "sha256": "b68c43c3d3d94128f28ce526c4d030854b6d9dc24b9d0fa1a5c6b9927bf4fe05"
+      },
+      {
+        "path": "assets/original-game-d9BrTN47.js",
+        "bytes": 92609,
+        "sha256": "78f798a3c2dc23755626479299d87e722ee4897750d276e9634168fda1568b2d"
+      },
+      {
+        "path": "assets/pixi-DMXpPjpr.js",
+        "bytes": 276,
+        "sha256": "b40374f74b87273ee81651c63bdcaf2bd60c5950180c599081d08088a52c624d"
+      },
+      {
+        "path": "assets/rolldown-runtime-QTnfLwEv.js",
+        "bytes": 694,
+        "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75"
+      },
+      {
+        "path": "assets/space-DwFRx7hn.js",
+        "bytes": 1451,
+        "sha256": "915a8f6bcb8c3327c9db52c315d859e685603e4a0305472fafc1784e18bf8db3"
+      },
+      {
+        "path": "assets/sprite-config-PdU77MQa.js",
+        "bytes": 295,
+        "sha256": "c48947b21eeb1ecf75b394ef3b1173e70d0ff91cf6bb67d06b989edc647118ea"
+      },
+      {
+        "path": "assets/sprite-preparation.worker-DSRc--Xi.js",
+        "bytes": 3891,
+        "sha256": "4e0031effc347a26f988586a2444984f7f9786989724d7eae48663ec90057dd4"
+      },
+      {
+        "path": "assets/style-DtSVcbX2.js",
+        "bytes": 357606,
+        "sha256": "0e27e7ddf7331178fbefe219d1e60e9ce5eb0f3a121c5759459c1bd0760e2f7a"
+      },
+      {
+        "path": "creator.html",
+        "bytes": 1581,
+        "sha256": "ba3f9f8bef58194090959d247cd610d1178459245d8f77c1f839ea7d88df32a5"
+      },
+      {
+        "path": "index.html",
+        "bytes": 1251,
+        "sha256": "1e8ee9410e77a4eaa5f376458d31a2a30759ba37cb62baeb17a4efb00c6494ff"
+      },
+      {
+        "path": "map/baggage.tmx",
+        "bytes": 2183,
+        "sha256": "33e144d31e3fba68c392174afa2ab17059d12ffcb8c3c930198e398c868f7fbe"
+      },
+      {
+        "path": "map/cab.tmx",
+        "bytes": 1618,
+        "sha256": "a947eb8ea754188b50ca70f37622878867afbc771bea43d6ac0c1bfac0197fb9"
+      },
+      {
+        "path": "map/carriage.tmx",
+        "bytes": 3176,
+        "sha256": "16d50ca07a75e027a835d47e1229b6081ab7c9042446156633f08fc5525bcb4f"
+      },
+      {
+        "path": "map/dawn-junction-c0b4a545.tmx",
+        "bytes": 1895,
+        "sha256": "acedd2b9c598ed7d179f94f98aefb5ab25970c56d08b3aa0b07942b666b535b7"
+      },
+      {
+        "path": "map/flood-bridge-e38ff237.tmx",
+        "bytes": 1894,
+        "sha256": "2024c872c5834c28b5bee7d267a5a4a20aa9eefca4f34cb1731e7927da24f423"
+      },
+      {
+        "path": "map/graystone-yard-78f22e9b.tmx",
+        "bytes": 1893,
+        "sha256": "9b40680fa3a59445354e3246771f85f139c3124e5780a1e16e5f93c05defdbdc"
+      },
+      {
+        "path": "map/mountain-pass-e83947a9.tmx",
+        "bytes": 2174,
+        "sha256": "d59a8c59b36edc8a5703cc13c42055f4016212f729d8239bc0bf34d3840ec2db"
+      },
+      {
+        "path": "map/pine-line-90af55e7.tmx",
+        "bytes": 2741,
+        "sha256": "ce021febc59e0076a35c63ea3be728a45f9870a0028ad095fee167c733f6a98d"
+      },
+      {
+        "path": "map/sleeping-town-f9922760.tmx",
+        "bytes": 1894,
+        "sha256": "f96630477170d3aaf32ccf23c6714f5fe5197cb8a186f00718f40fb62a2e7d46"
+      },
+      {
+        "path": "map/train-at-dawn-junction.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-dead-station.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-flood-bridge.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-graystone-yard.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-mountain-pass.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-pine-line.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-river-valley.tmx",
+        "bytes": 1338,
+        "sha256": "fbb1afc34c315197d1f178a02fdc1e9c6b42a6a005f28cb97281958228e8ab1c"
+      },
+      {
+        "path": "map/train-at-sleeping-town.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/train-at-tunnel.tmx",
+        "bytes": 1614,
+        "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de"
+      },
+      {
+        "path": "map/tunnel-b084000a.tmx",
+        "bytes": 1893,
+        "sha256": "c7fed701ad0cf363b7b2f60c8bf8fe9e2b5f6b5b120c285389cd5a4e8906a4b5"
+      },
+      {
+        "path": "map/walkway.tmx",
+        "bytes": 1475,
+        "sha256": "972f075e82835c7bb7219c033d057c9f25699d0fc1aa4d7f7f540711bebe7895"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.txt",
+        "bytes": 107869,
+        "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+      }
+    ],
+    "sameLocalBuild": true,
+    "at": "2026-09-12T04:06:52.810Z"
+  },
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "commit": "d9962ed70c13c97da355e315f0b75d24ce2d0fe9",
+    "sameLocalBuild": true,
+    "at": "2026-09-12T04:09:08.818Z",
+    "sameFilesAsMain": true
+  },
+  "pagesRun": {
+    "id": 34672060673,
+    "conclusion": "success",
+    "linuxTestsPassed": 657
+  },
+  "production": {
+    "release": "carriage-anchored-ending-20260912-1",
+    "at": "2026-09-12T04:06:52.266Z",
+    "requests": 40,
+    "newSyntheticJourneys": 1,
+    "actions": 32,
+    "finalVersion": 33,
+    "ending": "the-last-bridge",
+    "costs": [
+      "The last train permanently loses the ability to move",
+      "The crew must permanently maintain the foot crossing and reserve people, supplies and remaining fuel for route rescues",
+      "The train is anchored across the flood gap and its engine stops forever"
+    ],
+    "forcedCostsRetained": true,
+    "sameReceipt": true,
+    "endingRestored": true,
+    "assetsRetained": true,
+    "narrationQuotaRows": 0,
+    "modelOrMediaRequests": 0,
+    "realPlayerDataRead": false
+  },
+  "standardHostedVerification": {
+    "ok": true,
+    "identity": "anonymous-capability-v1",
+    "storage": "durable-object-sqlite",
+    "sourceZip": true
+  },
+  "limits": [
+    "No logged AlterU or actual iPhone test.",
+    "Old completed ending text is retained rather than rewritten.",
+    "Pump candidate rejected; no production art changes.",
+    "Full creator protagonist/identity pipeline and platform account recovery remain incomplete."
+  ]
+}
