@@ -1017,3 +1017,7 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 原图流读取与SHA校验抽为 `original-reference-download.ts`，UI使用同一函数。下载流异常/超限/取消时主动取消并释放reader，完成摘要计算后再次检查取消状态；解码失败立即回收blob URL。
 
 6项新增故障/恢复测试加13项画页合同测试全部通过，TypeScript通过。覆盖内容变更、503/空响应、断网后重试、无Content-Length的8MiB超限取消、读取前与读取中退出、部分响应断流，以及省略凭据/Referer。测试模拟fetch响应，不访问外部服务，也不代表浏览器故障提示或平台内全程验收已完成。
+
+### 原图摘要错误的真实界面复验（2026-09-12）
+
+测试服务新增仅本地 `--mismatched-reference-fixture`，只替换画页列表响应的参考摘要，不改SQLite、图片、主剧情或生产handler。`--platform-layout`仅在QA HTML响应隐藏外部访客栏。编译前端+Worker在5382通过320/390真实按钮路径：展示候选→展开→摘要错误提示→重新读取仍拒绝→关闭→实际走到启动机→检修保存，车况82到87，燃料68及人心58不变。无新媒体请求。证据与限制见 `original-reference-fault-review-20260912.json`；正式画页开关未开，未发布。

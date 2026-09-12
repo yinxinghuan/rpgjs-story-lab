@@ -1,0 +1,22 @@
+{
+  "scope": "Compiled frontend and Worker, new synthetic journey; response-only reference SHA corruption",
+  "sourceCommit": "156f83e",
+  "server": "127.0.0.1:5382",
+  "checks": {
+    "build": "passed: 9 scenes / 27 resource SHA checks / Worker startup",
+    "viewports": [
+      "390x844 platform-layout",
+      "320x568 platform-layout"
+    ],
+    "mismatch": "source image not displayed; failure message and reload button visible",
+    "retry": "revalidates and refuses mismatched source again",
+    "continuation": "close panel, approach starter, execute repair; condition 82 -> 87, fuel68/morale58 unchanged"
+  },
+  "evidenceDirectory": "_qa/ui/journal-reference-fault-20260912",
+  "limits": [
+    "Local fixture only; no new generation request",
+    "No authenticated AlterU verification",
+    "Fault injected in response metadata, not real public image",
+    "Production illustration gate remains false; not deployed"
+  ]
+}

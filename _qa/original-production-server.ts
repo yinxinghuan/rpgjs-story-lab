@@ -30,6 +30,13 @@ const server=createServer(async(req,res)=>{try{
   url.pathname=url.pathname.slice(GAME_ID.length+1);let size=0;const chunks:Buffer[]=[];for await(const part of req){size+=part.length;if(size>70000)throw Error('QA_BODY_LIMIT');chunks.push(Buffer.from(part))}
   const headers=new Headers();for(const [k,v]of Object.entries(req.headers))if(v)headers.set(k,Array.isArray(v)?v.join(','):v)
   const r=await handler(new Request(url,{method:req.method,headers,body:['GET','HEAD'].includes(req.method!)?undefined:Buffer.concat(chunks)}),env)
+  // Response-only corruption: exercise the real browser digest gate without
+  // altering SQL, the source image, candidate bytes, or production handlers.
+  if(process.argv.includes('--mismatched-reference-fixture')&&r.ok&&url.pathname.endsWith('/illustrations')){
+   const data=await r.json() as {illustrations?:Array<{reference?:{sha256:string}}>}
+   for(const job of data.illustrations??[])if(job.reference)job.reference.sha256='0'.repeat(64)
+   res.writeHead(r.status,Object.fromEntries(r.headers));res.end(JSON.stringify(data));return
+  }
   res.writeHead(r.status,Object.fromEntries(r.headers));res.end(Buffer.from(await r.arrayBuffer()));return
  }
  const path=resolve(dir,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname))
@@ -38,7 +45,9 @@ const server=createServer(async(req,res)=>{try{
   if(process.argv.includes('--fail-scenery-once')&&!failedScenery.has(url.pathname)){failedScenery.add(url.pathname);res.writeHead(503);res.end('QA scenery unavailable');return}
   if(process.argv.includes('--slow-scenery'))await new Promise(resolve=>setTimeout(resolve,20000))
  }
- res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','Cache-Control':'no-store'});res.end(readFileSync(path))
+ res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','Cache-Control':'no-store'})
+ if(process.argv.includes('--platform-layout')&&extname(path)==='.html')res.end(readFileSync(path,'utf8').replace('</head>','<style>#alteru-guest-banner{display:none!important}</style></head>'))
+ else res.end(readFileSync(path))
 }catch{res.writeHead(404);res.end('Not found')}})
 server.listen(port,'127.0.0.1',()=>console.log('Compiled production frontend and Worker at http://127.0.0.1:'+port))
 process.on('SIGINT',()=>server.close(()=>{storage.close();process.exit(0)}))
