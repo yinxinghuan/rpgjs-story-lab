@@ -69,17 +69,20 @@
       "nativeReadout": false
     }
   },
-  "newBrowserChecksThisTurn": false,
+  "newBrowserChecksThisTurn": true,
   "currentUiObservation": {
     "platform": "Telegram AlterU",
-    "scene": "graystone-yard",
-    "fuel": 50,
-    "condition": 81,
-    "morale": 63,
-    "lastAction": "与阿达修泵换取燃料",
+    "scene": "sleeping-town",
+    "fuel": 34,
+    "condition": 77,
+    "morale": 67,
+    "lastAction": "驶向沉睡小城（燃料−6）",
     "lastActionSaved": true,
-    "displayDefect": "native actor missing after continuous transition, unresolved",
-    "blocker": "Mac locked during reentry to deployed diagnostics version"
+    "actorVisible": true,
+    "backgroundFailed": true,
+    "blocker": null,
+    "next": "diagnose background failure with bounded stage/duration; continue town chapter",
+    "fullPlaythrough": false
   },
   "displayDiagnosticsDualDeployment": {
     "commit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",

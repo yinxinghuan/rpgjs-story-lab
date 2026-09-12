@@ -121,5 +121,75 @@
     "result": "Mac locked before restored game could be inspected",
     "next": "Read local display diagnostics in current graystone-yard journey, then continue route; preserve all existing journeys",
     "nativeDiagnosisComplete": false
+  },
+  "resumedPlatformDiagnostics": {
+    "recovery": "CHARACTER_ART_UNAVAILABLE on reentry; retry recovered same journey",
+    "graystone": {
+      "fuel": 50,
+      "condition": 81,
+      "morale": 63,
+      "playerVisible": true,
+      "position": [
+        272,
+        384
+      ],
+      "projected": [
+        272,
+        384
+      ],
+      "connected": true,
+      "graphics": 1,
+      "sheets": 1,
+      "canvas": [
+        1344,
+        2016
+      ],
+      "displayNodes": 81,
+      "textures": 6
+    },
+    "mako": "route explained then visibly joined, existing companions retained",
+    "mountainTransition": {
+      "fuelBefore": 50,
+      "fuelAfter": 44,
+      "condition": 81,
+      "morale": 63,
+      "playerVisible": true,
+      "background": "failed; retry still failed during this check",
+      "reloadBetweenYardAndMountain": false
+    },
+    "diagnosticLimit": "Native AX truncates long pre text; full tree rows require separate text blocks or screenshot. Missing actor remains unresolved, not reproduced on this transition."
+  },
+  "mountainNativeChoices": {
+    "inspect": true,
+    "range": "self survey",
+    "posts": "existing crew",
+    "braking": "spare hose",
+    "deltas": {
+      "fuel": -4,
+      "condition": -4,
+      "brakeHose": -1
+    },
+    "followup": "Ren checked all passengers; no newly missing passengers; Mako visibly agreed to continue",
+    "moraleDelta": 4,
+    "resourcesAfter": {
+      "fuel": 40,
+      "condition": 77,
+      "morale": 67
+    },
+    "fullPlaythrough": false
+  },
+  "townNativeRecovery": {
+    "request": "驶向沉睡小城（燃料−6）",
+    "firstAttempt": "Fetch is aborted; pending action preserved",
+    "recovery": "重新连接并恢复",
+    "fuelBefore": 40,
+    "fuelAfter": 34,
+    "condition": 77,
+    "morale": 67,
+    "actorVisible": true,
+    "background": "failed",
+    "evidence": "_qa/alteru-native-20260912/town-recovered-actor-visible.png",
+    "noDuplicateCost": true,
+    "fullPlaythrough": false
   }
 }
