@@ -1,0 +1,22 @@
+{
+  "codeCommit": "242c6e1",
+  "journey": "Own local synthetic journey, repaired starter, stats68/87/58",
+  "acceptedEvidence": {
+    "file": "_qa/calibrated-mobile/platform-layout-390-map.png",
+    "width": 390,
+    "height": 844,
+    "observations": [
+      "Full viewport game screenshot, HUD and all four footer buttons visible.",
+      "Hero and Ada readable, approved B perspective and narrow path retained.",
+      "Joystick visible and separated from footer."
+    ]
+  },
+  "notAccepted": [
+    "The later 320 screenshots were cropped by the browser tooling, not usable as 320x568 layout evidence.",
+    "Ordinary IAB screenshot API and viewport override disagree with Page.getLayoutMetrics at existing130% zoom.",
+    "Chrome comparison tab542044062 was created, but both creation observation and getTab timed out; no Chrome rendering claim."
+  ],
+  "cleanup": "Emulation.clearDeviceMetricsOverride and browser viewport reset completed. User zoom setting not changed.",
+  "release": "No release this turn. Latest functional browser evidence remains navigation-keyboard-browser-20260912.json; full regression evidence remains single-player-verification-20260912.json.",
+  "next": "Use native browser surface or corrected screenshot control for remaining small-screen check; avoid changing production CSS to compensate for tooling artifacts."
+}
