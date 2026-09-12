@@ -3,7 +3,7 @@ import OriginalReferencePicture from './original-reference-picture'
 import JourneyLoading from './journey-loading'
 import type {OriginalHead} from '../server/original-train-runtime'
 import type {Transport} from './session-client'
-import {originalSceneBackgroundVersion} from './original-asset-releases'
+import {originalIllustrationEligible} from './original-illustration-admission'
 import {originalBridgePlace} from './original-place-presentation'
 import {journalImageError} from './journal-image-errors'
 import {readOriginalIllustrations,illustrationAction,type OriginalIllustration} from './original-illustration-contract'
@@ -33,7 +33,7 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
   }catch{if(url)URL.revokeObjectURL(url);if(live)setImageError(true)}})()
   return()=>{live=false;if(url)URL.revokeObjectURL(url)}
  },[key,imageRetry,head.id,api])
- const action=illustrationAction(job,head.sceneId,selected,clock),supported=Boolean(originalSceneBackgroundVersion(head.assets,head.sceneId))
+ const action=illustrationAction(job,head.sceneId,selected,clock),supported=originalIllustrationEligible(head.assets,head.sceneId)
  async function start(){setBusy(true);setError('');readVersion.current++;try{
   const list=readOriginalIllustrations(await api(endpoint,{scene:selected,expected_version:head.version,retry:action==='retry'}))
   if(alive.current){readVersion.current++;setJobs(list);setReady(true)}
@@ -45,7 +45,7 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
   catch(e){if(alive.current){setReady(false);setError(e instanceof Error?e.message:'ILLUSTRATION_UNAVAILABLE')}}finally{if(alive.current)setBusy(false)}
  }
  const issue=error||job?.error
- const explanation=issue==='ILLUSTRATION_DECISION_CONFLICT'||issue==='ILLUSTRATION_CANDIDATE_CHANGED'?t('这张候选的记录已变化，请重新读取已保存的决定。','This candidate record changed. Reload its saved decision.'):issue==='ILLUSTRATION_SCENE_CHANGED'?t('当前位置已变化，请重新读取画页记录。','The current location changed. Reload the illustration record.'):issue==='ILLUSTRATION_DAILY_LIMIT'?t('今天的制作次数已用完，已有画页和旅程仍可继续。','Today’s creation limit is reached. Existing illustrations and your journey remain available.'):issue==='ILLUSTRATION_BACKGROUND_UNAVAILABLE'?t('这里尚未准备好画页参考图，可以继续旅程。','This place has no prepared illustration reference yet. You can continue your journey.'):journalImageError(issue,head.save.locale)
+ const explanation=issue==='ILLUSTRATION_DECISION_CONFLICT'||issue==='ILLUSTRATION_CANDIDATE_CHANGED'?t('这张候选的记录已变化，请重新读取已保存的决定。','This candidate record changed. Reload its saved decision.'):issue==='ILLUSTRATION_SCENE_CHANGED'?t('当前位置已变化，请重新读取画页记录。','The current location changed. Reload the illustration record.'):issue==='ILLUSTRATION_DAILY_LIMIT'?t('今天的制作次数已用完，已有画页和旅程仍可继续。','Today’s creation limit is reached. Existing illustrations and your journey remain available.'):issue==='ILLUSTRATION_SCENE_NOT_ADMITTED'?t('这个地点暂未开放新画页，已有记录和旅程仍可继续。','New illustrations are not available for this place yet. Your existing journal and journey remain available.'):issue==='ILLUSTRATION_BACKGROUND_UNAVAILABLE'?t('这里尚未准备好画页参考图，可以继续旅程。','This place has no prepared illustration reference yet. You can continue your journey.'):journalImageError(issue,head.save.locale)
  return <section className="og-illustrations" aria-label={t('旅途画页','Journey illustrations')}>
   <p>{t('为到过的地方留一张环境回忆。只发送公开背景和场景画面说明，不发送对白、头像或存档。制作时可以关闭面板继续旅程。','Keep an illustrated memory of a visited place. Only the public background and visual instructions are sent, not dialogue, avatars or your save. Close this panel to keep playing during creation.')}</p>
   <label htmlFor="og-illustration-scene">{t('回看地点','Place to revisit')}</label><select id="og-illustration-scene" value={selected} disabled={busy} onChange={e=>setSelected(e.target.value)}>{[head.sceneId,...jobs.map(j=>j.scene).filter(scene=>scene!==head.sceneId)].map(scene=><option key={scene} value={scene}>{label(scene)}{scene===head.sceneId?t(' · 当前',' · Current'):''}</option>)}</select>

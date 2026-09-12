@@ -9,6 +9,7 @@ import {createHash} from 'node:crypto'
 import {OriginalTrainAuthority,originalTrainRuntime,type OriginalHead} from '../server/original-train-runtime'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import {OriginalIllustrations,originalIllustrationPlan,originalIllustrationProducer} from '../server/original-illustration'
+import {originalIllustrationEligible} from '../src/original-illustration-admission'
 import {originalBackgroundReleases} from '../src/original-asset-releases'
 import {originalBackgroundSourcePaths} from '../src/original-background-sources'
 import {MediaServiceError} from '../src/vendor/media/client'
@@ -204,5 +205,23 @@ test('reference metadata accepts old records and rejects unsafe or malformed com
   assert.equal(readOriginalIllustrations({illustrations:[legacy]}).length,1)
   for(const bad of [{url:'javascript:alert(1)',sha256:reference.sha256},{url:'https://user:password@example.com/image.png',sha256:reference.sha256},{url:reference.url+'?token=private',sha256:reference.sha256},{url:reference.url,sha256:'x'.repeat(64)},{url:reference.url,sha256:null}])
    assert.throws(()=>readOriginalIllustrations({illustrations:[{...job,reference:bad}]}),/ILLUSTRATION_INVALID_RESPONSE/)
+ }finally{s.raw.close()}
+})
+
+test('new illustration requests are limited to reviewed reference versions without consuming quota elsewhere',()=>{
+ const s=setup();try{
+  const h=s.authority.create(owner,crypto.randomUUID(),'zh')
+  assert.equal(originalIllustrationEligible(h.assets,h.sceneId),true)
+  assert.equal(originalIllustrationEligible(h.assets,'train-at-tunnel'),true)
+  assert.equal(originalIllustrationEligible(undefined,h.sceneId),false)
+  for(const scene of ['train-at-flood-bridge','train-at-graystone-yard','train-at-pine-line','train-at-sleeping-town','train-at-mountain-pass','train-at-dawn-junction','unmade-room']){
+   assert.equal(originalIllustrationEligible(h.assets,scene),false)
+   const projected={...h,sceneId:scene},images=new OriginalIllustrations(s.db,()=>projected)
+   assert.throws(()=>images.start(owner,h.id,body(projected)),/ILLUSTRATION_SCENE_NOT_ADMITTED/)
+  }
+  assert.equal(s.db.all('SELECT * FROM original_illustration_usage').length,0)
+  assert.equal(s.images.list(owner,h.id).length,0)
+  assert.deepEqual(s.authority.get(owner,h.id),h)
+  s.images.start(owner,h.id,body(h));assert.equal(s.images.list(owner,h.id).length,1)
  }finally{s.raw.close()}
 })

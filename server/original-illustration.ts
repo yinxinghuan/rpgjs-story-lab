@@ -1,3 +1,4 @@
+import {originalIllustrationEligible} from '../src/original-illustration-admission'
 import type {AuthorityStorage} from './session-authority'
 import type {OriginalHead} from './original-train-runtime'
 import {originalBackgroundReleases,originalSceneBackgroundVersion,originalBaseAssets,ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
@@ -51,6 +52,7 @@ export class OriginalIllustrations{
   // A retry after a lost reply can recover the old job even after walking away.
   if(old&&(!body.retry||old.recoverable||old.state==='active'||old.state==='candidate'))return publicJob(old)
   if((!old&&h.sceneId!==body.scene)||h.version!==body.expected_version)throw new LabError('ILLUSTRATION_SCENE_CHANGED',409)
+  if(!old&&!originalIllustrationEligible(h.assets,h.sceneId))throw new LabError('ILLUSTRATION_SCENE_NOT_ADMITTED',409)
   if(old&&old.nextAt>this.now())throw new LabError('ILLUSTRATION_RETRY_LATER',429)
   if(old&&old.attempt>=2)throw new LabError('ILLUSTRATION_ATTEMPT_LIMIT',429)
   // Retrying a visited scene must not require returning along a one-way story
