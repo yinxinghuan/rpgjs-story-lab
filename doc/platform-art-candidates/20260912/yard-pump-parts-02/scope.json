@@ -1,0 +1,7 @@
+{
+  "newRequestsLimit": 1,
+  "purpose": "One shared pump body with pressure dial and barrier states; no automatic reroll or production replacement.",
+  "reference": "B material/camera specification; text-only to avoid starter identity leakage.",
+  "sourceRetained": true,
+  "admission": "pending visual and renderer review"
+}

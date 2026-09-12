@@ -1,0 +1,22 @@
+{
+  "status": "rejected",
+  "reviewedAt": "2026-09-12",
+  "sourceSha256": "a31c3b2ee0978f639f028fbc745a61670204ac5c949c6e9340ba9aa6d1aaae9c",
+  "taskId": "mt_4d9d2699156cad7089a25a016014824e",
+  "newRequests": 1,
+  "newRequestsLimit": 1,
+  "sourceRetained": true,
+  "productionChanged": false,
+  "alphaPreparationAttempted": false,
+  "cost": "not provided by public API",
+  "positive": [
+    "Five requested parts isolated in their cells; shared body is feasible.",
+    "Intact and bent barriers are visibly distinct."
+  ],
+  "reasons": [
+    "Pump roof and base are diamond-shaped with strong left/right faces: isometric yaw violates the locked front-facing B camera.",
+    "Pressure dials change rim, ticks and face between states, not only the needle.",
+    "RGB white background requires processing, but semantic/camera rejection occurs before alpha preparation."
+  ],
+  "nextDecision": "Stop this bounded request. Do not register or process this image as approved production art."
+}

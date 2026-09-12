@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-09-12",
+  "webOrigin": "https://aigram.aiwaves.tech",
+  "webState": "Login with Email; agreement not accepted; no login action performed",
+  "nativeMiniApp": "AIGram is visible, not AlterU",
+  "nativeTabSwitchResult": "AXError.notImplemented",
+  "accessPermissions": "game.aiwaves.tech and aigram.aiwaves.tech already authorized",
+  "sessionDataPersisted": false,
+  "existingPlayerSavesRead": false,
+  "nextExternalStep": "Complete login in the existing AlterU web tab. User input requested; no repeated origin permission needed."
+}
