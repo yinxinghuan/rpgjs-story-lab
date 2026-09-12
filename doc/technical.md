@@ -1083,3 +1083,9 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `original-illustration-admission.ts` 为新画页请求提供共享许可：仅平台北岬8fc11a96和隧道b084000a两个已有v3实测样本的参考版本符合条件，绑定完整SHA与scene。不能因同场景换了背景或存在任意参考就开放生成；基线北岬、自定义发布背景、洪水桥和其他未实测版本暂不符合条件。此许可仅允许请求候选，不自动批准输出。服务在新任务计次和写入前拒绝不符场景；界面使用同一许可隐藏无效创建入口。已有不可变任务的恢复、保留决定与跨场景重试合同保持不变。
 
 14项插画专项测试通过，包括7个未准入场景请求不写入、不扣次数、不改变故事，合格参考可创建；旧配方、任务恢复、隔离和决定测试仍通过。全局正式开关继续false，尚未把此能力宣称为完整游玩期生产验证。下一步需通过真实部署任务完成生成、取回、保留、离开再恢复，再考虑开放限定场景。
+
+### 真实媒体生产组件与故事并行实测（2026-09-12）
+
+`journal-live-chain-01`使用生产OriginalTrainAuthority、OriginalIllustrations及originalIllustrationProducer，新的本机SQLite合成旅程，实际调用平台公共媒体接口一次。请求先入库，再于生成期间完成repair-starter与commit-valley-route；真实结果以原北岬scene存储，而故事已在河谷version2（fuel62/condition87/morale58）。数据库关闭重开后原始PNG完全一致，旧请求恢复返回同一意图且总次数1。人工查看原参考与结果后保留为非关键回忆样本，决定在再次重开后仍为active；重复相同决定幂等，故事未变。
+
+任务mt_f92320f351ad85a072508e8db34be3d6，PNG SHA e99f176df19aabc3f686c7efbdfb2d6e6c5374f748a94286fa5557790d4ef0db。结果雨线/青色反光较强，原结构可辨，未替换地图。此实证是本机生产组件调用真实平台媒体，不是部署Worker或AlterU宿主内操作；浏览器呈现和正式后台链路仍需验证。全局开关未改。请求、任务、候选和恢复结果见doc/platform-art-candidates/20260912/journal-live-chain-01/。

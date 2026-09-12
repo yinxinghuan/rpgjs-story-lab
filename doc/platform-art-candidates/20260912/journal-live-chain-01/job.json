@@ -1,0 +1,20 @@
+{
+  "id": "46119413-c0b8-48b5-92f7-e887b4371845",
+  "scene": "train-at-dead-station",
+  "sourceVersion": 0,
+  "referenceVersion": "north-cape-platform-8fc11a96",
+  "reference": {
+    "url": "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png",
+    "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+  },
+  "state": "candidate",
+  "attempt": 1,
+  "recoverable": false,
+  "nextAt": 0,
+  "asset": {
+    "sha256": "e99f176df19aabc3f686c7efbdfb2d6e6c5374f748a94286fa5557790d4ef0db",
+    "bytes": 1555501,
+    "width": 768,
+    "height": 1024
+  }
+}

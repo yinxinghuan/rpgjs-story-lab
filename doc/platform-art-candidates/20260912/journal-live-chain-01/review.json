@@ -1,0 +1,23 @@
+{
+  "state": "candidate",
+  "taskId": "mt_f92320f351ad85a072508e8db34be3d6",
+  "sha256": "e99f176df19aabc3f686c7efbdfb2d6e6c5374f748a94286fa5557790d4ef0db",
+  "sourceScene": "train-at-dead-station",
+  "currentScene": "train-at-river-valley",
+  "version": 2,
+  "stats": {
+    "fuel": 62,
+    "condition": 87,
+    "morale": 58
+  },
+  "storyUnchanged": true,
+  "reopenedBytesEqual": true,
+  "sameIntentionAfterLeaving": true,
+  "uses": 1,
+  "kept": true,
+  "artReviewed": true,
+  "decisionRestored": true,
+  "visualVerdict": "accepted as noncritical memory sample; stronger rain and cyan reflections, not a replacement map",
+  "productionEnabled": false,
+  "browserReviewed": false
+}

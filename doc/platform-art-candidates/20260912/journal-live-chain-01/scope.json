@@ -1,0 +1,7 @@
+{
+  "session": "fa3d3e40-a8e5-4f4b-a2ca-4b95f6c73f50",
+  "referenceScene": "train-at-dead-station",
+  "requestId": "414e56ef-894b-40ad-88ad-07d5ae8c32ad",
+  "source": "Public background only; fresh synthetic story; exactly one intended media request",
+  "environment": "Local production authority classes and SQLite using real platform media producer, not deployed Worker or authenticated Mini App"
+}
