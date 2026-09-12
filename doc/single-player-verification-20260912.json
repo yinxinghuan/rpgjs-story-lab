@@ -1,0 +1,39 @@
+{
+  "codeCommit": "242c6e1",
+  "latestEvidenceCommit": "3d373a8",
+  "suite": {
+    "total": 693,
+    "initialPassed": 658,
+    "initialEnvironmentFailures": 35,
+    "initialFailureReason": "listen EPERM 127.0.0.1",
+    "affectedFilesRerun": 11,
+    "rerunPassed": 53,
+    "rerunFailed": 0,
+    "remainingTestFailures": 0,
+    "logs": [
+      "/private/tmp/rpg-current-single-player-regression.log",
+      "/private/tmp/rpg-current-http-regression.log"
+    ]
+  },
+  "build": "passed; /private/tmp/rpg-nearby-keyboard-build.log",
+  "ui": {
+    "status": "blocked-by-locked-mac",
+    "observation": "CUA getState: The Mac is locked and automatic unlock could not unlock it.",
+    "pending": [
+      "Normal re-approach after cancelling navigation must open the correct action panel and execute exactly once.",
+      "E shortcut must work in the rendered game and remain inactive during text editing and menus.",
+      "Illustration waiting/continue/keep flow must be rechecked before formal update.",
+      "Authenticated AlterU full original-story journey and re-entry remain unverified."
+    ]
+  },
+  "release": {
+    "newChangesPublished": false,
+    "lastVerifiedLiveCommit": "539774a44c2de5fe450b1ffce684e36b306f433b",
+    "next": "After actual UI verification, publish same commit to main and Pages and verify deployed Worker media generation with a new synthetic journey."
+  },
+  "remainingProductionBoundaries": [
+    "Platform hero four-direction anatomical gait parity remains unproven; contact05 generated no image. Approved B runtime art is preserved.",
+    "Platform-verified account recovery requires a trusted identity integration contract. Existing capability-based saves must remain intact."
+  ],
+  "goalComplete": false
+}
