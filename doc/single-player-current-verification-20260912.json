@@ -1,12 +1,12 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "fea2852e57055d9b14f80944439ba11d9eb35614",
+  "liveCommit": "951dd1c038032f714fe3ad88fd3d24d42e116ae8",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "decoder-recovery-review-20260913.json deployment: fea2852, 58 files each main/Pages, actual SHA equality.",
+    "sameCommitDualDeployment": "published-pixel-decode-review-20260913.json deployment: 951dd1c, 58 files each main/Pages, actual SHA equality.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",
@@ -24,7 +24,8 @@
       "storage": "durable-object-sqlite",
       "identity_mode": "anonymous-capability-v1"
     },
-    "decoderRecovery": "decoder-recovery-review-20260913.json: local production stalled Image.decode and explicit same-journey recovery; 706 CI tests; main/Pages each 58 actual files match the same tested build."
+    "decoderRecovery": "decoder-recovery-review-20260913.json: local production stalled Image.decode and explicit same-journey recovery; 706 CI tests; main/Pages each 58 actual files match the same tested build.",
+    "publishedPixelDecodeRecovery": "published-pixel-decode-review-20260913.json: both decode waits cancel; local real-PNG browser retry; 710 tests; same-commit dual deployment."
   },
   "remaining": [
     {
@@ -53,13 +54,13 @@
     "downloadCompatibility": 27,
     "redirectRejectionIllustrationSuite": 17,
     "fullCIRegression": {
-      "commit": "4bfad43f8b8da54663ca595eedb7ab1954beef11",
-      "run": 34693330872,
-      "tests": 696,
-      "passed": 696,
+      "commit": "951dd1c038032f714fe3ad88fd3d24d42e116ae8",
+      "run": 34713418426,
+      "tests": 710,
+      "passed": 710,
       "failed": 0,
       "skipped": 0,
-      "source": "gh run view --log; npm test step actual TAP totals"
+      "source": "gh run view --log; actual npm test TAP totals"
     },
     "displayDiagnostics": {
       "targetedTests": 11,

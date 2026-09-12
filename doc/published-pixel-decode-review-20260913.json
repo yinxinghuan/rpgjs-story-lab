@@ -22,12 +22,26 @@
       1448
     ],
     "retryPixelsNonempty": true,
-    "observedUiResult": "Both visible controls reported pass after cancellation and successful retry."
+    "observedUiResult": "Both visible controls reported pass after cancellation and successful retry.",
+    "evidence": [
+      "_qa/published-pixel-decode-20260913/recovered.png"
+    ]
   },
   "limitations": [
     "No actual published-character journey UI was enrolled in this check.",
     "No native iPhone reproduction; does not identify historical disappearance root cause."
   ],
   "baselineArtChanged": false,
-  "saveSchemaChanged": false
+  "saveSchemaChanged": false,
+  "deployment": {
+    "commit": "951dd1c038032f714fe3ad88fd3d24d42e116ae8",
+    "mainFiles": 58,
+    "pagesFiles": 58,
+    "sameLocalBuild": true,
+    "pagesWorkflow": 34713418426,
+    "ciTests": 710,
+    "ciPassed": 710,
+    "ciFailed": 0,
+    "pageHealthSourceZipPassed": true
+  }
 }
