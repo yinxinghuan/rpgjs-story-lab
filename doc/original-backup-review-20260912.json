@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "status": "local-verified-awaiting-release",
+  "status": "verified-and-dual-deployed",
   "scope": "Original v8 authoritative backup, offline empty-database recovery, and resuming completed journeys from the directory",
   "tests": {
     "passed": 651,
@@ -672,5 +672,6 @@
     "Backups include story inputs and must remain private; no production player data used in tests.",
     "Published scene/actor art remains referenced by immutable binding; this is not an offline game bundle.",
     "Local Chromium evidence is not actual iPhone or logged AlterU acceptance."
-  ]
+  ],
+  "releaseEvidence": "original-backup-release-20260912.json"
 }

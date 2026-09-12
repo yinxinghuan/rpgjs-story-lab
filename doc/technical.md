@@ -944,3 +944,5 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 原作`GET /sessions/:id/backup`经现有capability和版本边界读取，响应private/no-store；没有POST恢复接口。游戏旅程列表可准备并下载备份，包含剧情/自由输入，系统不导出capability。下载链接对应完成准备时的版本，释放旧blob；有待确认操作时先恢复。
 
 `scripts/restore-original-backup.ts`仅用于可信操作者离线演练：校验原作cartridge/schema、完整回执/游标/版本和owner边界，以0600权限独占创建目标SQLite，拒绝已有路径和非空表。插入全部行处于单个事务，失败回滚。它不是平台账号找回、浏览器上传导入或生产数据库迁移流程；不自动应用到在线Worker。
+
+本轮已双部署c934955，Pages34669500976成功；主站与镜像各54份实际文件SHA匹配。651回归通过，本机中英完整39行动到结局、下载校验、新开旅程再续旧结局通过；最终下载样式与503重试分别在320/390复验，链接44px。正式主站182请求、两个新合成旅程完成结局并校验完整备份，无模型/媒体调用，无真实存档读取或恢复。所有本轮临时服务已关闭；详情见original-backup-review-20260912.json与original-backup-release-20260912.json。
