@@ -914,3 +914,6 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 `SPRITE_RECIPES`仍保留全部历史配方，`spriteGenerationRequest`输出不变，供来源核验、任务恢复和原图导入。新增`spriteRecipeAvailable`只控制新意向，`planSpriteGeneration`拒绝当前未通过的ada-walk-v1，默认starter-broken-v1。已有prepared/generating/retryable-failed记录继续原ID/任务，完成或终止后选择器回到可用配方，不删除旧记录、图片或检查；不以更改配方解决旧任务。UI禁选与意向函数共同阻止新建，已有素材组合入口继续提供默认人物。此为当前产品能力选择，并非公共媒体服务的访问控制。
 
 本轮一次hero-side-pairs-01定点公共媒体请求在53778ms后返回PROVIDER_REJECTED/retryable=false，没有taskId或PNG，未重发；原主角及平台站姿资源未改。正式发布标识carriage-art-availability-20260912-1；旧车厢、原作、creator wire不变，画页生产开关继续关闭。
+
+
+配方能力更新已正式双部署bc0d378：主站/Pages各53份实际文件与本机一致，Pages34666270937成功。第一次CI因两项测试写死macOS临时目录失败，修复为系统tmpdir后Linux完整流程通过，未跳过测试。640项本机全套通过；11项持久化在/tmp复验通过。原作线上新建1个合成旅程、7次请求确认原作运行/画页门关闭/读取不改故事，无模型或媒体调用。最终修复提交仅改变测试目录，运行字节保持并在两站再次核对。详见art-availability-release-20260912.json；未宣称侧向步态、画页质量或完整AlterU实机验收通过。
