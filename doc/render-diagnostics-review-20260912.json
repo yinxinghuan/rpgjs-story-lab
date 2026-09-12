@@ -26,5 +26,24 @@
     "native platform defect remains open",
     "not final full-game acceptance"
   ],
-  "touchTarget": "summary minimum 44px added after first visual inspection"
+  "touchTarget": "summary minimum 44px added after first visual inspection",
+  "releaseCommit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
+  "ci": {
+    "tests": 699,
+    "failed": 0,
+    "workflow": 34698466229,
+    "conclusion": "success"
+  },
+  "mainResources": {
+    "files": 58,
+    "sameLocalBuild": true
+  },
+  "nativeReadout": "pending manual Mac unlock",
+  "displayDiagnosticsDualDeployment": {
+    "commit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
+    "mainFiles": 58,
+    "pagesFiles": 58,
+    "sameLocalBuild": true,
+    "pagesWorkflow": 34698466229
+  }
 }

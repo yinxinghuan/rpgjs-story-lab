@@ -99,5 +99,27 @@
     "morale": 61,
     "firstIntroduction": "可见雨衣与泵房钥匙 → 玛柯自报守卫队长 → 伤员和油泵交换条件",
     "fullPlaythrough": false
+  },
+  "yardPumpFollowup": {
+    "action": "与阿达修泵换取燃料（车况−6）",
+    "nativePlatform": true,
+    "saved": true,
+    "fuel": 50,
+    "condition": 81,
+    "morale": 63,
+    "deltas": {
+      "fuel": 12,
+      "condition": -6,
+      "morale": 2
+    },
+    "relation": "玛柯关系升温",
+    "fullPlaythrough": false
+  },
+  "displayDiagnosticsFollowup": {
+    "codeCommit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
+    "nativeReopenClicked": true,
+    "result": "Mac locked before restored game could be inspected",
+    "next": "Read local display diagnostics in current graystone-yard journey, then continue route; preserve all existing journeys",
+    "nativeDiagnosisComplete": false
   }
 }

@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "6bf1a99682b96409aa4b6bc80389835258f7c16f",
+  "liveCommit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
@@ -59,8 +59,33 @@
       "failed": 0,
       "skipped": 0,
       "source": "gh run view --log; npm test step actual TAP totals"
+    },
+    "displayDiagnostics": {
+      "targetedTests": 11,
+      "ciTotal": 699,
+      "ciFailed": 0,
+      "workflow": 34698466229,
+      "localUiReadout": true,
+      "nativeReadout": false
     }
   },
   "newBrowserChecksThisTurn": false,
-  "currentUiObservation": "Further continuous transition tunnel->yard reproduced hero absence on platform. Resource/task progression passed. Keep rendering defect open; current own journey yard38/87/61."
+  "currentUiObservation": {
+    "platform": "Telegram AlterU",
+    "scene": "graystone-yard",
+    "fuel": 50,
+    "condition": 81,
+    "morale": 63,
+    "lastAction": "与阿达修泵换取燃料",
+    "lastActionSaved": true,
+    "displayDefect": "native actor missing after continuous transition, unresolved",
+    "blocker": "Mac locked during reentry to deployed diagnostics version"
+  },
+  "displayDiagnosticsDualDeployment": {
+    "commit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
+    "mainFiles": 58,
+    "pagesFiles": 58,
+    "sameLocalBuild": true,
+    "pagesWorkflow": 34698466229
+  }
 }
