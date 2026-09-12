@@ -1,0 +1,15 @@
+{
+  "taskId": "mt_5e9c8c436303d03ec44592d3f94622a3",
+  "requests": 1,
+  "sha256": "08798d54c48befa243e27c790cf736e3fb838251b3fbe1de51a264088aa92d25",
+  "status": "rejected-as-replacement-frame",
+  "observations": [
+    "Pose differs from existing side contact: a hand extends toward screen right and the legs separate differently.",
+    "The prominently visible near-side arm remains down/forward of the torso; the back-swinging arm reads on the far side. Requested near/far limb assignment is not reliable.",
+    "Hair top is around y47 rather than requested/reference y80; scale and head anchor drift materially.",
+    "Distinct pixels or a changed silhouette do not establish a correct alternating gait."
+  ],
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "next": "Use explicit paired-frame anatomical review and fixed head/foot anchors before composition; do not auto-admit from silhouette difference or service success."
+}

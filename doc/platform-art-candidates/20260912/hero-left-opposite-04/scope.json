@@ -1,0 +1,6 @@
+{
+  "intent": "Correct missing phase: near arm back, near leg forward, screen-left travel",
+  "maximumRequests": 1,
+  "reference": "../hero-left-single-03/reference.png",
+  "runtimeAdmission": false
+}

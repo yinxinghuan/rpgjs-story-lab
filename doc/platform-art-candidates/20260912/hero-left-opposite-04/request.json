@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "46d5f33b-729a-4845-8c20-998c0932fb52",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/7d5194f/doc/platform-art-candidates/20260912/hero-left-single-03/reference.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Draw ONE missing left-facing walk pose from this idle reference. Keep the exact overhead orthographic camera, mustard hooded coat, teal trousers, brown boots, dark hair and brown satchel on the same anatomical side. The person faces screen LEFT. For this contact phase, the NEAR arm visible on the side facing the viewer swings BACK toward screen RIGHT: the near hand must be behind the hips, on their RIGHT, not reaching left. The NEAR leg reaches FORWARD toward screen LEFT, with its boot left of the hips; the far leg extends behind toward screen RIGHT. Show the arm swing and the two separate boots clearly. Do not mirror or turn the person. Preserve head shape and scale: hair top near y=80 and boot bottoms near y=294 in this 320x320 canvas, hips near x=164. Match the reference pixel-painted rendering and outline. Pure white background, no shadow, labels, grid or additional figure."
+}

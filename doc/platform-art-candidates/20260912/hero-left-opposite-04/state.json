@@ -1,0 +1,16 @@
+{
+  "task_id": "mt_5e9c8c436303d03ec44592d3f94622a3",
+  "request_id": "46d5f33b-729a-4845-8c20-998c0932fb52",
+  "type": "image",
+  "status": "succeeded",
+  "created_at": 1789206829995,
+  "updated_at": 1789206832679,
+  "media": {
+    "type": "image",
+    "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789206832485126.png",
+    "width": 320,
+    "height": 320,
+    "format": "png"
+  },
+  "timing_ms": 1596
+}
