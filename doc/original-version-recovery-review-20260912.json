@@ -1,0 +1,107 @@
+{
+  "date": "2026-09-12",
+  "status": "local-verified",
+  "regression": {
+    "passed": 643,
+    "failed": 0
+  },
+  "build": "passed",
+  "typescript": "passed",
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "observations": [
+        {
+          "stage": "initial",
+          "reloadedDocument": true,
+          "version": 0,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "action",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "directory",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "selection",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "checkpoint",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        }
+      ],
+      "oneJourneyPreserved": true,
+      "actionPosts": 2,
+      "identicalPendingReplay": true,
+      "consequenceAppliedOnce": true,
+      "errors": [],
+      "externalConnections": 0,
+      "realIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "observations": [
+        {
+          "stage": "initial",
+          "reloadedDocument": true,
+          "version": 0,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "action",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "directory",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "selection",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        },
+        {
+          "stage": "checkpoint",
+          "reloadedDocument": true,
+          "version": 1,
+          "checkpointPaused": true
+        }
+      ],
+      "oneJourneyPreserved": true,
+      "actionPosts": 2,
+      "identicalPendingReplay": true,
+      "consequenceAppliedOnce": true,
+      "errors": [],
+      "externalConnections": 0,
+      "realIPhone": false
+    }
+  ],
+  "qaCorrection": "First browser run queried enrollment-pending, whose persisted null is not an action. Corrected the harness to inspect pending-v2 action keys, reran both sizes completely; no runtime relaxation.",
+  "limits": [
+    "All browser evidence is fresh isolated local Chromium, not iPhone or logged AlterU.",
+    "Response/health version changes are fault injection against the real compiled Worker; no production outage was induced.",
+    "Already cached older clients do not receive this fix until they load the new frontend.",
+    "No source image or story schema changed."
+  ]
+}

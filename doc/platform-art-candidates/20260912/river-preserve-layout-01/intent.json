@@ -1,0 +1,13 @@
+{
+  "scope": "One platform-media reproduction of the remaining legacy river background",
+  "newRequestsLimit": 1,
+  "automaticNewIntentRetries": 0,
+  "baselineUnchangedUntilReview": true,
+  "acceptance": [
+    "Preserve B orthographic camera and 1024x1536 layout",
+    "Broken bridge stays broken, no new traversable crossing",
+    "Near-bank paved walking area and all current approach/collision coordinates remain readable",
+    "No baked actors or new interactable props",
+    "Actual 320/390 RPG-JS route and old binding preservation before admission"
+  ]
+}

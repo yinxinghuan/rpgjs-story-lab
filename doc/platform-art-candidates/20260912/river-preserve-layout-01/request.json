@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "0de9ffe2-f93a-473f-bc2c-e244f2bb6e5c",
+  "mode": "edit",
+  "prompt": "Reproduce this exact 1024x1536 orthographic overhead RPG background with the SAME layout and camera. This is a damaged railway bridge across a storm-swollen river at night, viewed from directly above with modest visible vertical faces, no horizon or perspective convergence. Preserve the central vertical railway at x about 512, the broken bridge with its missing left deck and disconnected crossing, the turbulent water in the upper half, the far-bank small clinic at the upper right, both river banks, railings and lamps at the exact reference positions. The entire near-bank stone apron in the lower half must remain open and walkable: x 86 to 938 and y 827 to 1493 pixels; keep the tracks embedded flush in this ground. Preserve all existing edges, bridge gaps and silhouettes. Keep the rich blue-black wet stone, moss, crisp pixel-painted detail, warm small amber lamps and dark readable rain-night lighting, without crushing floor texture to black. Do not repair the bridge or add a route over the river. Do not move shorelines, widen rails, add furniture, people, trains, vehicles, labels, letters, UI, borders or new interactive objects. Output a finished full-canvas PNG background. Identity, exact layout and readable ground matter more than additional decoration.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/b5bbc4abe80f20a993af2b5749bd369ad9a719fc/doc/original-train-candidates/20260911/river-valley-v1.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  }
+}
