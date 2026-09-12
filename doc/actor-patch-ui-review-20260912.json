@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-12",
+  "baseCommit": "68a6f65",
+  "url": "http://127.0.0.1:5384/creator.html?create_art=sprite",
+  "source": "hero-reproduce-01",
+  "patch": "hero-left-opposite-04",
+  "selected": {
+    "row": 1,
+    "column": 2
+  },
+  "checks": [
+    "saved separate source; original remains in history",
+    "reload preserves source replacement metadata",
+    "prepared candidate and map trial link available",
+    "gait play/pause/standing work; all review verdicts unchecked",
+    "960x1280 invalid patch rejected with ACTOR_FRAME_SIZE_MISMATCH; candidate retained",
+    "320x568 and 390x844 layout inspected"
+  ],
+  "artAdmitted": false,
+  "deployed": false,
+  "screenshots": [
+    "../_qa/actor-patch-ui/platform-layout-320-gait.png",
+    "../_qa/actor-patch-ui/platform-layout-320-patch.png",
+    "../_qa/actor-patch-ui/platform-layout-390-patch.png"
+  ],
+  "layoutNote": "External guest banner dismissed using its Close button for game layout inspection. No production suppression added.",
+  "uiAudit": "src strict scan clean; whole repository scan includes untracked dist-ren-qa and bundled third-party entity tables, not a clean whole-repo audit"
+}

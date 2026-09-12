@@ -1061,3 +1061,9 @@ hero-left-opposite-04使用同一平台站姿裁片，一次edit要求近侧手�
 newActorFrameSource把原图集与单帧组成新的source草稿，记录parentId及actorPatch（版本、行列、两份原PNG和名称），不复制旧审核或整体生图来源。处理与恢复调用verifySpriteComposition重建指定格，摘要有效但拼接像素/格位不一致仍拒绝。归档沿用现有4文件角色source/candidate/input-0/input-1及24MiB上限，增加受限actorPatch字段，不影响旧repair composition。
 
 13项相关测试通过：12格位底层替换另有既有测试；本轮覆盖IndexedDB重开、归档序列化往返、真实平台两PNG通过现有SQL归档后重开、异主读取拒绝、格位篡改拒绝，以及旧设备归档/HTTP丢包恢复兼容。首次HTTP测试因沙箱监听EPERM未运行，启用本机监听后重跑全部通过。TypeScript通过。制作页入口/连续播放尚未接入，不宣称完整补帧流程或素材已准入；正式站保持acf2510。
+
+### 制作页单帧替换入口（2026-09-12）
+
+`actor-frame-patch-panel.tsx` 在人物原图下提供方向、列和单帧PNG选择；`sprite-creator.tsx` 在现有浏览器锁内验证8MiB上限、解码并调用newActorFrameSource，以当前草稿id/revision执行CAS保存。错误尺寸不生成记录；成功另存原图，随后使用现有去背景、脚点对齐及ActorGaitPreview。替换后的图集类型锁定为人物，所有审核重新填写。文件选择在另存前只存在内存，刷新后的已保存替换来源从actorPatch恢复。
+
+已通过真实制作页导入hero-reproduce-01、替换左向第三帧、刷新恢复、处理、步态播放/暂停/站立和错误尺寸拒绝。使用hero-left-opposite-04仅验证流程；该单帧比例仍不合格，未发布或替换正式人物。320×568和390×844控件检查通过；当前工作尚未部署。
