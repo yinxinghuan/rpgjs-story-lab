@@ -5,6 +5,8 @@ import {resolve,join,extname,relative} from 'node:path'
 import {PreflightStorage} from '../server/preflight-storage'
 import {GAME_ID} from '../src/game-id'
 const sourceDir=resolve(process.argv[2]??'dist'),port=Number(process.argv[3]??5349)
+// Local-only presentation faults, never affect maps, actors, or API commits.
+const failedScenery=new Set<string>()
 // Freeze the tested frontend alongside the already frozen compiled Worker.
 // A later Vite build must not remove chunks/images during an in-flight route.
 const dir=join(mkdtempSync(join(tmpdir(),'original-production-assets-')),'dist')
@@ -32,6 +34,10 @@ const server=createServer(async(req,res)=>{try{
  }
  const path=resolve(dir,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname))
  if(relative(dir,path).startsWith('..')||!statSync(path).isFile())throw Error('QA_NOT_FOUND')
+ if(url.searchParams.has('scene_asset')&&/^\/art\/(approved\/|original-)/.test(url.pathname)){
+  if(process.argv.includes('--fail-scenery-once')&&!failedScenery.has(url.pathname)){failedScenery.add(url.pathname);res.writeHead(503);res.end('QA scenery unavailable');return}
+  if(process.argv.includes('--slow-scenery'))await new Promise(resolve=>setTimeout(resolve,20000))
+ }
  res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','Cache-Control':'no-store'});res.end(readFileSync(path))
 }catch{res.writeHead(404);res.end('Not found')}})
 server.listen(port,'127.0.0.1',()=>console.log('Compiled production frontend and Worker at http://127.0.0.1:'+port))

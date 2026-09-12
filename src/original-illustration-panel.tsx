@@ -1,4 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react'
+import JourneyLoading from './journey-loading'
 import type {OriginalHead} from '../server/original-train-runtime'
 import type {Transport} from './session-client'
 import {originalSceneBackgroundVersion} from './original-asset-releases'
@@ -52,7 +53,7 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
   {job?.state==='discarded'&&<><p role="status">{t('这张候选未保留。原场景与文字记录保持不变。','This candidate was not kept. The original scene and written journal are unchanged.')}</p><button className="og-choice" onClick={onReadJournal}>{t('继续阅读旅程记录','Continue reading the journal')}</button></>}
   {picture?.key===key?<figure><img src={picture.url} width="768" height="1024" alt={t('环境回忆：','Illustrated memory: ')+label(selected)} draggable={false}/><figcaption>{t('这是发起制作时的环境回忆，不是新事件或当前地图。','A memory of the place when requested, not a new event or the current map.')}</figcaption></figure>:job&&['active','candidate'].includes(job.state)&&!imageError?<p role="status">{t('正在读取图片…','Loading image…')}</p>:null}
   {ready&&job?.state==='candidate'&&<div><button className="og-choice" disabled={busy||picture?.key!==key} onClick={()=>void decide('keep')}>{t('保留这张画页','Keep this illustration')}</button><button className="og-choice" disabled={busy} onClick={()=>void decide('discard')}>{t('不保留这张候选','Do not keep this candidate')}</button></div>}
-  {job?.state==='preparing'&&<p role="status">{t('画页正在准备。离开后可从这里恢复同一任务。','The illustration is being prepared. Return here to recover the same task.')}</p>}
+  {job?.state==='preparing'&&<><div className="og-generation-preview"><JourneyLoading locale={head.save.locale} detail={t('这段旅途正在绘成画页…','This journey is becoming an illustration…')}/></div><p>{t('可以继续探索，回来后查看同一张画页的进展。','Keep exploring and return to check this same illustration.')}</p><button className="og-choice" onClick={onReadJournal}>{t('继续旅程','Continue the journey')}</button></>}
   {issue&&<p role="status">{explanation}</p>}
   {imageError&&<><p role="status">{t('图片暂时无法读取，旅程没有改变。','The image could not load. Your journey is unchanged.')}</p><button className="og-choice" onClick={()=>setImageRetry(n=>n+1)}>{t('重新读取图片','Reload image')}</button></>}
   {error&&<button className="og-choice" disabled={busy} onClick={()=>void refresh()}>{t('重新读取画页记录','Reload illustration records')}</button>}
