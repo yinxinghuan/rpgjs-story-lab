@@ -1,0 +1,15 @@
+{
+  "date": "2026-09-12",
+  "taskId": "mt_e11876e8d7f3bb5240c3f7076133c090",
+  "sha256": "b17b3c07b0093c3a495a638c8b2c31b67f57937ccd944cae09f6d00e69c62a0c",
+  "requests": 1,
+  "elapsedMs": 9906,
+  "admission": "rejected",
+  "findings": [
+    "Left-facing pose retains essentially the same stepping/arm configuration as the source side row; it does not supply a reliable opposite contact pose.",
+    "Right-facing arms and torso relationship changed; subject scale and camera details also differ from the existing grid.",
+    "RGB white matte with a thin vertical center divider, not transparent alpha.",
+    "Two separate poses are insufficient evidence of a continuous four-direction animation."
+  ],
+  "action": "No automatic matte removal, composition, runtime replacement or second generation. Retain originals and improve on-screen leg comparison for the existing creator review."
+}

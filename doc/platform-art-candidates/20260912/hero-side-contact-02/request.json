@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "aae979b4-a9ed-417e-9250-89d4c9fbb446",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/9749685/doc/platform-art-candidates/20260912/hero-reproduce-01/candidate.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 384
+  },
+  "prompt": "Draw two missing walking poses of the yellow-jacket traveler in the reference. Same dark-brown hair, mustard hooded coat, teal trousers, brown boots and brown satchel. Preserve the strong overhead orthographic camera and pixel-painted style. One row, two equal 320x384 cells, one complete person per cell on pure white. Left cell faces screen LEFT; right cell faces screen RIGHT. In BOTH cells, the near leg visible in front of the other leg is stretched BACKWARD, while the far leg stretches FORWARD. The visible near arm swings FORWARD. Thus in the left-facing cell the foreground boot is to the RIGHT of the hips and the visible hand to their LEFT. In the right-facing cell the foreground boot is to the LEFT of the hips and the visible hand to their RIGHT. This is the opposite half-step to the repeated side poses in the reference. Keep the bag on its original anatomical side, never flip the whole figure. Keep head and torso shape, top surfaces, body size and clothing consistent. Full boots inside each cell with clear margins. No grid, labels, checkerboard, scene or shadow."
+}

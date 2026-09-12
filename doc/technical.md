@@ -962,3 +962,8 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 `actor-publication.ts` 共享图集结构校验，但 `PublishedHero.slot=protagonist` 与 `PublishedActor.slot=ada-mechanic` 分别严格检查。`CreatorSpriteArchive` 使用独立的 `creator_hero_releases` 表；`/sprites/:id/publish-hero` 必须引用已归档最新合格图集/地图检查，回执丢失可重试同一发布，后续检查不能覆盖已发布版本。原图接口继续要求制作身份，公开 `/hero-releases/:id/file` 只提供不可变结果 PNG。
 `originalEnrollmentAssets` 将可选 `protagonist` 元数据复制进原有背景绑定层，与 v3 启动器、v4 阿达及通风机组合；未带字段的存档仍使用原 B 主角，不迁移或重写。`originalBoundHero` 统一提供 renderer 和模型上下文所需版本；自定义图集在入场前核验 SHA、尺寸、alpha、脚点与全部主体边界，外形描述设为 not-described。
 `hero_release` 追加到原有组合续玩 key，空值保持历史 key。组合页兼容旧四槽选择，并增加玩家主角槽。原作线协议更新至 original-session-18.assets-14；制作档案既有版本保持不变。主体资源仍来自同一游戏 UUID、同一权威旅程，未新增账号认证或另一套后台。
+
+
+### 腿部重复风险提示（2026-09-12）
+`actor-stride-comparison.ts` 只读比较每方向第1/3帧：alpha>200定位主体，取主体下方36%，容许最多2源像素的平移差，计算不透明区域交并比及 RGB 差异。交并比≥0.90且归一化差异≤0.15仅提示重复风险，透明区RGB不参与。阈值在当前基准/平台候选观察上校准，不能证明解剖腿身份，也不拒绝或通过存档。
+制作检查展开时解码一次候选，切换方向复用结果；关闭或候选变更使旧异步结果失效。只读CSS裁切并排放大腿部，不改PNG、历史检查或地图准入。未比较/读取失败保持人工检查，不默认为成功。

@@ -1,0 +1,80 @@
+{
+  "date": "2026-09-12",
+  "release": "carriage-stride-review-20260912-1",
+  "candidate": "platform-art-candidates/20260912/hero-side-contact-02/review.json",
+  "candidateAdmitted": false,
+  "requests": 1,
+  "runtimeArtChanged": false,
+  "checks": {
+    "targetedTests": 11,
+    "passed": 11,
+    "build": "tsc, spatial contract, 27 resource hashes, Vite and opaque Worker startup passed",
+    "comparison": "lower 36 percent of opaque subject; at most 2px translation; overlap >= .90 and normalized pixel difference <= .15 flags similarity risk only",
+    "notAnatomicalCertification": true
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "flags": [
+        {
+          "direction": "down",
+          "warning": 0
+        },
+        {
+          "direction": "left",
+          "warning": 1
+        },
+        {
+          "direction": "right",
+          "warning": 1
+        },
+        {
+          "direction": "up",
+          "warning": 0
+        }
+      ],
+      "originalUnchanged": true,
+      "observationsNotAutofilled": true,
+      "rejectedObservationRestored": true,
+      "externalRequests": 0,
+      "errors": [],
+      "actualIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "flags": [
+        {
+          "direction": "down",
+          "warning": 0
+        },
+        {
+          "direction": "left",
+          "warning": 1
+        },
+        {
+          "direction": "right",
+          "warning": 1
+        },
+        {
+          "direction": "up",
+          "warning": 0
+        }
+      ],
+      "originalUnchanged": true,
+      "observationsNotAutofilled": true,
+      "rejectedObservationRestored": true,
+      "externalRequests": 0,
+      "errors": [],
+      "actualIPhone": false
+    }
+  ],
+  "limitations": [
+    "Similarity warning has false-positive and false-negative possibilities; no automatic pass/fail or publication.",
+    "Current baseline back alternation retained; side gait is not certified.",
+    "No actual iPhone hardware or logged platform acceptance in this run."
+  ]
+}
