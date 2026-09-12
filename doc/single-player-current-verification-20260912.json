@@ -40,7 +40,7 @@
     {
       "requirement": "Platform character production with consistent four-direction gait",
       "state": "unverified",
-      "latest": "hero-leg-layer-08 isolated trousers/boots successfully, but both cells still put the screen-left boot forward; rejected as a gait pair. Next candidate method is controlled rendering of a symmetric lower-body layer, with separate unchanged upper body and explicit seam/lighting checks. No runtime admission."
+      "latest": "Transparent first-cell leg layer plus original standing inspected; opposite contacts work but boot shape/shading changes at neutral transitions. Candidate remains rejected; see leg-layer-playback-review-20260913.json alphaFourBeatFollowup."
     },
     {
       "requirement": "Trusted platform identity and account recovery",

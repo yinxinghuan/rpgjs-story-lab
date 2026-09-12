@@ -61,7 +61,7 @@ export default function OriginalGame(){
   const {id:version,resource}=originalBoundHero(h.assets)
   if(heroBlob.current){if(heroKey.current!==version)throw new ScenePreparationError('characters','HERO_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
-  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const release=originalPublishedHero(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedHeroPixels(release,png,decodeSpritePixels)}const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');if(!mounted.current){void Assets.unload(blob).catch(()=>{});URL.revokeObjectURL(blob);return}heroBlob.current=blob;heroKey.current=version}
+  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const release=originalPublishedHero(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedHeroPixels(release,png,png=>decodeSpritePixels(png,abort.signal))}const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');if(!mounted.current){void Assets.unload(blob).catch(()=>{});URL.revokeObjectURL(blob);return}heroBlob.current=blob;heroKey.current=version}
   catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','HERO_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
  const brakeBlob=useRef('')
@@ -83,7 +83,7 @@ export default function OriginalGame(){
   if(equipmentBlob.current){if(equipmentKey.current!==key)throw new ScenePreparationError('equipment','EQUIPMENT_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!
-   const release=originalStarterRelease(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedDevicePixels(release,png,decodeSpritePixels)}
+   const release=originalStarterRelease(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedDevicePixels(release,png,png=>decodeSpritePixels(png,abort.signal))}
    const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');equipmentBlob.current=blob;equipmentKey.current=key
   }catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','EQUIPMENT_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
@@ -101,7 +101,7 @@ export default function OriginalGame(){
   if(actorBlob.current){if(actorKey.current!==key)throw new ScenePreparationError('characters','ACTOR_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!
-   if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedActorPixels(release,png,decodeSpritePixels)}
+   if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedActorPixels(release,png,png=>decodeSpritePixels(png,abort.signal))}
    const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');actorBlob.current=blob;actorKey.current=key
   }catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }

@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-13",
+  "problem": "Published hero, actor and device pixel checks awaited two Image.decode calls without observing the existing preparation deadline.",
+  "fix": "Optional AbortSignal through spritePreviewUrl/decodeSpritePixels, forwarded by all three production publication validators; image sources cleared and inner Blob URLs revoked on abort.",
+  "targetedTests": 9,
+  "fullRegression": {
+    "total": 710,
+    "passed": 710,
+    "failed": 0,
+    "note": "Initial sandbox run: 35 HTTP tests failed due to local listen EPERM; authorized rerun passed all."
+  },
+  "buildPassed": true,
+  "browser": {
+    "fixture": "_qa/sprite-decode-browser-server.mjs",
+    "surface": "Local IAB, current source helper bundled with esbuild, real immutable hero PNG",
+    "decodePassesInterrupted": [
+      1,
+      2
+    ],
+    "retryDimensions": [
+      1086,
+      1448
+    ],
+    "retryPixelsNonempty": true,
+    "observedUiResult": "Both visible controls reported pass after cancellation and successful retry."
+  },
+  "limitations": [
+    "No actual published-character journey UI was enrolled in this check.",
+    "No native iPhone reproduction; does not identify historical disappearance root cause."
+  ],
+  "baselineArtChanged": false,
+  "saveSchemaChanged": false
+}
