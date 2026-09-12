@@ -40,7 +40,7 @@
     {
       "requirement": "Platform character production with consistent four-direction gait",
       "state": "unverified",
-      "latest": "hero-lower-body-07 generated successfully but redrew upper body and used an oversized stride; rejected. Prompt-only local edits are not a validated production method. Approved B art unchanged."
+      "latest": "hero-leg-layer-08 isolated trousers/boots successfully, but both cells still put the screen-left boot forward; rejected as a gait pair. Next candidate method is controlled rendering of a symmetric lower-body layer, with separate unchanged upper body and explicit seam/lighting checks. No runtime admission."
     },
     {
       "requirement": "Trusted platform identity and account recovery",

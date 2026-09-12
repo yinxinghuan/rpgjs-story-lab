@@ -1,0 +1,24 @@
+{
+  "taskId": "mt_3898180cdb414c9fd1ecc6d2bbf34601",
+  "sha256": "c8769255e3b9943c0358f4fcf5f5850feedf7d7ea43b5e11ea6cfd1159185404",
+  "bytes": 82380,
+  "size": [
+    640,
+    320
+  ],
+  "timingMs": 4780,
+  "requests": 1,
+  "status": "not-admitted",
+  "hypothesis": "Generate only the symmetric lower-body layer, so torso and asymmetric bag need not be redrawn during gait production.",
+  "observations": [
+    "Only trousers and boots are present; no torso, hands, coat or bag. Layer isolation succeeded.",
+    "In both cells the screen-left boot is closer to the viewer and lower on screen. Opposite contacts were not generated.",
+    "The silhouette and leg length differ slightly between cells; automatic two-frame alternation would still read as one repeated leg.",
+    "Pixel-art coloration remains teal and brown, but proportions and body attachment have not been checked in the game."
+  ],
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "postprocessingPerformed": false,
+  "conclusion": "Leg-only image generation is feasible in this sample, but does not solve opposite-step production. This pair cannot be used as the two walking contacts.",
+  "next": "Do not resubmit the same prompt. Evaluate explicit renderer mirroring of an independently symmetric leg layer, with separate unchanged upper body; forbid mirroring asymmetric bag/costume, and check lighting, seam, ground point and all directions before admission."
+}

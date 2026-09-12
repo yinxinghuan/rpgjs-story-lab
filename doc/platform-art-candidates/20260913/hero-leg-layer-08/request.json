@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "4bee0e0e-5d77-4849-b74e-4699b648bb48",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/overhead/hero-gait-v2.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 320
+  },
+  "prompt": "Create a TWO-CELL lower-body animation layer from the BACK VIEW character in the bottom row of the reference. Output only dark teal trouser legs and brown boots, cut off cleanly at the horizontal hip line. No head, torso, yellow jacket, arms, hands, bag, belt or shadow. Preserve the reference pixel-art texture, boot size, trouser material and overhead orthographic viewing angle. Both cells depict the SAME lower body walking slowly away from the camera toward screen top. Cell one: anatomical LEFT boot nearer the viewer, lower on screen, right boot farther away, higher on screen. Cell two: anatomical RIGHT boot nearer the viewer, lower on screen, left boot farther away, higher on screen. For this back view anatomical left is screen left. Small grounded walking steps, not running, jumping or deep knee bends. Keep hip height, hip width, body center, scale and leg lengths identical in both cells. Each cell 320x320, hip centered at cell x160 and y110, lowest boot sole at y230, generous blank margin. Plain solid white background. Exactly two distinct opposite steps in one horizontal row; no text, labels, grid or third pose. This is a modular legs-only sprite, NOT a full-body character sheet."
+}
