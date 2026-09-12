@@ -1,0 +1,13 @@
+{
+  "scope": "One side-view contact-pair request, not a full-sheet reroll",
+  "newRequestsLimit": 1,
+  "automaticNewIntentRetries": 0,
+  "baselineUnchanged": true,
+  "acceptance": [
+    "Opposite foreground leg and visible arm for both directions",
+    "Same B camera, scale and satchel identity",
+    "No altered front/back poses; splice only after visual acceptance",
+    "Creator preparation and actual renderer validation required before admission"
+  ],
+  "source": "hero-reproduce-01; source preserved"
+}

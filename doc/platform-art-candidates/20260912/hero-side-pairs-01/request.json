@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "2f6e98ea-506e-46c6-9324-cc4854a5bcec",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/9749685/doc/platform-art-candidates/20260912/hero-reproduce-01/candidate.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 640
+  },
+  "prompt": "Create FOUR precise side-walking keyframes of the SAME yellow-jacket hero in this reference. 2 columns by 2 rows, equal 320x320 cells. Keep the strong overhead orthographic camera, visible hair crown and shoulder tops, compact proportions, dark teal trousers, brown boots, crisp pixel-painted texture and the brown satchel fixed to the SAME anatomical side. Do NOT mirror the body or bag. Both cells of the TOP row face screen LEFT. Both cells of the BOTTOM row face screen RIGHT. Each row is ONE consecutive alternating contact pair, not a duplicate pose pair. In column 1, the NEAR leg (foreground leg attached to the visible hip) steps FORWARD, the FAR leg steps BACK, the NEAR arm swings BACK behind the torso. In column 2, the NEAR leg steps BACK and the FAR leg steps FORWARD, while the NEAR arm swings FORWARD beyond the chest. For the left-facing top row, foreground boot endpoint is LEFT of the hips in cell 1 and RIGHT of the hips in cell 2; visible hand is RIGHT of torso in cell 1 and LEFT of torso in cell 2. For the right-facing bottom row reverse those screen directions. Preserve correct hip attachment, front/back limb occlusion and boot toe direction. Show the reversal clearly with a gap between legs. Same head, face direction, coat, bag position, scale and body height within each row. The reference repeats the same side stride: FIX that error, do not copy repeated poses. No front-facing or rear-facing cells, no standing pose. Pure solid white background, no grid, checkerboard, labels, shadows or text. Entire figures centered in their cells with margins. Output 640x640 PNG."
+}

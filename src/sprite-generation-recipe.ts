@@ -2,6 +2,10 @@ import type {GenerateImageMediaRequest} from './vendor/media/client'
 /** Versioned recipes are immutable: archived provenance reconstructs the exact request. */
 export const SPRITE_RECIPES=['ada-walk-v1','starter-broken-v1','starter-repaired-v1'] as const
 export type SpriteRecipe=typeof SPRITE_RECIPES[number]
+// Provenance stays readable forever. New-intention availability is a separate
+// decision: repeated side strides have not passed the walking-sheet review.
+export const DEFAULT_SPRITE_RECIPE:SpriteRecipe='starter-broken-v1'
+export function spriteRecipeAvailable(recipe:SpriteRecipe){return recipe==='starter-broken-v1'||recipe==='starter-repaired-v1'}
 export type SpriteGenerationSource={version:1;recipe:SpriteRecipe;requestId:string;sessionId:string;taskId:string}
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i
 export function assertSpriteGenerationSource(v:any):asserts v is SpriteGenerationSource{

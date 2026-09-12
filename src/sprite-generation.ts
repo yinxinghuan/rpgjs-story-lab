@@ -1,13 +1,14 @@
 import {generateImageMedia,waitForMediaTask,MediaServiceError,type MediaTask} from './vendor/media/client'
 import {spriteDatabaseName,inspectSpritePng,verifySpritePng,newSpriteSource,type SpritePng,type SpriteDraftRepository} from './sprite-draft'
 import {spritePreviewUrl} from './sprite-browser-io'
-import {spriteGenerationRequest,type SpriteRecipe} from './sprite-generation-recipe'
+import {spriteGenerationRequest,spriteRecipeAvailable,type SpriteRecipe} from './sprite-generation-recipe'
 export type SpriteGeneration={version:1;id:string;recipe:SpriteRecipe;sessionId:string;createdAt:number;state:'prepared'|'generating'|'failed'|'ready';taskId?:string;png?:SpritePng;error?:string;retryable:boolean;nextAt:number}
 export interface SpriteGenerations{get(id?:string):Promise<SpriteGeneration|undefined>;put(d:SpriteGeneration):Promise<void>;list():Promise<SpriteGeneration[]>}
 export const spriteGenerationDatabase=(url:string)=>spriteDatabaseName(url).replace('sprite-drafts','sprite-generations')
 export const pendingSpriteGeneration=(d?:SpriteGeneration)=>Boolean(d&&(d.state==='prepared'||d.state==='generating'||d.state==='failed'&&d.retryable))
 export function planSpriteGeneration(recipe:SpriteRecipe,sessionId:string):SpriteGeneration{
  const id=crypto.randomUUID();spriteGenerationRequest(recipe,id,sessionId)
+ if(!spriteRecipeAvailable(recipe))throw Error('SPRITE_RECIPE_NOT_RELEASED')
  return {version:1,id,recipe,sessionId,createdAt:Date.now(),state:'prepared',retryable:true,nextAt:0}
 }
 export class BrowserSpriteGenerations implements SpriteGenerations{

@@ -907,3 +907,10 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 末次重试先把旧请求、plan、任务和PNG分块归档到`original_illustration_attempts`与`original_illustration_attempt_parts`，再新建requestId。离开原地点后仍可使用当前head版本申请重试，plan完整复用首次场景/素材/配方快照；首次申请仍要求当前地点。历史及原图经原capability的`attempts`与`attempts/:n/file`读取，私有且no-store，摘要逐次核验。普通file路径隐藏discarded图；两次额度与原每日18次上限不变，重连不新增意向。
 
 原作日志画页面板显式显示候选、已保留和不保留状态。PNG摘要、尺寸和原生解码通过后才能保留，无法读取仍可不保留；不保留提供返回文字记录。决定回执丢失后重新读取服务端记录，关闭/刷新不自动决定。异步文件绑定scene/SHA/state，旧文件不能覆盖换场景或已放弃状态。生产开关`ORIGINAL_ILLUSTRATION_RELEASED`仍为false；保留只是个人回忆选择，不是自动美术验收，不改变正式地图和基准人物。
+
+
+### 2026-09-12 按实测能力开放制作配方
+
+`SPRITE_RECIPES`仍保留全部历史配方，`spriteGenerationRequest`输出不变，供来源核验、任务恢复和原图导入。新增`spriteRecipeAvailable`只控制新意向，`planSpriteGeneration`拒绝当前未通过的ada-walk-v1，默认starter-broken-v1。已有prepared/generating/retryable-failed记录继续原ID/任务，完成或终止后选择器回到可用配方，不删除旧记录、图片或检查；不以更改配方解决旧任务。UI禁选与意向函数共同阻止新建，已有素材组合入口继续提供默认人物。此为当前产品能力选择，并非公共媒体服务的访问控制。
+
+本轮一次hero-side-pairs-01定点公共媒体请求在53778ms后返回PROVIDER_REJECTED/retryable=false，没有taskId或PNG，未重发；原主角及平台站姿资源未改。正式发布标识carriage-art-availability-20260912-1；旧车厢、原作、creator wire不变，画页生产开关继续关闭。

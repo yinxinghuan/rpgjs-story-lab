@@ -1,0 +1,83 @@
+{
+  "date": "2026-09-12",
+  "release": "carriage-art-availability-20260912-1",
+  "scope": "Separate immutable generation provenance from new-intent recipe availability",
+  "tests": {
+    "fullSuitePassed": 640,
+    "fullSuiteFailed": 0,
+    "targetedPassed": 7,
+    "build": "TypeScript, cloud frontend, 27 asset SHA checks and compiled Worker startup",
+    "audits": [
+      "public secrets",
+      "API base",
+      "media integration",
+      "UI foundation",
+      "UUID",
+      "self-hosted storage",
+      "whitespace"
+    ]
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "newWalkIntentUnavailable": true,
+      "defaultRecipe": "starter-broken-v1",
+      "existingArtLinkOpened": true,
+      "oldRequestPreserved": true,
+      "oldTaskRecovered": true,
+      "readySourceImported": true,
+      "refreshPreserved": true,
+      "taskReads": 1,
+      "submissions": 0,
+      "externalRequests": 0,
+      "syntheticMediaResponses": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "actualIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "newWalkIntentUnavailable": true,
+      "defaultRecipe": "starter-broken-v1",
+      "existingArtLinkOpened": true,
+      "oldRequestPreserved": true,
+      "oldTaskRecovered": true,
+      "readySourceImported": true,
+      "refreshPreserved": true,
+      "taskReads": 1,
+      "submissions": 0,
+      "externalRequests": 0,
+      "syntheticMediaResponses": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "actualIPhone": false
+    }
+  ],
+  "visualReview": {
+    "reviewed": true,
+    "screenshots": [
+      "_qa/ui/gait-recipe-policy-320-zh-platform-layout-local-qa.png",
+      "_qa/ui/gait-recipe-policy-390-en-platform-layout-local-qa.png"
+    ],
+    "noOverflow": true,
+    "controlsAtLeast44px": true
+  },
+  "knownLimits": [
+    "No stable full four-direction platform-generated actor admitted",
+    "Local fresh browser only, not logged AlterU or actual iPhone",
+    "Original illustrations remain closed in production",
+    "This change pauses new intent creation; it does not revoke existing tasks or claim a media-service security boundary"
+  ],
+  "mediaExperiment": "platform-art-candidates/20260912/hero-side-pairs-01/review.json",
+  "productionDeployment": "pending exact-commit verification"
+}

@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-12",
+  "status": "terminal-service-rejection-no-image",
+  "requests": 1,
+  "requestId": "2f6e98ea-506e-46c6-9324-cc4854a5bcec",
+  "elapsedMs": 53778,
+  "error": "PROVIDER_REJECTED",
+  "retryable": false,
+  "taskId": null,
+  "image": null,
+  "cost": "not provided by public API",
+  "baselineChanged": false,
+  "visualAcceptance": "not assessable: no output image",
+  "furtherRequestsInBatch": false,
+  "next": "Pause new unvalidated walking-sheet recipe in the product; preserve old jobs, references and ready assets. Continue with approved existing cast and category-specific production."
+}
