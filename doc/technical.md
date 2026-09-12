@@ -1073,3 +1073,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 单帧来源扩展使旧制作页不能解析新归档清单，因此制作接口握手升级为`creator-runtime-2`，继续使用`X-Creator-Runtime`。背景持久记录仍为`creator-background-1`，由独立`CREATOR_BACKGROUND_RECORD_VERSION`约束；已有creator owner命名空间、浏览器能力身份和Story Session存档均未变更。旧接口请求在访问归档对象前返回409，客户端版本不匹配提示刷新；公开素材GET仍由服务器转发当前版本，不要求旧游戏画面携带新头。
 
 单帧入口版本54829a6的完整回归689项通过；接口升级后creator-cloud/sprite-cloud共12项通过，覆盖旧接口拒绝、背景原图恢复、人物与设备归档和新单帧来源恢复。接口升级后的完整回归同样689项通过，构建、Worker启动及9场景27资源哈希验证通过。接口升级仍待随前后端同提交正式部署。
+
+### 单帧制作流程正式发布（2026-09-12）
+
+539774a已部署到原UUID主站和Pages静态镜像；两站各58份实际文件与同一本地构建逐一SHA相同，Pages任务34688585823成功。制作后台health确认creator-runtime-2，公开源码ZIP与主站API验证通过。已创建的合成河谷旅程恢复为原version37，结局及资源不变；插画开关保持关闭，未准入人物素材未进入游戏。完整登录态AlterU验收仍未完成，不能由这次部署与恢复检查替代。证据：actor-patch-release-20260912.json。
