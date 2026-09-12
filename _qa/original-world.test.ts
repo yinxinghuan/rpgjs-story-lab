@@ -1,7 +1,7 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {findGridPath} from '../src/grid-path'
-import {advanceRoute} from '../src/walking-motion'
+import {advanceRoute,WALK_SPEED} from '../src/walking-motion'
 import {originalTrainSpatialPlan,originalTrainPlanWalkable,originalTrainRoom,originalTrainObstacles} from '../src/original-train-spatial-plan'
 test('North Cape paths reach each authored target while respecting the full actor footprint',()=>{
  const world=originalTrainSpatialPlan(),scene=originalTrainRoom('dead-station'),spawn=world.scenes.find(s=>s.id===scene)!.spawn,walk=(p:{x:number;y:number})=>originalTrainPlanWalkable(scene,p)
@@ -24,6 +24,29 @@ test('route between opposite train sides goes around the front, not across the r
  const scene=originalTrainRoom('dead-station'),walk=(p:{x:number;y:number})=>originalTrainPlanWalkable(scene,p)
  const path=findGridPath({x:110,y:185},{x:260,y:195},walk)
  assert.ok(path.length>0);assert.ok(path.some(p=>p.y>=248));assert.ok(path.every(walk))
+})
+test('interrupted North Cape walks can resume toward every interaction at mobile and desktop frame rates',()=>{
+ const world=originalTrainSpatialPlan(),scene=originalTrainRoom('dead-station'),spawn=world.scenes.find(s=>s.id===scene)!.spawn,walk=(p:{x:number;y:number})=>originalTrainPlanWalkable(scene,p)
+ const targets=world.entities.filter(e=>e.scene===scene)
+ for(const fps of [30,60,120])for(const target of targets){
+  let position={...spawn},route=findGridPath(position,target.approach,walk)
+  const stopped=[] as typeof position[]
+  for(let frame=0;route.length&&frame<3000;frame++){
+   const step=advanceRoute(position,route,WALK_SPEED/fps,walk)
+   assert.equal(step.blocked,false,target.id);position=step.position;route.splice(0,step.consumed)
+   if(frame%23===0)stopped.push({...position})
+  }
+  assert.equal(route.length,0)
+  for(const start of stopped)for(const next of targets){
+   position=start;route=findGridPath(position,next.approach,walk)
+   assert.ok(route.length,`${target.id} -> ${next.id} at ${fps} fps`)
+   for(let frame=0;route.length&&frame<3000;frame++){
+    const step=advanceRoute(position,route,WALK_SPEED/fps,walk)
+    assert.equal(step.blocked,false,`${target.id} -> ${next.id}`);position=step.position;route.splice(0,step.consumed)
+   }
+   assert.equal(route.length,0);assert.ok(Math.hypot(position.x-next.approach.x,position.y-next.approach.y)<4)
+  }
+ }
 })
 test('river map keeps the full actor on the near bank and reaches all registered candidate positions',()=>{
  const scene=originalTrainRoom('river-valley'),world=originalTrainSpatialPlan(),spawn=world.scenes.find(s=>s.id===scene)!.spawn,walk=(p:{x:number;y:number})=>originalTrainPlanWalkable(scene,p)
