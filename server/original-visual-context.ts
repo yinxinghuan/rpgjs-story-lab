@@ -1,3 +1,5 @@
+import {originalHeroRelease} from '../src/original-hero-release'
+import {originalHeroVersion} from '../src/original-asset-releases'
 import {brakeArt} from '../src/original-brake-art'
 import {originalBrakeState} from '../src/original-equipment-state'
 import type {OriginalHead} from './original-train-runtime'
@@ -23,5 +25,6 @@ export function originalVisualContext(h:OriginalHead,speakerId:string){
   id:'tunnel-fan',state:originalFanState(h.save),assetSha256:originalFanRelease(h.assets)?.housing.sha256??fanArt.housing.sha256,
   appearance:originalFanRelease(h.assets)?{}:{housing:'fixed dark olive metal enclosure with a round dark opening',interior:'three charcoal-gray fan blades and a brass hub'},
  }]:[]
- return {version:1,backgroundVersion:originalSceneBackgroundVersion(h.assets,h.sceneId)??'legacy-scene',speaker,equipment}
+ const hero=originalHeroRelease(originalHeroVersion(h.assets))
+ return {version:2,protagonist:{representation:'bound-walking-sheet',assetVersion:hero.id,assetSha256:hero.resource.sha256,appearance:hero.appearance,appearanceStatus:'reviewed'},backgroundVersion:originalSceneBackgroundVersion(h.assets,h.sceneId)??'legacy-scene',speaker,equipment}
 }
