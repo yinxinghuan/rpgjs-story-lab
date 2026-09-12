@@ -5,7 +5,7 @@
 - `server/original-presentation.ts`：准入检查九房间绑定、四名固定人物素材、通风机、当前地面与交互点、旅程内素材身份不变。它是结构检查，不是自动审美认证，也不表示其他设备素材全部完成。原始运行时仍默认拒绝；正式Worker显式使用此gate。
 - `vite.config.ts`及`server/original-scene-preview.ts`：cloud/Pages和preflight输出完整地图与背景；`scripts/check-original-dist.ts`在构建时核验实际采用资源的字节、SHA、尺寸和许可证文件，拒绝采用whitebox背景。
 - `worker/source.ts`：原作服务在同一DO namespace的`original-v8:<owner>`内运行，旧车厢对象和数据库迁移标签不变。正式原作使用现有game-chat接口的行动理解/交谈适配器、20秒预算、持久6回合/分钟配额和玩家主动开启；按钮无需模型。显式测试gate不会隐式获得在线provider。
-- 当前正式原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-creator-play-20260912-1`，正式主站/Pages同一b472da3，发布记录为creator-play-release-20260912.json。
+- 当前正式原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-assembly-20260912-1`，正式主站/Pages同一8c4ebb1，发布记录为assembly-release-20260912.json。
 - `_qa/original-production-server.ts`仅供本机测试：原样导入已编译Worker、服务dist、全新临时SQLite，禁止服务器外发；浏览器脚本另拦截所有远程来源。它不是生产Worker，也不读取生产或个人存档。
 - 原作与车厢切换先保存位置；有待确认操作时不得切换。原作目录和两种故事的续玩键保留，不做自动存档迁移。平台账户恢复、全面设备状态美术、最终真实AlterU整段验收仍待完成；上线与实测结果另记发布证据，后文历史“原作关闭”不代表当前候选代码。
 
@@ -893,3 +893,5 @@ creator.html?create_art=assembly提供四槽组合，沿用原制作页样式和
 GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物、设备、风机一致：先确认该owner的草稿存在，未发布返回null，其他身份不可查。只读新增，不改creator/original wire或数据库schema。本轮发布标识carriage-assembly-20260912-1。三类现有在线素材面板均链接到组合页；Pages不读取在线目录。
 
 626回归通过；新增实际HTTP测试覆盖四槽同时采用、完整元数据、错误槽位、目录失败、身份隔离、丢开户回执、查询参数顺序无关、改选新旅程与默认/原组合保留。320中文/390英文普通正式构建实际选取四槽、刷新、目录网络失败、缺失版本、五文件加载、启动器维修、默认旅程返回与同组合续玩通过，无横向溢出和页面错误。角色使用合成诊断图，仅验证机制，其他样本为保留平台资源；不声称新美术或平台实机通过。详见assembly-review-20260912.json。
+
+组合页已正式双部署8c4ebb1：主站与Pages各53文件逐项SHA匹配，Pages34661607417构建/626回归/部署成功。线上使用全新合成制作身份完成6次请求，确认当前release、空私有目录和未知草稿拒绝，没有读取既有身份或调用模型/媒体；真实平台内完整验收仍待此前浏览器来源权限。
