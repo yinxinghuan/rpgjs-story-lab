@@ -1136,3 +1136,9 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `src/abortable-art-load.ts` 将不原生接收 AbortSignal 的图片解码及 Pixi 纹理载入纳入现有资源等待预算。`scene-readiness.ts` 的 `Image.decode()` 在中止时立即结束等待并清理图片 URL；`original-game.tsx` 的六类图集载入在相同信号中止时返回已有可重试错误，迟到的纹理单独卸载，不覆盖重试结果。下载的 SHA、尺寸与素材准入检查保持原样。成功载入后清理定时器所发出的 abort 不会卸载正在使用的纹理。
 
 这是对可确定的“下载已结束而解码 Promise 不返回”漏洞的修复，不将此前原生平台人物偶发消失的原因推断为解码挂起。`_qa/abortable-art-load.test.ts` 覆盖挂起、超时后旧结果、重试、晚到错误及真实资源加载函数；本地生产测试服务的 `--stall-image-decode` 只在测试 HTML 响应注入故障，不进入正式构建。
+
+### 完整单人游戏的构建期空间检查（2026-09-13）
+
+`npm run check:spatial` 仍保留早期切片验证，并额外调用正式 Story Session 使用的 `compileOriginalSpatialBinding`，检查完整原作的中英文规则及实际 `originalBoundWorldPlan`。检查覆盖旧档默认布局与当前新建旅程布局：每组9场景、8个故事地点、78实体、89行动、13转场和4角色。两种语言必须具有相同的行动、角色、地点及逐场景行动目标。
+
+每组78个实体从该场景出生点到接近点均运行实际寻路，并逐像素检查路径段，防止网格端点跨越薄障碍。这证明静态布局可达，不证明人物动态占位下的路径、任意剧情状态都能通关，或美术与实际 renderer 显示正确。玩家发布的素材布局仍由其独立准入流程检查，不能据本检查自动发布。

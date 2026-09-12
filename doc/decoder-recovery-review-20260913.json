@@ -31,5 +31,16 @@
     "Not native iPhone decoder reproduction.",
     "Does not prove cause or elimination of historical native missing-actor failures.",
     "Pixi-specific pending-load cancellation tested through the shared helper; browser fault targeted Image.decode."
-  ]
+  ],
+  "deployment": {
+    "commit": "fea2852e57055d9b14f80944439ba11d9eb35614",
+    "mainFiles": 58,
+    "pagesFiles": 58,
+    "sameLocalBuild": true,
+    "pagesWorkflow": 34709824847,
+    "ciTests": 706,
+    "ciPassed": 706,
+    "ciFailed": 0,
+    "pageHealthSourceZipPassed": true
+  }
 }

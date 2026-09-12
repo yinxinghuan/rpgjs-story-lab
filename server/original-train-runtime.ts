@@ -29,8 +29,8 @@ import {originalConversationBlocks} from '../src/original-conversation'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
 const world=originalTrainChapterSpatialPlan()
-const bindingFor=(c:ReturnType<typeof originalCartridge>,assets?:OriginalAssetBindings)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},originalBoundWorldPlan(assets),(scene,p)=>originalEnvironmentWalkable(originalSceneBackgroundVersion(assets,scene),scene,p))
-const bindingForHead=(h:OriginalHead)=>bindingFor(originalCartridge(h.save.locale),h.assets)
+export const compileOriginalSpatialBinding=(c:ReturnType<typeof originalCartridge>,assets?:OriginalAssetBindings)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},originalBoundWorldPlan(assets),(scene,p)=>originalEnvironmentWalkable(originalSceneBackgroundVersion(assets,scene),scene,p))
+const bindingForHead=(h:OriginalHead)=>compileOriginalSpatialBinding(originalCartridge(h.save.locale),h.assets)
 /** Mandatory content admission. Callers must validate assets and story projection
  * before enabling a playable session; source-rule QA uses an explicit test gate. */
 export type OriginalPresentationGate=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>true

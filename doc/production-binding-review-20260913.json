@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-13",
+  "change": "Build-time check now uses the full-game authority compiler and both actual legacy/current spatial layouts, not only the earlier carriage slice.",
+  "command": "npm run check:spatial",
+  "variants": [
+    "legacy-default",
+    "current-enrollment"
+  ],
+  "eachVariant": {
+    "scenes": 9,
+    "storyLocations": 8,
+    "entities": 78,
+    "staticRoutesChecked": 78,
+    "actions": 89,
+    "portals": 13,
+    "characters": 4
+  },
+  "bilingual": [
+    "action IDs",
+    "character IDs",
+    "story location IDs",
+    "per-scene action target"
+  ],
+  "negativeCases": [
+    "missing repair-starter rule rejected",
+    "valley rule pointing to pine-line rejected"
+  ],
+  "targetedTests": {
+    "passed": 29,
+    "failed": 0
+  },
+  "buildPassed": true,
+  "finalTypecheckPassed": true,
+  "limitations": [
+    "Static authored paths, not dynamic character obstruction.",
+    "Not all possible story states or complete path exhaustiveness.",
+    "No visual art or native renderer certification.",
+    "Creator-published layouts retain separate admission."
+  ],
+  "liveGameCommit": "fea2852e57055d9b14f80944439ba11d9eb35614"
+}

@@ -1,7 +1,7 @@
 import {junctionActions} from './original-junction-chapter'
 import type {SpatialBindingDefinition} from './spatial-binding'
-/** Authoring geometry. North Cape runs in preflight; other rooms and the
- * original cast/state assets are not yet admitted for playable story sessions. */
+/** Base story geometry. Production uses the chapter plan plus the journey’s
+ * immutable admitted-art layout bindings; this base also serves legacy saves. */
 export const originalTrainLocations=['dead-station','river-valley','graystone-yard','pine-line','tunnel','mountain-pass','sleeping-town','dawn-junction'] as const
 export const originalTrainRoom=(location:string)=>'train-at-'+location
 const characters=['ada-mechanic','ren-medic','lin-scout','mara-raider'] as const
@@ -21,8 +21,8 @@ export function originalTrainSpatialPlan():SpatialBindingDefinition{
   characters:characters.map(id=>({id,kind:'physical',travels:true,entities:scenes.map(s=>s.id+'-'+id)})),
  }
 }
-/** Additive chapter bindings, still authoring-only until presentation admission.
- * Existing v2 rooms/footprints/positions do not change. */
+/** Additive chapter bindings consumed by the production story authority.
+ * Presentation admission and art-specific geometry are applied separately. */
 export function originalTrainChapterSpatialPlan():SpatialBindingDefinition{
  const world=originalTrainSpatialPlan(),scene=originalTrainRoom('river-valley')
  world.mapVersion=originalChapterMapVersion
