@@ -143,3 +143,16 @@ test('recorded player claims and prior generated replies cannot prove shared exp
   assert.ok(r.head.save.blocks.at(-1)!.text.includes('cannot confirm'));assert.equal(r.head.save.scene,h.save.scene)
  }finally{f.close()}
 })
+
+for(const locale of ['zh','en'] as const)test(`unestablished lamp attachment stays unknown in ${locale}, without model quota or story effects`,async()=>{
+ let requests=0
+ const f=fixture(createOriginalDialogueGenerator(async()=>{requests++;return {text:'My lamp is attached with a strap.',characters:[]}}))
+ try{
+  const h=f.service.create(owner,randomUUID(),locale),b=say(h,locale==='zh'?'你的小灯在哪里，怎么固定的？':'Where is your lamp and how is it fastened?','ada-mechanic','live')
+  const result=await f.service.action(owner,h.id,b)
+  assert.equal(requests,0);assert.equal(result.source,'author');assert.equal(result.guard,'unestablished-visual-detail')
+  assert.deepEqual({...result.head.save,blocks:h.save.blocks},h.save)
+  assert.match(result.head.save.blocks.at(-1)!.text,locale==='zh'?/无法判断/:/does not show/)
+  assert.deepEqual(await f.reopen().action(owner,h.id,b),result);assert.equal(requests,0)
+ }finally{f.close()}
+})

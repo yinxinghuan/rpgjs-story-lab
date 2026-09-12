@@ -24,7 +24,7 @@ import {assertOriginalAssetBindings,originalEnrollmentAssets,type OriginalAssetB
 import {originalActionIntentIssues,originalIsAuthoredAction} from '../src/original-action-intent'
 import {originalGameEntities,originalGameObjective} from '../src/original-game-projection'
 import type {OriginalActionInterpreter} from './original-action-interpreter'
-import {originalDialogueContext,originalLocalDialogue,originalRecollectionReply,type OriginalDialogueGenerator} from './original-dialogue'
+import {originalDialogueContext,originalLocalDialogue,originalRecollectionReply,originalVisualUncertaintyReply,type OriginalDialogueGenerator} from './original-dialogue'
 import {originalConversationBlocks} from '../src/original-conversation'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
@@ -69,15 +69,15 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
     if(!person)throw new LabError('ORIGINAL_DIALOGUE_TARGET_REQUIRED',409)
     if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
     check({...h,position:pos})
-    const text=body.text.trim(),context=originalDialogueContext(h,person.id),recollection=originalRecollectionReply(text,context),useModel=body.mode==='live'&&recollection===null
+    const text=body.text.trim(),context=originalDialogueContext(h,person.id),recollection=originalRecollectionReply(text,context),visualUncertainty=originalVisualUncertaintyReply(text,context),useModel=body.mode==='live'&&recollection===null&&visualUncertainty===null
     if(useModel&&!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
-    const reply=recollection??(useModel?await dialogue!(text,clone(context)):originalLocalDialogue(text,context))
+    const reply=recollection??visualUncertainty??(useModel?await dialogue!(text,clone(context)):originalLocalDialogue(text,context))
     if(typeof reply!=='string'||!reply.trim()||reply.length>900)throw new LabError('ORIGINAL_DIALOGUE_REJECTED',409)
     // Conversation appends paired visible blocks to the existing v8 archive.
     // Story scene, danger, resources, choices and relationships remain identical.
     const next:OriginalHead={...h,version:h.version+1,position:pos,save:{...h.save,blocks:[...h.save.blocks,...originalConversationBlocks(h.save,person.id,body.action_id,text,reply.trim())]}}
     assertOriginalHead(next);check(next,h,null)
-    return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:useModel?'model':'author',...(recollection!==null?{guard:'recorded-conversation'}:{})}
+    return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:useModel?'model':'author',...(recollection!==null?{guard:'recorded-conversation'}:visualUncertainty!==null?{guard:'unestablished-visual-detail'}:{})}
    }
    const actions=originalGameEntities(h).find(e=>e.id===entity.id)?.actions.map(a=>({id:a.id,label:a.label}))??[]
    const authoredLabels=[...entity.actions.flatMap(id=>c.domainRules?.rules.find(r=>r.id===id)?.match??[]),...actions.map(a=>a.label)]

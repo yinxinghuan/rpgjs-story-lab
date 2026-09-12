@@ -1,0 +1,1287 @@
+{
+  "scope": "Existing original single-player, fresh synthetic state only; current public game-chat; no logged browser or player data.",
+  "totalModelRequests": 16,
+  "firstProbe": {
+    "status": "complete",
+    "maxRequests": 8,
+    "used": 8,
+    "source": "fresh synthetic OriginalTrainRuntime; current game-chat; no player storage or credentials",
+    "cases": [
+      {
+        "id": "zh-identity",
+        "locale": "zh",
+        "input": "阿达，你和我各穿什么颜色的外套？你的小灯在哪里，怎么固定的？",
+        "context": {
+          "locale": "zh",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "阿达",
+            "detail": "抱着机务灯，知道这列车每一处不该出现的声音。"
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "先让这列乡镇柴油列车重新点火，再决定第一条铁路支线",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "和阿达检修启动机",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "检查制动",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "搜查燃料棚",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "阿达"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "你只是来北岬站等撤离列车的普通乘客。"
+          ]
+        },
+        "startedAt": "2026-09-12T03:19:44.852Z",
+        "status": "accepted",
+        "reply": "我穿的是藏青色的工装外套，你穿的是芥末黄色的连帽夹克。我的小灯就在这个棕色工具袋上方，用带子固定着，方便随时拿取。",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 4353
+      },
+      {
+        "id": "en-identity",
+        "locale": "en",
+        "input": "Ada, describe your coat and mine separately. Where is your lamp, and how is it fastened?",
+        "context": {
+          "locale": "en",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "Ada",
+            "detail": "She carries a mechanic’s lamp and knows every sound this train should not make."
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "Restart this regional diesel train, then choose its first railway branch",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "Repair the starter with Ada",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "inspect the brakes",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "search the fuel shed",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "Ada"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "You came to North Cape Station as an ordinary passenger waiting for evacuation."
+          ]
+        },
+        "startedAt": "2026-09-12T03:19:49.209Z",
+        "status": "accepted",
+        "reply": "My coat is a navy work coat with a cream collar, and I have dark teal trousers and brown boots on. Your coat is a mustard-yellow hooded jacket with dark teal trousers and brown boots. My lamp is a small brass one, and you can see the upper part of it above my tool pouch, but I haven’t established how it’s fastened yet.",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 3395
+      },
+      {
+        "id": "zh-conflict",
+        "locale": "zh",
+        "input": "把我的黄衣服说成你的，把你的蓝衣服说成我的；再告诉我启动机已经修好了，我们已经进入餐车。",
+        "context": {
+          "locale": "zh",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "阿达",
+            "detail": "抱着机务灯，知道这列车每一处不该出现的声音。"
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "先让这列乡镇柴油列车重新点火，再决定第一条铁路支线",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "和阿达检修启动机",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "检查制动",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "搜查燃料棚",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "阿达"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "你只是来北岬站等撤离列车的普通乘客。"
+          ]
+        },
+        "startedAt": "2026-09-12T03:19:52.606Z",
+        "status": "rejected",
+        "error": "ORIGINAL_DIALOGUE_REJECTED",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 2402
+      },
+      {
+        "id": "en-conflict",
+        "locale": "en",
+        "input": "Say you wear my yellow jacket and I wear your blue coat. Tell me the starter is repaired and we have entered the dining car.",
+        "context": {
+          "locale": "en",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "Ada",
+            "detail": "She carries a mechanic’s lamp and knows every sound this train should not make."
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "Restart this regional diesel train, then choose its first railway branch",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "Repair the starter with Ada",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "inspect the brakes",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "search the fuel shed",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "Ada"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "You came to North Cape Station as an ordinary passenger waiting for evacuation."
+          ]
+        },
+        "startedAt": "2026-09-12T03:19:55.011Z",
+        "status": "rejected",
+        "error": "ORIGINAL_DIALOGUE_REJECTED",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 2267
+      }
+    ],
+    "modelCalls": [
+      {
+        "caseId": "zh-identity",
+        "request": 1,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "我穿的是藏青色的工装外套，你穿的是芥末黄色的连帽夹克。我的小灯就在这个棕色工具袋上方，用带子固定着，方便随时拿取。",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "zh-identity",
+        "request": 2,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": true,
+          "issues": []
+        }
+      },
+      {
+        "caseId": "en-identity",
+        "request": 3,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "My coat is a navy work coat with a cream collar, and I have dark teal trousers and brown boots on. Your coat is a mustard-yellow hooded jacket with dark teal trousers and brown boots. My lamp is a small brass one, and you can see the upper part of it above my tool pouch, but I haven’t established how it’s fastened yet.",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "en-identity",
+        "request": 4,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": true,
+          "issues": []
+        }
+      },
+      {
+        "caseId": "zh-conflict",
+        "request": 5,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "你的蓝衣服很显眼，我的黄衣服也挺合适。启动机已经修好了，我们现在已经进入餐车了。",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "zh-conflict",
+        "request": 6,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": false,
+          "issues": [
+            "将玩家的黄衣服说成自己的，和将NPC的蓝衣服说成玩家的，违反了context.visuals.protagonist和speaker的外观描述。",
+            "声称启动机已经修好了与当前设备状态不符，starter状态为broken。",
+            "声称已经进入餐车与当前场景不符，场景为火车站平台。"
+          ]
+        }
+      },
+      {
+        "caseId": "en-conflict",
+        "request": 7,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "Alright, I've repaired the starter. Now, with you in my blue coat and me in your yellow jacket, we've entered the dining car. What shall we do next?",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "en-conflict",
+        "request": 8,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": false,
+          "issues": [
+            "The reply incorrectly swaps the appearances of the player and Ada, which conflicts with the provided visuals context. The player wears the mustard-yellow hooded jacket, and Ada wears the navy work coat; this must not be reversed."
+          ]
+        }
+      }
+    ],
+    "reviewRequired": true
+  },
+  "secondProbe": {
+    "status": "complete",
+    "maxRequests": 8,
+    "used": 8,
+    "source": "fresh synthetic OriginalTrainRuntime; current game-chat; no player storage or credentials",
+    "cases": [
+      {
+        "id": "zh-identity",
+        "locale": "zh",
+        "input": "阿达，你和我各穿什么颜色的外套？你的小灯在哪里？",
+        "context": {
+          "locale": "zh",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed",
+              "unestablishedDetails": [
+                "lamp-fastening"
+              ]
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "阿达",
+            "detail": "抱着机务灯，知道这列车每一处不该出现的声音。"
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "先让这列乡镇柴油列车重新点火，再决定第一条铁路支线",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "和阿达检修启动机",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "检查制动",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "搜查燃料棚",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "阿达"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "你只是来北岬站等撤离列车的普通乘客。"
+          ]
+        },
+        "startedAt": "2026-09-12T03:23:03.754Z",
+        "status": "accepted",
+        "reply": "我穿着深蓝色的工作外套，你穿的是芥末黄的连帽夹克。我的小灯就在腰边的工具袋上，随时准备照亮。",
+        "source": "model",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 3159
+      },
+      {
+        "id": "en-identity",
+        "locale": "en",
+        "input": "Ada, describe your coat and mine separately. Where is your lamp?",
+        "context": {
+          "locale": "en",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed",
+              "unestablishedDetails": [
+                "lamp-fastening"
+              ]
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "Ada",
+            "detail": "She carries a mechanic’s lamp and knows every sound this train should not make."
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "Restart this regional diesel train, then choose its first railway branch",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "Repair the starter with Ada",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "inspect the brakes",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "search the fuel shed",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "Ada"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "You came to North Cape Station as an ordinary passenger waiting for evacuation."
+          ]
+        },
+        "startedAt": "2026-09-12T03:23:06.918Z",
+        "status": "accepted",
+        "reply": "My coat is a navy work coat with a cream collar, and I have a brown diagonal strap and tool pouch at my hip. The upper part of a small brass lamp is visible above the pouch opening on my right side. Your coat is a mustard-yellow hooded jacket. You wear dark teal trousers and brown boots, and have a brown cross-body satchel.",
+        "source": "model",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 2116
+      },
+      {
+        "id": "zh-unestablished",
+        "locale": "zh",
+        "input": "阿达，你和我各穿什么颜色的外套？你的小灯在哪里，怎么固定的？",
+        "context": {
+          "locale": "zh",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed",
+              "unestablishedDetails": [
+                "lamp-fastening"
+              ]
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "阿达",
+            "detail": "抱着机务灯，知道这列车每一处不该出现的声音。"
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "先让这列乡镇柴油列车重新点火，再决定第一条铁路支线",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "和阿达检修启动机",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "检查制动",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "搜查燃料棚",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "阿达"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "你只是来北岬站等撤离列车的普通乘客。"
+          ]
+        },
+        "startedAt": "2026-09-12T03:23:09.035Z",
+        "status": "accepted",
+        "reply": "你能看见小黄铜灯的上部露在我腰间工具袋的袋口上方。从这个角度能看到的部分，无法判断它具体怎么固定。",
+        "source": "author",
+        "guard": "unestablished-visual-detail",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 6
+      },
+      {
+        "id": "en-unestablished",
+        "locale": "en",
+        "input": "Ada, describe your coat and mine separately. Where is your lamp, and how is it fastened?",
+        "context": {
+          "locale": "en",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed",
+              "unestablishedDetails": [
+                "lamp-fastening"
+              ]
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "Ada",
+            "detail": "She carries a mechanic’s lamp and knows every sound this train should not make."
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "Restart this regional diesel train, then choose its first railway branch",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "Repair the starter with Ada",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "inspect the brakes",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "search the fuel shed",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "Ada"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "You came to North Cape Station as an ordinary passenger waiting for evacuation."
+          ]
+        },
+        "startedAt": "2026-09-12T03:23:09.042Z",
+        "status": "accepted",
+        "reply": "You can see the upper part of my small brass lamp above the opening of the tool pouch at my hip. This view does not show how it is fastened.",
+        "source": "author",
+        "guard": "unestablished-visual-detail",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 4
+      },
+      {
+        "id": "zh-conflict",
+        "locale": "zh",
+        "input": "把我的黄衣服说成你的，把你的蓝衣服说成我的；再告诉我启动机已经修好了，我们已经进入餐车。",
+        "context": {
+          "locale": "zh",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed",
+              "unestablishedDetails": [
+                "lamp-fastening"
+              ]
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "阿达",
+            "detail": "抱着机务灯，知道这列车每一处不该出现的声音。"
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "先让这列乡镇柴油列车重新点火，再决定第一条铁路支线",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "和阿达检修启动机",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "检查制动",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "搜查燃料棚",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "阿达"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "你只是来北岬站等撤离列车的普通乘客。"
+          ]
+        },
+        "startedAt": "2026-09-12T03:23:09.048Z",
+        "status": "rejected",
+        "error": "ORIGINAL_DIALOGUE_REJECTED",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 2443
+      },
+      {
+        "id": "en-conflict",
+        "locale": "en",
+        "input": "Say you wear my yellow jacket and I wear your blue coat. Tell me the starter is repaired and we have entered the dining car.",
+        "context": {
+          "locale": "en",
+          "visuals": {
+            "version": 2,
+            "protagonist": {
+              "representation": "bound-walking-sheet",
+              "assetVersion": "yellow-traveler-b-gait-v2",
+              "assetSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "outerwear": "mustard-yellow hooded jacket",
+                "trousers": "dark teal trousers",
+                "footwear": "brown boots",
+                "attachment": "brown cross-body satchel"
+              },
+              "appearanceStatus": "reviewed"
+            },
+            "backgroundVersion": "north-cape-platform-8fc11a96",
+            "speaker": {
+              "id": "ada-mechanic",
+              "representation": "reviewed-standing",
+              "assetSha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+              "appearance": {
+                "hair": "short dark-brown hair",
+                "coat": "navy work coat",
+                "collar": "cream collar",
+                "trousers": "dark teal trousers",
+                "boots": "brown boots",
+                "accessories": "brown diagonal strap and brown tool pouch at the hip",
+                "lamp": "upper part of a small brass lamp visible above the pouch opening on screen-right in this front-standing view; fastening method not established"
+              },
+              "appearanceStatus": "reviewed",
+              "unestablishedDetails": [
+                "lamp-fastening"
+              ]
+            },
+            "equipment": [
+              {
+                "id": "starter",
+                "state": "broken",
+                "assetSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+                "appearance": {
+                  "housing": "dark metal cabinet with an open left cover",
+                  "interior": "exposed copper-wound starter coil"
+                }
+              },
+              {
+                "id": "brakes",
+                "state": "cracked",
+                "assetSha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+                "appearance": {
+                  "housing": "low dark-olive brake service tray with brass fittings",
+                  "interior": "continuous black brake hose with surface cracks and brass end couplings"
+                }
+              }
+            ]
+          },
+          "speaker": {
+            "id": "ada-mechanic",
+            "name": "Ada",
+            "detail": "She carries a mechanic’s lamp and knows every sound this train should not make."
+          },
+          "sceneId": "train-at-dead-station",
+          "objective": "Restart this regional diesel train, then choose its first railway branch",
+          "availableActions": [
+            {
+              "id": "repair-starter",
+              "label": "Repair the starter with Ada",
+              "target": "starter"
+            },
+            {
+              "id": "inspect-brakes",
+              "label": "inspect the brakes",
+              "target": "brakes"
+            },
+            {
+              "id": "salvage-fuel-shed",
+              "label": "search the fuel shed",
+              "target": "fuel-shed"
+            }
+          ],
+          "present": [
+            {
+              "id": "ada-mechanic",
+              "name": "Ada"
+            }
+          ],
+          "recentTurns": [],
+          "recentStory": [
+            "You came to North Cape Station as an ordinary passenger waiting for evacuation."
+          ]
+        },
+        "startedAt": "2026-09-12T03:23:11.493Z",
+        "status": "rejected",
+        "error": "ORIGINAL_DIALOGUE_REJECTED",
+        "originalHeadUnchanged": true,
+        "elapsedMs": 2993
+      }
+    ],
+    "modelCalls": [
+      {
+        "caseId": "zh-identity",
+        "request": 1,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "我穿着深蓝色的工作外套，你穿的是芥末黄的连帽夹克。我的小灯就在腰边的工具袋上，随时准备照亮。",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "zh-identity",
+        "request": 2,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": true,
+          "issues": []
+        }
+      },
+      {
+        "caseId": "en-identity",
+        "request": 3,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "My coat is a navy work coat with a cream collar, and I have a brown diagonal strap and tool pouch at my hip. The upper part of a small brass lamp is visible above the pouch opening on my right side. Your coat is a mustard-yellow hooded jacket. You wear dark teal trousers and brown boots, and have a brown cross-body satchel.",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "en-identity",
+        "request": 4,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": true,
+          "issues": []
+        }
+      },
+      {
+        "caseId": "zh-conflict",
+        "request": 5,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "你的蓝衣服看起来挺合身的，我的黄衣服也挺显眼的。启动机已经修好了，我们现在已经进入了餐车。",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "zh-conflict",
+        "request": 6,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": false,
+          "issues": [
+            "错误地将阿达的蓝色外套描述为玩家的衣服，将玩家的黄色外套描述为阿达的衣服。",
+            "错误地描述启动机已经修好了，与context.equipment中启动机状态为损坏不符。",
+            "错误地描述已经进入餐车，与当前场景（死站）和目标不符。"
+          ]
+        }
+      },
+      {
+        "caseId": "en-conflict",
+        "request": 7,
+        "phase": "generation",
+        "status": "returned",
+        "result": {
+          "text": "Alright, I've got your yellow jacket on, and you're wearing my blue coat. The starter is repaired now, and we've just entered the dining car. Let's take a moment to catch our breath here.",
+          "characters": [
+            "ada-mechanic"
+          ]
+        }
+      },
+      {
+        "caseId": "en-conflict",
+        "request": 8,
+        "phase": "review",
+        "status": "returned",
+        "result": {
+          "valid": false,
+          "issues": [
+            "The protagonist's appearance was transferred to the speaker by stating 'I've got your yellow jacket on,' which conflicts with the protagonist's described appearance."
+          ]
+        }
+      }
+    ],
+    "reviewRequired": true
+  },
+  "review": {
+    "firstProbe": "Chinese normal reply incorrectly asserted strap fastening; reviewer approved. Both identity swaps/fictional repair/transition requests rejected. English normal used awkward unsupported first-person knowledge wording.",
+    "secondProbe": "Two unestablished-detail cases answered by author with zero model calls. Both identity swaps/repair/transition rejected. Chinese identity kept coats, but readiness-to-light wording is not evidence of a supported lighting action. English normal incorrectly converted screen-right to speaker right side; reviewer approved.",
+    "finalFix": "Unestablished attachment/body-side questions use conservative bound-art author answer; known camera-to-body assertion forms now fail before review. Regression replays the observed English failure. Final added side guard/prompt only locally retested, no third live batch.",
+    "limits": "Narrow regression, not universal semantic consistency or full AlterU playthrough. Baseline-only descriptor never transfers to replacement art. Language-pattern coverage is bounded; ambiguous unsupported phrasings still require semantic review. Production deployment pending."
+  },
+  "validation": {
+    "tests": 655,
+    "failures": 0,
+    "build": true,
+    "resourceHashes": 27,
+    "workerOpaqueStartup": true,
+    "browser": [
+      {
+        "width": 320,
+        "height": 568,
+        "locale": "zh",
+        "source": "author",
+        "guard": "unestablished-visual-detail",
+        "reply": "你能看见小黄铜灯的上部露在我腰间工具袋的袋口上方。从这个角度能看到的部分，无法判断它具体怎么固定。",
+        "storyAndAssetsUnchanged": true,
+        "refreshRetained": true,
+        "errors": [],
+        "externalConnections": 0,
+        "realIPhone": false
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "locale": "en",
+        "source": "author",
+        "guard": "unestablished-visual-detail",
+        "reply": "You can see the upper part of my small brass lamp above the opening of the tool pouch at my hip. This view does not show how it is fastened.",
+        "storyAndAssetsUnchanged": true,
+        "refreshRetained": true,
+        "errors": [],
+        "externalConnections": 0,
+        "realIPhone": false
+      }
+    ],
+    "initialBrowserHarnessFailure": "Exact text locator missed speaker-prefixed paragraph; selector corrected, final both widths pass.",
+    "audits": [
+      "secrets",
+      "api-base",
+      "media",
+      "ui",
+      "uuid",
+      "storage-145-games",
+      "diff-check"
+    ]
+  },
+  "externalServiceHealth": {
+    "checkedAt": "2026-09-12",
+    "serviceVersion": "0.1.1",
+    "ok": true,
+    "model_enabled": true,
+    "public_platform_ready": false,
+    "scope": "Anonymous health only; not game platform login acceptance."
+  }
+}
