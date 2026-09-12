@@ -1,3 +1,4 @@
+import {inspectOriginalDirectory} from '../src/original-session-client'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
@@ -143,3 +144,5 @@ test('definite new-journey quota refusal retains current story and does not lock
  assert.equal((await capped.selectSession(a.id)).id,a.id)
  }finally{raw.close()}
 })
+
+test("directory accepts completed ending offset but rejects impossible or noninteger cursors",()=>{const row={id:"synthetic-journey-123",version:40,cursor:39,scene:"train-at-dawn-junction",updated:1};assert.deepEqual(inspectOriginalDirectory({sessions:[row]}),[row]);for(const cursor of [-1,1.5,38,41])assert.throws(()=>inspectOriginalDirectory({sessions:[{...row,cursor}]}),/DIRECTORY/)})

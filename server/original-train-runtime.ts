@@ -1,3 +1,4 @@
+import {exportOriginalJourney} from './original-backup'
 import {assertOriginalEquipmentAction} from '../src/original-equipment-state'
 import {originalBoundWorldPlan} from '../src/original-world-plan'
 import {originalEnvironmentWalkable} from '../src/original-environment-layouts'
@@ -131,5 +132,6 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
 /** Same SQLite transaction/replay implementation as the live carriage. This is
  * guarded by the original release switch and mandatory presentation admission. */
 export class OriginalTrainAuthority extends SessionAuthority<OriginalHead>{
+ backup(owner:string,id:string){return exportOriginalJourney(this.db,owner,id)}
  constructor(db:AuthorityStorage,admit:OriginalPresentationGate=originalPresentationUnavailable,generator?:StoryTurnGenerator,endingGenerator?:OriginalEndingGenerator,interpreter?:OriginalActionInterpreter,dialogue?:OriginalDialogueGenerator){super(db,originalTrainRuntime(admit,generator,endingGenerator,interpreter,dialogue))}
 }

@@ -48,9 +48,10 @@ export async function handleOriginalSession(request:Request,owner:string,authori
    return originalJson(authority.create(owner,b.enrollment_id,b.locale,device||actor||fan?{...(fan?{fan}:{}),...(device?{starter:device}:{}),...(actor?{actor}:{}),...(release?{background:release}:{})}:release))
   }
   if(path==='/sessions')throw new LabError('METHOD_NOT_ALLOWED',405)
-  const m=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|ending|prepare-action|commit-action))?$/)
+  const m=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|ending|prepare-action|commit-action|backup))?$/)
   if(!m)throw new LabError('NOT_FOUND',404)
   if(request.method==='GET'&&!m[2])return originalJson(authority.get(owner,m[1]))
+  if(request.method==='GET'&&m[2]==='backup'){const response=originalJson(await authority.backup(owner,m[1]));response.headers.set('Cache-Control','private, no-store');return response}
   if(request.method==='GET'&&m[2]==='events')return originalJson({events:authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
   if(request.method==='POST'&&m[2]==='prepare-action'){
    const b=await readBody(request)

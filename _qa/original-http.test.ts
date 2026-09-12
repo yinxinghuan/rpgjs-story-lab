@@ -1,3 +1,4 @@
+import {inspectOriginalDirectory} from '../src/original-session-client'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -48,7 +49,8 @@ for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','
   h.lose('/ending');await assert.rejects(connection.client.sendEnding(head));assert.equal(connection.client.hasPending(),true);h.reopen();connection=originalSessionHttp(store,lock,fetch,h.base)
   const ending=await connection.client.recover();head=ending.head;assert.equal(head.save.finale.status,'complete');assert.equal(head.save.finale.ending?.anchorFamily,'settle-basic');assert.equal(ending.cursor,steps.length);assert.equal(head.version,steps.length+1);assert.deepEqual({...head.save,finale:before.save.finale},before.save)
   assert.equal(connection.client.hasPending(),false);assert.deepEqual(await connection.client.enroll(locale),head);assert.deepEqual(head.assets,assetBindings)
-  const events=await connection.api(`/sessions/${id}/events?after=0`),directory=await connection.api('/sessions');assert.equal(events.events.length,steps.length);assert.equal(directory.sessions[0].cursor,steps.length)
+  const backup=await connection.api(`/sessions/${id}/backup`);assert.equal(backup.payload.format,'original-train-backup-v1');assert.equal(JSON.parse(backup.payload.tables.journeys[0].data).version,head.version);assert.equal(backup.payload.tables.receipts.length,head.version);assert.equal(backup.payload.tables.journal.length,steps.length);await assert.rejects(connection.api(`/sessions/${id}/backup`,{}),/METHOD_NOT_ALLOWED/);
+  const events=await connection.api(`/sessions/${id}/events?after=0`),directory=await connection.api('/sessions');assert.equal(events.events.length,steps.length);assert.equal(directory.sessions[0].cursor,steps.length);assert.equal(inspectOriginalDirectory(directory)[0].version,head.version);assert.equal(inspectOriginalDirectory(directory)[0].id,head.id)
   await assert.rejects(connection.api(`/sessions/${id}/position`,{expected_version:0,sceneId:head.sceneId,position:head.position}),/STALE_POSITION/)
   assert.deepEqual(await connection.api(`/sessions/${id}/position`,{expected_version:head.version,sceneId:head.sceneId,position:head.position}),{position:head.position})
   assert.ok(h.requests()>=steps.length*2);assert.ok(h.forwarded.every(r=>r.headers.get('Authorization')===null));assert.ok(h.forwarded.every(r=>/^[a-f0-9]{64}$/.test(r.headers.get('X-Authority-Owner')??'')))

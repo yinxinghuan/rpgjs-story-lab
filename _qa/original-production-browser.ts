@@ -1,3 +1,5 @@
+import {validateOriginalBackup} from '../server/original-backup'
+import {readFileSync} from 'node:fs'
 import {chromium} from 'playwright'
 import assert from 'node:assert/strict'
 import {writeFileSync} from 'node:fs'
@@ -7,14 +9,14 @@ import {originalCharacterPresent} from '../src/original-character-presence'
 import {originalHeroVersion} from '../src/original-asset-releases'
 import {originalHeroRelease,ORIGINAL_HERO_V2} from '../src/original-hero-release'
 import {environmentStoryRoute} from './environment-story-route'
-const origin=process.argv[2]??'http://127.0.0.1:5349',evidence:any[]=[],heroBinding=process.argv.includes('--hero-binding'),prefix=heroBinding?'hero-binding-full':'production'
+const origin=process.argv[2]??'http://127.0.0.1:5349',evidence:any[]=[],heroBinding=process.argv.includes('--hero-binding'),backupFlow=process.argv.includes('--backup'),prefix=backupFlow?'original-backup-full':heroBinding?'hero-binding-full':'production'
 if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(origin))throw Error('LOCAL_QA_ONLY')
 const browser=await chromium.launch({executablePath:'/Users/yin/Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',headless:true})
 try{for(const [width,height,lang,travel]of [[320,568,'zh',true],[390,844,'en',false]]as const){
  const context=await browser.newContext({viewport:{width,height},locale:lang==='zh'?'zh-CN':'en-US',hasTouch:true});let head:any;const errors:string[]=[],assets=new Set<string>(),checks:any[]=[],heroLoads:string[]=[]
  await context.route('**/*',r=>{const u=new URL(r.request().url());return u.origin===origin||['blob:','data:'].includes(u.protocol)?r.continue():r.abort()})
  const page=await context.newPage(),t=(a:string,b:string)=>lang==='zh'?a:b
- page.on('pageerror',e=>errors.push(e.message));page.on('response',async r=>{const u=new URL(r.url());if(heroBinding&&u.pathname.endsWith('/hero-gait-v2.png')&&r.ok())heroLoads.push(u.searchParams.get('scene_asset')??'legacy');if(/\/(lin|mako)-standing-v1\.png$/.test(u.pathname)&&r.ok())assets.add(u.pathname);if(r.url().includes('/api/original/sessions')&&r.ok()){try{const b=await r.json(),h=b.head??b;if(h.id&&h.save&&(!head||h.version>=head.version))head=h}catch{}}})
+ page.on('pageerror',e=>errors.push(e.message));page.on('response',async r=>{const u=new URL(r.url());if(heroBinding&&u.pathname.endsWith('/hero-gait-v2.png')&&r.ok())heroLoads.push(u.searchParams.get('scene_asset')??'legacy');if(/\/(lin|mako)-standing-v1\.png$/.test(u.pathname)&&r.ok())assets.add(u.pathname);if(r.url().includes('/api/original/sessions')&&r.ok()){try{const b=await r.json(),h=b.head??b;if(h.id&&h.save&&(!head||h.id!==head.id||h.version>=head.version))head=h}catch{}}})
  const ready=async(v:number)=>{await page.waitForFunction(v=>document.querySelector('.og-game')?.getAttribute('data-version')===String(v)&&!document.querySelector('.og-loading')&&!document.querySelector('.og-error'),v)}
  const close=()=>page.getByRole('button',{name:t('关闭面板','Close panel'),exact:true}).click()
  async function approach(id:string){const e=originalGameEntities(head).find(e=>e.person?.id===id)!;assert.ok(e,id);await page.getByRole('button',{name:t('附近','Nearby'),exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:e.person!.name,exact:true}).click();await close()}
@@ -46,10 +48,19 @@ try{for(const [width,height,lang,travel]of [[320,568,'zh',true],[390,844,'en',fa
   assert.deepEqual(new Set(head.save.finale.ending.characterEpilogues.map((e:any)=>e.characterId)),new Set(['ada-mechanic','lin-scout','mara-raider']))
   assert.equal(head.save.partyMemberIds.includes('lin-scout'),travel);assert.equal(head.save.partyMemberIds.includes('mara-raider'),travel)
   const ending=structuredClone(head.save.finale.ending);await page.screenshot({path:`_qa/ui/${prefix}-ending-${width}-${lang}-local-qa.png`});await page.reload();await ready(steps.length+1);assert.deepEqual(head.save.finale.ending,ending);assert.deepEqual(head.assets,bindings)
+  if(backupFlow){
+   const directory=async()=>{await close();await page.getByRole('button',{name:t('记录','Journal'),exact:true}).click();await page.getByRole('button',{name:t('查看与继续旧旅程','View and continue saved journeys'),exact:true}).click()}
+   await directory();await page.getByRole('button',{name:new RegExp(t('当前旅程 · ','Current journey · '))}).waitFor();assert.equal(await page.getByRole('alert').count(),0)
+   await page.getByRole('button',{name:t('准备旅程备份','Prepare journey backup'),exact:true}).click();const link=page.getByRole('link',{name:new RegExp(t('下载备份','Download backup'))});await link.waitFor();await link.scrollIntoViewIfNeeded();await page.screenshot({path:`_qa/ui/${prefix}-download-${width}-${lang}-platform-layout-local-qa.png`})
+   const downloaded=page.waitForEvent('download');await link.click();const file=await downloaded,path=await file.path();assert.ok(path);const backup=await validateOriginalBackup(JSON.parse(readFileSync(path,'utf8')));assert.equal(backup.journeyId,journey);assert.deepEqual(JSON.parse(String(backup.tables.journeys[0].data)).save,head.save);assert.equal(backup.tables.receipts.length,steps.length+1);assert.equal(backup.tables.journal.length,steps.length)
+   await page.getByRole('button',{name:t('保留旧旅程，重新出发','Keep old journeys and start again'),exact:true}).click();await ready(0);assert.notEqual(head.id,journey)
+   await directory();const resume=page.getByRole('button',{name:new RegExp('^'+t('继续旅程 · ','Continue journey · '))});await resume.waitFor();assert.equal(await resume.count(),1);await resume.click();await ready(steps.length+1);assert.equal(head.id,journey);assert.deepEqual(head.save.finale.ending,ending);assert.deepEqual(head.assets,bindings)
+   await page.screenshot({path:`_qa/ui/${prefix}-resumed-${width}-${lang}-platform-layout-local-qa.png`})
+  }
   await close();await page.getByRole('button',{name:t('记录','Journal'),exact:true}).click();await page.getByRole('button',{name:t('查看与继续旧旅程','View and continue saved journeys'),exact:true}).click();await page.getByRole('button',{name:t('继续之前的车厢旅程','Continue the earlier carriage journey'),exact:true}).click();
   await page.waitForSelector('.cl-app');await page.waitForFunction(()=>!document.querySelector('.cl-loading')&&!document.querySelector('.cl-error'));
   await page.getByRole('button',{name:t('旅程菜单','Journey menu'),exact:true}).click();await page.getByRole('button',{name:t('完整单人旅程','Full single-player journey'),exact:true}).click();await ready(steps.length+1);assert.equal(head.id,journey);assert.deepEqual(head.save.finale.ending,ending);
-  assert.equal(assets.size,2);assert.deepEqual(errors,[]);evidence.push({width,height,lang,travel,...(heroBinding?{heroVersion:originalHeroVersion(bindings),heroVerifiedLoads:heroLoads.filter(s=>s===originalHeroRelease().resource.sha256).length,comparisonQueryCannotReplaceBoundHero:true}:{}),actions:steps.length,finalVersion:head.version,checks,assets:[...assets],endingRetained:true,errors,externalConnections:0})
+  assert.equal(assets.size,2);assert.deepEqual(errors,[]);evidence.push({width,height,lang,travel,...(heroBinding?{heroVersion:originalHeroVersion(bindings),heroVerifiedLoads:heroLoads.filter(s=>s===originalHeroRelease().resource.sha256).length,comparisonQueryCannotReplaceBoundHero:true}:{}),actions:steps.length,finalVersion:head.version,checks,assets:[...assets],endingRetained:true,...(backupFlow?{completeDirectory:true,downloadValidated:true,newJourneyThenOriginalEndingResumed:true}:{}),errors,externalConnections:0})
  }catch(e){await page.screenshot({path:`_qa/ui/${prefix}-${width}-${lang}-failure-local-qa.png`});console.error(await page.locator('body').innerText());console.error(head?{version:head.version,scene:head.sceneId}:{});throw e}finally{await context.close()}
 }}finally{await browser.close()}
 writeFileSync('/private/tmp/'+prefix+'-browser-report.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence))

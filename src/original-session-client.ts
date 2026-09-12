@@ -27,10 +27,11 @@ export class OriginalSessionClient extends RecoverableSessionClient<OriginalHead
 }
 
 export type OriginalJourneyEntry={id:string;version:number;cursor:number;scene:string;updated:number}
+// Completing the ending increments the head version without adding an action event.
 export function inspectOriginalDirectory(value:unknown):OriginalJourneyEntry[]{
  const rows=(value as any)?.sessions
  if(!Array.isArray(rows)||rows.length>100)throw Error('INVALID_SESSION_DIRECTORY')
  const seen=new Set<string>()
- for(const r of rows){if(!r||!/^[a-zA-Z0-9-]{16,80}$/.test(r.id)||seen.has(r.id)||!Number.isSafeInteger(r.version)||r.version<0||r.cursor!==r.version||!Number.isFinite(r.updated)||r.updated<0||!world.scenes.some(s=>s.id===r.scene))throw Error('INVALID_SESSION_DIRECTORY');seen.add(r.id)}
+ for(const r of rows){if(!r||!/^[a-zA-Z0-9-]{16,80}$/.test(r.id)||seen.has(r.id)||!Number.isSafeInteger(r.version)||r.version<0||!Number.isSafeInteger(r.cursor)||r.cursor<0||r.cursor>r.version||r.version-r.cursor>1||!Number.isFinite(r.updated)||r.updated<0||!world.scenes.some(s=>s.id===r.scene))throw Error('INVALID_SESSION_DIRECTORY');seen.add(r.id)}
  return rows.map(({id,version,cursor,scene,updated})=>({id,version,cursor,scene,updated}))
 }

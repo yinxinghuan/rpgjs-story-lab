@@ -1,3 +1,4 @@
+import {validateOriginalBackup} from '../server/original-backup'
 import assert from 'node:assert/strict'
 import {randomUUID} from 'node:crypto'
 import {originalSessionHttp} from '../src/original-session-http'
@@ -25,6 +26,7 @@ for(const locale of ['zh','en']as const){
   if(i===3){assert.equal(head.save.stats.condition,97);assert.equal(head.save.facts['brake-hose-replaced'],true);assert.equal(head.save.inventory.some(item=>item.id==='spare-hose'),false);assert.equal(head.save.danger.phase,'calm')}
  }
  assert.equal(head.save.finale.status,'ready');lose='/ending';await assert.rejects(connection.client.sendEnding(head));head=(await connection.client.recover()).head;assert.equal(head.save.finale.status,'complete');assert.deepEqual(await connection.client.enroll(locale),head)
- output.push({locale,journey:initial,version:head.version,scenes:head.save.map.filter(m=>m.visited).map(m=>m.id),ending:head.save.finale.ending?.anchorFamily,stats:head.save.stats,requests:calls,brakeRepairAndExactOpeningCosts:true,lostEnrollmentActionEndingRecovered:true})
+ let backupVerified=false;if(process.argv.includes('--backup')){const payload=await validateOriginalBackup(await connection.api('/sessions/'+head.id+'/backup'));assert.deepEqual(JSON.parse(String(payload.tables.journeys[0].data)).save,head.save);assert.equal(payload.tables.receipts.length,head.version);assert.equal(payload.tables.journal.length,head.version-1);backupVerified=true}
+ output.push({...(backupVerified?{backupVerified:true}:{}),locale,journey:initial,version:head.version,scenes:head.save.map.filter(m=>m.visited).map(m=>m.id),ending:head.save.finale.ending?.anchorFamily,stats:head.save.stats,requests:calls,brakeRepairAndExactOpeningCosts:true,lostEnrollmentActionEndingRecovered:true})
 }
 console.log(JSON.stringify({at:new Date().toISOString(),base,modelRequests:0,syntheticOnly:true,results:output},null,2))
