@@ -1,0 +1,32 @@
+{
+  "health": {
+    "ok": true,
+    "production": true,
+    "identityMode": "anonymous-capability-v1",
+    "runtimeContract": "original-session-18.assets-14.story-8.original-train-authoring-10",
+    "liveModelAvailable": true,
+    "liveDialogueAvailable": true,
+    "illustrationsAvailable": false
+  },
+  "input": "我现在和阿达一起修好启动机。",
+  "action": "repair-starter",
+  "interpretation": {
+    "input": "我现在和阿达一起修好启动机。",
+    "actionId": "repair-starter"
+  },
+  "versionBefore": 0,
+  "versionAfter": 1,
+  "restoredExactly": true,
+  "stats": {
+    "fuel": 68,
+    "condition": 87,
+    "morale": 58
+  },
+  "scope": "New anonymous synthetic journey, one live free-input trial; no existing player session accessed",
+  "productionRelease": "original-character-continuity-20260912-1",
+  "limits": [
+    "One live action, not a complete live-model story or authenticated AlterU playthrough",
+    "Anonymous capability identity; account recovery remains unverified",
+    "No media generation request and no asset changes"
+  ]
+}

@@ -1021,3 +1021,7 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 ### 原图摘要错误的真实界面复验（2026-09-12）
 
 测试服务新增仅本地 `--mismatched-reference-fixture`，只替换画页列表响应的参考摘要，不改SQLite、图片、主剧情或生产handler。`--platform-layout`仅在QA HTML响应隐藏外部访客栏。编译前端+Worker在5382通过320/390真实按钮路径：展示候选→展开→摘要错误提示→重新读取仍拒绝→关闭→实际走到启动机→检修保存，车况82到87，燃料68及人心58不变。无新媒体请求。证据与限制见 `original-reference-fault-review-20260912.json`；正式画页开关未开，未发布。
+
+### 正式站自然语言行动复验（2026-09-12）
+
+通过原作正式客户端/HTTP传输创建全新匿名合成旅程，正式health报告liveModelAvailable与liveDialogueAvailable为true。一句“我现在和阿达一起修好启动机。”以live free-input提交，返回interpretation.actionId=repair-starter，版本0→1，资源68/87/58；重建客户端连接后enroll恢复的完整head与提交结果deepEqual。无真实玩家/账号数据读取，无媒体请求。临时续玩能力保存在仓库外0600文件，公开报告不含能力令牌。证据 `original-live-action-review-20260912.json`；这一条不等于完整模型路线或已登录AlterU验证。
