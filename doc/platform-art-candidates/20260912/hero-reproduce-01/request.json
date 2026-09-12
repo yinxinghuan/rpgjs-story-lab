@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "db2eafab-3bfd-4f86-884b-296251d2abee",
+  "mode": "edit",
+  "prompt": "Reproduce this corrected walking sprite sheet with the SAME character and SAME twelve poses. Yellow hooded jacket, dark brown hair, dark teal trousers, brown boots and brown diagonal satchel. Preserve the strong overhead orthographic camera, body proportions and crisp pixel-painted texture. Do not redesign the person. Exactly 3 equal columns by 4 equal rows. Row 1 faces DOWN toward viewer. Row 2 faces LEFT. Row 3 faces RIGHT. Row 4 faces UP away with no face. Column 2 in all rows is standing with both boots grounded at equal depth. Columns 1 and 3 are opposite strides, not duplicate poses. In the BACK row the boot endpoints explicitly exchange depth between outer columns: first pose left boot higher on screen and right boot lower; third pose left boot lower and right boot higher. Keep torso, hair, coat and bag unchanged between these back strides. Keep bag on the original anatomical side; never mirror the full character. Preserve a clear gap between legs. White uniform background only, no checkerboard, grid, shadows, lettering or panels. Equal 320x320 cells, generous margins, no subject touching a cell edge. Output 960x1280 PNG. This is a production pose-preservation test: accurate directions and alternating feet matter more than added detail.",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/public/art/overhead/hero-gait-v2.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1280
+  }
+}

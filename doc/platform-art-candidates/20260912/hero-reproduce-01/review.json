@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-12",
+  "status": "rejected-as-complete-walk-sheet",
+  "sourceSha256": "8eadfcf1f93a95dabbb5dc1ee7c9e6ad4007e4be48682739de41c3df65566076",
+  "taskId": "mt_bb2123a7bda65bd4b72487e8bcf898b0",
+  "requests": 1,
+  "elapsedMs": 16177,
+  "cost": "not provided by public API",
+  "findings": [
+    "Strong overhead B camera, yellow-coat identity and pixel-painted style largely retained.",
+    "Front and back outer poses visibly exchange boot endpoint depth; the previously reported back-step defect is not repeated in this candidate.",
+    "Left and right side-view outer poses are visually near-repeats: no reliable reversal of foreground leg and forward arm. Full directional gait therefore not accepted.",
+    "RGB white matte rather than true alpha. Existing creator processor removes it and preserves source; output identical across both tested viewport contexts.",
+    "Side-view limitations may be inherited from the early baseline. Its earlier back-stride repair is not evidence that all four directions have anatomically correct alternation."
+  ],
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "sourceSha": "8eadfcf1f93a95dabbb5dc1ee7c9e6ad4007e4be48682739de41c3df65566076",
+      "preparedSha": "6dfd55a3fd83d2adaff8c79d14fb795664a5e8325eb57bf92b7e70c0f61e7ef2",
+      "positions": [
+        "248,430 · 画面 248,430",
+        "192,430 · 画面 192,430",
+        "192,373 · 画面 192,373",
+        "192,429 · 画面 192,429"
+      ],
+      "rejectedSheetRetained": true,
+      "mapApprovalBlocked": true,
+      "externalRequests": 0,
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "pageErrors": [],
+      "actualIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "sourceSha": "8eadfcf1f93a95dabbb5dc1ee7c9e6ad4007e4be48682739de41c3df65566076",
+      "preparedSha": "6dfd55a3fd83d2adaff8c79d14fb795664a5e8325eb57bf92b7e70c0f61e7ef2",
+      "positions": [
+        "251,430 · Rendered 251,430",
+        "193,430 · Rendered 193,430",
+        "193,372 · Rendered 193,372",
+        "193,431 · Rendered 193,431"
+      ],
+      "rejectedSheetRetained": true,
+      "mapApprovalBlocked": true,
+      "externalRequests": 0,
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "pageErrors": [],
+      "actualIPhone": false
+    }
+  ],
+  "admission": {
+    "runtime": false,
+    "published": false,
+    "baselineChanged": false,
+    "allTwelveSemanticChecksPassed": false
+  },
+  "limits": [
+    "Fresh localhost Chrome viewport checks, not iPhone hardware or logged AlterU acceptance.",
+    "Keyboard movement proves runtime execution, not gait anatomy or stable batch-generation quality.",
+    "No original sheet pixels were repainted or mirrored for this probe.",
+    "No additional generation planned in this batch."
+  ],
+  "next": "Keep the approved baseline. Continue original-game optional journey-illustration lifecycle; existing legacy walkway illustration is not automatically applicable to the original story.",
+  "regression": {
+    "tests": 6,
+    "passed": 6,
+    "files": [
+      "_qa/actor-sheet-review.test.ts",
+      "_qa/hero-back-gait.test.ts"
+    ],
+    "scope": "Review preservation and existing back-stride repair. No runtime code changed."
+  }
+}

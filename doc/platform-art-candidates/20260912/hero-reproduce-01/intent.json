@@ -1,0 +1,7 @@
+{
+  "scope": "One platform pose-preservation probe using public approved corrected B hero. No player data.",
+  "maximumNewRequests": 1,
+  "reference": "public/art/overhead/hero-gait-v2.png",
+  "runtimeReplacement": false,
+  "admission": "All directions, opposite strides, grounded standing, identity, perspective, then existing preparation and map QA. Failure keeps baseline; no automatic redraw."
+}
