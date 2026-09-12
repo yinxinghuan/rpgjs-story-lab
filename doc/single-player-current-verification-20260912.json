@@ -29,7 +29,7 @@
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "in-progress",
-      "currentBlocker": "No current entry blocker; continue same journey at tunnel50/87/64 and verify remaining story/ending."
+      "currentBlocker": "Repeated missing actor after continuous transition; need live renderer diagnostics before continuing full acceptance."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -62,5 +62,5 @@
     }
   },
   "newBrowserChecksThisTurn": false,
-  "currentUiObservation": "Own platform journey resumed at river with hero visible; rescue/Ren joining/oxygen consumption and continuous tunnel transition passed; hero visible in tunnel. Full ending still pending."
+  "currentUiObservation": "Further continuous transition tunnel->yard reproduced hero absence on platform. Resource/task progression passed. Keep rendering defect open; current own journey yard38/87/61."
 }
