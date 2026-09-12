@@ -64,5 +64,44 @@
       58
     ],
     "scope": "Local IAB viewport; not physical iPhone hardware."
+  },
+  "nativePostDeploymentReentry": {
+    "date": "2026-09-13",
+    "surface": "Telegram AlterU native Mini App",
+    "procedure": "Escape to existing platform profile, reopen CARRIAGE 07 via Play; continue same completed synthetic journey.",
+    "deployedCommit": "7d98b16e17b0d30b0e334e93a652c85d5cb64ab3",
+    "nativeBundleHashInspected": false,
+    "scene": "黎明枢纽",
+    "ending": "共同线路",
+    "resources": {
+      "fuel": 32,
+      "condition": 73,
+      "morale": 83
+    },
+    "companions": [
+      "阿达",
+      "任医生",
+      "玛柯"
+    ],
+    "inventory": [
+      "总调度钥匙 × 1",
+      "铁路电台 × 1"
+    ],
+    "consumedItemsNotRestored": [
+      "氧气瓶",
+      "软管",
+      "桥检工具箱"
+    ],
+    "heroVisible": true,
+    "backgroundVisible": true,
+    "loadingThenEndingObserved": true,
+    "newJourneyCreated": false,
+    "evidence": "_qa/alteru-native-20260913/post-release-reentry.png",
+    "limitations": [
+      "Normal reentry; no native GPU fault injected.",
+      "Does not establish root cause or elimination of earlier intermittent missing actor.",
+      "Same-device anonymous capability journey; no trusted account or cross-device recovery proof.",
+      "Deployment verified separately; native WebView bundle hash not inspected."
+    ]
   }
 }

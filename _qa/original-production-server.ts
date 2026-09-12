@@ -46,9 +46,15 @@ const server=createServer(async(req,res)=>{try{
   if(process.argv.includes('--slow-scenery'))await new Promise(resolve=>setTimeout(resolve,20000))
  }
  res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','Cache-Control':'no-store'})
- if(extname(path)==='.html'&&(process.argv.includes('--platform-layout')||process.argv.includes('--context-loss-control'))){
+ if(extname(path)==='.html'&&(process.argv.includes('--platform-layout')||process.argv.includes('--context-loss-control')||process.argv.includes('--stall-image-decode'))){
   let html=readFileSync(path,'utf8')
   if(process.argv.includes('--platform-layout'))html=html.replace('</head>','<style>#alteru-guest-banner{display:none!important}</style></head>')
+  // Decoder fault exists only in this response harness. Original promises stay
+  // stalled; the application must abandon them, then explicitly retry.
+  if(process.argv.includes('--stall-image-decode')){
+   html=html.replace('<head>',`<head><script>const qaOriginalDecode=HTMLImageElement.prototype.decode;HTMLImageElement.prototype.decode=function(){return new Promise(()=>{})};window.qaResumeDecode=function(){HTMLImageElement.prototype.decode=qaOriginalDecode};</script>`)
+   html=html.replace('</body>',`<button style="position:fixed;right:8px;top:8px;z-index:99999;min-height:44px" onclick="window.qaResumeDecode();this.disabled=true;this.textContent='QA: decoder restored'">QA: restore image decoder</button></body>`)
+  }
   if(process.argv.includes('--context-loss-control'))html=html.replace('</body>',`<button id="qa-context-loss" style="position:fixed;right:8px;top:8px;z-index:99999;min-height:44px">QA: interrupt graphics</button><script>document.getElementById('qa-context-loss').onclick=function(){const c=document.querySelector('#rpg canvas');const gl=c&&(c.getContext('webgl2')||c.getContext('webgl'));const ext=gl&&gl.getExtension('WEBGL_lose_context');if(ext){ext.loseContext();this.textContent='QA: context loss requested'}else this.textContent='QA: context loss unavailable'};</script></body>`)
   res.end(html)
  }

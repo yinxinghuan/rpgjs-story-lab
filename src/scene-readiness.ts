@@ -1,3 +1,4 @@
+import {abortableArtLoad} from './abortable-art-load'
 export type SceneResource={path:string;kind:'background'|'map';sha256:string;bytes:number;width?:number;height?:number}
 export type SceneResourceManifest={version:string;scenes:Record<string,{version:string;assets:SceneResource[]}>}
 export type PreparedScene={version:string;background:string}
@@ -46,7 +47,8 @@ export async function loadBrowserSceneResource(resource:SceneResource,signal:Abo
  if(resource.kind==='map'){report?.('ready');return}
  report?.('decode')
  const blobUrl=URL.createObjectURL(new Blob([bytes],{type:'image/png'}))
- try{const img=new Image();img.src=blobUrl;await img.decode();if(signal.aborted||img.naturalWidth!==resource.width||img.naturalHeight!==resource.height)throw Error('RESOURCE_DECODE');report?.('ready');return blobUrl}catch{URL.revokeObjectURL(blobUrl);throw new ResourceLoadError('RESOURCE_DECODE')}
+ const img=new Image()
+ try{img.src=blobUrl;await abortableArtLoad(()=>img.decode(),signal);if(signal.aborted||img.naturalWidth!==resource.width||img.naturalHeight!==resource.height)throw Error('RESOURCE_DECODE');report?.('ready');return blobUrl}catch{img.src='';URL.revokeObjectURL(blobUrl);throw new ResourceLoadError('RESOURCE_DECODE')}
 }
 export const loadTrackedBrowserSceneResource:SceneResourceLoader=(resource,signal,report)=>loadBrowserSceneResource(resource,signal,undefined,undefined,report)
 export function createBrowserSceneReadiness(){return new SceneReadiness(__SCENE_RESOURCES__,loadBrowserSceneResource)}

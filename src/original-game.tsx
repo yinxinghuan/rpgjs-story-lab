@@ -1,3 +1,4 @@
+import {abortableArtLoad} from './abortable-art-load'
 import JourneyLoading from './journey-loading'
 import {nearestInteraction,isInteractionShortcut} from './nearby-interaction'
 import {originalCharacterDetail} from './original-character-detail'
@@ -60,7 +61,7 @@ export default function OriginalGame(){
   const {id:version,resource}=originalBoundHero(h.assets)
   if(heroBlob.current){if(heroKey.current!==version)throw new ScenePreparationError('characters','HERO_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
-  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const release=originalPublishedHero(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedHeroPixels(release,png,decodeSpritePixels)}const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');if(!mounted.current){void Assets.unload(blob).catch(()=>{});URL.revokeObjectURL(blob);return}heroBlob.current=blob;heroKey.current=version}
+  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const release=originalPublishedHero(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedHeroPixels(release,png,decodeSpritePixels)}const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');if(!mounted.current){void Assets.unload(blob).catch(()=>{});URL.revokeObjectURL(blob);return}heroBlob.current=blob;heroKey.current=version}
   catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','HERO_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
  const brakeBlob=useRef('')
@@ -70,20 +71,20 @@ export default function OriginalGame(){
  async function prepareEquipment(h:OriginalHead){
   if(originalEquipmentHasArt('brakes',h.assets)&&!brakeBlob.current){
    const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
-   try{blob=(await loadBrowserSceneResource(brakeArt.resource,abort.signal))!;const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==912||texture?.height!==640)throw Error('RESOURCE_DECODE');brakeBlob.current=blob}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','BRAKE_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
+   try{blob=(await loadBrowserSceneResource(brakeArt.resource,abort.signal))!;const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==912||texture?.height!==640)throw Error('RESOURCE_DECODE');brakeBlob.current=blob}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','BRAKE_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
   }
 
   if(originalEquipmentHasArt('tunnel-fan',h.assets))for(const [part,resource]of originalFanResources(h.assets)){
    if(fanBlobs.current.has(part))continue
    const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
-   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');fanBlobs.current.set(part,blob)}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','FAN_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
+   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');fanBlobs.current.set(part,blob)}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','FAN_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
   }
   const resource=originalEquipmentResource(h.assets),key=originalStarterRelease(h.assets)?.id??'baseline'
   if(equipmentBlob.current){if(equipmentKey.current!==key)throw new ScenePreparationError('equipment','EQUIPMENT_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!
    const release=originalStarterRelease(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedDevicePixels(release,png,decodeSpritePixels)}
-   const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');equipmentBlob.current=blob;equipmentKey.current=key
+   const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');equipmentBlob.current=blob;equipmentKey.current=key
   }catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('equipment','EQUIPMENT_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
 
@@ -94,14 +95,14 @@ export default function OriginalGame(){
   for(const a of originalFixedStandingArt(h.assets)){
    if(fixedActorBlobs.current.has(a.graphic))continue
    const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
-   try{blob=(await loadBrowserSceneResource(a.resource,abort.signal))!;const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==a.resource.width||texture?.height!==a.resource.height)throw Error('RESOURCE_DECODE');fixedActorBlobs.current.set(a.graphic,blob)}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
+   try{blob=(await loadBrowserSceneResource(a.resource,abort.signal))!;const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==a.resource.width||texture?.height!==a.resource.height)throw Error('RESOURCE_DECODE');fixedActorBlobs.current.set(a.graphic,blob)}catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
   }
   const release=originalActorRelease(h.assets),key=release?.id??'baseline',resource=originalActorResource(h.assets)
   if(actorBlob.current){if(actorKey.current!==key)throw new ScenePreparationError('characters','ACTOR_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
   try{blob=(await loadBrowserSceneResource(resource,abort.signal))!
    if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedActorPixels(release,png,decodeSpritePixels)}
-   const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');actorBlob.current=blob;actorKey.current=key
+   const texture=await abortableArtLoad(()=>Assets.load({src:blob,parser:'loadTextures'}),abort.signal,()=>Assets.unload(blob));if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');actorBlob.current=blob;actorKey.current=key
   }catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','CHARACTER_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
 

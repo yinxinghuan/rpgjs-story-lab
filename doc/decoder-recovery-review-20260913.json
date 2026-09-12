@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-13",
+  "problem": "Fetch abort did not bound Image.decode or Pixi Assets.load waits in character/equipment preparation.",
+  "fix": "Abort-aware decoder waiting, image URL cleanup, late abandoned texture unloading; existing 30s budget and retry flow.",
+  "targetedTests": 12,
+  "fullTests": {
+    "total": 706,
+    "passed": 706,
+    "failed": 0
+  },
+  "buildPassed": true,
+  "secretScanPassed": true,
+  "browser": {
+    "surface": "Local IAB production build with compiled Worker and disposable SQL",
+    "fault": "HTMLImageElement.decode promises deliberately never settle, injected only by QA HTML response.",
+    "observed": "SCENE_NOT_READY:HERO_ART_UNAVAILABLE recovery button replaces loading wait.",
+    "recovery": "Restore decoder using visible QA button, reconnect same journey, explicitly retry scenery.",
+    "resourcesBeforeAndAfter": [
+      68,
+      82,
+      58
+    ],
+    "heroVisibleAfter": true,
+    "backgroundVisibleAfter": true,
+    "evidence": [
+      "_qa/decoder-recovery-20260913/timed-out.png",
+      "_qa/decoder-recovery-20260913/recovered.png"
+    ]
+  },
+  "limitations": [
+    "Not native iPhone decoder reproduction.",
+    "Does not prove cause or elimination of historical native missing-actor failures.",
+    "Pixi-specific pending-load cancellation tested through the shared helper; browser fault targeted Image.decode."
+  ]
+}

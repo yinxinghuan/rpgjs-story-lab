@@ -1130,3 +1130,9 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 绘图上下文丢失恢复（2026-09-13）
 
 `renderer-context-loss.ts` 在 renderer host 捕获 canvas 的非冒泡 `webglcontextlost` 事件，不拦截 Pixi 自身事件处理。一次故障锁定当前页面的空间输入和转场，原作界面单独保存 `RENDERER_CONTEXT_LOST`，避免被稍后返回的普通请求清除。玩家显式重新载入后，沿现有 Story Session 恢复同一旅程和待确认请求；不创建第二个 renderer，也不删除存档。`_qa/original-production-server.ts --context-loss-control` 只在本机响应注入可见按钮，通过 `WEBGL_lose_context` 扩展验证实际故障与恢复，按钮不进入 dist。该恢复能力不证明此前偶发角色消失就是 GPU 上下文丢失。
+
+### 图片解码等待的超时恢复（2026-09-13）
+
+`src/abortable-art-load.ts` 将不原生接收 AbortSignal 的图片解码及 Pixi 纹理载入纳入现有资源等待预算。`scene-readiness.ts` 的 `Image.decode()` 在中止时立即结束等待并清理图片 URL；`original-game.tsx` 的六类图集载入在相同信号中止时返回已有可重试错误，迟到的纹理单独卸载，不覆盖重试结果。下载的 SHA、尺寸与素材准入检查保持原样。成功载入后清理定时器所发出的 abort 不会卸载正在使用的纹理。
+
+这是对可确定的“下载已结束而解码 Promise 不返回”漏洞的修复，不将此前原生平台人物偶发消失的原因推断为解码挂起。`_qa/abortable-art-load.test.ts` 覆盖挂起、超时后旧结果、重试、晚到错误及真实资源加载函数；本地生产测试服务的 `--stall-image-decode` 只在测试 HTML 响应注入故障，不进入正式构建。
