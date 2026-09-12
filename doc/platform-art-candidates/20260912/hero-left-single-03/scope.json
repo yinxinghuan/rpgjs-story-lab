@@ -1,0 +1,14 @@
+{
+  "purpose": "Single left-facing opposite contact pose using only an idle reference, avoiding repeated gait examples",
+  "source": "../hero-reproduce-01/candidate.png",
+  "crop": {
+    "x": 320,
+    "y": 320,
+    "width": 320,
+    "height": 320
+  },
+  "processing": "Pixel crop only; no repaint, mirroring, rescale or matte removal",
+  "referenceSha256": "ff1b21ff435bba28744f6b9f4a90038cceca507f9cea238ab6b58f96f42a092c",
+  "generationBudget": 1,
+  "runtimeAdmission": false
+}
