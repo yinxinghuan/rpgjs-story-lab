@@ -1,6 +1,6 @@
 import type {AuthorityStorage} from './session-authority'
 import type {OriginalHead} from './original-train-runtime'
-import {originalBackgroundReleases,originalSceneBackgroundVersion,originalBaseAssets} from '../src/original-asset-releases'
+import {originalBackgroundReleases,originalSceneBackgroundVersion,originalBaseAssets,ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM} from '../src/original-asset-releases'
 import {backgroundReleasePath} from '../src/background-publication'
 import {originalBackgroundSourcePaths} from '../src/original-background-sources'
 import {GAME_ID} from '../src/game-id'
@@ -11,7 +11,7 @@ import {inspectJournalPng} from './journal-image'
 export const ORIGINAL_ILLUSTRATION_RELEASED=false
 const COMMIT='8c4ebb1d42397286d91a7d511fc0d41d1f7a144a'
 const size={width:768,height:1024} as const
-export type IllustrationPlan={version:1;scene:string;sourceVersion:number;referenceVersion:string;referenceSha256:string;request:GenerateImageMediaRequest}
+export type IllustrationPlan={version:1|2;scene:string;sourceVersion:number;referenceVersion:string;referenceSha256:string;request:GenerateImageMediaRequest}
 export type IllustrationJob={id:string;plan:IllustrationPlan;requestId:string;attempt:number;state:'preparing'|'failed'|'active';recoverable:boolean;nextAt:number;lease?:string;leaseUntil:number;taskId?:string;error?:string;asset?:{sha256:string;bytes:number;width:768;height:1024}}
 export type IllustrationProducer=(job:IllustrationJob,onTask:(id:string)=>void)=>Promise<Uint8Array>
 /** Source selection is authoritative; no player text, identity or save is sent. */
@@ -24,7 +24,8 @@ export function originalIllustrationPlan(head:OriginalHead):IllustrationPlan{
  if(!source)throw new LabError('ILLUSTRATION_BACKGROUND_UNAVAILABLE',409)
  if(!published&&!originalBackgroundSourcePaths[id])throw new LabError('ILLUSTRATION_BACKGROUND_UNAVAILABLE',409)
  const reference=published?`https://game.aiwaves.tech/${GAME_ID}${backgroundReleasePath(published.id)}/file`:`https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/${COMMIT}/${originalBackgroundSourcePaths[id]}`
- return {version:1,scene:head.sceneId,sourceVersion:head.version,referenceVersion:id,referenceSha256:source.sha256,request:{sessionId:GAME_ID,mode:'edit',referenceUrls:[reference],size:{...size},prompt:'Create an illustrated travel journal page of this exact railway environment. Preserve the reference location, narrow paths, tracks, architectural proportions, strong overhead orthographic view and crisp pixel-painted style. Keep the same time of day, weather, lighting and visible structures. Environment only: no people, faces, animals, writing, labels, new doors, new buildings, extra vehicles or objects. Do not depict a rescue, victory, repair or any new event. This is a quiet visual memory of a visited place, not a playable map or a change to the world. Compose the complete reference location within a 3:4 portrait frame without stretching geometry.'}}
+ const night=[ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM].includes(id)?' This exact scene is a DARK RAINY NIGHT, not daytime or dusk. Preserve the deep blue-black shadows, dark teal wet pavement, small isolated amber lamp pools and almost-black foliage. Keep most of the image dark. No global gray fill light, bright concrete or daylight.':''
+ return {version:2,scene:head.sceneId,sourceVersion:head.version,referenceVersion:id,referenceSha256:source.sha256,request:{sessionId:GAME_ID,mode:'edit',referenceUrls:[reference],size:{...size},prompt:'Produce a faithful pixel-painted image of this exact railway environment for a travel journal. Copy the source palette, illumination and textured pixel detail; do not simplify it into a line drawing, comic, vector graphic or flat poster.'+night+' Preserve the reference location, narrow paths, tracks, architectural proportions, strong overhead orthographic view, time of day, weather and visible structures. Environment only: no people, faces, animals, writing, labels, new doors, new buildings, extra vehicles or objects. Do not depict a rescue, victory, repair or any new event. This is a visual memory of a visited place, not a playable map or a change to the world. Compose the complete reference location within a 3:4 portrait frame without stretching geometry.'}}
 }
 const safeCodes=new Set(['RATE_LIMITED','QUEUE_BUSY','TIMEOUT','PROVIDER_REJECTED','REFERENCE_UNAVAILABLE','ORIGIN_NOT_ALLOWED','IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'])
 const publicJob=(j:IllustrationJob)=>({id:j.id,scene:j.plan.scene,sourceVersion:j.plan.sourceVersion,referenceVersion:j.plan.referenceVersion,state:j.state,attempt:j.attempt,recoverable:j.recoverable,nextAt:j.nextAt,...(j.error?{error:j.error}:{}),...(j.asset?{asset:j.asset}:{})})

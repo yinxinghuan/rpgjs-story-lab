@@ -1,0 +1,25 @@
+{
+  "maximumNewRequests": 1,
+  "correctionOf": "original-journal-01",
+  "observedFailure": "Night source was changed to bright gray daylight and flatter line drawing",
+  "plan": {
+    "version": 2,
+    "scene": "train-at-dead-station",
+    "sourceVersion": 0,
+    "referenceVersion": "north-cape-platform-8fc11a96",
+    "referenceSha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+    "request": {
+      "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+      "mode": "edit",
+      "referenceUrls": [
+        "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png"
+      ],
+      "size": {
+        "width": 768,
+        "height": 1024
+      },
+      "prompt": "Produce a faithful pixel-painted image of this exact railway environment for a travel journal. Copy the source palette, illumination and textured pixel detail; do not simplify it into a line drawing, comic, vector graphic or flat poster. This exact scene is a DARK RAINY NIGHT, not daytime or dusk. Preserve the deep blue-black shadows, dark teal wet pavement, small isolated amber lamp pools and almost-black foliage. Keep most of the image dark. No global gray fill light, bright concrete or daylight. Preserve the reference location, narrow paths, tracks, architectural proportions, strong overhead orthographic view, time of day, weather and visible structures. Environment only: no people, faces, animals, writing, labels, new doors, new buildings, extra vehicles or objects. Do not depict a rescue, victory, repair or any new event. This is a visual memory of a visited place, not a playable map or a change to the world. Compose the complete reference location within a 3:4 portrait frame without stretching geometry."
+    }
+  },
+  "scope": "One targeted correction using the same public approved source and fresh synthetic plan. No player data; no automatic further attempts or production activation."
+}

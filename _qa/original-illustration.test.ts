@@ -31,6 +31,16 @@ test('plans use exact packaged repository sources, not generated dist URLs or pr
  assert.equal(plan.request.referenceUrls!.length,1);assert.doesNotMatch(JSON.stringify(plan),/阿达|Ada|blocks|characters|stats|dialogue/)
  assert.throws(()=>originalIllustrationPlan({...h,sceneId:'unmade-dining-car'}),/BACKGROUND_UNAVAILABLE/)
 })
+test('palette recipe updates affect new intentions only; stored v1 requests resume unchanged',async()=>{
+ const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h))
+ const stored=JSON.parse(s.db.all<{data:string}>('SELECT data FROM original_illustrations')[0].data)
+ assert.equal(stored.plan.version,2);assert.match(stored.plan.request.prompt,/DARK RAINY NIGHT/)
+ const old=JSON.parse(readFileSync('doc/platform-art-candidates/20260912/original-journal-01/intent.json','utf8')).plan
+ stored.plan=old;s.db.run('UPDATE original_illustrations SET data=?',JSON.stringify(stored))
+ await s.images.run(owner,h.id,h.sceneId,async j=>{assert.deepEqual(j.plan,old);assert.equal(j.requestId,stored.requestId);return fixture})
+ assert.equal(s.images.list(owner,h.id)[0].state,'active')
+ }finally{s.raw.close()}
+})
 test('task records and immutable PNG survive restart, lost responses and source-scene departure without touching story',async()=>{
  const dir=mkdtempSync('/private/tmp/original-illustration-'),path=join(dir,'test.sqlite');let s=setup(path)
  try{

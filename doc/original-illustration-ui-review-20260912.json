@@ -1,0 +1,151 @@
+{
+  "date": "2026-09-12",
+  "scope": "Original-game journal illustration UI and recovery, behind server availability gate",
+  "productionReleased": false,
+  "changes": [
+    "Journal opens existing-style illustration panel; one primary create/recover/retry action",
+    "Only current place and existing records appear; unknown future locations excluded",
+    "Media busy does not disable closing the panel or story actions",
+    "SHA and native PNG decode before display; failed image reload does not regenerate",
+    "Scene/asset key fences late images; refreshed records preserve the one job",
+    "Stored v1 plans retain exact prompts; only new intentions use palette recipe v2"
+  ],
+  "tests": {
+    "fullSuite": {
+      "passed": 635,
+      "failed": 0
+    },
+    "finalTargeted": {
+      "passed": 10,
+      "failed": 0,
+      "includesOneNewV1CompatibilityCaseBeyondFullSuite": true
+    },
+    "finalBuild": "TypeScript, Vite, 27-resource validation and compiled Worker startup passed",
+    "audits": [
+      "public secrets",
+      "game API base",
+      "platform media integration",
+      "UI foundation"
+    ]
+  },
+  "browserFirst": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "posts": 1,
+      "onePersistedJob": true,
+      "versionAfterRefresh": 2,
+      "currentScene": "train-at-river-valley",
+      "imageScene": "train-at-dead-station",
+      "listFailureRecovered": true,
+      "fileFailureRecovered": true,
+      "lateImageHidden": true,
+      "closeDuringGeneration": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "artAcceptance": false,
+      "realIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "posts": 1,
+      "onePersistedJob": true,
+      "versionAfterRefresh": 2,
+      "currentScene": "train-at-river-valley",
+      "imageScene": "train-at-dead-station",
+      "listFailureRecovered": true,
+      "fileFailureRecovered": true,
+      "lateImageHidden": true,
+      "closeDuringGeneration": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "artAcceptance": false,
+      "realIPhone": false
+    }
+  ],
+  "browserFinalNight": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "posts": 1,
+      "onePersistedJob": true,
+      "versionAfterRefresh": 2,
+      "currentScene": "train-at-river-valley",
+      "imageScene": "train-at-dead-station",
+      "listFailureRecovered": true,
+      "fileFailureRecovered": true,
+      "lateImageHidden": true,
+      "closeDuringGeneration": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "artAcceptance": false,
+      "realIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "posts": 1,
+      "onePersistedJob": true,
+      "versionAfterRefresh": 2,
+      "currentScene": "train-at-river-valley",
+      "imageScene": "train-at-dead-station",
+      "listFailureRecovered": true,
+      "fileFailureRecovered": true,
+      "lateImageHidden": true,
+      "closeDuringGeneration": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "artAcceptance": false,
+      "realIPhone": false
+    }
+  ],
+  "mediaReview": {
+    "date": "2026-09-12",
+    "status": "rejected-small-screen-legibility",
+    "taskId": "mt_83212dc1c9f21fa6b48e22a0c20a5dc6",
+    "sha256": "8734c7e1e1b25bce694f5a0387b20ea523f5ef299aabef67a6ba851ca2f71933",
+    "elapsedMs": 11726,
+    "cost": "not provided by public API",
+    "findings": [
+      "Dark rainy-night identity and orthographic railway structure restored.",
+      "Image is substantially darker and simpler than the approved source; small-screen panels lose locomotive and pavement detail.",
+      "Real 320/390 journal panel screenshots reviewed; mechanism passing is not aesthetic acceptance."
+    ],
+    "encodedLuma": {
+      "method": "Read-only mean 0.2126 R + 0.7152 G + 0.0722 B on encoded 0-1 channels; descriptive, not a perceptual pass threshold",
+      "source": {
+        "mean": 0.1055967296,
+        "fractionBelow008": 0.3824780782
+      },
+      "candidate": {
+        "mean": 0.04922143498,
+        "fractionBelow008": 0.8256251017
+      }
+    },
+    "runtimeAdmitted": false,
+    "furtherGenerationInThisCorrectionBatch": false
+  },
+  "limitations": [
+    "Fresh localhost Chrome only, no real iPhone or logged AlterU acceptance",
+    "Both retained images tested through the UI are still aesthetically rejected",
+    "Production health reports illustrationsAvailable=false, existing release and saves unchanged"
+  ],
+  "next": "Complete candidate rejection/retention/fallback handling in the existing journal flow before enabling production. Do not silently adopt unsuitable generated images or keep adding blind regeneration attempts."
+}

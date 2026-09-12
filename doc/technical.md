@@ -2,6 +2,8 @@
 
 ## 当前正式接入合同（2026-09-12）
 
+画页UI开发增量：`src/original-illustration-panel.tsx` 接入原作日志，独立busy/读取序列和图片版本key处理等待、下载失败与迟到响应；`src/original-illustration-contract.ts` 验证列表并决定创建/恢复/重试/返回地点/次数用完状态。原作health的 `illustrationsAvailable` 为唯一可见入口开关，生产仍false。本机测试服务仅在显式保留素材回放参数下启用；没有生产测试query。新请求配方v2只对已知北岬基准加强暗蓝雨夜约束，数据库中v1请求不改写。最终实际日志流程、真实图片读取与错误恢复证据见 `original-illustration-ui-review-20260912.json`；两张媒体候选均未准入，下一步完成候选放弃/保留/回退。
+
 开发分支新增 `server/original-illustration.ts`，为原作提供独立画页任务、24,000字节分块保存、摘要检查、120秒租约与每日意向配额；`server/original-http.ts` 接 `/sessions/:id/illustrations` 和场景文件读取。它运行在现有 `original-v8:<owner>` 数据库，读取原作状态做来源校验，但不写剧情、坐标、资源或行动回执。`src/original-background-sources.ts` 与构建共用真实仓库原图路径，避免把构建时才生成的 `art/approved/` 地址误作Git引用。`ORIGINAL_ILLUSTRATION_RELEASED=false`，生产请求仍拒绝；仅显式注入的本机合成媒体测试启用。首张真实画页因夜色改变未通过美术验收，尚无正式画页UI，不改变下列线上版本。恢复与真实PNG浏览器解码证据见 `original-illustration-review-20260912.json`。
 - `src/original-release.ts`：cloud主入口选完整原作；`?story=carriage`继续旧车厢，`?story_runtime=legacy`保留旧浏览器存档。Pages镜像不访问原作后台；preflight仍需显式`?story=original`。
 - `server/original-presentation.ts`：准入检查九房间绑定、四名固定人物素材、通风机、当前地面与交互点、旅程内素材身份不变。它是结构检查，不是自动审美认证，也不表示其他设备素材全部完成。原始运行时仍默认拒绝；正式Worker显式使用此gate。

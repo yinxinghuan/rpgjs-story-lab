@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-12",
+  "status": "rejected-small-screen-legibility",
+  "taskId": "mt_83212dc1c9f21fa6b48e22a0c20a5dc6",
+  "sha256": "8734c7e1e1b25bce694f5a0387b20ea523f5ef299aabef67a6ba851ca2f71933",
+  "elapsedMs": 11726,
+  "cost": "not provided by public API",
+  "findings": [
+    "Dark rainy-night identity and orthographic railway structure restored.",
+    "Image is substantially darker and simpler than the approved source; small-screen panels lose locomotive and pavement detail.",
+    "Real 320/390 journal panel screenshots reviewed; mechanism passing is not aesthetic acceptance."
+  ],
+  "encodedLuma": {
+    "method": "Read-only mean 0.2126 R + 0.7152 G + 0.0722 B on encoded 0-1 channels; descriptive, not a perceptual pass threshold",
+    "source": {
+      "mean": 0.1055967296,
+      "fractionBelow008": 0.3824780782
+    },
+    "candidate": {
+      "mean": 0.04922143498,
+      "fractionBelow008": 0.8256251017
+    }
+  },
+  "runtimeAdmitted": false,
+  "furtherGenerationInThisCorrectionBatch": false
+}
