@@ -1,5 +1,5 @@
 {
-  "status": "in-progress-rendering-defect",
+  "status": "in-progress",
   "surface": "Telegram macOS AlterU Mini App; user navigated to existing Carriage07 game entry",
   "authorization": "User explicitly allowed journey-management operation after automatic review rejection. Created new journey with keep-old-and-start-again; did not continue existing journey.",
   "actions": [
@@ -39,9 +39,9 @@
       "cause": "unconfirmed"
     }
   ],
-  "currentCheckpoint": "Own new platform test journey, valley after bridge inspection,62/87/58. Map open; continue this journey, do not create again.",
+  "currentCheckpoint": "Own platform test journey at white-stone tunnel before ventilation inspection;50/87/64; Ren joined and oxygen consumed. Map open; continue same journey.",
   "fullPlaythrough": false,
-  "reentryVerified": false,
+  "reentryVerified": true,
   "diagnosis": {
     "localComparison": "Existing local5392 journey took same valley route; hero visible after transition and no captured warn/error logs. Local fixture is not proof of platform renderer.",
     "confirmedCodeDefect": "fixed-map-camera cached detached-but-not-destroyed viewport; new room offset survived. Regression reproduced -90,-180 instead of0,0.",
@@ -49,5 +49,30 @@
     "tests": "9 camera and transition tests passed, including new regression.",
     "platformCauseConfirmed": false,
     "next": "Build and real renderer verification, then same-commit deploy and resume existing platform test journey."
+  },
+  "viewportFixFollowup": {
+    "deployedCommit": "6bf1a99682b96409aa4b6bc80389835258f7c16f",
+    "pagesRun": 34696388922,
+    "pagesConclusion": "success",
+    "reentry": "Exited platform game with Escape and reopened same Carriage07 entry; river62/87/58 and bridge inspection restored; hero and Ada visible.",
+    "continuedActions": [
+      "Winch rescue: fuel62->56; visible Ren introduction, oxygen item gained.",
+      "Give oxygen: item consumed, Ren joins party, relation increases, morale58->64.",
+      "Travel to tunnel: fuel56->50; arrived tunnel and hero visibly rendered without page reload."
+    ],
+    "evidence": "_qa/alteru-native-20260912/tunnel-after-viewport-fix.png",
+    "limits": "Successful reentry and one continuous transition after update; not proof that all possible renderer failures are eliminated.",
+    "dualDeployment": {
+      "main": {
+        "files": 58,
+        "sameLocalBuild": true,
+        "at": "2026-09-12T13:35:53.282Z"
+      },
+      "pages": {
+        "files": 58,
+        "sameLocalBuild": true,
+        "at": "2026-09-12T13:33:40.452Z"
+      }
+    }
   }
 }
