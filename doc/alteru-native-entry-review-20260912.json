@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-12",
+  "deployment": "539774a44c2de5fe450b1ffce684e36b306f433b",
+  "surface": "Telegram macOS AlterU Mini App",
+  "observations": [
+    "Existing logged-in Mini App displayed the older carriage experience with completed-journey status.",
+    "Native accessibility button action opened the in-game journey menu.",
+    "Native coordinate action for the Mini App top menu returned AXError.notImplemented.",
+    "After inspecting and dismissing the native View menu, the Mini App displayed Unable to Load with an instruction to reopen. Cause not established."
+  ],
+  "conclusion": "Login itself is not the currently observed barrier. The host Mini App must become usable before full production gameplay can be verified.",
+  "fullPlatformPlaythrough": false,
+  "userActionRequested": "Reopen AlterU Mini App; no additional authorization requested.",
+  "dataBoundary": "No credentials copied or used; no raw accessibility URLs retained in repository; no player save queried, modified or reset.",
+  "evidence": "../_qa/alteru-native-20260912/host-unable-to-load.png"
+}
