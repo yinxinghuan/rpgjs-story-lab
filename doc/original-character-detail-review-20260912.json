@@ -1,0 +1,69 @@
+{
+  "date": "2026-09-12",
+  "release": "original-character-continuity-20260912-1",
+  "production": false,
+  "foundIn": "Actual in-app browser at 320x568, original game new synthetic journey: Lin still described as missing after pine-meet.",
+  "fix": [
+    "Persist post-rescue detail in the original character_update command.",
+    "Share exact legacy-detail projection between map person, roster and dialogue context.",
+    "Do not rewrite historical save data or receipts; preserve custom descriptions and absence gates."
+  ],
+  "automated": {
+    "fullTests": 675,
+    "passed": 675,
+    "failed": 0,
+    "pineTests": 16,
+    "build": true,
+    "sceneResourceHashes": 27,
+    "secretAudit": true
+  },
+  "browser": {
+    "source": "Local compiled production Worker; disposable synthetic database; external model/media calls disabled.",
+    "actions": [
+      "repair-starter",
+      "commit-forest-route",
+      "pine-inspect",
+      "pine-reverse",
+      "pine-meet",
+      "pine-survey-route (typed exact phrase)"
+    ],
+    "viewports": [
+      {
+        "width": 320,
+        "height": 568
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "beforeIntroductionHidden": true,
+    "rosterDetailCorrect": true,
+    "mapDialogueDetailCorrect": true,
+    "reloadAfterIntroductionCorrect": true,
+    "typedActionRelationshipDelta": 1,
+    "resourcesAfterTypedAction": {
+      "fuel": 64,
+      "condition": 75,
+      "morale": 56
+    },
+    "evidenceDirectory": "_qa/ui/mobile-full-route-20260912/",
+    "note": "Only files named lin-detail-fixed are fixed-build evidence. Earlier pine and tunnel captures are the prior frozen mobile release. The tunnel-before-scenery capture uses desktop width after the test tab was recreated.",
+    "reloadAfterTypedActionCorrect": true,
+    "continuation": {
+      "url": "http://127.0.0.1:5374/",
+      "iabTab": "100",
+      "scene": "train-at-pine-line",
+      "actionsCompleted": 6,
+      "nextAction": "pine-invite or pine-stay; then refuel/depart along the existing full route"
+    }
+  },
+  "scope": {
+    "fullNineSceneMobileRouteComplete": false,
+    "authenticatedAlterUComplete": false,
+    "physicalIPhone": false,
+    "newModelRequests": 0,
+    "newMediaRequests": 0,
+    "realPlayerSavesRead": false
+  }
+}

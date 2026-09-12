@@ -1,6 +1,7 @@
 import type {Locale,ParsedCommand,StoryCartridge,StorySave} from './vendor/original-train/types'
 import {applyParsedScene} from './vendor/original-train/engine/reducer'
 import {LabError} from './journey-runtime'
+import {introducedLinDetail} from './original-character-detail'
 export const pineActions=[
  {id:'pine-inspect',zh:'检查林线信号与新鲜轮痕',en:'Inspect the forest signal and fresh wheel marks'},
  {id:'pine-reverse',zh:'紧急倒车避让货车（车况−12，人心−2）',en:'Reverse to avoid the freight cars (Condition −12, Morale −2)'},
@@ -84,7 +85,7 @@ export function executePineTurn(save:StorySave,c:StoryCartridge,id:PineActionId)
  }
  if(id==='pine-meet'){
   text=s('车门里侧的卡扣被震弯了。你从外侧松开固定销，一个穿着湿透巡检服、护着线路簿的人侧身出来：“林澈，线路巡检员。倒车时门扣卡死，电台也只剩断续呼号。”他想把木场侧线的实际路况交给这列车，免得下一班再相信假信号。','The inner door catch is bent. You release its outer pin and a person in a soaked inspection uniform steps out, shielding a route book. “Lin, track inspector. The catch jammed when the car rolled back; my radio could only send fragments.” He wants this train to carry the verified timber-line conditions so the next crew will not trust the false signal.')
-  commands.push({type:'character_update',characterId:lin.id,character:lin.name});fact('pine-met',true)
+  commands.push({type:'character_update',characterId:lin.id,character:lin.name,detail:introducedLinDetail(c.locale)});fact('pine-met',true)
   objective=s('和林澈核对实际线路，再决定同行安排','Verify the route with Lin, then decide whether he joins the train')
  }
  if(id==='pine-survey-route'){

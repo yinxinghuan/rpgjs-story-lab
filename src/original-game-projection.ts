@@ -12,6 +12,7 @@ import {originalPlaceBlocks} from './original-place-presentation'
 import {resolveOriginalChapter} from './original-chapters'
 import {originalActionIntentIssues} from './original-action-intent'
 import {junctionChoices} from './original-junction-chapter'
+import {originalCharacterDetail} from './original-character-detail'
 const world=originalTrainChapterSpatialPlan()
 /** Preparation follows the same action resolver as authority, but never commits
  * a turn. An unrelated branch must not prevent the selected route loading. */
@@ -42,7 +43,8 @@ export function originalGameEntities(head:OriginalHead){
   })
   const label=e.id==='brakes'&&originalEquipmentHasArt('brakes',head.assets)?(save.locale==='zh'?'制动检修点':'Brake service point'):undefined
   if(!actions.length&&!actor&&!label)return []
-  return [{...e,actions,label,person:actor?save.characters.find(p=>p.id===actor.id):undefined}]
+  const person=actor?save.characters.find(p=>p.id===actor.id):undefined
+  return [{...e,actions,label,person:person?{...person,detail:originalCharacterDetail(save,person)}:undefined}]
  })
 }
 

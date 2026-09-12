@@ -5,11 +5,12 @@ import {originalConversation} from '../src/original-conversation'
 import {originalGameObjective,originalGameEntities} from '../src/original-game-projection'
 import {originalCharacterPresent} from '../src/original-character-presence'
 import {LabError} from '../src/journey-runtime'
+import {originalCharacterDetail} from '../src/original-character-detail'
 
 export function originalDialogueContext(h:OriginalHead,speakerId:string){
  const person=h.save.characters.find(p=>p.id===speakerId)
  if(!person||!originalCharacterPresent(h.save,speakerId))throw new LabError('CHARACTER_NOT_PRESENT',409)
- return {locale:h.save.locale,visuals:originalVisualContext(h,speakerId),speaker:{id:person.id,name:person.name,detail:person.detail},sceneId:h.sceneId,
+ return {locale:h.save.locale,visuals:originalVisualContext(h,speakerId),speaker:{id:person.id,name:person.name,detail:originalCharacterDetail(h.save,person)},sceneId:h.sceneId,
   objective:originalGameObjective(h),availableActions:originalGameEntities(h).flatMap(e=>e.actions.map(a=>({id:a.id,label:a.label,target:e.id}))),present:h.save.characters.filter(p=>originalCharacterPresent(h.save,p.id)).map(p=>({id:p.id,name:p.name})),
   recentTurns:originalConversation(h.save,speakerId),
   // Only the latest visible scene prose, with commands, hidden facts and future
