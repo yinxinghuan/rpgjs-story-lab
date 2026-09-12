@@ -1,4 +1,5 @@
 import JourneyLoading from './journey-loading'
+import {nearestInteraction,isInteractionShortcut} from './nearby-interaction'
 import {originalCharacterDetail} from './original-character-detail'
 import OriginalSceneSilhouette from './original-scene-silhouette'
 import {ProgressiveSceneReadiness} from './progressive-scene-readiness'
@@ -146,6 +147,17 @@ export default function OriginalGame(){
  },[ready,busy,panel,error,head?.sceneId,head?.save.facts['tunnel-cargo-policy']])
  useEffect(()=>{const checkpoint=()=>{const h=headRef.current;if(h&&runtime.current&&!busyRef.current&&!errorRef.current&&runtime.current.renderedScene()===h.sceneId)void connection.api('/sessions/'+h.id+'/position',{position:pos.current,sceneId:h.sceneId,expected_version:h.version}).catch(e=>{if(mounted.current&&e instanceof Error&&e.message==='RUNTIME_VERSION_MISMATCH')setError(e.message)})};const timer=setInterval(checkpoint,2000);const hide=()=>{if(document.hidden){runtime.current?.move(0,0);checkpoint()}};document.addEventListener('visibilitychange',hide);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',hide)}},[])
  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!busyRef.current)setPanel(null)};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[])
+ useEffect(()=>{
+  const key=(e:KeyboardEvent)=>{
+   const editing=e.target instanceof HTMLElement&&Boolean(e.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"]),[role="textbox"]'))
+   if(!isInteractionShortcut(e,editing)||busyRef.current||!ready||panel||errorRef.current)return
+   const h=headRef.current;if(!h)return
+   e.preventDefault()
+   const target=nearestInteraction(originalGameEntities(h),pos.current,world.interactionDistance)
+   if(target)open(target);else setNotice(t('再走近一点，或点击地图上的物件。','Move closer, or tap an object on the map.'))
+  }
+  window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
+ },[ready,panel,error,head?.id,head?.version])
  useEffect(()=>{if(!panel&&!error)return;const box=document.querySelector<HTMLElement>(error?'.og-error':'.og-sheet'),previous=document.activeElement as HTMLElement;const items=()=>Array.from(box?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),a[href]')??[]);items()[0]?.focus();const trap=(e:KeyboardEvent)=>{if(e.key!=='Tab')return;const all=items(),i=all.indexOf(document.activeElement as HTMLElement);if(!all.length)return;if(e.shiftKey&&i<=0){e.preventDefault();all.at(-1)!.focus()}else if(!e.shiftKey&&(i===all.length-1||i<0)){e.preventDefault();all[0].focus()}};window.addEventListener('keydown',trap);return()=>{window.removeEventListener('keydown',trap);previous?.focus()}},[panel,error])
  useLayoutEffect(()=>{const scroll=document.querySelector<HTMLElement>('.og-scroll');if(scroll&&panel==='log')scroll.scrollTop=scroll.scrollHeight;else if(scroll&&panel==='pictures')scroll.scrollTop=0},[panel,head?.version])
  // Cancel the route synchronously: a frame can arrive before the passive pause effect.
