@@ -29,7 +29,14 @@ export function originalIllustrationPlan(head:OriginalHead):IllustrationPlan{
  const night=[ORIGINAL_BACKGROUND_BASELINE,ORIGINAL_BACKGROUND_PLATFORM].includes(id)?' It is a rainy night: retain the blue-teal wet ground and warm existing lamps. Night does not mean underexposed: the locomotive roof, platform edges and paving must remain as readable as in the reference. Do not darken the source or add daylight, fog, a gray wash or new lamps.':' Preserve the reference time of day, weather and existing lighting; do not add new light sources or change exposure.'
  return {version:3,scene:head.sceneId,sourceVersion:head.version,referenceVersion:id,referenceSha256:source.sha256,request:{sessionId:GAME_ID,mode:'edit',referenceUrls:[reference],size:{...size},prompt:'Create a faithful travel-journal illustration of the railway environment in the reference. Match the reference exposure, midtone brightness, local contrast, colors and textured pixel detail.'+night+' Preserve every existing structure, track, narrow walkway, vehicle silhouette and its relative position, using the same overhead orthographic camera and proportions. Environment only; no people, faces, animals, writing or labels. No new objects, doors, buildings, vehicles or story events. Fit the full reference location into a 3:4 portrait composition without stretching its geometry. This is a visual memory, not a new map.'}}
 }
-const safeCodes=new Set(['RATE_LIMITED','QUEUE_BUSY','TIMEOUT','PROVIDER_REJECTED','REFERENCE_UNAVAILABLE','ORIGIN_NOT_ALLOWED','IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'])
+const safeCodes=new Set(['RATE_LIMITED','QUEUE_BUSY','TIMEOUT','PROVIDER_REJECTED','REFERENCE_UNAVAILABLE','ORIGIN_NOT_ALLOWED','IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH','ILLUSTRATION_MEDIA_NETWORK','ILLUSTRATION_MEDIA_RESPONSE','ILLUSTRATION_ASSET_NETWORK','ILLUSTRATION_ASSET_STREAM'])
+/** Only bounded stage/status codes leave the service; never exception messages or URLs. */
+export function originalIllustrationFailureCode(error:unknown){
+ const code=error instanceof MediaServiceError?error.code:error instanceof Error?error.message:''
+ if(safeCodes.has(code)||/^ILLUSTRATION_ASSET_HTTP_[1-5][0-9]{2}$/.test(code))return code
+ if(error instanceof MediaServiceError&&Number.isInteger(error.status)&&error.status>=100&&error.status<=599)return 'ILLUSTRATION_MEDIA_HTTP_'+error.status
+ return 'ILLUSTRATION_UNAVAILABLE'
+}
 const normalize=(j:IllustrationJob):IllustrationJob=>j.state==='active'&&(j.decision?.verdict!=='kept'||j.decision.sha256!==j.asset?.sha256)?{...j,state:'candidate',decision:undefined}:j
 const publicJob=(value:IllustrationJob)=>{const j=normalize(value);return {id:j.id,scene:j.plan.scene,sourceVersion:j.plan.sourceVersion,referenceVersion:j.plan.referenceVersion,reference:{url:j.plan.request.referenceUrls![0],sha256:j.plan.referenceSha256},state:j.state,attempt:j.attempt,recoverable:j.recoverable,nextAt:j.nextAt,...(j.error?{error:j.error}:{}),...(j.asset?{asset:j.asset}:{}),...(j.decision?{decision:j.decision}:{})}}
 /** Separate rows in the existing authority DB: asynchronous media never writes
@@ -89,7 +96,7 @@ export class OriginalIllustrations{
     for(let n=0;n<bytes.length;n+=24000)this.db.run('INSERT INTO original_illustration_parts VALUES(?,?,?,?,?)',owner,id,scene,n/24000,btoa(String.fromCharCode(...bytes.subarray(n,n+24000))))
     j.asset=asset;j.state='candidate';j.recoverable=false;j.leaseUntil=0;delete j.lease;delete j.error
    })
-  }catch(e){const code=e instanceof MediaServiceError?e.code:e instanceof Error?e.message:'';update(j=>{j.state='failed';j.error=safeCodes.has(code)?code:'ILLUSTRATION_UNAVAILABLE';j.recoverable=!['IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'].includes(code)&&!(e instanceof MediaServiceError&&!e.retryable&&e.status>0);j.nextAt=this.now()+Math.max(8000,(e instanceof MediaServiceError?e.retryAfterSeconds??0:0)*1000);j.leaseUntil=0;delete j.lease})}
+  }catch(e){const code=e instanceof MediaServiceError?e.code:e instanceof Error?e.message:'';update(j=>{j.state='failed';j.error=originalIllustrationFailureCode(e);j.recoverable=!['IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'].includes(code)&&!(e instanceof MediaServiceError&&!e.retryable&&e.status>0);j.nextAt=this.now()+Math.max(8000,(e instanceof MediaServiceError?e.retryAfterSeconds??0:0)*1000);j.leaseUntil=0;delete j.lease})}
  }
  async file(owner:string,id:string,scene:string,attempt?:number){
   this.head(owner,id);const current=this.get(owner,id,scene),archived=attempt!==undefined&&attempt!==current?.attempt,j=archived?this.archived(owner,id,scene,attempt):current
@@ -104,17 +111,20 @@ export class OriginalIllustrations{
 export const originalIllustrationProducer=(request:typeof fetch=fetch):IllustrationProducer=>async(job,onTask)=>{
  const signal=AbortSignal.timeout(90000)
  const options={signal,pollIntervalMs:8000,fetchImpl:async(input:RequestInfo|URL,init?:RequestInit)=>{
-  const r=await request(input,init)
-  if(r.ok){const t=await r.clone().json();if(t.request_id!==job.requestId||job.taskId&&t.task_id!==job.taskId)throw Error('ILLUSTRATION_TASK_MISMATCH');onTask(t.task_id)}
+  let r:Response
+  try{r=await request(input,init)}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_MEDIA_NETWORK')}
+  if(r.ok){let t:any;try{t=await r.clone().json()}catch{throw Error('ILLUSTRATION_MEDIA_RESPONSE')}if(t?.request_id!==job.requestId||job.taskId&&t?.task_id!==job.taskId)throw Error('ILLUSTRATION_TASK_MISMATCH');onTask(t.task_id)}
   return r
  }}
  const task=job.taskId?await waitForMediaTask(job.taskId,options):await generateImageMedia({...job.plan.request,requestId:job.requestId},options)
  if(task.request_id!==job.requestId||task.status!=='succeeded'||task.media?.type!=='image'||task.media.format!=='png'||task.media.width!==768||task.media.height!==1024)throw Error('IMAGE_INVALID')
  const u=new URL(task.media.url)
  if(u.protocol!=='https:'||u.username||u.password||u.port||!['cdn.aiwaves.tech','images.aiwaves.tech','game.aiwaves.tech'].includes(u.hostname))throw Error('IMAGE_INVALID')
- const r=await request(u,{signal,credentials:'omit',redirect:'error'})
- if(!r.ok||!r.body)throw Error('ILLUSTRATION_UNAVAILABLE')
+ let r:Response
+ try{r=await request(u,{signal,credentials:'omit',redirect:'error'})}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_ASSET_NETWORK')}
+ if(!r.ok)throw Error('ILLUSTRATION_ASSET_HTTP_'+r.status)
+ if(!r.body)throw Error('ILLUSTRATION_ASSET_STREAM')
  const reader=r.body.getReader(),chunks:Uint8Array[]=[];let n=0
- for(;;){const {done,value}=await reader.read();if(done)break;n+=value.length;if(n>8*1024*1024){await reader.cancel();throw Error('IMAGE_INVALID')}chunks.push(value)}
+ for(;;){let result:ReadableStreamReadResult<Uint8Array>;try{result=await reader.read()}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_ASSET_STREAM')}const {done,value}=result;if(done)break;n+=value.length;if(n>8*1024*1024){await reader.cancel();throw Error('IMAGE_INVALID')}chunks.push(value)}
  const bytes=new Uint8Array(n);let at=0;for(const c of chunks){bytes.set(c,at);at+=c.length}await inspectJournalPng(bytes);return bytes
 }

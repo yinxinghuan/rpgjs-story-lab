@@ -8,7 +8,7 @@ import {mkdtempSync,rmSync,readFileSync} from 'node:fs'
 import {createHash} from 'node:crypto'
 import {OriginalTrainAuthority,originalTrainRuntime,type OriginalHead} from '../server/original-train-runtime'
 import {originalReleasedPresentation} from '../server/original-presentation'
-import {OriginalIllustrations,originalIllustrationPlan,originalIllustrationProducer} from '../server/original-illustration'
+import {OriginalIllustrations,originalIllustrationPlan,originalIllustrationProducer,originalIllustrationFailureCode} from '../server/original-illustration'
 import {originalIllustrationEligible} from '../src/original-illustration-admission'
 import {originalBackgroundReleases} from '../src/original-asset-releases'
 import {originalBackgroundSourcePaths} from '../src/original-background-sources'
@@ -27,6 +27,30 @@ const fixture=new Uint8Array(PNG.sync.write({width:768,height:1024,data:Buffer.a
 const owner='a'.repeat(64)
 function setup(path=':memory:',now:()=>number=Date.now){const raw=new DatabaseSync(path),db:AuthorityStorage={all:(sql,...b)=>raw.prepare(sql).all(...b) as any,run:(sql,...b)=>{raw.prepare(sql).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const result=work();raw.exec('COMMIT');return result}catch(e){raw.exec('ROLLBACK');throw e}}},authority=new OriginalTrainAuthority(db,originalReleasedPresentation);return {raw,db,authority,images:new OriginalIllustrations(db,(o,id)=>authority.get(o,id),now)}}
 const body=(h:OriginalHead,retry=false)=>({scene:h.sceneId,expected_version:h.version,retry})
+test('production diagnostics retain bounded stage/status without exposing raw errors',()=>{
+ assert.equal(originalIllustrationFailureCode(new Error('private URL or credential detail')),'ILLUSTRATION_UNAVAILABLE')
+ assert.equal(originalIllustrationFailureCode(new MediaServiceError('HTTP_ERROR','private response',502,true)),'ILLUSTRATION_MEDIA_HTTP_502')
+ assert.equal(originalIllustrationFailureCode(new MediaServiceError('PROVIDER_REJECTED','private response',400,false)),'PROVIDER_REJECTED')
+ assert.equal(originalIllustrationFailureCode(new Error('ILLUSTRATION_ASSET_HTTP_503')),'ILLUSTRATION_ASSET_HTTP_503')
+ assert.equal(originalIllustrationFailureCode(new Error('ILLUSTRATION_ASSET_HTTP_503?secret=hidden')),'ILLUSTRATION_UNAVAILABLE')
+})
+test('media transport and invalid task responses persist distinct errors without changing story or request',async()=>{
+ let now=100000;const s=setup(':memory:',()=>now)
+ try{
+  const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h))
+  const requestId=JSON.parse(s.db.all<{data:string}>('SELECT data FROM original_illustrations')[0].data).requestId
+  for(const [response,expected]of [
+   [async()=>{throw Error('network URL containing private details')},'ILLUSTRATION_MEDIA_NETWORK'],
+   [async()=>new Response('not json'),'ILLUSTRATION_MEDIA_RESPONSE'],
+   [async()=>new Response('gateway unavailable',{status:502}),'ILLUSTRATION_MEDIA_HTTP_502'],
+  ] as const){
+   await s.images.run(owner,h.id,h.sceneId,originalIllustrationProducer(response))
+   const job=s.images.list(owner,h.id)[0];assert.equal(job.error,expected);assert.equal(job.attempt,1);assert.equal(job.recoverable,true)
+   assert.equal(JSON.parse(s.db.all<{data:string}>('SELECT data FROM original_illustrations')[0].data).requestId,requestId)
+   assert.deepEqual(s.authority.get(owner,h.id),h);now+=10000
+  }
+ }finally{s.raw.close()}
+})
 test('plans use exact packaged repository sources, not generated dist URLs or private story text',()=>{
  for(const [id,path]of Object.entries(originalBackgroundSourcePaths))assert.equal(createHash('sha256').update(readFileSync(path)).digest('hex'),originalBackgroundReleases[id].sha256)
  const h=originalTrainRuntime(()=>true).initial('zh',crypto.randomUUID()),plan=originalIllustrationPlan(h)
