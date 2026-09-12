@@ -1,0 +1,52 @@
+{
+  "release": "7367c13f0d121e7a9ffc57c92ccd44cc0701ebbf",
+  "productionRecovery": {
+    "outcome": {
+      "ok": true
+    },
+    "job": {
+      "id": "61855f13-1e91-4133-8b33-6556001a88fa",
+      "scene": "train-at-dead-station",
+      "sourceVersion": 0,
+      "referenceVersion": "north-cape-platform-8fc11a96",
+      "reference": {
+        "url": "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png",
+        "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+      },
+      "state": "failed",
+      "attempt": 1,
+      "recoverable": true,
+      "nextAt": 1789214771492,
+      "error": "ILLUSTRATION_ASSET_NETWORK"
+    },
+    "sameJob": true,
+    "sameAttempt": true,
+    "storyUnchanged": true,
+    "artReviewed": false
+  },
+  "finding": "Server download supplied credentials:omit, a RequestInit field rejected by workerd. Removed only from server fetch calls; no incoming headers forwarded and redirect:error retained. Live causal confirmation pending.",
+  "source": "https://github.com/cloudflare/workerd/issues/902",
+  "tests": {
+    "passed": 27,
+    "files": [
+      "original-illustration.test.ts",
+      "journal-image.test.ts",
+      "creator-art.test.ts"
+    ]
+  },
+  "platformFullPlaythrough": false,
+  "diagnosticReleaseVerification": {
+    "main": {
+      "commit": "7367c13f0d121e7a9ffc57c92ccd44cc0701ebbf",
+      "files": 58,
+      "sameLocalBuild": true,
+      "at": "2026-09-12T12:06:48.546Z"
+    },
+    "pages": {
+      "commit": "7367c13f0d121e7a9ffc57c92ccd44cc0701ebbf",
+      "files": 58,
+      "sameLocalBuild": true,
+      "at": "2026-09-12T12:12:12.544Z"
+    }
+  }
+}

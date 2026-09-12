@@ -59,7 +59,7 @@ export function allowedImageUrl(value:string){
 }
 async function download(url:string,request:typeof fetch,signal:AbortSignal){
  if(!allowedImageUrl(url))throw Error('IMAGE_INVALID')
- const r=await request(url,{signal,redirect:'error',credentials:'omit'})
+ const r=await request(url,{signal,redirect:'error'})
  if(!r.ok||!r.body)throw Error('IMAGE_UNAVAILABLE')
  const chunks:Uint8Array[]=[],reader=r.body.getReader();let length=0
  for(;;){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>8*1024*1024){await reader.cancel();throw Error('IMAGE_INVALID')}chunks.push(value)}

@@ -14,7 +14,7 @@ export function platformArtArchiveSource(request:typeof fetch=fetch):ArtArchiveS
  const signal=AbortSignal.timeout(22000)
  const task=await getMediaTask(input.taskId,{signal,fetchImpl:request})
  if(task.task_id!==input.taskId||task.request_id!==input.id||task.type!=='image'||task.status!=='succeeded'||task.media?.type!=='image'||task.media.format!=='png'||task.media.width!==1024||task.media.height!==1536||!allowedImageUrl(task.media.url))throw new LabError('ART_SOURCE_MISMATCH',409)
- const r=await request(task.media.url,{signal,redirect:'error',credentials:'omit'})
+ const r=await request(task.media.url,{signal,redirect:'error'})
  if(!r.ok||!r.body)throw new LabError('ART_SOURCE_UNAVAILABLE',503)
  const reader=r.body.getReader(),chunks:Uint8Array[]=[];let size=0
  for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>8*1024*1024){await reader.cancel();throw new LabError('ART_TOO_LARGE',413)}chunks.push(value)}

@@ -1105,3 +1105,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 正式画页分阶段错误（2026-09-12）
 
 真实主站两次恢复同一画页任务均返回 `ILLUSTRATION_UNAVAILABLE`，剧情仍可修理并恢复。`original-illustration.ts` 新增有限错误码，区分媒体连接、任务 JSON 响应、非预期服务 HTTP 状态、素材下载连接/HTTP/流中断；仅记录阶段与三位状态码，不公开异常文本、URL 或凭据。原请求、任务租约、尝试限额及故事状态不变。16 项相关回归及类型检查通过；该诊断尚需正式运行才能判断实际根因。
+
+### 2026-09-12 服务端图片下载兼容性
+
+正式诊断将原画页任务失败定位为 `ILLUSTRATION_ASSET_NETWORK`；任务与剧情版本未变。三个服务端图片下载入口移除 workerd 不支持的 `credentials` RequestInit 字段。服务端不持有浏览器 cookie jar，也不转发调用者请求头；继续保留 HTTPS/域名准入及 `redirect: error`。相关 27 项测试通过，正式环境恢复原任务的因果验证仍待执行。参见 `media-download-compatibility-20260912.json`。

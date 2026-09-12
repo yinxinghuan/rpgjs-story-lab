@@ -120,8 +120,10 @@ export const originalIllustrationProducer=(request:typeof fetch=fetch):Illustrat
  if(task.request_id!==job.requestId||task.status!=='succeeded'||task.media?.type!=='image'||task.media.format!=='png'||task.media.width!==768||task.media.height!==1024)throw Error('IMAGE_INVALID')
  const u=new URL(task.media.url)
  if(u.protocol!=='https:'||u.username||u.password||u.port||!['cdn.aiwaves.tech','images.aiwaves.tech','game.aiwaves.tech'].includes(u.hostname))throw Error('IMAGE_INVALID')
+ // Server-only fetch has no ambient cookie jar. Do not pass browser credentials:
+ // workerd rejects that RequestInit field; never forward incoming request headers.
  let r:Response
- try{r=await request(u,{signal,credentials:'omit',redirect:'error'})}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_ASSET_NETWORK')}
+ try{r=await request(u,{signal,redirect:'error'})}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_ASSET_NETWORK')}
  if(!r.ok)throw Error('ILLUSTRATION_ASSET_HTTP_'+r.status)
  if(!r.body)throw Error('ILLUSTRATION_ASSET_STREAM')
  const reader=r.body.getReader(),chunks:Uint8Array[]=[];let n=0
