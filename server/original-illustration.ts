@@ -9,7 +9,8 @@ import {LabError} from '../src/journey-runtime'
 import {generateImageMedia,waitForMediaTask,MediaServiceError,type GenerateImageMediaRequest} from '../src/vendor/media/client'
 import {inspectJournalPng} from './journal-image'
 
-export const ORIGINAL_ILLUSTRATION_RELEASED=false
+// New requests remain limited by originalIllustrationEligible.
+export const ORIGINAL_ILLUSTRATION_RELEASED=true
 const COMMIT='8c4ebb1d42397286d91a7d511fc0d41d1f7a144a'
 const size={width:768,height:1024} as const
 export type IllustrationPlan={version:1|2|3;scene:string;sourceVersion:number;referenceVersion:string;referenceSha256:string;request:GenerateImageMediaRequest}

@@ -9,10 +9,10 @@ import {journalImageError} from './journal-image-errors'
 import {readOriginalIllustrations,illustrationAction,type OriginalIllustration} from './original-illustration-contract'
 
 /** Optional journal media. Busy state is local and never pauses story requests. */
-export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head:OriginalHead;api:Transport;onReadJournal:()=>void}){
+export default function OriginalIllustrationPanel({head,api,onReadJournal,onContinue}:{head:OriginalHead;api:Transport;onReadJournal:()=>void;onContinue:()=>void}){
  const t=(zh:string,en:string)=>head.save.locale==='zh'?zh:en,alive=useRef(true),readVersion=useRef(0)
  const [jobs,setJobs]=useState<OriginalIllustration[]>([]),[selected,setSelected]=useState(head.sceneId),[ready,setReady]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[clock,setClock]=useState(Date.now())
- const [comparing,setComparing]=useState(false)
+ const [comparing,setComparing]=useState(false),[generating,setGenerating]=useState(false)
  const [picture,setPicture]=useState<{key:string;url:string}|null>(null),[imageError,setImageError]=useState(false),[imageRetry,setImageRetry]=useState(0)
  const endpoint='/sessions/'+head.id+'/illustrations',job=jobs.find(j=>j.scene===selected),key=selected+':'+(job?.asset?.sha256??'')+':'+job?.state
  const label=(scene:string)=>scene==='train-at-flood-bridge'?originalBridgePlace(head.save.locale):head.save.map.find(m=>'train-at-'+m.id===scene)?.label??t('已到达的场景','Visited place')
@@ -34,10 +34,10 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
   return()=>{live=false;if(url)URL.revokeObjectURL(url)}
  },[key,imageRetry,head.id,api])
  const action=illustrationAction(job,head.sceneId,selected,clock),supported=originalIllustrationEligible(head.assets,head.sceneId)
- async function start(){setBusy(true);setError('');readVersion.current++;try{
+ async function start(){setBusy(true);setGenerating(true);setError('');readVersion.current++;try{
   const list=readOriginalIllustrations(await api(endpoint,{scene:selected,expected_version:head.version,retry:action==='retry'}))
   if(alive.current){readVersion.current++;setJobs(list);setReady(true)}
- }catch(e){if(alive.current){setReady(false);setError(e instanceof Error?e.message:'ILLUSTRATION_UNAVAILABLE')}}finally{if(alive.current)setBusy(false)}}
+ }catch(e){if(alive.current){setReady(false);setError(e instanceof Error?e.message:'ILLUSTRATION_UNAVAILABLE')}}finally{if(alive.current){setBusy(false);setGenerating(false)}}}
  async function decide(decision:'keep'|'discard'){
   if(!job?.asset)return
   setBusy(true);setError('');readVersion.current++
@@ -59,7 +59,7 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
    {comparing&&<div id="og-reference-comparison"><OriginalReferencePicture key={job.reference.sha256} reference={job.reference} locale={head.save.locale}/></div>}
   </div>}
   {ready&&job?.state==='candidate'&&<div><button className="og-choice" disabled={busy||picture?.key!==key} onClick={()=>void decide('keep')}>{t('保留这张画页','Keep this illustration')}</button><button className="og-choice" disabled={busy} onClick={()=>void decide('discard')}>{t('不保留这张候选','Do not keep this candidate')}</button></div>}
-  {job?.state==='preparing'&&<><div className="og-generation-preview"><JourneyLoading locale={head.save.locale} detail={t('这段旅途正在绘成画页…','This journey is becoming an illustration…')}/></div><p>{t('可以继续探索，回来后查看同一张画页的进展。','Keep exploring and return to check this same illustration.')}</p><button className="og-choice" onClick={onReadJournal}>{t('继续旅程','Continue the journey')}</button></>}
+  {(generating||job?.state==='preparing')&&<><div className="og-generation-preview"><JourneyLoading locale={head.save.locale} detail={t('这段旅途正在绘成画页…','This journey is becoming an illustration…')}/></div><p>{t('可以继续探索，回来后查看同一张画页的进展。','Keep exploring and return to check this same illustration.')}</p><button className="og-choice" onClick={onContinue}>{t('继续旅程','Continue the journey')}</button></>}
   {issue&&<p role="status">{explanation}</p>}
   {imageError&&<><p role="status">{t('图片暂时无法读取，旅程没有改变。','The image could not load. Your journey is unchanged.')}</p><button className="og-choice" onClick={()=>setImageRetry(n=>n+1)}>{t('重新读取图片','Reload image')}</button></>}
   {error&&<button className="og-choice" disabled={busy} onClick={()=>void refresh()}>{t('重新读取画页记录','Reload illustration records')}</button>}

@@ -160,7 +160,7 @@ test('platform producer rejects foreign task identity and preserves original tas
  await assert.rejects(originalIllustrationProducer(async()=>Response.json({request_id:'wrong',task_id:'foreign',status:'succeeded'}))(j,()=>{}),/TASK_MISMATCH/)
  }finally{s.raw.close()}
 })
-test('real media PNG round-trips through the Worker route; default gate and capability isolation remain',async()=>{
+test('real media PNG round-trips through the Worker route; released read access and capability isolation remain',async()=>{
  const bytes=new Uint8Array(readFileSync('doc/platform-art-candidates/20260912/original-journal-01/candidate.png'))
  const decoded=PNG.sync.read(Buffer.from(bytes));assert.equal(decoded.width,768);assert.equal(decoded.height,1024)
  assert.equal(createHash('sha256').update(bytes).digest('hex'),'ef122477079498a7215a0b83afe761d975b8e704e97f3d52a06f9437f7f1b8f5')
@@ -170,7 +170,7 @@ test('real media PNG round-trips through the Worker route; default gate and capa
  const call=(path:string,data?:unknown,auth=headers)=>handleApi(new Request('https://authority.invalid/api/original'+path,{headers:auth,method:data===undefined?'GET':'POST',body:data===undefined?undefined:JSON.stringify(data)}),env)
  try{
   const h=await(await call('/sessions',{enrollment_id:crypto.randomUUID(),locale:'zh'})).json() as OriginalHead
-  assert.equal((await call('/sessions/'+h.id+'/illustrations')).status,404)
+  const empty=await call('/sessions/'+h.id+'/illustrations');assert.equal(empty.status,200);assert.deepEqual(await empty.json(),{illustrations:[]});assert.equal((await(await call('/health')).json()).illustrationsAvailable,true)
   enabled=true;objects.clear()
   const path='/sessions/'+h.id+'/illustrations',r=await call(path,body(h));assert.equal(r.status,200);assert.equal((await r.json()).illustrations[0].state,'candidate')
   const file=await call(path+'/'+h.sceneId+'/file');assert.deepEqual(new Uint8Array(await file.arrayBuffer()),bytes)
@@ -192,7 +192,7 @@ test('real media PNG round-trips through the Worker route; default gate and capa
   assert.equal((await call(review+'/attempts/1/file',undefined,{...headers,Authorization:'Bearer '+newCapability()})).status,404)
   await call(review+'/decision',{...decision,attempt:2,decision:'keep'});assert.equal((await(await call(path)).json()).illustrations[0].state,'active')
   assert.deepEqual(await(await call('/sessions/'+h.id)).json(),h)
-  enabled=false;objects.clear();assert.equal((await call(review+'/decision',decision)).status,404);assert.equal((await call(review+'/attempts')).status,404)
+  enabled=false;objects.clear();assert.equal((await call(review+'/decision',decision)).status,200);assert.equal((await call(review+'/attempts')).status,200);assert.equal((await(await call(path)).json()).illustrations[0].state,'active')
  }finally{storage.close()}
 })
 

@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-12",
+  "baseCommit": "3aa093e",
+  "environment": "Compiled frontend and Worker on localhost; fixed exposure-03 PNG delayed 15 seconds; no new remote generation",
+  "checks": [
+    "390px: clicking create immediately shows journey loading and continue control",
+    "Candidate becomes available after leaving panel; keep decision survives reload",
+    "320px revised build: continue returns directly to map before delayed response; joystick enabled; resources 68/82/58 unchanged"
+  ],
+  "screenshots": [
+    "../_qa/illustration-open-ui/platform-layout-390-waiting.png",
+    "../_qa/illustration-open-ui/platform-layout-320-continue-map.png"
+  ],
+  "deploymentPending": true,
+  "followup": "While walking to an entity, opening journal appeared to be superseded by arrival action panel; investigate navigation/arrival timing before release.",
+  "realAlterU": false
+}

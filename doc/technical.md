@@ -1089,3 +1089,9 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `journal-live-chain-01`使用生产OriginalTrainAuthority、OriginalIllustrations及originalIllustrationProducer，新的本机SQLite合成旅程，实际调用平台公共媒体接口一次。请求先入库，再于生成期间完成repair-starter与commit-valley-route；真实结果以原北岬scene存储，而故事已在河谷version2（fuel62/condition87/morale58）。数据库关闭重开后原始PNG完全一致，旧请求恢复返回同一意图且总次数1。人工查看原参考与结果后保留为非关键回忆样本，决定在再次重开后仍为active；重复相同决定幂等，故事未变。
 
 任务mt_f92320f351ad85a072508e8db34be3d6，PNG SHA e99f176df19aabc3f686c7efbdfb2d6e6c5374f748a94286fa5557790d4ef0db。结果雨线/青色反光较强，原结构可辨，未替换地图。此实证是本机生产组件调用真实平台媒体，不是部署Worker或AlterU宿主内操作；浏览器呈现和正式后台链路仍需验证。全局开关未改。请求、任务、候选和恢复结果见doc/platform-art-candidates/20260912/journal-live-chain-01/。
+
+### 限定画页开放与立即反馈候选（2026-09-12）
+
+开发版本将全局画页入口打开，仍由参考版本准入控制新请求，仅北岬平台参考和隧道参考可新建。生成按钮按下立即设置generating，不等待HTTP返回才显示JourneyLoading；“继续旅程”使用独立onContinue直接关闭面板回地图，保留onReadJournal用于明确阅读操作。390等待画面、候选保留刷新恢复，以及320直接回图/摇杆恢复已用冻结前端和Worker的15秒固定候选测试复验，未新增媒体调用。
+
+最终690项完整回归通过，构建、资源哈希、源码UI扫描及凭据扫描通过。线上仍为539774a、画页关闭；本改动尚未部署。待核查走向物件时打开记录被抵达面板覆盖的时序边界，再进行正式运行验证。详见illustration-open-ui-review-20260912.json。
