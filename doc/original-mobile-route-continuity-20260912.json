@@ -1,0 +1,32 @@
+{
+  "runtimeCommit": "64b5c37",
+  "release": "original-character-continuity-20260912-1",
+  "environment": "Local compiled production frontend and Worker at 127.0.0.1:5374; disposable synthetic journey; external model and media calls disabled",
+  "input": "Visible nearby controls, actual RPG-JS walking to interaction points, then authored action buttons; earlier pine route survey used the visible full-sentence input",
+  "route": "north-cape → black-pine → white-stone-tunnel → graystone-yard → mountain-pass → sleeping-town → flood-bridge → dawn-junction",
+  "completion": {
+    "authoredActions": 39,
+    "ending": "在枢纽安顿",
+    "fuel": 72,
+    "condition": 73,
+    "morale": 67,
+    "companions": ["阿达", "林澈", "玛柯"],
+    "endingTextIdenticalAfterReload": true
+  },
+  "observed": [
+    "Reopened browser recovered the existing synthetic journey at Graystone Yard with fuel 72, condition 75 and morale 53.",
+    "Mako appeared after the visible introduction; work pact added 12 fuel and 2 morale, deducted 6 condition, and enabled the invitation.",
+    "Lin and Mako performed their previously established pass duties; gravel siding deducted the displayed 12 condition and 6 morale.",
+    "Town repair increased condition from 57 to 77; supplies and broadcast costs survived subsequent transitions.",
+    "Bridge kit was explicitly obtained and consumed; crossing deducted 4 fuel and 4 condition before junction arrival.",
+    "Ending preserved all three companions, the selected settlement cost and route consequences; exact visible ending text survived reload."
+  ],
+  "evidenceDirectory": "_qa/ui/mobile-full-route-20260912/",
+  "captures": ["external-guest-settled-restored-320.png", "external-guest-settled-restored-390.png"],
+  "limits": [
+    "Actual authenticated AlterU and physical iPhone validation remain incomplete.",
+    "This is the eight-scene forest branch, not coverage of every scene or every branch.",
+    "Latest ending captures include the external guest banner and are not platform-layout composition approval.",
+    "UI observation JSON is partial; the final visible journey record includes the completed actions."
+  ]
+}
