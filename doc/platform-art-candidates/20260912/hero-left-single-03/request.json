@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "9d727612-20b7-4e10-8efa-47368e11a429",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/7d5194f/doc/platform-art-candidates/20260912/hero-left-single-03/reference.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Edit only the walking posture of this one left-facing traveler. Preserve the reference head, overhead camera, pixel detail, mustard coat, teal trousers, brown satchel and exact character scale. Keep the head at the same canvas coordinates. Produce ONE full-body left-facing walking contact pose. The near leg (the leg closest to the viewer) extends BACK behind the hips toward screen RIGHT; its boot is the rightmost boot. The far leg reaches forward toward screen LEFT; its boot is the leftmost boot. The near arm swings forward toward screen LEFT. Both legs are straight enough to read a clear split stride. Do not turn the body or mirror the person; keep the satchel on its original side. Plain pure white background, no ground shadow, no labels or grid. Retain the 320x320 canvas and original clear margins."
+}

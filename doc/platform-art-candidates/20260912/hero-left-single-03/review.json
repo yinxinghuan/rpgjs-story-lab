@@ -1,0 +1,21 @@
+{
+  "taskId": "mt_9de5978bc8ffa6dabe11210c2749d416",
+  "status": "not-admitted-same-arm-phase",
+  "requests": 1,
+  "sha256": "bcaf9f3b8221a101e7142316f04df7689a8452dd4449ce0f4991f47dc015d9d6",
+  "observations": [
+    "Single left-facing subject and recognizable yellow coat/satchel identity retained.",
+    "Visible near arm still extends toward screen left, matching the existing outer left-facing poses rather than the missing opposite arm phase.",
+    "Prior two-pose and this single-pose request explicitly asked the near arm to swing forward; this is a specification error for the missing phase, not proof that the model ignored that instruction.",
+    "Head position and overall figure height drifted from the idle crop.",
+    "Leg depth/near-far identity alone is not reliably resolved by this still; do not claim anatomically correct alternation."
+  ],
+  "nextContract": {
+    "leftFacingExisting": "near visible hand ahead of torso toward screen left",
+    "leftFacingMissing": "near visible arm swings behind torso toward screen right; opposite leg contact must then be checked in alternating playback",
+    "verification": "Compare both hands, boot depth/overlap, fixed head scale and foot anchor against the existing contact frame, not only the idle reference"
+  },
+  "runtimeAdmission": false,
+  "generationComplete": true,
+  "baselineChanged": false
+}
