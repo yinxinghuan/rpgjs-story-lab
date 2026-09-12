@@ -1067,3 +1067,9 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `actor-frame-patch-panel.tsx` 在人物原图下提供方向、列和单帧PNG选择；`sprite-creator.tsx` 在现有浏览器锁内验证8MiB上限、解码并调用newActorFrameSource，以当前草稿id/revision执行CAS保存。错误尺寸不生成记录；成功另存原图，随后使用现有去背景、脚点对齐及ActorGaitPreview。替换后的图集类型锁定为人物，所有审核重新填写。文件选择在另存前只存在内存，刷新后的已保存替换来源从actorPatch恢复。
 
 已通过真实制作页导入hero-reproduce-01、替换左向第三帧、刷新恢复、处理、步态播放/暂停/站立和错误尺寸拒绝。使用hero-left-opposite-04仅验证流程；该单帧比例仍不合格，未发布或替换正式人物。320×568和390×844控件检查通过；当前工作尚未部署。
+
+### 制作接口版本与持久记录分离（2026-09-12）
+
+单帧来源扩展使旧制作页不能解析新归档清单，因此制作接口握手升级为`creator-runtime-2`，继续使用`X-Creator-Runtime`。背景持久记录仍为`creator-background-1`，由独立`CREATOR_BACKGROUND_RECORD_VERSION`约束；已有creator owner命名空间、浏览器能力身份和Story Session存档均未变更。旧接口请求在访问归档对象前返回409，客户端版本不匹配提示刷新；公开素材GET仍由服务器转发当前版本，不要求旧游戏画面携带新头。
+
+单帧入口版本54829a6的完整回归689项通过；接口升级后creator-cloud/sprite-cloud共12项通过，覆盖旧接口拒绝、背景原图恢复、人物与设备归档和新单帧来源恢复。接口升级后的完整回归同样689项通过，构建、Worker启动及9场景27资源哈希验证通过。接口升级仍待随前后端同提交正式部署。

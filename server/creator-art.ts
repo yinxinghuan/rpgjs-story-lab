@@ -3,7 +3,7 @@ import {LabError} from '../src/journey-runtime'
 import {getMediaTask} from '../src/vendor/media/client'
 import {inspectArtCandidate} from '../src/art-draft'
 import {allowedImageUrl} from './journal-image'
-import {assertCloudArtInput,CREATOR_RUNTIME_CONTRACT,CREATOR_DRAFT_LIMIT,type CloudArtInput,type CloudArtRecord} from '../src/creator-contract'
+import {assertCloudArtInput,CREATOR_BACKGROUND_RECORD_VERSION,CREATOR_DRAFT_LIMIT,type CloudArtInput,type CloudArtRecord} from '../src/creator-contract'
 import {assertBackgroundReview,assertPublishedBackground,type PublishedBackground} from '../src/background-publication'
 
 export type ArtArchiveSource=(input:CloudArtInput)=>Promise<Uint8Array>
@@ -44,7 +44,7 @@ export class CreatorArtArchive{
    const bytes=await this.source(input)
    let candidate;try{candidate=await inspectArtCandidate(bytes)}catch{throw new LabError('ART_INVALID',409)}
    if(candidate.sha256!==input.sha256)throw new LabError('ART_SOURCE_MISMATCH',409)
-   const record:CloudArtRecord={...input,version:CREATOR_RUNTIME_CONTRACT,width:1024,height:1536,bytes:bytes.length,createdAt:this.now()}
+   const record:CloudArtRecord={...input,version:CREATOR_BACKGROUND_RECORD_VERSION,width:1024,height:1536,bytes:bytes.length,createdAt:this.now()}
    return this.db.transaction(()=>{
     const raced=this.replay(owner,input);if(raced)return raced
     if(this.list(owner).length>=CREATOR_DRAFT_LIMIT)throw new LabError('ART_DRAFT_LIMIT',429)

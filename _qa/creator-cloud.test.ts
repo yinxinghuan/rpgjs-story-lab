@@ -10,7 +10,7 @@ import {CreatorArtArchive,platformArtArchiveSource} from '../server/creator-art'
 import {inspectArtCandidate,planArtDraft,type ArtDraft} from '../src/art-draft'
 import {CreatorCloudDrafts,creatorCloudTransport} from '../src/creator-cloud'
 import {CarriageJourneyAuthority,createHandler,handleApi} from '../worker/source'
-import {CREATOR_RUNTIME_HEADER,CREATOR_RUNTIME_CONTRACT} from '../src/creator-contract'
+import {CREATOR_RUNTIME_HEADER,CREATOR_RUNTIME_CONTRACT,assertCloudArtRecord} from '../src/creator-contract'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 const bytes=new Uint8Array(readFileSync(new URL('../doc/platform-art-candidates/20260911/environment-edit-02/candidate.png',import.meta.url)))
 const candidate=await inspectArtCandidate(bytes),taskId='mt_1a1c4492493eaf68a32331d43d91c207'
@@ -19,6 +19,7 @@ test('deployed handler opens creator archives behind capability auth and origina
  const env={CARRIAGE_JOURNEYS:{idFromName:()=>{throw Error('unauthenticated request reached namespace')},get:()=>{throw Error('unauthenticated request reached object')}}}
  const request=(path:string)=>handleApi(new Request('https://game.invalid'+path),env)
  const health=await request('/api/creator/health');assert.equal(health.status,200);assert.equal((await health.json()).runtimeContract,CREATOR_RUNTIME_CONTRACT)
+ const stale=await handleApi(new Request('https://game.invalid/api/creator/sprites',{headers:{Authorization:'Bearer '+'A'.repeat(43),[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:'creator-background-1'}}),env);assert.equal(stale.status,409);assert.equal((await stale.json()).error,'RUNTIME_VERSION_MISMATCH')
  for(const path of ['/api/creator/drafts','/api/creator/sprites'])assert.equal((await request(path)).status,401)
  assert.equal((await request('/api/original/health')).status,200)
  assert.equal((await request('/api/original/sessions')).status,401)
@@ -32,7 +33,7 @@ function fixture(source=async()=>bytes){
 }
 test('cloud art preserves original bytes, private immutable records and same-task retries across restart',async()=>{
  const f=fixture();try{const i=input(),[a,b]=await Promise.all([f.archive.save('alice',i),f.archive.save('alice',i)])
-  assert.deepEqual(a,b);assert.equal(f.calls(),1);assert.deepEqual(await f.archive.file('alice',i.id),bytes)
+  assert.equal(a.version,'creator-background-1');assertCloudArtRecord(a);assert.deepEqual(a,b);assert.equal(f.calls(),1);assert.deepEqual(await f.archive.file('alice',i.id),bytes)
   assert.deepEqual(f.archive.list('bob'),[]);await assert.rejects(f.archive.file('bob',i.id),/ART_DRAFT_NOT_FOUND/)
   f.restart();assert.deepEqual(await f.archive.save('alice',i),a);assert.equal(f.calls(),1);assert.deepEqual(await f.archive.file('alice',i.id),bytes)
   await assert.rejects(f.archive.save('alice',{...i,lighting:'warm'}),/ART_DRAFT_CONFLICT/);assert.equal(f.calls(),1)
