@@ -1,0 +1,460 @@
+{
+  "scope": "Existing agent-created synthetic production journey; API/client test, not renderer or logged-in AlterU",
+  "actions": [
+    {
+      "action": "commit-valley-route",
+      "version": 2,
+      "scene": "train-at-river-valley",
+      "stats": {
+        "fuel": 62,
+        "condition": 87,
+        "morale": 58
+      }
+    },
+    {
+      "action": "river-survey",
+      "version": 3,
+      "scene": "train-at-river-valley",
+      "stats": {
+        "fuel": 62,
+        "condition": 87,
+        "morale": 58
+      }
+    },
+    {
+      "action": "river-rescue-manual",
+      "version": 4,
+      "scene": "train-at-river-valley",
+      "stats": {
+        "fuel": 62,
+        "condition": 79,
+        "morale": 58
+      }
+    },
+    {
+      "action": "river-treat",
+      "version": 5,
+      "scene": "train-at-river-valley",
+      "stats": {
+        "fuel": 62,
+        "condition": 79,
+        "morale": 64
+      }
+    },
+    {
+      "action": "river-depart",
+      "version": 6,
+      "scene": "train-at-tunnel",
+      "stats": {
+        "fuel": 56,
+        "condition": 79,
+        "morale": 64
+      }
+    },
+    {
+      "action": "tunnel-inspect",
+      "version": 7,
+      "scene": "train-at-tunnel",
+      "stats": {
+        "fuel": 56,
+        "condition": 79,
+        "morale": 64
+      },
+      "interpretation": {
+        "input": "我现在检查通风机和隧道里的烟流。",
+        "actionId": "tunnel-inspect"
+      }
+    },
+    {
+      "action": "tunnel-doctor-led",
+      "version": 8,
+      "scene": "train-at-tunnel",
+      "stats": {
+        "fuel": 56,
+        "condition": 79,
+        "morale": 66
+      }
+    },
+    {
+      "action": "tunnel-ventilate",
+      "version": 9,
+      "scene": "train-at-tunnel",
+      "stats": {
+        "fuel": 48,
+        "condition": 79,
+        "morale": 66
+      }
+    },
+    {
+      "action": "tunnel-depart",
+      "version": 10,
+      "scene": "train-at-graystone-yard",
+      "stats": {
+        "fuel": 44,
+        "condition": 79,
+        "morale": 66
+      }
+    },
+    {
+      "action": "yard-meet",
+      "version": 11,
+      "scene": "train-at-graystone-yard",
+      "stats": {
+        "fuel": 44,
+        "condition": 79,
+        "morale": 66
+      }
+    },
+    {
+      "action": "yard-medical-pact",
+      "version": 12,
+      "scene": "train-at-graystone-yard",
+      "stats": {
+        "fuel": 60,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "yard-route-brief",
+      "version": 13,
+      "scene": "train-at-graystone-yard",
+      "stats": {
+        "fuel": 60,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "yard-invite",
+      "version": 14,
+      "scene": "train-at-graystone-yard",
+      "stats": {
+        "fuel": 60,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "yard-depart",
+      "version": 15,
+      "scene": "train-at-mountain-pass",
+      "stats": {
+        "fuel": 54,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "pass-inspect",
+      "version": 16,
+      "scene": "train-at-mountain-pass",
+      "stats": {
+        "fuel": 54,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "pass-player-watch",
+      "version": 17,
+      "scene": "train-at-mountain-pass",
+      "stats": {
+        "fuel": 54,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "pass-mako-duty",
+      "version": 18,
+      "scene": "train-at-mountain-pass",
+      "stats": {
+        "fuel": 54,
+        "condition": 79,
+        "morale": 72
+      }
+    },
+    {
+      "action": "pass-gravel-siding",
+      "version": 19,
+      "scene": "train-at-mountain-pass",
+      "stats": {
+        "fuel": 54,
+        "condition": 67,
+        "morale": 66
+      }
+    },
+    {
+      "action": "pass-debrief",
+      "version": 20,
+      "scene": "train-at-mountain-pass",
+      "stats": {
+        "fuel": 54,
+        "condition": 67,
+        "morale": 70
+      }
+    },
+    {
+      "action": "pass-depart",
+      "version": 21,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 48,
+        "condition": 67,
+        "morale": 70
+      }
+    },
+    {
+      "action": "town-inspect",
+      "version": 22,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 48,
+        "condition": 67,
+        "morale": 70
+      }
+    },
+    {
+      "action": "town-grid-aid",
+      "version": 23,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 42,
+        "condition": 67,
+        "morale": 78
+      }
+    },
+    {
+      "action": "town-public-rules",
+      "version": 24,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 42,
+        "condition": 67,
+        "morale": 86
+      }
+    },
+    {
+      "action": "town-refuel",
+      "version": 25,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 58,
+        "condition": 67,
+        "morale": 86
+      }
+    },
+    {
+      "action": "town-repair",
+      "version": 26,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 58,
+        "condition": 87,
+        "morale": 86
+      }
+    },
+    {
+      "action": "town-rest",
+      "version": 27,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 58,
+        "condition": 87,
+        "morale": 92
+      }
+    },
+    {
+      "action": "town-route-brief",
+      "version": 28,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 58,
+        "condition": 87,
+        "morale": 92
+      }
+    },
+    {
+      "action": "town-pack-kit",
+      "version": 29,
+      "scene": "train-at-sleeping-town",
+      "stats": {
+        "fuel": 58,
+        "condition": 87,
+        "morale": 92
+      }
+    },
+    {
+      "action": "town-depart",
+      "version": 30,
+      "scene": "train-at-flood-bridge",
+      "stats": {
+        "fuel": 52,
+        "condition": 87,
+        "morale": 92
+      }
+    },
+    {
+      "action": "bridge-inspect",
+      "version": 31,
+      "scene": "train-at-flood-bridge",
+      "stats": {
+        "fuel": 52,
+        "condition": 87,
+        "morale": 92
+      },
+      "interpretation": {
+        "input": "我现在检查近岸桥台及洪水水位。",
+        "actionId": "bridge-inspect"
+      }
+    },
+    {
+      "action": "bridge-kit-survey",
+      "version": 32,
+      "scene": "train-at-flood-bridge",
+      "stats": {
+        "fuel": 52,
+        "condition": 87,
+        "morale": 92
+      }
+    },
+    {
+      "action": "bridge-arrange",
+      "version": 33,
+      "scene": "train-at-flood-bridge",
+      "stats": {
+        "fuel": 52,
+        "condition": 87,
+        "morale": 92
+      }
+    },
+    {
+      "action": "bridge-rail-crossing",
+      "version": 34,
+      "scene": "train-at-dawn-junction",
+      "stats": {
+        "fuel": 44,
+        "condition": 79,
+        "morale": 92
+      }
+    },
+    {
+      "action": "junction-review",
+      "version": 35,
+      "scene": "train-at-dawn-junction",
+      "stats": {
+        "fuel": 44,
+        "condition": 79,
+        "morale": 92
+      }
+    },
+    {
+      "action": "junction-settle-basic",
+      "version": 36,
+      "scene": "train-at-dawn-junction",
+      "stats": {
+        "fuel": 44,
+        "condition": 79,
+        "morale": 92
+      }
+    }
+  ],
+  "complete": true,
+  "rejectedProbe": {
+    "input": "我现在仔细检查桥面和承重结构。",
+    "observed": "No actionId, subsequent read remains version30 fuel52 condition87 morale92",
+    "analysis": "Current admitted action inspects near-bank supports and flood level, while deck survey is a separate action; initial probe was not an exact semantic equivalent",
+    "rejectionCode": "not captured by first harness"
+  },
+  "final": {
+    "version": 37,
+    "stats": {
+      "fuel": 44,
+      "condition": 79,
+      "morale": 92
+    },
+    "ending": {
+      "anchorFamily": "settle-basic",
+      "title": "在枢纽安顿",
+      "thesis": "先让抵达的人有地方生活，远行留给以后的选择。",
+      "capabilitiesUsed": [
+        "settle-junction"
+      ],
+      "irreversibleCosts": [
+        "列车不再作为一整列自由旅行的车辆"
+      ],
+      "preserved": [
+        "已经抵达的人与他们真实留下的关系"
+      ],
+      "lost": [
+        "整列车共同远行的生活"
+      ],
+      "unresolved": [
+        "如何分配住处并接纳后来者"
+      ],
+      "finaleScenes": [
+        "列车在枢纽月台停稳。",
+        "乘客选择自己的住处与共同空间。",
+        "既有伙伴按各自意愿留下或继续生活。",
+        "最后一盏车厢灯成为新住处的灯。"
+      ],
+      "characterEpilogues": [
+        {
+          "characterId": "ada-mechanic",
+          "text": "阿达和队伍共同走到了最后；新的安排保留了这段同行经历。 她完成过启动、制动与桥前的机务工作，专业判断不再只靠一张证件证明。"
+        },
+        {
+          "characterId": "ren-medic",
+          "text": "任医生和队伍共同走到了最后；新的安排保留了这段同行经历。 河谷的氧气已经用于救治；他没有把这次救援写成从未付出代价的奇迹。"
+        },
+        {
+          "characterId": "mara-raider",
+          "text": "玛柯和队伍共同走到了最后；新的安排保留了这段同行经历。 货场油账上的合作条目已经结清；他的名字与当时答应承担的责任写在一起。"
+        }
+      ],
+      "regionalEpilogues": [
+        {
+          "regionId": "dead-station",
+          "text": "启动机修复后，列车按最初承诺的支线离开；这段选择没有被终点重写。"
+        },
+        {
+          "regionId": "river-valley",
+          "text": "诊所氧气已用于治疗，任医生把两名获救者的情况留在诊所记录里。"
+        },
+        {
+          "regionId": "graystone-yard",
+          "text": "合作换来的油已记入账册，同行者带着约定上路，留守者继续看管货场。"
+        },
+        {
+          "regionId": "tunnel",
+          "text": "排烟付出的燃料换来了保留物资的空间；燃料不会被终点返还。"
+        },
+        {
+          "regionId": "mountain-pass",
+          "text": "山口采用过的制动方式、实际岗位与车损留在行车记录中。"
+        },
+        {
+          "regionId": "sleeping-town",
+          "text": "列车供出的燃料恢复了应急广播。 停留恢复精神，也让过桥时的水位更高。"
+        },
+        {
+          "regionId": "dawn-junction",
+          "text": "列车实际越过洪水桥后进入枢纽，抵达与过桥是两个不同的事实。"
+        }
+      ],
+      "finalImagePrompt": "stationary weathered train used as shelter beside a dawn railway junction, existing passengers settling into ordinary life, no text, no UI",
+      "id": "ending-15jk18r",
+      "snapshotId": "ending-15jk18r",
+      "generated": false
+    },
+    "eventCount": 36,
+    "exactReload": true
+  },
+  "limitations": [
+    "Production HTTP/client test, not a renderer playthrough or authenticated AlterU test",
+    "Existing synthetic journey began with separately recorded live starter action",
+    "One ambiguous bridge probe was not committed; exact rejection code was not captured",
+    "No new media requests or player data access"
+  ]
+}
