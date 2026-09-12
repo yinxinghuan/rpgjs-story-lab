@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-12",
+  "scope": "Original single-player story optional illustration service lifecycle; production gate remains closed",
+  "core": [
+    "Same existing original authority database; independent artifact and chunk rows, not StorySave modifications",
+    "Current scene/version required for a new intention; one stored result and at most two intentions per scene",
+    "18 new intentions per owner per UTC day; resumes retain request/task identity and do not consume an intention",
+    "Persisted 120-second lease fences late completion; 90-second provider budget",
+    "PNG bytes persisted in 24,000-byte chunks with SHA verification, independent of future CDN availability",
+    "Current source metadata shared with game background packaging; only immutable public references and fixed environment prompt leave server"
+  ],
+  "tests": {
+    "fullSuite": {
+      "passed": 632,
+      "failed": 0
+    },
+    "targetedFinal": {
+      "passed": 7,
+      "failed": 0,
+      "includesOneAdditionalTestBeyondFullSuite": true
+    },
+    "initialSandboxFailure": "30 local HTTP tests could not bind 127.0.0.1 (EPERM); same suite passed with permitted loopback listening",
+    "build": "TypeScript, Vite, 27-resource verification, compiled Worker opaque startup passed",
+    "audits": [
+      "public secrets",
+      "game API base",
+      "platform media integration"
+    ]
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "sha": "ef122477079498a7215a0b83afe761d975b8e704e97f3d52a06f9437f7f1b8f5",
+      "decoded": [
+        768,
+        1024
+      ],
+      "bytes": 1486728,
+      "oneJob": true,
+      "storyUnchanged": true,
+      "fileHeader": "original-session-15.assets-12.story-8.original-train-authoring-10",
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "externalRequests": 0,
+      "scope": "Native browser decoding and authenticated compiled-Worker HTTP round-trip only. No illustration UI or real device acceptance."
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "sha": "ef122477079498a7215a0b83afe761d975b8e704e97f3d52a06f9437f7f1b8f5",
+      "decoded": [
+        768,
+        1024
+      ],
+      "bytes": 1486728,
+      "oneJob": true,
+      "storyUnchanged": true,
+      "fileHeader": "original-session-15.assets-12.story-8.original-train-authoring-10",
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "externalRequests": 0,
+      "scope": "Native browser decoding and authenticated compiled-Worker HTTP round-trip only. No illustration UI or real device acceptance."
+    }
+  ],
+  "media": {
+    "date": "2026-09-12",
+    "status": "rejected-night-palette",
+    "requestCount": 1,
+    "taskId": "mt_fec5bd620c23a8edb84e8466be298ac1",
+    "sourceSha256": "ef122477079498a7215a0b83afe761d975b8e704e97f3d52a06f9437f7f1b8f5",
+    "elapsedMs": 13727,
+    "cost": "not provided by public API",
+    "findings": [
+      "Track, locomotive, pavement, lamps and orthographic plan remain recognizable.",
+      "Source is a dark rain-at-night scene; output is a much brighter gray daylight-like rendering with a flatter illustrated style.",
+      "No people or text introduced. Geometry preservation alone is insufficient for the locked time-of-day and style contract."
+    ],
+    "productionAdmitted": false,
+    "furtherGenerationPlannedInThisBatch": false
+  },
+  "limitations": [
+    "No production illustration UI or release yet",
+    "Not real iPhone or logged AlterU acceptance",
+    "Raw media file structurally validated on server; native decode verified in Chrome for this retained real sample; this is not automatic perceptual approval",
+    "Legacy walkway image endpoint remains separate and unchanged",
+    "Unbound legacy room backgrounds remain unavailable for generation until individually registered"
+  ],
+  "next": "Add the original-game journal interaction and review/retry experience; correct the observed lighting/style failure in a bounded test before opening production. Preserve author-driven gameplay and all old journeys."
+}

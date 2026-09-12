@@ -6,12 +6,22 @@ import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 import type {PublishedDevice} from '../src/device-publication'
 import type {PublishedBackground} from '../src/background-publication'
 import type {PublishedActor} from '../src/actor-publication'
+import type {OriginalIllustrations,IllustrationProducer} from './original-illustration'
 export const originalJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}})
 /** Runs behind the existing capability boundary, in an original-only object. */
-export async function handleOriginalSession(request:Request,owner:string,authority:OriginalTrainAuthority,readBody:(request:Request)=>Promise<any>,resolveBackground?:(id:string)=>Promise<PublishedBackground>,resolveDevice?:(id:string)=>Promise<PublishedDevice>,resolveActor?:(id:string)=>Promise<PublishedActor>,resolveFan?:(id:string)=>Promise<PublishedLayer>){
+export async function handleOriginalSession(request:Request,owner:string,authority:OriginalTrainAuthority,readBody:(request:Request)=>Promise<any>,resolveBackground?:(id:string)=>Promise<PublishedBackground>,resolveDevice?:(id:string)=>Promise<PublishedDevice>,resolveActor?:(id:string)=>Promise<PublishedActor>,resolveFan?:(id:string)=>Promise<PublishedLayer>,illustrations?:{store:OriginalIllustrations;produce:IllustrationProducer}){
  try{
   if(request.headers.get(ORIGINAL_RUNTIME_HEADER)!==ORIGINAL_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(ORIGINAL_API_PATH.length)
+  const image=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})\/illustrations(?:\/([a-z0-9-]+)\/file)?$/)
+  if(image){
+   if(!illustrations)throw new LabError('ILLUSTRATION_NOT_RELEASED',404)
+   const {store,produce}=illustrations
+   if(request.method==='GET'&&image[2])return new Response(new Uint8Array(await store.file(owner,image[1],image[2])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}})
+   if(request.method==='GET')return originalJson({illustrations:store.list(owner,image[1])})
+   if(request.method==='POST'&&!image[2]){const job=store.start(owner,image[1],await readBody(request));await store.run(owner,image[1],job.scene,produce);return originalJson({illustrations:store.list(owner,image[1])})}
+   throw new LabError('METHOD_NOT_ALLOWED',405)
+  }
   if(path==='/sessions'&&request.method==='GET')return originalJson({sessions:authority.directory(owner)})
   if(path==='/sessions'&&request.method==='POST'){
    const b=await readBody(request)

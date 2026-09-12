@@ -15,6 +15,7 @@ import {originalJson,handleOriginalSession} from '../server/original-http'
 import {ORIGINAL_API_PATH,ORIGINAL_RUNTIME_HEADER,ORIGINAL_RUNTIME_CONTRACT} from '../src/original-runtime-contract'
 import {createJournalImageProducer,readJournalImageAsset,type ImageProducer} from '../server/journal-image'
 import {JOURNAL_IMAGE_RELEASED} from '../src/journal-image-release'
+import {OriginalIllustrations,originalIllustrationProducer,ORIGINAL_ILLUSTRATION_RELEASED,type IllustrationProducer} from '../server/original-illustration'
 import {ProductionAuthority,type AuthorityStorage} from '../server/production-authority'
 import {LabError} from '../src/journey-runtime'
 import {propose,chatModel,type ModelRequest} from '../server/model'
@@ -75,6 +76,7 @@ interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sq
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
  private original?:OriginalTrainAuthority
+ private illustrations?:OriginalIllustrations
  private creator?:CreatorArtArchive
  private sprites?:CreatorSpriteArchive
  private layers?:CreatorLayerArchive
@@ -82,7 +84,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
@@ -198,6 +200,7 @@ export class CarriageJourneyAuthority{
   }
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){
    this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter,this.originalDialogue)
+   if(ORIGINAL_ILLUSTRATION_RELEASED||this.illustrationProducer){this.illustrations??=new OriginalIllustrations(this.db,(owner,id)=>this.original!.get(owner,id));this.illustrationProducer??=originalIllustrationProducer()}
    return handleOriginalSession(request,owner,this.original,body,async id=>{
     if(!backgroundReleaseId(id)||!this.env?.CARRIAGE_JOURNEYS)throw new LabError('BACKGROUND_NOT_PUBLISHED',404)
     const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
@@ -218,7 +221,7 @@ export class CarriageJourneyAuthority{
     const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/layer-releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
     if(!r.ok)throw new LabError('LAYER_NOT_PUBLISHED',404)
     const release=await r.json();assertPublishedLayer(release);if(release.id!==id)throw new LabError('LAYER_RELEASE_INVALID',409);return release
-   })
+   },this.illustrations&&this.illustrationProducer?{store:this.illustrations,produce:this.illustrationProducer}:undefined)
   }
   const path=url.pathname.slice('/api/lab'.length)
   if(path==='/sessions'&&request.method==='GET')return json({sessions:this.authority.directory(owner)})

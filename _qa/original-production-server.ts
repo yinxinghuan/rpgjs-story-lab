@@ -7,12 +7,13 @@ const dir=resolve(process.argv[2]??'dist'),port=Number(process.argv[3]??5349)
 // Optional retained-image response for isolated creator contract QA. No remote
 // media request is made; all other production behavior uses the compiled Worker.
 const retainedBackground=process.argv.includes('--retained-background-fixture')?async()=>new Uint8Array(readFileSync('doc/platform-art-candidates/20260911/environment-edit-02/candidate.png')):undefined
+const retainedIllustration=process.argv.includes('--retained-illustration-fixture')?async()=>new Uint8Array(readFileSync('doc/platform-art-candidates/20260912/original-journal-01/candidate.png')):undefined
 if(!Number.isSafeInteger(port)||port<1024||port>65535)throw Error('QA_PORT')
 // Exact compiled Worker, fresh disposable SQL, no cookies or external requests.
 globalThis.fetch=async()=>{throw Error('QA_EXTERNAL_NETWORK_DISABLED')}
 const worker=await import('data:text/javascript;base64,'+readFileSync('worker/index.js').toString('base64'))
 const storage=new PreflightStorage(mkdtempSync('/private/tmp/original-production-')),objects=new Map<string,any>()
-const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(key:unknown)=>({fetch:(request:Request)=>{const id=String(key);let object=objects.get(id);if(!object){object=new worker.CarriageJourneyAuthority(storage.context(id),env,undefined,undefined,undefined,undefined,undefined,retainedBackground);objects.set(id,object)}return object.fetch(request)}})}}
+const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(key:unknown)=>({fetch:(request:Request)=>{const id=String(key);let object=objects.get(id);if(!object){object=new worker.CarriageJourneyAuthority(storage.context(id),env,undefined,undefined,undefined,undefined,undefined,retainedBackground,retainedIllustration);objects.set(id,object)}return object.fetch(request)}})}}
 const mime:Record<string,string>={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.tmx':'application/xml','.tsx':'application/xml','.svg':'image/svg+xml','.woff2':'font/woff2','.ogg':'audio/ogg','.mp3':'audio/mpeg'}
 const server=createServer(async(req,res)=>{try{
  const url=new URL(req.url??'/','http://127.0.0.1:'+port)

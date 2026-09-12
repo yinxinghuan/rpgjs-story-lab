@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-12",
+  "status": "rejected-night-palette",
+  "requestCount": 1,
+  "taskId": "mt_fec5bd620c23a8edb84e8466be298ac1",
+  "sourceSha256": "ef122477079498a7215a0b83afe761d975b8e704e97f3d52a06f9437f7f1b8f5",
+  "elapsedMs": 13727,
+  "cost": "not provided by public API",
+  "findings": [
+    "Track, locomotive, pavement, lamps and orthographic plan remain recognizable.",
+    "Source is a dark rain-at-night scene; output is a much brighter gray daylight-like rendering with a flatter illustrated style.",
+    "No people or text introduced. Geometry preservation alone is insufficient for the locked time-of-day and style contract."
+  ],
+  "productionAdmitted": false,
+  "furtherGenerationPlannedInThisBatch": false
+}

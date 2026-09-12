@@ -1,0 +1,23 @@
+{
+  "limit": 1,
+  "plan": {
+    "version": 1,
+    "scene": "train-at-dead-station",
+    "sourceVersion": 0,
+    "referenceVersion": "north-cape-platform-8fc11a96",
+    "referenceSha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+    "request": {
+      "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+      "mode": "edit",
+      "referenceUrls": [
+        "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png"
+      ],
+      "size": {
+        "width": 768,
+        "height": 1024
+      },
+      "prompt": "Create an illustrated travel journal page of this exact railway environment. Preserve the reference location, narrow paths, tracks, architectural proportions, strong overhead orthographic view and crisp pixel-painted style. Keep the same time of day, weather, lighting and visible structures. Environment only: no people, faces, animals, writing, labels, new doors, new buildings, extra vehicles or objects. Do not depict a rescue, victory, repair or any new event. This is a quiet visual memory of a visited place, not a playable map or a change to the world. Compose the complete reference location within a 3:4 portrait frame without stretching geometry."
+    }
+  },
+  "scope": "One environment-only illustration from a fresh synthetic original-game journey. No player data or dialogue."
+}
