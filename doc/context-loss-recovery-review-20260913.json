@@ -35,5 +35,34 @@
     ]
   },
   "qaControlNotInProduction": true,
-  "deployment": "pending"
+  "deployment": {
+    "commit": "7d98b16e17b0d30b0e334e93a652c85d5cb64ab3",
+    "mainFiles": 58,
+    "pagesFiles": 58,
+    "sameLocalBuild": true,
+    "pagesWorkflow": 34708072193,
+    "ciTests": 703,
+    "ciPassed": 703,
+    "ciFailed": 0
+  },
+  "mobileRecovery": {
+    "sizes": [
+      [
+        390,
+        844
+      ],
+      [
+        320,
+        568
+      ]
+    ],
+    "promptAndButtonVisible": true,
+    "reloadAt320Verified": true,
+    "resourcesPreserved": [
+      68,
+      87,
+      58
+    ],
+    "scope": "Local IAB viewport; not physical iPhone hardware."
+  }
 }

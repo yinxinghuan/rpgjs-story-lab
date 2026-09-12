@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "c697052d6da9b0add6e40f51c5c37b4ecf938846",
+  "liveCommit": "7d98b16e17b0d30b0e334e93a652c85d5cb64ab3",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
@@ -99,5 +99,6 @@
     "pagesWorkflow": 34698466229
   },
   "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json",
-  "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913"
+  "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
+  "contextLossRecovery": "context-loss-recovery-review-20260913.json"
 }
