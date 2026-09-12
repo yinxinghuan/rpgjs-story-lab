@@ -28,8 +28,8 @@
   "remaining": [
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
-      "state": "in-progress",
-      "currentBlocker": "Native route reached common-route ending; post-ending re-entry pending Mac unlock. Earlier intermittent renderer/resource failures still require resolution."
+      "state": "route-and-reentry-verified-with-known-display-defects",
+      "currentBlocker": "No login or lock blocker now. Same native journey reached ending and reentered with stats, companions, inventory and consequences retained. Earlier intermittent renderer/resource failures still prevent full acceptance."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -80,9 +80,16 @@
     "lastAction": "选择「共同线路」",
     "visibleFinalOwnership": true,
     "nativeStoryRouteReachedEnding": true,
-    "blocker": "Mac locked after ending record; final reentry remains unverified",
-    "next": "Reopen same native synthetic journey, verify ending/resources/companions retained",
-    "fullPlaythroughAcceptance": false
+    "blocker": null,
+    "next": "Resolve intermittent rendering/resource failures and remaining platform media quality/identity contracts",
+    "fullPlaythroughAcceptance": false,
+    "reentryAfterEndingVerified": true,
+    "companionsRetained": [
+      "阿达",
+      "任医生",
+      "玛柯"
+    ],
+    "consumedInventoryRetained": true
   },
   "displayDiagnosticsDualDeployment": {
     "commit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",

@@ -281,11 +281,43 @@
     },
     "nativeStoryRouteReachedEnding": true,
     "fullPlatformAcceptance": false,
-    "reentryAfterEndingVerified": false,
-    "interruption": "Mac locked immediately after closing ending record; no reentry attempted.",
+    "reentryAfterEndingVerified": true,
+    "interruption": "Initial lock interruption resolved by user; native exit and same-game Play reentry completed.",
     "remaining": [
-      "Reopen same native journey and verify ending/resources/companions retained.",
       "Previously intermittent actor disappearance/background load failures remain unresolved; successful recent transitions do not prove root cause fixed."
-    ]
+    ],
+    "reentry": {
+      "platformExitAndPlay": true,
+      "scene": "黎明枢纽",
+      "fuel": 32,
+      "condition": 73,
+      "morale": 83,
+      "ending": "共同线路",
+      "companions": [
+        "阿达",
+        "任医生",
+        "玛柯"
+      ],
+      "visibleConsequences": [
+        "诊所氧气用于治疗",
+        "货场合作油账结清",
+        "隧道排烟燃料不返还",
+        "小城恢复广播且未额外休息",
+        "实际过桥后进入枢纽"
+      ],
+      "inventory": [
+        "总调度钥匙 ×1",
+        "铁路电台 ×1"
+      ],
+      "consumedItemsAbsent": [
+        "桥检工具箱",
+        "制动软管",
+        "诊所氧气瓶"
+      ],
+      "evidence": [
+        "_qa/alteru-native-20260912/common-route-reentry.png",
+        "_qa/alteru-native-20260912/common-route-reentry-inventory.png"
+      ]
+    }
   }
 }
