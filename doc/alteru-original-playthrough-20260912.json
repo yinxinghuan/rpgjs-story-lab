@@ -222,5 +222,70 @@
     "next": "town supplies and departure not yet executed",
     "interruption": "Mac locked after action result",
     "fullPlaythrough": false
+  },
+  "nativeBridgeAndEnding20260913": {
+    "platform": "Telegram AlterU; same synthetic journey as earlier native chapters",
+    "releaseCommit": "c697052d6da9b0add6e40f51c5c37b4ecf938846",
+    "townSupplies": {
+      "fuelDelta": 16,
+      "bridgeKitDelta": 1,
+      "after": {
+        "fuel": 44,
+        "condition": 77,
+        "morale": 83
+      }
+    },
+    "bridgeArrival": {
+      "fuelDelta": -6,
+      "after": {
+        "fuel": 38,
+        "condition": 77,
+        "morale": 83
+      },
+      "heroVisible": true,
+      "backgroundVisible": true,
+      "evidence": "_qa/alteru-native-20260912/bridge-arrival-visible.png"
+    },
+    "inspection": "Main bridge rail loose, supporting beam continuous; maintenance alternative and permanent pedestrian crossing tradeoff visibly explained.",
+    "survey": {
+      "action": "使用现有桥检工具箱勘测（工具箱−1）",
+      "bridgeKitDelta": -1,
+      "visibleConsequence": "Consumables used to secure rail; main-bridge condition cost reduced."
+    },
+    "people": "按既有名单安排过桥顺序; existing companions retain posts; no silently restored missing passengers.",
+    "crossing": {
+      "action": "按勘测结果带列车过主桥",
+      "previewFuelCost": 6,
+      "previewConditionCost": 4,
+      "actualFuelDelta": -6,
+      "actualConditionDelta": -4,
+      "after": {
+        "fuel": 32,
+        "condition": 73,
+        "morale": 83
+      },
+      "destination": "黎明枢纽",
+      "heroVisible": true,
+      "backgroundVisible": true,
+      "evidence": "_qa/alteru-native-20260912/junction-arrival-visible.png"
+    },
+    "ending": {
+      "reviewBeforeChoice": true,
+      "chosen": "共同线路",
+      "visibleFinalOwnership": true,
+      "visibleCosts": [
+        "放弃个人最终决定权",
+        "长期预留沿线救援车厢和燃料"
+      ],
+      "evidence": "_qa/alteru-native-20260912/common-route-ending.png"
+    },
+    "nativeStoryRouteReachedEnding": true,
+    "fullPlatformAcceptance": false,
+    "reentryAfterEndingVerified": false,
+    "interruption": "Mac locked immediately after closing ending record; no reentry attempted.",
+    "remaining": [
+      "Reopen same native journey and verify ending/resources/companions retained.",
+      "Previously intermittent actor disappearance/background load failures remain unresolved; successful recent transitions do not prove root cause fixed."
+    ]
   }
 }

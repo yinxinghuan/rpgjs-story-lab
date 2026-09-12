@@ -29,7 +29,7 @@
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "in-progress",
-      "currentBlocker": "Repeated missing actor after continuous transition; need live renderer diagnostics before continuing full acceptance."
+      "currentBlocker": "Native route reached common-route ending; post-ending re-entry pending Mac unlock. Earlier intermittent renderer/resource failures still require resolution."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -71,16 +71,18 @@
   },
   "newBrowserChecksThisTurn": true,
   "currentUiObservation": {
+    "date": "2026-09-13",
     "platform": "Telegram AlterU",
-    "scene": "sleeping-town",
-    "fuel": 28,
-    "condition": 77,
+    "scene": "dawn-junction",
+    "fuel": 32,
+    "condition": 73,
     "morale": 83,
-    "lastAction": "公开危险物资岗位与乘客离站权利",
-    "lastActionSaved": true,
-    "blocker": "Mac locked before next supplies/departure action",
-    "next": "continue town preparation and bridge chapter",
-    "fullPlaythrough": false
+    "lastAction": "选择「共同线路」",
+    "visibleFinalOwnership": true,
+    "nativeStoryRouteReachedEnding": true,
+    "blocker": "Mac locked after ending record; final reentry remains unverified",
+    "next": "Reopen same native synthetic journey, verify ending/resources/companions retained",
+    "fullPlaythroughAcceptance": false
   },
   "displayDiagnosticsDualDeployment": {
     "commit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
@@ -89,5 +91,6 @@
     "sameLocalBuild": true,
     "pagesWorkflow": 34698466229
   },
-  "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json"
+  "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json",
+  "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913"
 }
