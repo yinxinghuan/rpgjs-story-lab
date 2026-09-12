@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "status": "local-verified",
+  "status": "verified-and-dual-deployed",
   "regression": {
     "passed": 643,
     "failed": 0
@@ -103,5 +103,6 @@
     "Response/health version changes are fault injection against the real compiled Worker; no production outage was induced.",
     "Already cached older clients do not receive this fix until they load the new frontend.",
     "No source image or story schema changed."
-  ]
+  ],
+  "releaseEvidence": "original-version-recovery-release-20260912.json"
 }
