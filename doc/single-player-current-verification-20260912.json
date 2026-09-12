@@ -7,7 +7,23 @@
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
     "sameCommitDualDeployment": "Same live illustration review: 58 files at each main/Pages source match.",
-    "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough."
+    "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
+    "postDownloadUpdateSavePreservation": {
+      "release": "original-media-diagnostics-20260912-1",
+      "illustrationsAvailable": true,
+      "version": 37,
+      "endingPreserved": true,
+      "statsPreserved": true
+    },
+    "publicReleaseGates": {
+      "ok": true,
+      "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+      "page": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "health": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/health",
+      "remix": "https://github.com/yinxinghuan/rpgjs-story-lab/archive/refs/heads/main.zip",
+      "storage": "durable-object-sqlite",
+      "identity_mode": "anonymous-capability-v1"
+    }
   },
   "remaining": [
     {
@@ -34,7 +50,17 @@
   "latestTestScopes": {
     "fullHistoricalRegression": "693 tests evidence in single-player-verification-20260912.json; do not relabel as latest full suite.",
     "downloadCompatibility": 27,
-    "redirectRejectionIllustrationSuite": 17
+    "redirectRejectionIllustrationSuite": 17,
+    "fullCIRegression": {
+      "commit": "4bfad43f8b8da54663ca595eedb7ab1954beef11",
+      "run": 34693330872,
+      "tests": 696,
+      "passed": 696,
+      "failed": 0,
+      "skipped": 0,
+      "source": "gh run view --log; npm test step actual TAP totals"
+    }
   },
-  "newBrowserChecksThisTurn": false
+  "newBrowserChecksThisTurn": false,
+  "currentUiObservation": "CUA getState repeated: Mac locked, automatic unlock failed. No new UI verification."
 }
