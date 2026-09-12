@@ -1,6 +1,7 @@
 import {createServer} from 'node:http'
 import {readFileSync} from 'node:fs'
 const files={
+ '/candidate-alpha.png':['image/png',new URL('../doc/platform-art-candidates/20260913/hero-leg-layer-08/candidate-alpha.png',import.meta.url)],
  '/hero.png':['image/png',new URL('../public/art/overhead/hero-gait-v2.png',import.meta.url)],
  '/':['text/html; charset=utf-8',new URL('./leg-layer-review.html',import.meta.url)],
  '/candidate.png':['image/png',new URL('../doc/platform-art-candidates/20260913/hero-leg-layer-08/candidate.png',import.meta.url)],

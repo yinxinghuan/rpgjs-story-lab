@@ -16,7 +16,7 @@
   "runtimeAdmission": false,
   "baselineChanged": false,
   "limitations": [
-    "Leg layer only, no standing transition or upper-body seam.",
+    "Transparent first-cell legs and original standing transition now inspected in CSS assembly; original/generated boot mismatch remains.",
     "Not actual RPG-JS movement or iPhone validation.",
     "No visual verdict may be derived solely from CSS mirroring.",
     "Asymmetric clothing, accessories and directional light require separate review."
@@ -85,5 +85,31 @@
       "_qa/leg-layer-20260913/assembled-phase2.png"
     ]
   },
-  "buildPassed": true
+  "buildPassed": true,
+  "alphaFourBeatFollowup": {
+    "date": "2026-09-13",
+    "preparation": "scripts/prepare-leg-layer-candidate.ts",
+    "output": "doc/platform-art-candidates/20260913/hero-leg-layer-08/candidate-alpha.png",
+    "originalPreserved": true,
+    "outputSha256": "9123198a3a2727d78be3ef504bfe75319b94456e97c05e7a21fd074118ff1d7d",
+    "sequence": [
+      "first-cell contact",
+      "original standing",
+      "first-cell mirrored contact",
+      "original standing"
+    ],
+    "observations": [
+      "Opposite contact poses visible; fixed upper body and bag preserved.",
+      "No obvious rectangular white matte around the displayed first-cell legs against dark and purple backgrounds at the inspected scale. This is not a pixel-perfect alpha pass for the entire sheet.",
+      "Original standing boots and generated contact boots differ in shape and shading; pose switching changes the silhouette.",
+      "Second unused source cell retains a thin pale inner seam; this sheet is not admitted as a general two-cell asset."
+    ],
+    "result": "do-not-replace-production-hero",
+    "nextRequirement": "Produce neutral and opposite contact legs as one coherent layer family, then inspect full sequence and distance-driven motion in the actual renderer. Do not combine a differently styled existing neutral frame merely to fill the fourth beat.",
+    "evidence": [
+      "_qa/leg-layer-20260913/alpha-standing.png",
+      "_qa/leg-layer-20260913/alpha-right-contact.png",
+      "_qa/leg-layer-20260913/alpha-left-purple.png"
+    ]
+  }
 }
