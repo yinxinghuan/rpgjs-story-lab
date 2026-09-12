@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
+  "liveCommit": "c697052d6da9b0add6e40f51c5c37b4ecf938846",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
@@ -73,15 +73,15 @@
   "currentUiObservation": {
     "platform": "Telegram AlterU",
     "scene": "sleeping-town",
-    "fuel": 34,
+    "fuel": 28,
     "condition": 77,
-    "morale": 67,
-    "lastAction": "驶向沉睡小城（燃料−6）",
+    "morale": 75,
+    "lastAction": "核对站台线路板的过桥提示",
     "lastActionSaved": true,
     "actorVisible": true,
-    "backgroundFailed": true,
+    "backgroundVisible": true,
     "blocker": null,
-    "next": "diagnose background failure with bounded stage/duration; continue town chapter",
+    "next": "continue town preparation and bridge chapter",
     "fullPlaythrough": false
   },
   "displayDiagnosticsDualDeployment": {
@@ -90,5 +90,6 @@
     "pagesFiles": 58,
     "sameLocalBuild": true,
     "pagesWorkflow": 34698466229
-  }
+  },
+  "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json"
 }

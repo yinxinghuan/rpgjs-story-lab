@@ -191,5 +191,22 @@
     "evidence": "_qa/alteru-native-20260912/town-recovered-actor-visible.png",
     "noDuplicateCost": true,
     "fullPlaythrough": false
+  },
+  "townBroadcastAndReentry": {
+    "broadcast": "fuel -6, morale +8; saved",
+    "after": {
+      "fuel": 28,
+      "condition": 77,
+      "morale": 75
+    },
+    "sameJourneyReentered": true,
+    "mapMs": 641,
+    "backgroundMs": 16342,
+    "backgroundVisible": true,
+    "heroVisible": true,
+    "routeBoardRead": true,
+    "routeBoard": "bridge approach is not crossing; inspect support and people first; finale choice only after arrival",
+    "evidence": "_qa/alteru-native-20260912/town-c697052-background-ready.png",
+    "fullPlaythrough": false
   }
 }

@@ -1,5 +1,5 @@
 {
-  "status": "implemented-local-ui-and-platform-review-pending",
+  "status": "local-and-native-readout-verified",
   "purpose": "Diagnose recurring missing scenery in authenticated native playthrough without guessing a network or decode cause",
   "tests": {
     "targeted": 18,
@@ -7,9 +7,38 @@
     "scope": "resource load stages, fixed error mapping, explicit retry, map admission, late responses and bounded render diagnostics"
   },
   "build": true,
-  "liveCommitUnchanged": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
-  "deployed": false,
+  "deployed": true,
   "uiChange": "Existing display help outputs short preformatted lines instead of a single AX-truncated text node",
-  "blocker": "Mac locked before UI validation",
-  "next": "Run new compiled frontend locally; check native diagnostic short lines after authorized same-commit dual deployment; resume same sleeping-town journey at 34/77/67"
+  "blocker": null,
+  "next": "Continue town and remaining story in same native journey; preserve intermittent actor/scenery defects until their causes are verified",
+  "localUi": {
+    "injectedFailure": "download / RESOURCE_HTTP / 503 / 6ms",
+    "retry": "background visible, resource values unchanged"
+  },
+  "native": {
+    "scene": "sleeping-town",
+    "mapMs": 641,
+    "backgroundMs": 16342,
+    "backgroundBytes": 2807539,
+    "state": "ready",
+    "reason": null,
+    "playerVisible": true,
+    "backgroundVisible": true,
+    "resources": [
+      28,
+      77,
+      75
+    ]
+  },
+  "liveCommit": "c697052d6da9b0add6e40f51c5c37b4ecf938846",
+  "dualDeployment": {
+    "mainFiles": 58,
+    "pagesFiles": 58,
+    "sameLocalBuild": true,
+    "workflow": 34702575983
+  },
+  "ci": {
+    "tests": 701,
+    "failed": 0
+  }
 }
