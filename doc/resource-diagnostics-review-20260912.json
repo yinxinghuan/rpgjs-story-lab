@@ -1,0 +1,15 @@
+{
+  "status": "implemented-local-ui-and-platform-review-pending",
+  "purpose": "Diagnose recurring missing scenery in authenticated native playthrough without guessing a network or decode cause",
+  "tests": {
+    "targeted": 18,
+    "failed": 0,
+    "scope": "resource load stages, fixed error mapping, explicit retry, map admission, late responses and bounded render diagnostics"
+  },
+  "build": true,
+  "liveCommitUnchanged": "4f9b2f9a699f1ee1c2e07fca6d2e04cbc6507559",
+  "deployed": false,
+  "uiChange": "Existing display help outputs short preformatted lines instead of a single AX-truncated text node",
+  "blocker": "Mac locked before UI validation",
+  "next": "Run new compiled frontend locally; check native diagnostic short lines after authorized same-commit dual deployment; resume same sleeping-town journey at 34/77/67"
+}

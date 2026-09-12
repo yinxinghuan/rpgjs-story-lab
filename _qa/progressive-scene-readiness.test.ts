@@ -1,7 +1,7 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {ProgressiveSceneReadiness} from '../src/progressive-scene-readiness'
-import type {SceneResourceManifest} from '../src/scene-readiness'
+import {ResourceLoadError,type SceneResourceManifest} from '../src/scene-readiness'
 const manifest:SceneResourceManifest={version:'test',scenes:{room:{version:'one',assets:[{kind:'map',path:'./room.tmx',sha256:'map',bytes:1},{kind:'background',path:'./room.png',sha256:'art',bytes:1}]}}}
 test('a verified map becomes playable while its background is still pending',async()=>{
  let finish!:(v:string)=>void
@@ -44,4 +44,15 @@ test('late resources from disposed loaders cannot publish or notify a new journe
  const r=new ProgressiveSceneReadiness(manifest,async a=>a.kind==='map'?undefined:new Promise<string>(resolve=>{finish=resolve}),()=>{changes++})
  await r.prepare('room');const pending=r.prepareBackground('room');r.dispose();const before=changes;finish('blob:old')
  await assert.rejects(pending);assert.equal(changes,before);assert.equal(r.background('room'),undefined)
+})
+test('background diagnostics preserve failed stage and HTTP status, without arbitrary errors or URLs',async()=>{
+ let second=false
+ const r=new ProgressiveSceneReadiness(manifest,async(a,_signal,report)=>{if(a.kind==='map')return undefined;report?.('body');if(!second)throw new ResourceLoadError('RESOURCE_HTTP',503);throw Error('private URL or token')})
+ await r.prepare('room');await assert.rejects(r.prepareBackground('room'))
+ let d=r.diagnostics('room')[1]
+ assert.equal(d.stage,'body');assert.equal(d.reason,'RESOURCE_HTTP');assert.equal(d.status,503);assert.ok(d.elapsedMs>=0)
+ second=true;await assert.rejects(r.prepareBackground('room',true));d=r.diagnostics('room')[1]
+ assert.equal(d.reason,'RESOURCE_UNAVAILABLE');assert.equal(d.status,null)
+ assert.doesNotMatch(JSON.stringify(r.diagnostics('room')),/private|path|room.png/)
+ r.activate('room');r.dispose()
 })

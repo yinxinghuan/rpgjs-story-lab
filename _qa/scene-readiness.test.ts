@@ -86,3 +86,10 @@ test('runtime validates bytes and digest under an arbitrary deployment subpath',
  const altered=Buffer.from(bytes);altered[100]^=1;await assert.rejects(load(altered),/RESOURCE_VERSION/)
  await assert.rejects(load(bytes.subarray(1)),/RESOURCE_SIZE/);await assert.rejects(load(bytes,503),/RESOURCE_HTTP/)
 })
+test('resource download diagnostics distinguish transport and body failures without exposing underlying messages',async()=>{
+ const resource=manifest.scenes.walkway.assets.find(r=>r.kind==='map')!,signal=new AbortController().signal,stages:string[]=[]
+ await assert.rejects(loadBrowserSceneResource(resource,signal,'https://example.test/',async()=>{throw Error('private network URL')},stage=>stages.push(stage)),/^Error: RESOURCE_NETWORK$/)
+ assert.deepEqual(stages,['download']);stages.length=0
+ await assert.rejects(loadBrowserSceneResource(resource,signal,'https://example.test/',async()=>new Response(new ReadableStream({start(c){c.error(Error('private body URL'))}})),stage=>stages.push(stage)),/^Error: RESOURCE_BODY$/)
+ assert.deepEqual(stages,['download','body'])
+})

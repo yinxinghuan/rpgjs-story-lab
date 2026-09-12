@@ -8,7 +8,9 @@ export const SCENE_PREPARATION_TIMEOUT_MS=30000
 const resourceFailures=new Set(['RESOURCE_HTTP','RESOURCE_SIZE','RESOURCE_VERSION','RESOURCE_DECODE'])
 export class ScenePreparationError extends Error{constructor(public scene:string,public reason:string){super('SCENE_NOT_READY:'+reason)}}
 type Entry={state:PreparationState;attempts:number;value?:PreparedScene;pending?:Promise<PreparedScene>;reason?:string}
-export type SceneResourceLoader=(resource:SceneResource,signal:AbortSignal)=>Promise<string|undefined>
+export type ResourceStage='download'|'body'|'hash'|'decode'|'ready'
+export type SceneResourceLoader=(resource:SceneResource,signal:AbortSignal,report?:(stage:ResourceStage)=>void)=>Promise<string|undefined>
+export class ResourceLoadError extends Error{constructor(code:string,public status?:number){super(code)}}
 /** Cache lifetime is this immutable build. Failed entries retry only explicitly. */
 export class SceneReadiness{
  private entries=new Map<string,Entry>()
@@ -29,14 +31,22 @@ export class SceneReadiness{
  }
 }
 declare const __SCENE_RESOURCES__:SceneResourceManifest
-export async function loadBrowserSceneResource(resource:SceneResource,signal:AbortSignal,baseUrl=document.baseURI,fetcher:typeof fetch=fetch){
+export async function loadBrowserSceneResource(resource:SceneResource,signal:AbortSignal,baseUrl:string|((stage:ResourceStage)=>void)=document.baseURI,fetcher:typeof fetch=fetch,report?:(stage:ResourceStage)=>void){
+ if(typeof baseUrl==='function'){report=baseUrl;baseUrl=document.baseURI}
  const url=new URL(resource.path,baseUrl);url.searchParams.set('scene_asset',resource.sha256)
- const response=await fetcher(url,{signal,credentials:'omit'});if(!response.ok)throw new Error('RESOURCE_HTTP')
- const bytes=await response.arrayBuffer();if(bytes.byteLength!==resource.bytes)throw new Error('RESOURCE_SIZE')
+ report?.('download')
+ let response:Response;try{response=await fetcher(url,{signal,credentials:'omit'})}catch{throw new ResourceLoadError('RESOURCE_NETWORK')}
+ if(!response.ok)throw new ResourceLoadError('RESOURCE_HTTP',response.status)
+ report?.('body')
+ let bytes:ArrayBuffer;try{bytes=await response.arrayBuffer()}catch{throw new ResourceLoadError('RESOURCE_BODY')}
+ if(bytes.byteLength!==resource.bytes)throw new Error('RESOURCE_SIZE')
+ report?.('hash')
  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('')
  if(digest!==resource.sha256)throw new Error('RESOURCE_VERSION')
- if(resource.kind==='map')return
+ if(resource.kind==='map'){report?.('ready');return}
+ report?.('decode')
  const blobUrl=URL.createObjectURL(new Blob([bytes],{type:'image/png'}))
- try{const img=new Image();img.src=blobUrl;await img.decode();if(signal.aborted||img.naturalWidth!==resource.width||img.naturalHeight!==resource.height)throw Error('RESOURCE_DECODE');return blobUrl}catch(e){URL.revokeObjectURL(blobUrl);throw e}
+ try{const img=new Image();img.src=blobUrl;await img.decode();if(signal.aborted||img.naturalWidth!==resource.width||img.naturalHeight!==resource.height)throw Error('RESOURCE_DECODE');report?.('ready');return blobUrl}catch{URL.revokeObjectURL(blobUrl);throw new ResourceLoadError('RESOURCE_DECODE')}
 }
+export const loadTrackedBrowserSceneResource:SceneResourceLoader=(resource,signal,report)=>loadBrowserSceneResource(resource,signal,undefined,undefined,report)
 export function createBrowserSceneReadiness(){return new SceneReadiness(__SCENE_RESOURCES__,loadBrowserSceneResource)}

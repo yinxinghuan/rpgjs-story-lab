@@ -1122,3 +1122,6 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 
 ### 当前画面诊断增量（2026-09-12）
 `src/render-diagnostics.ts` 对当前显示树只采集有限数值和布尔值，最多遍历 2048 节点/32 层，最多显示 32 项视口或纹理几何。排除纹理地址、节点标识及任意附加属性；循环引用不会递归。`RpgRendererRuntime.diagnostics()` 同时读取当前地图握手、玩家坐标、isConnected、graphics/graphicsSignals 数量和画布尺寸。原作记录面板用折叠的“画面显示帮助”按需呈现；无网络、存档写入或自动恢复动作。该读数只帮助定位连续转场人物缺失，不能证明实际像素可见。
+
+### 背景失败阶段诊断（2026-09-12，待平台复验）
+`loadBrowserSceneResource` 通过可选阶段回调报告 download/body/hash/decode/ready，并将底层网络与正文读取异常转换为固定错误码。`ProgressiveSceneReadiness.diagnostics` 返回资源类型、声明大小、阶段、耗时、允许列表中的错误码与 HTTP 状态，不返回 URL 或原始异常。超时、迟到响应、显式重试和地图准入合同不变。记录面板诊断拆为短行，避免原生 AX 截断单个长文本。实际失败原因仍需部署后的平台读数，不能用本机测试推断。
