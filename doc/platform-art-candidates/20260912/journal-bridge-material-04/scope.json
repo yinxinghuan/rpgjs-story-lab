@@ -1,0 +1,5 @@
+{
+  "maxNewRequests": 1,
+  "purpose": "Bridge material fidelity correction",
+  "productionReplacement": false
+}

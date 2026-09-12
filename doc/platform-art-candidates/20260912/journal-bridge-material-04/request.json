@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260912/flood-bridge-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 1024
+  },
+  "prompt": "Faithfully reproduce the supplied raster game environment, preserving its fine textured pixel-painted material rendering. Keep the original mottled concrete grain, tiny irregular rust speckles on the locomotive roof, weathered metal edges, stone surface roughness and detailed broken foam on the river. Retain that fine local texture across the entire image; do not replace it with large flat color regions, vector shapes, cel shading, clean poster fills or smooth simplified surfaces. Match the source exposure, subdued gray-brown palette, lighting and shadow direction. Preserve the existing locomotive, tracks, bridge deck, railings and water in their exact relative arrangement, with the same overhead orthographic camera. No people, text, new objects, damage, repairs or story events. Fit the full location into a 3:4 portrait frame without stretching individual objects. This is a still memory of this location, not a new playable map.",
+  "requestId": "346b38f2-6429-4111-b647-08645ca08954"
+}

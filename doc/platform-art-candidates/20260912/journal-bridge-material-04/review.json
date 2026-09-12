@@ -1,0 +1,18 @@
+{
+  "status": "rejected-exaggerated-weathering",
+  "taskId": "mt_6a3f9797db547866f1f43dbe89851a03",
+  "sha256": "a60bfbe250d6f306c612fc6e6f102fbcc7399e2f437c5555206ce3346e77fb59",
+  "bytes": 1485873,
+  "timingMs": 4277,
+  "newRequests": 1,
+  "cost": "not supplied by public API",
+  "findings": [
+    "Fine concrete and metal grain restored compared with bridge-v3.",
+    "Rust coverage on locomotive roof and high-contrast foam increased substantially relative to the original reference.",
+    "Correct orthographic layout does not establish faithful surface condition."
+  ],
+  "runtimeAdmitted": false,
+  "productionChanged": false,
+  "furtherGenerationInThisBatch": false,
+  "next": "Retain original reference and written journal as fallback; strengthen reference-relative quality review before another recipe revision. Do not ship this prompt as v4."
+}
