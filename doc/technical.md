@@ -1125,3 +1125,8 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 
 ### 背景失败阶段诊断（2026-09-12，待平台复验）
 `loadBrowserSceneResource` 通过可选阶段回调报告 download/body/hash/decode/ready，并将底层网络与正文读取异常转换为固定错误码。`ProgressiveSceneReadiness.diagnostics` 返回资源类型、声明大小、阶段、耗时、允许列表中的错误码与 HTTP 状态，不返回 URL 或原始异常。超时、迟到响应、显式重试和地图准入合同不变。记录面板诊断拆为短行，避免原生 AX 截断单个长文本。实际失败原因仍需部署后的平台读数，不能用本机测试推断。
+
+
+### 绘图上下文丢失恢复（2026-09-13）
+
+`renderer-context-loss.ts` 在 renderer host 捕获 canvas 的非冒泡 `webglcontextlost` 事件，不拦截 Pixi 自身事件处理。一次故障锁定当前页面的空间输入和转场，原作界面单独保存 `RENDERER_CONTEXT_LOST`，避免被稍后返回的普通请求清除。玩家显式重新载入后，沿现有 Story Session 恢复同一旅程和待确认请求；不创建第二个 renderer，也不删除存档。`_qa/original-production-server.ts --context-loss-control` 只在本机响应注入可见按钮，通过 `WEBGL_lose_context` 扩展验证实际故障与恢复，按钮不进入 dist。该恢复能力不证明此前偶发角色消失就是 GPU 上下文丢失。

@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-13",
+  "change": "Latch WebGL context loss in original-game renderer, stop movement, expose explicit reload recovery without resetting Story Session.",
+  "nativeHistoricalCauseProven": false,
+  "targetedTests": 9,
+  "fullSuite": {
+    "tests": 703,
+    "passed": 703,
+    "failed": 0,
+    "scope": "Before final motion-status and walkTo guard tightening; targeted9 repeated afterward."
+  },
+  "buildPassed": true,
+  "browser": {
+    "runtime": "local compiled production frontend and Worker, fresh temporary SQL",
+    "fault": "WEBGL_lose_context extension called via explicit QA button; not synthetic DOM event",
+    "before": {
+      "fuel": 68,
+      "condition": 87,
+      "morale": 58,
+      "starterRepaired": true
+    },
+    "observedFailure": "RENDERER_CONTEXT_LOST with focused reload recovery button",
+    "recoveredViaVisibleButton": true,
+    "after": {
+      "fuel": 68,
+      "condition": 87,
+      "morale": 58,
+      "starterRepaired": true,
+      "heroVisible": true,
+      "equipmentVisible": true
+    },
+    "evidence": [
+      "_qa/context-loss-20260913/lost.png",
+      "_qa/context-loss-20260913/recovered.png"
+    ]
+  },
+  "qaControlNotInProduction": true,
+  "deployment": "pending"
+}

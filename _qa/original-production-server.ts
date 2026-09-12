@@ -46,7 +46,12 @@ const server=createServer(async(req,res)=>{try{
   if(process.argv.includes('--slow-scenery'))await new Promise(resolve=>setTimeout(resolve,20000))
  }
  res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','Cache-Control':'no-store'})
- if(process.argv.includes('--platform-layout')&&extname(path)==='.html')res.end(readFileSync(path,'utf8').replace('</head>','<style>#alteru-guest-banner{display:none!important}</style></head>'))
+ if(extname(path)==='.html'&&(process.argv.includes('--platform-layout')||process.argv.includes('--context-loss-control'))){
+  let html=readFileSync(path,'utf8')
+  if(process.argv.includes('--platform-layout'))html=html.replace('</head>','<style>#alteru-guest-banner{display:none!important}</style></head>')
+  if(process.argv.includes('--context-loss-control'))html=html.replace('</body>',`<button id="qa-context-loss" style="position:fixed;right:8px;top:8px;z-index:99999;min-height:44px">QA: interrupt graphics</button><script>document.getElementById('qa-context-loss').onclick=function(){const c=document.querySelector('#rpg canvas');const gl=c&&(c.getContext('webgl2')||c.getContext('webgl'));const ext=gl&&gl.getExtension('WEBGL_lose_context');if(ext){ext.loseContext();this.textContent='QA: context loss requested'}else this.textContent='QA: context loss unavailable'};</script></body>`)
+  res.end(html)
+ }
  else res.end(readFileSync(path))
 }catch{res.writeHead(404);res.end('Not found')}})
 server.listen(port,'127.0.0.1',()=>console.log('Compiled production frontend and Worker at http://127.0.0.1:'+port))

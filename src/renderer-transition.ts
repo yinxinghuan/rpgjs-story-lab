@@ -1,10 +1,10 @@
 /** A UI timeout stops waiting, not an engine transfer already in flight. */
 export const RENDERER_TRANSITION_TIMEOUT_MS = 30000
-const failures=new Set(['MAP_TRANSFER_TIMEOUT','MAP_TRANSFER_REJECTED','MAP_TRANSFER_BUSY','MAP_RUNTIME_DISPOSED'])
+const failures=new Set(['MAP_TRANSFER_TIMEOUT','MAP_TRANSFER_REJECTED','MAP_TRANSFER_BUSY','MAP_RUNTIME_DISPOSED','RENDERER_CONTEXT_LOST'])
 export function rendererFailure(error:unknown){return error instanceof Error&&failures.has(error.message)?error.message:'RENDERER_RESTORE'}
 // This RPG-JS beta has page-global providers. Reconnecting Story Session cannot
 // recreate a renderer whose initial load never acknowledged completion.
-export function rendererNeedsPageReload(code:string){return ['MAP_TRANSFER_TIMEOUT','MAP_RUNTIME_DISPOSED','RPG_RENDERER_ALREADY_CREATED'].includes(code)}
+export function rendererNeedsPageReload(code:string){return ['MAP_TRANSFER_TIMEOUT','MAP_RUNTIME_DISPOSED','RPG_RENDERER_ALREADY_CREATED','RENDERER_CONTEXT_LOST'].includes(code)}
 type Port<S, P> = {
   changeMap: (scene: S, position: P) => Promise<boolean>
   teleport: (position: P) => Promise<unknown>
