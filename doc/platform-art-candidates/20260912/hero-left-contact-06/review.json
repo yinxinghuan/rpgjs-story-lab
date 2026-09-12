@@ -1,0 +1,16 @@
+{
+  "taskId": "mt_392f44425baf99641a453dd781a413e9",
+  "sha256": "4402d6a071a92044fb1e0fdceea5b0db683fa83c3748e6f9e95bea127736b697",
+  "requests": 1,
+  "status": "not-admitted",
+  "observations": [
+    "Yellow coat and satchel identity recognizable, with overhead view retained.",
+    "Near visible arm now swings behind torso toward screen right, unlike preceding wrong-phase candidates.",
+    "Stride is exaggerated with lifted rear boot, reading as running rather than short grounded walking contact.",
+    "Head top is visibly above reference hair top; face and torso angle also drift.",
+    "Opposite anatomical leg identity is not proven by this still; no alternating playback acceptance."
+  ],
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "next": "Do not insert this frame into the existing walking cycle. Preserve candidate as arm-phase evidence; need consistent short-stride contact pair and anchored playback before admission."
+}

@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "60a35440-6957-478c-86d2-33ea6ec146a1",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/7d5194f/doc/platform-art-candidates/20260912/hero-left-single-03/reference.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Create one alternate walking frame of this exact left-facing game character. Preserve the reference identity, overhead orthographic camera, scale and head position. Yellow hooded coat, teal trousers, brown satchel and boots. For this frame, the leg closest to the viewer reaches forward toward screen left, while the opposite leg extends toward screen right. The visible near arm swings back toward screen right, opposite its leg. Keep the two boots visibly separated on the ground. Use a natural short walking stride. One full-body figure at the reference size, centered on a plain white 320x320 canvas. Same crisp pixel-painted edges. No text or extra figures."
+}

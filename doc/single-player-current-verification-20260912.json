@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-12",
+  "liveCommit": "4bfad43f8b8da54663ca595eedb7ab1954beef11",
+  "goalComplete": false,
+  "verified": {
+    "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
+    "mobile390": "calibrated-mobile-review-20260912.json",
+    "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
+    "sameCommitDualDeployment": "Same live illustration review: 58 files at each main/Pages source match.",
+    "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough."
+  },
+  "remaining": [
+    {
+      "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
+      "state": "unverified",
+      "currentBlocker": "CUA getState returned Mac locked; preceding unlocked Mini App observation was Unable to Load, not missing authorization."
+    },
+    {
+      "requirement": "Small-screen 320x568 calibrated visual verification",
+      "state": "unverified",
+      "reason": "Earlier screenshots were cropped by tooling; 390 proof does not cover 320."
+    },
+    {
+      "requirement": "Platform character production with consistent four-direction gait",
+      "state": "unverified",
+      "latest": "contact06 generated successfully but exaggerated running stride/head drift; not admitted. Approved B art unchanged."
+    },
+    {
+      "requirement": "Trusted platform identity and account recovery",
+      "state": "external-contract-needed",
+      "reason": "Existing capability saves remain intact; browser-supplied account identifiers cannot establish authenticated ownership."
+    }
+  ],
+  "latestTestScopes": {
+    "fullHistoricalRegression": "693 tests evidence in single-player-verification-20260912.json; do not relabel as latest full suite.",
+    "downloadCompatibility": 27,
+    "redirectRejectionIllustrationSuite": 17
+  },
+  "newBrowserChecksThisTurn": false
+}

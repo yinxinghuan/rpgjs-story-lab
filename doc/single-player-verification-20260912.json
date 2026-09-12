@@ -35,5 +35,7 @@
     "Platform hero four-direction anatomical gait parity remains unproven; contact05 generated no image. Approved B runtime art is preserved.",
     "Platform-verified account recovery requires a trusted identity integration contract. Existing capability-based saves must remain intact."
   ],
-  "goalComplete": false
+  "goalComplete": false,
+  "historicalSnapshot": true,
+  "supersededBy": "single-player-current-verification-20260912.json"
 }
