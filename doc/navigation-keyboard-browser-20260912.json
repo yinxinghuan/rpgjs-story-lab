@@ -1,0 +1,31 @@
+{
+  "codeCommit": "242c6e1",
+  "environment": "Actual IAB localhost 5392; compiled production frontend/Worker, fresh synthetic journey, fixture illustration producer, no external media requests",
+  "checks": {
+    "cancelApproachWithJournal": "passed; journal remained open after route cancellation",
+    "reapproach": "passed; selected starter via nearby list and action panel opened",
+    "repair": "passed; condition82->87, fuel68/morale58 unchanged",
+    "keyboardFar": "passed; E only asks to move closer",
+    "keyboardNear": "passed; E opens Ada dialogue",
+    "keyboardEditing": "passed; e typed in text field, no interaction or submission",
+    "illustrationKeep": "passed with existing accepted fixture; keep persisted after page reload",
+    "storyReload": "passed; condition87/fuel68/morale58, repaired starter no longer offered",
+    "waitingDelay": "not exercised in this immediate fixture; earlier 15s fixture evidence remains separate"
+  },
+  "uiLimits": [
+    "Default browser viewport interaction passed.",
+    "Viewport capability is affected by existing 1.3 scaling: requested390x844 gave actual300x649; requested507x1097 gave document390x844.",
+    "Screenshots still showed a scaled content region and extra dark area, so they are not accepted as calibrated mobile composition evidence. Temporary override was reset.",
+    "An initial marker click moved on the ground without walking notice. A subsequent visible marker click opened the correct panel. Initial hit-timing cause not established; do not claim every dynamic marker hit tested."
+  ],
+  "screenshots": [
+    "_qa/navigation-keyboard-ui/platform-layout-320-text-input.png",
+    "_qa/navigation-keyboard-ui/platform-layout-390-actual-kept.jpg"
+  ],
+  "next": [
+    "Recheck target-size visuals in a calibrated browser.",
+    "Same-commit main/Pages release plus deployed Worker synthetic media run.",
+    "Authenticated AlterU full original story and re-entry."
+  ],
+  "published": false
+}
