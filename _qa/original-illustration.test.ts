@@ -19,6 +19,7 @@ import type {AuthorityStorage} from '../server/session-authority'
 import {CarriageJourneyAuthority,handleApi} from '../worker/source'
 import {PreflightStorage} from '../server/preflight-storage'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
+import {readOriginalIllustrations} from '../src/original-illustration-contract'
 import {newCapability} from '../src/cloud-session'
 const require=createRequire(import.meta.url),{PNG}=require(join(dirname(require.resolve('playwright-core/package.json')),'lib/utilsBundle.js'))
 const fixture=new Uint8Array(PNG.sync.write({width:768,height:1024,data:Buffer.alloc(768*1024*4,80)}))
@@ -55,6 +56,9 @@ test('stored v2 recipe survives disk reopen, discard and retry without adopting 
   s.images.decide(owner,h.id,{scene:h.sceneId,attempt:1,sha256:first.asset!.sha256,decision:'discard'})
   s.images.start(owner,h.id,body(h,true));s.raw.close();s=setup(path)
   await s.images.run(owner,h.id,h.sceneId,async job=>{assert.deepEqual(job.plan,old);assert.equal(job.attempt,2);assert.notEqual(job.requestId,stored.requestId);return fixture})
+  const publicJobs=s.images.history(owner,h.id,h.sceneId)
+  for(const job of publicJobs)assert.deepEqual(job.reference,{url:old.request.referenceUrls[0],sha256:old.referenceSha256})
+  assert.deepEqual(readOriginalIllustrations({illustrations:s.images.list(owner,h.id)})[0].reference,publicJobs[1].reference)
   assert.deepEqual(s.authority.get(owner,h.id),h)
   assert.deepEqual(s.images.history(owner,h.id,h.sceneId).map(j=>j.state),['discarded','candidate'])
  }finally{s.raw.close();rmSync(dir,{recursive:true,force:true})}
@@ -189,4 +193,16 @@ test('real media PNG round-trips through the Worker route; default gate and capa
   assert.deepEqual(await(await call('/sessions/'+h.id)).json(),h)
   enabled=false;objects.clear();assert.equal((await call(review+'/decision',decision)).status,404);assert.equal((await call(review+'/attempts')).status,404)
  }finally{storage.close()}
+})
+
+test('reference metadata accepts old records and rejects unsafe or malformed comparison sources',()=>{
+ const s=setup();try{
+  const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h))
+  const job=s.images.list(owner,h.id)[0]
+  assert.equal(readOriginalIllustrations({illustrations:[job]}).length,1)
+  const {reference,...legacy}=job
+  assert.equal(readOriginalIllustrations({illustrations:[legacy]}).length,1)
+  for(const bad of [{url:'javascript:alert(1)',sha256:reference.sha256},{url:'https://user:password@example.com/image.png',sha256:reference.sha256},{url:reference.url+'?token=private',sha256:reference.sha256},{url:reference.url,sha256:'x'.repeat(64)},{url:reference.url,sha256:null}])
+   assert.throws(()=>readOriginalIllustrations({illustrations:[{...job,reference:bad}]}),/ILLUSTRATION_INVALID_RESPONSE/)
+ }finally{s.raw.close()}
 })

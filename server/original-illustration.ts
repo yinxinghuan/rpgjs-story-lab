@@ -29,7 +29,7 @@ export function originalIllustrationPlan(head:OriginalHead):IllustrationPlan{
 }
 const safeCodes=new Set(['RATE_LIMITED','QUEUE_BUSY','TIMEOUT','PROVIDER_REJECTED','REFERENCE_UNAVAILABLE','ORIGIN_NOT_ALLOWED','IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'])
 const normalize=(j:IllustrationJob):IllustrationJob=>j.state==='active'&&(j.decision?.verdict!=='kept'||j.decision.sha256!==j.asset?.sha256)?{...j,state:'candidate',decision:undefined}:j
-const publicJob=(value:IllustrationJob)=>{const j=normalize(value);return {id:j.id,scene:j.plan.scene,sourceVersion:j.plan.sourceVersion,referenceVersion:j.plan.referenceVersion,state:j.state,attempt:j.attempt,recoverable:j.recoverable,nextAt:j.nextAt,...(j.error?{error:j.error}:{}),...(j.asset?{asset:j.asset}:{}),...(j.decision?{decision:j.decision}:{})}}
+const publicJob=(value:IllustrationJob)=>{const j=normalize(value);return {id:j.id,scene:j.plan.scene,sourceVersion:j.plan.sourceVersion,referenceVersion:j.plan.referenceVersion,reference:{url:j.plan.request.referenceUrls![0],sha256:j.plan.referenceSha256},state:j.state,attempt:j.attempt,recoverable:j.recoverable,nextAt:j.nextAt,...(j.error?{error:j.error}:{}),...(j.asset?{asset:j.asset}:{}),...(j.decision?{decision:j.decision}:{})}}
 /** Separate rows in the existing authority DB: asynchronous media never writes
  * a StorySave, action receipt, position, resource counter or scene binding. */
 export class OriginalIllustrations{
