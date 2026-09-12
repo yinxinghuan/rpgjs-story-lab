@@ -23,6 +23,7 @@ jobs:
       - run: npm run build:worker
       - run: npm test
       - run: npm run build
+      - run: npm run check:spatial-story
       - run: test -s dist/THIRD_PARTY_NOTICES.txt && test -s dist/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

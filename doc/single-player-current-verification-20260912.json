@@ -25,7 +25,8 @@
       "identity_mode": "anonymous-capability-v1"
     },
     "decoderRecovery": "decoder-recovery-review-20260913.json: local production stalled Image.decode and explicit same-journey recovery; 706 CI tests; main/Pages each 58 actual files match the same tested build.",
-    "publishedPixelDecodeRecovery": "published-pixel-decode-review-20260913.json: both decode waits cancel; local real-PNG browser retry; 710 tests; same-commit dual deployment."
+    "publishedPixelDecodeRecovery": "published-pixel-decode-review-20260913.json: both decode waits cancel; local real-PNG browser retry; 710 tests; same-commit dual deployment.",
+    "storyAndPhysicalReachability": "spatial-story-route-review-20260913.json: 120 offline sampled journeys, actual ground/character/equipment collision, 82 action IDs, all complete; not renderer or iPhone proof."
   },
   "remaining": [
     {

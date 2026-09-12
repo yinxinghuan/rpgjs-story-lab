@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-13",
+  "baselineCommit": "376c4e0",
+  "command": "npm run check:spatial-story",
+  "journeys": 120,
+  "actions": 82,
+  "walkedRoutes": 5073,
+  "walkabilitySamples": 1520437,
+  "failures": 0,
+  "endingChoices": [
+    "junction-bridge-basic",
+    "junction-common-line",
+    "junction-emergency-conductor",
+    "junction-endless-rescue",
+    "junction-first-street",
+    "junction-many-hands",
+    "junction-open-ledger",
+    "junction-quiet-platform",
+    "junction-settle-basic",
+    "junction-the-last-bridge"
+  ],
+  "productionPresentationGate": true,
+  "actualCollisionPredicate": "originalWorldWalkable: current admitted ground + present characters + bound equipment",
+  "pathfinder": "findGridPath",
+  "scope": "Authored buttons and matching typed labels; sampled states, not arbitrary language or exhaustive story space",
+  "limits": [
+    "No rendered frames or physical iPhone measurements",
+    "No live model/media calls or player save access",
+    "No proof of all authored or future user-created content"
+  ],
+  "buildPassed": true,
+  "evidence": "spatial-story-route-evidence-20260913.json"
+}

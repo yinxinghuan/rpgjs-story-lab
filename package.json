@@ -18,7 +18,8 @@
     "build:preflight": "tsc --noEmit && npm run check:spatial && vite build --mode cloud-preflight --outDir dist-preflight",
     "preview:preflight": "vite preview --mode cloud-preflight --outDir dist-preflight --host 127.0.0.1 --port 5220 --strictPort",
     "build:local": "tsc --noEmit && vite build",
-    "check:spatial": "node --import tsx scripts/check-spatial-cartridge.ts"
+    "check:spatial": "node --import tsx scripts/check-spatial-cartridge.ts",
+    "check:spatial-story": "node --import tsx scripts/check-original-branches.ts --spatial"
   },
   "keywords": [],
   "author": "",
