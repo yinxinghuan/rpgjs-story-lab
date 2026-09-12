@@ -5,7 +5,8 @@ const job:OriginalIllustration={id:crypto.randomUUID(),scene:'train-at-dead-stat
 test('old-place recovery remains available; only a new intention needs the current place and available budget',()=>{
  assert.equal(illustrationAction(job,'train-at-river-valley',job.scene,0),'recover')
  assert.equal(illustrationAction({...job,nextAt:60000},'train-at-river-valley',job.scene,59999),'wait')
- assert.equal(illustrationAction({...job,state:'failed',recoverable:false},'train-at-river-valley',job.scene,0),'return')
+ assert.equal(illustrationAction({...job,state:'failed',recoverable:false},'train-at-river-valley',job.scene,0),'retry')
+ assert.equal(illustrationAction({...job,state:'candidate'},job.scene,job.scene,0),'review')
  assert.equal(illustrationAction({...job,state:'failed',recoverable:false,attempt:2},job.scene,job.scene,0),'exhausted')
  assert.equal(illustrationAction({...job,state:'failed',recoverable:false},job.scene,job.scene,0),'retry')
  assert.equal(illustrationAction(undefined,job.scene,job.scene,0),'create')

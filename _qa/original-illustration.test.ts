@@ -38,7 +38,44 @@ test('palette recipe updates affect new intentions only; stored v1 requests resu
  const old=JSON.parse(readFileSync('doc/platform-art-candidates/20260912/original-journal-01/intent.json','utf8')).plan
  stored.plan=old;s.db.run('UPDATE original_illustrations SET data=?',JSON.stringify(stored))
  await s.images.run(owner,h.id,h.sceneId,async j=>{assert.deepEqual(j.plan,old);assert.equal(j.requestId,stored.requestId);return fixture})
- assert.equal(s.images.list(owner,h.id)[0].state,'active')
+ assert.equal(s.images.list(owner,h.id)[0].state,'candidate')
+ }finally{s.raw.close()}
+})
+test('keeping is explicit and idempotent; opposite decisions and foreign digests cannot alter the saved choice',async()=>{
+ const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h));await s.images.run(owner,h.id,h.sceneId,async()=>fixture)
+ const j=s.images.list(owner,h.id)[0];assert.equal(j.state,'candidate')
+ const decision={scene:h.sceneId,attempt:1,sha256:j.asset!.sha256,decision:'keep'}
+ assert.throws(()=>s.images.decide(owner,h.id,{...decision,sha256:'f'.repeat(64)}),/CANDIDATE_CHANGED/)
+ const kept=s.images.decide(owner,h.id,decision);assert.equal(kept.state,'active');assert.equal(kept.decision!.verdict,'kept');assert.deepEqual(s.images.decide(owner,h.id,decision),kept)
+ assert.throws(()=>s.images.decide(owner,h.id,{...decision,decision:'discard'}),/DECISION_CONFLICT/)
+ assert.throws(()=>s.images.decide('b'.repeat(64),h.id,decision),/SESSION_NOT_FOUND/)
+ assert.deepEqual(s.authority.get(owner,h.id),h);assert.equal(s.images.history(owner,h.id,h.sceneId).length,1)
+ }finally{s.raw.close()}
+})
+test('discard, cross-scene retry and late decisions retain both original attempts and bytes after restart',async()=>{
+ const dir=mkdtempSync('/private/tmp/illustration-decisions-'),path=join(dir,'state.sqlite');let s=setup(path)
+ try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h));await s.images.run(owner,h.id,h.sceneId,async()=>fixture)
+ const old=s.images.list(owner,h.id)[0],discard={scene:h.sceneId,attempt:1,sha256:old.asset!.sha256,decision:'discard'}
+ s.images.decide(owner,h.id,discard);await assert.rejects(s.images.file(owner,h.id,h.sceneId),/NOT_READY/)
+ let moved=h;for(const id of ['repair-starter','commit-valley-route']){const e=originalGameEntities(moved).find(e=>e.actions.some(a=>a.id===id))!;moved=(await s.authority.action(owner,h.id,{action_id:crypto.randomUUID(),expected_version:moved.version,sceneId:moved.sceneId,target:e.id,position:e.approach,type:'action',action:id})).head}
+ const before=structuredClone(moved),originalPlan=JSON.parse(s.db.all<{data:string}>('SELECT data FROM original_illustrations')[0].data).plan
+ s.images.start(owner,h.id,{...body(moved,true),scene:h.sceneId});const alternate=new Uint8Array(readFileSync('doc/platform-art-candidates/20260912/original-journal-night-02/candidate.png'))
+ await s.images.run(owner,h.id,h.sceneId,async job=>{assert.deepEqual(job.plan,originalPlan);assert.equal(job.attempt,2);return alternate})
+ assert.equal(s.images.decide(owner,h.id,discard).decision!.verdict,'discarded');assert.equal(s.images.list(owner,h.id)[0].state,'candidate');assert.throws(()=>s.images.decide(owner,h.id,{...discard,decision:'keep'}),/DECISION_CONFLICT/)
+ const second=s.images.list(owner,h.id)[0];s.images.decide(owner,h.id,{...discard,attempt:2,sha256:second.asset!.sha256,decision:'keep'})
+ s.raw.close();s=setup(path)
+ assert.deepEqual(await s.images.file(owner,h.id,h.sceneId,1),fixture);assert.deepEqual(await s.images.file(owner,h.id,h.sceneId),alternate)
+ assert.deepEqual(s.images.history(owner,h.id,h.sceneId).map(j=>[j.attempt,j.state]),[[1,'discarded'],[2,'active']]);assert.deepEqual(s.authority.get(owner,h.id),before)
+ assert.equal(s.db.all<{uses:number}>('SELECT uses FROM original_illustration_usage')[0].uses,2)
+ assert.throws(()=>s.images.history('b'.repeat(64),h.id,h.sceneId),/SESSION_NOT_FOUND/)
+ }finally{s.raw.close();rmSync(dir,{recursive:true,force:true})}
+})
+test('previous unreviewed active rows return as candidates; two discarded attempts keep the written journey usable',async()=>{
+ const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h));await s.images.run(owner,h.id,h.sceneId,async()=>fixture)
+ s.db.run('UPDATE original_illustrations SET data=json_set(data,\'$.state\',\'active\')')
+ assert.equal(s.images.list(owner,h.id)[0].state,'candidate')
+ for(const attempt of [1,2]){const j=s.images.list(owner,h.id)[0];s.images.decide(owner,h.id,{scene:h.sceneId,attempt,sha256:j.asset!.sha256,decision:'discard'});if(attempt===1){s.images.start(owner,h.id,body(h,true));await s.images.run(owner,h.id,h.sceneId,async()=>fixture)}}
+ assert.throws(()=>s.images.start(owner,h.id,body(h,true)),/ATTEMPT_LIMIT/);assert.equal(s.images.list(owner,h.id)[0].state,'discarded');assert.deepEqual(s.authority.get(owner,h.id),h)
  }finally{s.raw.close()}
 })
 test('task records and immutable PNG survive restart, lost responses and source-scene departure without touching story',async()=>{
@@ -52,7 +89,7 @@ test('task records and immutable PNG survive restart, lost responses and source-
   const before=JSON.stringify(s.authority.get(owner,h.id)),events=JSON.stringify(s.authority.events(owner,h.id,0))
   assert.equal(s.images.start(owner,h.id,body(h)).id,first.id);finish(fixture);await pending
   assert.equal(JSON.stringify(s.authority.get(owner,h.id)),before);assert.equal(JSON.stringify(s.authority.events(owner,h.id,0)),events)
-  s.raw.close();s=setup(path);assert.equal(s.images.list(owner,h.id)[0].state,'active');assert.equal(s.images.list(owner,h.id)[0].scene,h.sceneId);assert.deepEqual(await s.images.file(owner,h.id,h.sceneId),fixture)
+  s.raw.close();s=setup(path);assert.equal(s.images.list(owner,h.id)[0].state,'candidate');assert.equal(s.images.list(owner,h.id)[0].scene,h.sceneId);assert.deepEqual(await s.images.file(owner,h.id,h.sceneId),fixture)
   assert.equal(s.images.start(owner,h.id,body(h)).id,first.id);assert.throws(()=>s.images.list('b'.repeat(64),h.id),/SESSION_NOT_FOUND/);await assert.rejects(s.images.file('b'.repeat(64),h.id,h.sceneId),/SESSION_NOT_FOUND/)
   assert.doesNotMatch(JSON.stringify(s.images.list(owner,h.id)),/requestId|taskId|referenceUrls|synthetic-task|lease/)
  }finally{s.raw.close();rmSync(dir,{recursive:true,force:true})}
@@ -63,7 +100,7 @@ test('lease expiry fences late results; persisted task resumes without creating 
  const old=s.images.run(owner,h.id,h.sceneId,async(j,onTask)=>{requestId=j.requestId;onTask('stable-task');return new Promise(r=>finish=r)})
  time+=120001
  await s.images.run(owner,h.id,h.sceneId,async(j)=>{assert.equal(j.requestId,requestId);assert.equal(j.taskId,'stable-task');return fixture})
- finish(new Uint8Array([1,2,3]));await old;assert.equal(s.images.list(owner,h.id)[0].state,'active');assert.deepEqual(await s.images.file(owner,h.id,h.sceneId),fixture)
+ finish(new Uint8Array([1,2,3]));await old;assert.equal(s.images.list(owner,h.id)[0].state,'candidate');assert.deepEqual(await s.images.file(owner,h.id,h.sceneId),fixture)
  }finally{s.raw.close()}
 })
 test('terminal retry budget, rate-limit cooldown and per-owner daily quota survive service recreation',async()=>{
@@ -85,7 +122,7 @@ test('current scene/version required for new intentions, HTTP gate closed by def
  const url='https://authority.invalid/api/original/sessions/'+h.id+'/illustrations',headers={[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT},read=(r:Request)=>r.json()
  assert.equal((await handleOriginalSession(new Request(url,{headers}),owner,s.authority,read)).status,404)
  const response=await handleOriginalSession(new Request(url,{headers,method:'POST',body:JSON.stringify(body(h))}),owner,s.authority,read,undefined,undefined,undefined,undefined,{store:s.images,produce:async()=>fixture})
- assert.equal(response.status,200);assert.equal((await response.json()).illustrations[0].state,'active')
+ assert.equal(response.status,200);assert.equal((await response.json()).illustrations[0].state,'candidate')
  const file=await handleOriginalSession(new Request(url+'/'+h.sceneId+'/file',{headers}),owner,s.authority,read,undefined,undefined,undefined,undefined,{store:s.images,produce:async()=>{throw Error('NO_SECOND_CALL')}})
  assert.equal(file.headers.get(ORIGINAL_RUNTIME_HEADER),ORIGINAL_RUNTIME_CONTRACT);assert.deepEqual(new Uint8Array(await file.arrayBuffer()),fixture)
  }finally{s.raw.close()}
@@ -95,7 +132,7 @@ test('platform producer rejects foreign task identity and preserves original tas
  const producer=originalIllustrationProducer(async(input,init)=>{const u=String(input);if(u.includes('/v1/')){if(u.endsWith('generations')){submissions++;lastRequest=JSON.parse(String(init!.body)).request_id}return Response.json({request_id:lastRequest,task_id:'retained-task',status:'succeeded',type:'image',media:{type:'image',url:'https://cdn.aiwaves.tech/synthetic.png',format:'png',width:768,height:1024}})}downloads++;return downloads===1?new Response('',{status:503}):new Response(fixture)})
  await s.images.run(owner,h.id,h.sceneId,producer);assert.equal(s.images.list(owner,h.id)[0].state,'failed')
  s.db.run('UPDATE original_illustrations SET data=json_set(data,\'$.nextAt\',0)')
- await s.images.run(owner,h.id,h.sceneId,producer);assert.equal(submissions,1);assert.equal(downloads,2);assert.equal(s.images.list(owner,h.id)[0].state,'active')
+ await s.images.run(owner,h.id,h.sceneId,producer);assert.equal(submissions,1);assert.equal(downloads,2);assert.equal(s.images.list(owner,h.id)[0].state,'candidate')
  const j={...s.images.list(owner,h.id)[0],plan:originalIllustrationPlan(h),requestId:crypto.randomUUID(),taskId:'expected',leaseUntil:0} as any
  await assert.rejects(originalIllustrationProducer(async()=>Response.json({request_id:'wrong',task_id:'foreign',status:'succeeded'}))(j,()=>{}),/TASK_MISMATCH/)
  }finally{s.raw.close()}
@@ -112,10 +149,26 @@ test('real media PNG round-trips through the Worker route; default gate and capa
   const h=await(await call('/sessions',{enrollment_id:crypto.randomUUID(),locale:'zh'})).json() as OriginalHead
   assert.equal((await call('/sessions/'+h.id+'/illustrations')).status,404)
   enabled=true;objects.clear()
-  const path='/sessions/'+h.id+'/illustrations',r=await call(path,body(h));assert.equal(r.status,200);assert.equal((await r.json()).illustrations[0].state,'active')
+  const path='/sessions/'+h.id+'/illustrations',r=await call(path,body(h));assert.equal(r.status,200);assert.equal((await r.json()).illustrations[0].state,'candidate')
   const file=await call(path+'/'+h.sceneId+'/file');assert.deepEqual(new Uint8Array(await file.arrayBuffer()),bytes)
   await call(path,body(h));assert.equal(calls,1);assert.deepEqual(await(await call('/sessions/'+h.id)).json(),h)
   assert.equal((await call(path,undefined,{...headers,Authorization:'Bearer '+newCapability()})).status,404)
   assert.equal((await call(path,undefined,{...headers,Authorization:''})).status,401)
+  const j=(await(await call(path)).json()).illustrations[0],decision={scene:h.sceneId,attempt:1,sha256:j.asset.sha256,decision:'discard'},review=path+'/'+h.sceneId
+  assert.equal((await call(review+'/decision',null)).status,400)
+  assert.equal((await call(review+'/decision',{...decision,scene:'train-at-river-valley'})).status,400)
+  assert.equal((await call(review+'/decision',decision,{...headers,Authorization:'Bearer '+newCapability()})).status,404)
+  assert.equal((await call(review+'/decision',decision,{...headers,[ORIGINAL_RUNTIME_HEADER]:'wrong'})).status,409)
+  const discarded=await call(review+'/decision',decision);assert.equal(discarded.status,200);assert.equal((await discarded.json()).illustrations[0].state,'discarded')
+  assert.equal((await call(review+'/file')).status,409)
+  await call(path,body(h,true));assert.equal(calls,2)
+  const late=await call(review+'/decision',decision);assert.equal((await late.json()).illustrations[0].attempt,2)
+  assert.equal((await call(review+'/decision',{...decision,decision:'keep'})).status,409)
+  assert.deepEqual((await(await call(review+'/attempts')).json()).attempts.map((a:any)=>[a.attempt,a.state]),[[1,'discarded'],[2,'candidate']])
+  const oldFile=await call(review+'/attempts/1/file');assert.equal(oldFile.headers.get('Cache-Control'),'private, no-store');assert.deepEqual(new Uint8Array(await oldFile.arrayBuffer()),bytes)
+  assert.equal((await call(review+'/attempts/1/file',undefined,{...headers,Authorization:'Bearer '+newCapability()})).status,404)
+  await call(review+'/decision',{...decision,attempt:2,decision:'keep'});assert.equal((await(await call(path)).json()).illustrations[0].state,'active')
+  assert.deepEqual(await(await call('/sessions/'+h.id)).json(),h)
+  enabled=false;objects.clear();assert.equal((await call(review+'/decision',decision)).status,404);assert.equal((await call(review+'/attempts')).status,404)
  }finally{storage.close()}
 })

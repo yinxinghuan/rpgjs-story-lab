@@ -12,7 +12,7 @@ export const ORIGINAL_ILLUSTRATION_RELEASED=false
 const COMMIT='8c4ebb1d42397286d91a7d511fc0d41d1f7a144a'
 const size={width:768,height:1024} as const
 export type IllustrationPlan={version:1|2;scene:string;sourceVersion:number;referenceVersion:string;referenceSha256:string;request:GenerateImageMediaRequest}
-export type IllustrationJob={id:string;plan:IllustrationPlan;requestId:string;attempt:number;state:'preparing'|'failed'|'active';recoverable:boolean;nextAt:number;lease?:string;leaseUntil:number;taskId?:string;error?:string;asset?:{sha256:string;bytes:number;width:768;height:1024}}
+export type IllustrationJob={id:string;plan:IllustrationPlan;requestId:string;attempt:number;state:'preparing'|'failed'|'candidate'|'active'|'discarded';recoverable:boolean;nextAt:number;lease?:string;leaseUntil:number;taskId?:string;error?:string;asset?:{sha256:string;bytes:number;width:768;height:1024};decision?:{verdict:'kept'|'discarded';sha256:string;at:number}}
 export type IllustrationProducer=(job:IllustrationJob,onTask:(id:string)=>void)=>Promise<Uint8Array>
 /** Source selection is authoritative; no player text, identity or save is sent. */
 export function originalIllustrationPlan(head:OriginalHead):IllustrationPlan{
@@ -28,7 +28,8 @@ export function originalIllustrationPlan(head:OriginalHead):IllustrationPlan{
  return {version:2,scene:head.sceneId,sourceVersion:head.version,referenceVersion:id,referenceSha256:source.sha256,request:{sessionId:GAME_ID,mode:'edit',referenceUrls:[reference],size:{...size},prompt:'Produce a faithful pixel-painted image of this exact railway environment for a travel journal. Copy the source palette, illumination and textured pixel detail; do not simplify it into a line drawing, comic, vector graphic or flat poster.'+night+' Preserve the reference location, narrow paths, tracks, architectural proportions, strong overhead orthographic view, time of day, weather and visible structures. Environment only: no people, faces, animals, writing, labels, new doors, new buildings, extra vehicles or objects. Do not depict a rescue, victory, repair or any new event. This is a visual memory of a visited place, not a playable map or a change to the world. Compose the complete reference location within a 3:4 portrait frame without stretching geometry.'}}
 }
 const safeCodes=new Set(['RATE_LIMITED','QUEUE_BUSY','TIMEOUT','PROVIDER_REJECTED','REFERENCE_UNAVAILABLE','ORIGIN_NOT_ALLOWED','IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'])
-const publicJob=(j:IllustrationJob)=>({id:j.id,scene:j.plan.scene,sourceVersion:j.plan.sourceVersion,referenceVersion:j.plan.referenceVersion,state:j.state,attempt:j.attempt,recoverable:j.recoverable,nextAt:j.nextAt,...(j.error?{error:j.error}:{}),...(j.asset?{asset:j.asset}:{})})
+const normalize=(j:IllustrationJob):IllustrationJob=>j.state==='active'&&(j.decision?.verdict!=='kept'||j.decision.sha256!==j.asset?.sha256)?{...j,state:'candidate',decision:undefined}:j
+const publicJob=(value:IllustrationJob)=>{const j=normalize(value);return {id:j.id,scene:j.plan.scene,sourceVersion:j.plan.sourceVersion,referenceVersion:j.plan.referenceVersion,state:j.state,attempt:j.attempt,recoverable:j.recoverable,nextAt:j.nextAt,...(j.error?{error:j.error}:{}),...(j.asset?{asset:j.asset}:{}),...(j.decision?{decision:j.decision}:{})}}
 /** Separate rows in the existing authority DB: asynchronous media never writes
  * a StorySave, action receipt, position, resource counter or scene binding. */
 export class OriginalIllustrations{
@@ -36,25 +37,41 @@ export class OriginalIllustrations{
   db.run('CREATE TABLE IF NOT EXISTS original_illustrations(owner TEXT NOT NULL, session TEXT NOT NULL, scene TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(owner,session,scene))')
   db.run('CREATE TABLE IF NOT EXISTS original_illustration_parts(owner TEXT NOT NULL, session TEXT NOT NULL, scene TEXT NOT NULL, part INTEGER NOT NULL, data TEXT NOT NULL, PRIMARY KEY(owner,session,scene,part))')
   db.run('CREATE TABLE IF NOT EXISTS original_illustration_usage(owner TEXT NOT NULL, day INTEGER NOT NULL, uses INTEGER NOT NULL, PRIMARY KEY(owner,day))')
+  db.run('CREATE TABLE IF NOT EXISTS original_illustration_attempts(owner TEXT NOT NULL, session TEXT NOT NULL, scene TEXT NOT NULL, attempt INTEGER NOT NULL, data TEXT NOT NULL, PRIMARY KEY(owner,session,scene,attempt))')
+  db.run('CREATE TABLE IF NOT EXISTS original_illustration_attempt_parts(owner TEXT NOT NULL, session TEXT NOT NULL, scene TEXT NOT NULL, attempt INTEGER NOT NULL, part INTEGER NOT NULL, data TEXT NOT NULL, PRIMARY KEY(owner,session,scene,attempt,part))')
  }
- private get(owner:string,id:string,scene:string){const r=this.db.all<{data:string}>('SELECT data FROM original_illustrations WHERE owner=? AND session=? AND scene=?',owner,id,scene)[0];return r?JSON.parse(r.data) as IllustrationJob:undefined}
+ private get(owner:string,id:string,scene:string){const r=this.db.all<{data:string}>('SELECT data FROM original_illustrations WHERE owner=? AND session=? AND scene=?',owner,id,scene)[0];return r?normalize(JSON.parse(r.data)):undefined}
+ private archived(owner:string,id:string,scene:string,attempt:number){const row=this.db.all<{data:string}>('SELECT data FROM original_illustration_attempts WHERE owner=? AND session=? AND scene=? AND attempt=?',owner,id,scene,attempt)[0];return row?normalize(JSON.parse(row.data)):undefined}
+ private archive(owner:string,id:string,j:IllustrationJob){this.db.run('INSERT INTO original_illustration_attempts VALUES(?,?,?,?,?)',owner,id,j.plan.scene,j.attempt,JSON.stringify(j));if(j.asset)this.db.run('INSERT INTO original_illustration_attempt_parts SELECT owner,session,scene,?,part,data FROM original_illustration_parts WHERE owner=? AND session=? AND scene=?',j.attempt,owner,id,j.plan.scene)}
  private put(owner:string,id:string,j:IllustrationJob){this.db.run('INSERT INTO original_illustrations VALUES(?,?,?,?) ON CONFLICT(owner,session,scene) DO UPDATE SET data=excluded.data',owner,id,j.plan.scene,JSON.stringify(j))}
  list(owner:string,id:string){this.head(owner,id);return this.db.all<{data:string}>('SELECT data FROM original_illustrations WHERE owner=? AND session=? ORDER BY scene',owner,id).map(r=>publicJob(JSON.parse(r.data)))}
  start(owner:string,id:string,body:any){const h=this.head(owner,id);return this.db.transaction(()=>{
   if(!body||Object.keys(body).sort().join(',')!=='expected_version,retry,scene'||typeof body.retry!=='boolean'||!Number.isSafeInteger(body.expected_version)||typeof body.scene!=='string')throw new LabError('INVALID_ILLUSTRATION_REQUEST')
   const old=this.get(owner,id,body.scene)
   // A retry after a lost reply can recover the old job even after walking away.
-  if(old&&(!body.retry||old.recoverable||old.state==='active'))return publicJob(old)
-  if(h.sceneId!==body.scene||h.version!==body.expected_version)throw new LabError('ILLUSTRATION_SCENE_CHANGED',409)
+  if(old&&(!body.retry||old.recoverable||old.state==='active'||old.state==='candidate'))return publicJob(old)
+  if((!old&&h.sceneId!==body.scene)||h.version!==body.expected_version)throw new LabError('ILLUSTRATION_SCENE_CHANGED',409)
   if(old&&old.nextAt>this.now())throw new LabError('ILLUSTRATION_RETRY_LATER',429)
   if(old&&old.attempt>=2)throw new LabError('ILLUSTRATION_ATTEMPT_LIMIT',429)
-  const plan=originalIllustrationPlan(h),day=Math.floor(this.now()/86400000)
+  // Retrying a visited scene must not require returning along a one-way story
+  // route, or accidentally use the player's new location as its reference.
+  const plan=old?structuredClone(old.plan):originalIllustrationPlan(h),day=Math.floor(this.now()/86400000)
   const uses=this.db.all<{uses:number}>('SELECT uses FROM original_illustration_usage WHERE owner=? AND day=?',owner,day)[0]?.uses??0
   if(uses>=18)throw new LabError('ILLUSTRATION_DAILY_LIMIT',429)
   this.db.run('INSERT INTO original_illustration_usage VALUES(?,?,?) ON CONFLICT(owner,day) DO UPDATE SET uses=excluded.uses',owner,day,uses+1)
   const job:IllustrationJob={id:old?.id??crypto.randomUUID(),plan,requestId:crypto.randomUUID(),attempt:(old?.attempt??0)+1,state:'preparing',recoverable:true,nextAt:0,leaseUntil:0}
+  if(old)this.archive(owner,id,old)
   this.put(owner,id,job);return publicJob(job)
  })}
+ decide(owner:string,id:string,body:any){this.head(owner,id);return this.db.transaction(()=>{
+  if(!body||Object.keys(body).sort().join(',')!=='attempt,decision,scene,sha256'||typeof body.scene!=='string'||![1,2].includes(body.attempt)||!['keep','discard'].includes(body.decision)||typeof body.sha256!=='string'||!/^[a-f0-9]{64}$/.test(body.sha256))throw new LabError('INVALID_ILLUSTRATION_DECISION')
+  const current=this.get(owner,id,body.scene),j=current?.attempt===body.attempt?current:this.archived(owner,id,body.scene,body.attempt),verdict=body.decision==='keep'?'kept':'discarded'
+  if(!j?.asset||j.asset.sha256!==body.sha256)throw new LabError('ILLUSTRATION_CANDIDATE_CHANGED',409)
+  if(j.decision){if(j.decision.verdict!==verdict)throw new LabError('ILLUSTRATION_DECISION_CONFLICT',409);return publicJob(j)}
+  if(j.state!=='candidate'||j.attempt!==current?.attempt)throw new LabError('ILLUSTRATION_NOT_CANDIDATE',409)
+  j.decision={verdict,sha256:body.sha256,at:this.now()};j.state=verdict==='kept'?'active':'discarded';j.recoverable=false;j.nextAt=0;delete j.error;this.put(owner,id,j);return publicJob(j)
+ })}
+ history(owner:string,id:string,scene:string){this.head(owner,id);const old=this.db.all<{data:string}>('SELECT data FROM original_illustration_attempts WHERE owner=? AND session=? AND scene=? ORDER BY attempt',owner,id,scene).map(r=>publicJob(JSON.parse(r.data))),current=this.get(owner,id,scene);return current?[...old,publicJob(current)]:old}
  async run(owner:string,id:string,scene:string,produce:IllustrationProducer){
   this.head(owner,id)
   const claimed=this.db.transaction(()=>{const j=this.get(owner,id,scene);if(!j||!j.recoverable||j.nextAt>this.now()||j.leaseUntil>this.now())return;j.state='preparing';j.lease=crypto.randomUUID();j.leaseUntil=this.now()+120000;delete j.error;this.put(owner,id,j);return structuredClone(j)})
@@ -67,13 +84,14 @@ export class OriginalIllustrations{
    update(j=>{
     this.db.run('DELETE FROM original_illustration_parts WHERE owner=? AND session=? AND scene=?',owner,id,scene)
     for(let n=0;n<bytes.length;n+=24000)this.db.run('INSERT INTO original_illustration_parts VALUES(?,?,?,?,?)',owner,id,scene,n/24000,btoa(String.fromCharCode(...bytes.subarray(n,n+24000))))
-    j.asset=asset;j.state='active';j.recoverable=false;j.leaseUntil=0;delete j.lease;delete j.error
+    j.asset=asset;j.state='candidate';j.recoverable=false;j.leaseUntil=0;delete j.lease;delete j.error
    })
   }catch(e){const code=e instanceof MediaServiceError?e.code:e instanceof Error?e.message:'';update(j=>{j.state='failed';j.error=safeCodes.has(code)?code:'ILLUSTRATION_UNAVAILABLE';j.recoverable=!['IMAGE_INVALID','ILLUSTRATION_TASK_MISMATCH'].includes(code)&&!(e instanceof MediaServiceError&&!e.retryable&&e.status>0);j.nextAt=this.now()+Math.max(8000,(e instanceof MediaServiceError?e.retryAfterSeconds??0:0)*1000);j.leaseUntil=0;delete j.lease})}
  }
- async file(owner:string,id:string,scene:string){
-  this.head(owner,id);const j=this.get(owner,id,scene);if(j?.state!=='active'||!j.asset)throw new LabError('ILLUSTRATION_NOT_READY',409)
-  const rows=this.db.all<{part:number;data:string}>('SELECT part,data FROM original_illustration_parts WHERE owner=? AND session=? AND scene=? ORDER BY part',owner,id,scene),out=new Uint8Array(j.asset.bytes);let at=0
+ async file(owner:string,id:string,scene:string,attempt?:number){
+  this.head(owner,id);const current=this.get(owner,id,scene),archived=attempt!==undefined&&attempt!==current?.attempt,j=archived?this.archived(owner,id,scene,attempt):current
+  if(!j?.asset||(!['candidate','active'].includes(j.state)&&!(attempt!==undefined&&j.state==='discarded')))throw new LabError('ILLUSTRATION_NOT_READY',409)
+  const rows=archived?this.db.all<{part:number;data:string}>('SELECT part,data FROM original_illustration_attempt_parts WHERE owner=? AND session=? AND scene=? AND attempt=? ORDER BY part',owner,id,scene,attempt):this.db.all<{part:number;data:string}>('SELECT part,data FROM original_illustration_parts WHERE owner=? AND session=? AND scene=? ORDER BY part',owner,id,scene),out=new Uint8Array(j.asset.bytes);let at=0
   rows.forEach((r,i)=>{if(r.part!==i)throw Error('IMAGE_INVALID');const b=Uint8Array.from(atob(r.data),c=>c.charCodeAt(0));out.set(b,at);at+=b.length})
   if(at!==out.length||(await inspectJournalPng(out)).sha256!==j.asset.sha256)throw new LabError('ILLUSTRATION_ASSET_CHANGED',409)
   return out

@@ -13,6 +13,17 @@ export async function handleOriginalSession(request:Request,owner:string,authori
  try{
   if(request.headers.get(ORIGINAL_RUNTIME_HEADER)!==ORIGINAL_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(ORIGINAL_API_PATH.length)
+  const review=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})\/illustrations\/([a-z0-9-]+)\/(decision|attempts)(?:\/([12])\/file)?$/)
+  if(review){
+   if(!illustrations)throw new LabError('ILLUSTRATION_NOT_RELEASED',404)
+   const {store}=illustrations
+   if(review[3]==='decision'&&!review[4]&&request.method==='POST'){const b=await readBody(request);if(b?.scene!==review[2])throw new LabError('INVALID_ILLUSTRATION_DECISION');store.decide(owner,review[1],b);return originalJson({illustrations:store.list(owner,review[1])})}
+   if(review[3]==='attempts'&&request.method==='GET'){
+    if(!review[4])return originalJson({attempts:store.history(owner,review[1],review[2])})
+    return new Response(new Uint8Array(await store.file(owner,review[1],review[2],Number(review[4]))),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}})
+   }
+   throw new LabError('METHOD_NOT_ALLOWED',405)
+  }
   const image=path.match(/^\/sessions\/([a-zA-Z0-9-]{16,80})\/illustrations(?:\/([a-z0-9-]+)\/file)?$/)
   if(image){
    if(!illustrations)throw new LabError('ILLUSTRATION_NOT_RELEASED',404)

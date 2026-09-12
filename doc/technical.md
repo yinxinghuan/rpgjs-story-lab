@@ -899,3 +899,11 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 626回归通过；新增实际HTTP测试覆盖四槽同时采用、完整元数据、错误槽位、目录失败、身份隔离、丢开户回执、查询参数顺序无关、改选新旅程与默认/原组合保留。320中文/390英文普通正式构建实际选取四槽、刷新、目录网络失败、缺失版本、五文件加载、启动器维修、默认旅程返回与同组合续玩通过，无横向溢出和页面错误。角色使用合成诊断图，仅验证机制，其他样本为保留平台资源；不声称新美术或平台实机通过。详见assembly-review-20260912.json。
 
 组合页已正式双部署8c4ebb1：主站与Pages各53文件逐项SHA匹配，Pages34661607417构建/626回归/部署成功。线上使用全新合成制作身份完成6次请求，确认当前release、空私有目录和未知草稿拒绝，没有读取既有身份或调用模型/媒体；真实平台内完整验收仍待此前浏览器来源权限。
+
+### 2026-09-12 原作画页候选决定与回退
+
+`OriginalIllustrations`在现有原作DO里保存独立媒体行，不写StorySave、资源或场景绑定。生成成功进入candidate；`POST /sessions/:id/illustrations/:scene/decision`校验scene/attempt/sha256/keep-or-discard，在事务中保存首个决定。同意保留后active，不保留后discarded；相同决定重试返回回执，相反决定拒绝。响应始终读取当前候选列表，旧尝试的迟到回执不能把UI换回旧图。开发旧active记录无匹配keep回执时只读投影为candidate，不伪造历史决定。
+
+末次重试先把旧请求、plan、任务和PNG分块归档到`original_illustration_attempts`与`original_illustration_attempt_parts`，再新建requestId。离开原地点后仍可使用当前head版本申请重试，plan完整复用首次场景/素材/配方快照；首次申请仍要求当前地点。历史及原图经原capability的`attempts`与`attempts/:n/file`读取，私有且no-store，摘要逐次核验。普通file路径隐藏discarded图；两次额度与原每日18次上限不变，重连不新增意向。
+
+原作日志画页面板显式显示候选、已保留和不保留状态。PNG摘要、尺寸和原生解码通过后才能保留，无法读取仍可不保留；不保留提供返回文字记录。决定回执丢失后重新读取服务端记录，关闭/刷新不自动决定。异步文件绑定scene/SHA/state，旧文件不能覆盖换场景或已放弃状态。生产开关`ORIGINAL_ILLUSTRATION_RELEASED`仍为false；保留只是个人回忆选择，不是自动美术验收，不改变正式地图和基准人物。

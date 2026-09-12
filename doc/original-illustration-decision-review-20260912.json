@@ -1,0 +1,117 @@
+{
+  "date": "2026-09-12",
+  "scope": "Original journal candidate decisions, preserved attempts and cross-scene retry",
+  "productionReleased": false,
+  "liveReleaseUnchanged": "8c4ebb1d42397286d91a7d511fc0d41d1f7a144a",
+  "tests": {
+    "fullSuite": {
+      "passed": 639,
+      "failed": 0
+    },
+    "targeted": {
+      "passed": 13,
+      "failed": 0
+    },
+    "build": "TypeScript, Vite, 9 scenes, 27 asset digests and compiled Worker startup passed",
+    "audits": [
+      "public secrets",
+      "game API base",
+      "platform media integration",
+      "UI foundation",
+      "git diff whitespace"
+    ]
+  },
+  "verifiedContracts": [
+    "Successful generation produces an undecided candidate; closing/viewing/reloading cannot keep it",
+    "Keep/discard bound to immutable attempt and SHA; first decision wins and repeated decisions are idempotent",
+    "Private HTTP attempts and files retain owner/wire/feature-gate boundaries",
+    "Discarded first attempt and full request preserved across second attempt and SQLite restart",
+    "Late first-attempt receipt returns current list without replacing second candidate",
+    "Retry after one-way story movement reuses original source snapshot and requires current head version",
+    "No illustration decision changes StorySave, authoritative position, resources or action receipts"
+  ],
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "locale": "zh",
+      "generations": 2,
+      "decisions": 2,
+      "finalState": "active",
+      "candidateSurvivesUnreviewedRefresh": true,
+      "undecodedKeepDisabled": true,
+      "discardLostReplyRecovered": true,
+      "secondDecisionLostReplyRecovered": true,
+      "oldSceneRetryFromValley": true,
+      "sourceVersion": 0,
+      "storyVersion": 2,
+      "originalScene": "train-at-river-valley",
+      "writtenJournalFallback": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "realMediaRequests": 0,
+      "artAccepted": false,
+      "realIPhone": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "generations": 2,
+      "decisions": 2,
+      "finalState": "discarded",
+      "candidateSurvivesUnreviewedRefresh": true,
+      "undecodedKeepDisabled": true,
+      "discardLostReplyRecovered": true,
+      "secondDecisionLostReplyRecovered": true,
+      "oldSceneRetryFromValley": true,
+      "sourceVersion": 0,
+      "storyVersion": 2,
+      "originalScene": "train-at-river-valley",
+      "writtenJournalFallback": true,
+      "noOverflow": true,
+      "pageErrors": [],
+      "blockedOrigins": [
+        "https://images.aiwaves.tech"
+      ],
+      "realMediaRequests": 0,
+      "artAccepted": false,
+      "realIPhone": false
+    }
+  ],
+  "visualReview": {
+    "screenshots": [
+      "_qa/ui/illustration-decision-candidate-320-zh-platform-layout-local-qa.png",
+      "_qa/ui/illustration-decision-candidate-390-en-platform-layout-local-qa.png",
+      "_qa/ui/illustration-decision-final-320-zh-platform-layout-local-qa.png",
+      "_qa/ui/illustration-decision-final-390-en-platform-layout-local-qa.png"
+    ],
+    "reviewed": true,
+    "findings": [
+      "Keep/discard buttons remain readable and at least 44px; panels scroll without horizontal overflow",
+      "Rejected state clearly returns to the written journal; two-attempt limit leaves no third-generation button",
+      "Night fixture remains too dark; synthetic keep click tests persistence only, not asset quality acceptance"
+    ]
+  },
+  "sources": [
+    {
+      "file": "doc/platform-art-candidates/20260912/original-journal-01/candidate.png",
+      "sha256": "ef122477079498a7215a0b83afe761d975b8e704e97f3d52a06f9437f7f1b8f5",
+      "modified": false
+    },
+    {
+      "file": "doc/platform-art-candidates/20260912/original-journal-night-02/candidate.png",
+      "sha256": "8734c7e1e1b25bce694f5a0387b20ea523f5ef299aabef67a6ba851ca2f71933",
+      "modified": false
+    }
+  ],
+  "limits": [
+    "Fresh isolated local Chrome, not real iPhone or logged AlterU",
+    "No new media generation or external browser access",
+    "Formal image gate remains false; both retained fixtures remain aesthetically rejected"
+  ],
+  "next": "Continue the full single-player and platform-media workflow, preserving the reviewed B art direction. Do not enable production media based solely on successful API/UI tests; image quality and actual platform acceptance remain outstanding."
+}
