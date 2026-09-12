@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "status": "local-verified-awaiting-release",
+  "status": "verified-and-dual-deployed",
   "change": "主角美术版本随旅程固定，资源 SHA/尺寸/解码校验后进入真实 RPG-JS renderer；模型使用同一主角外形描述。",
   "hero": {
     "version": "yellow-traveler-b-gait-v2",
@@ -680,5 +680,6 @@
     "本轮没有生成新图片，不宣称修好全部侧向步态。",
     "制作页通用主角发布尚未开放；生产插画开关仍关闭。",
     "登录生产浏览器来源访问仍待独立授权，本轮仅使用本地隔离浏览器及匿名公开/合成发布检查。"
-  ]
+  ],
+  "releaseEvidence": "original-hero-binding-release-20260912.json"
 }
