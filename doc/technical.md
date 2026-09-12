@@ -5,7 +5,7 @@
 - `server/original-presentation.ts`：准入检查九房间绑定、四名固定人物素材、通风机、当前地面与交互点、旅程内素材身份不变。它是结构检查，不是自动审美认证，也不表示其他设备素材全部完成。原始运行时仍默认拒绝；正式Worker显式使用此gate。
 - `vite.config.ts`及`server/original-scene-preview.ts`：cloud/Pages和preflight输出完整地图与背景；`scripts/check-original-dist.ts`在构建时核验实际采用资源的字节、SHA、尺寸和许可证文件，拒绝采用whitebox背景。
 - `worker/source.ts`：原作服务在同一DO namespace的`original-v8:<owner>`内运行，旧车厢对象和数据库迁移标签不变。正式原作使用现有game-chat接口的行动理解/交谈适配器、20秒预算、持久6回合/分钟配额和玩家主动开启；按钮无需模型。显式测试gate不会隐式获得在线provider。
-- 当前正式原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-brake-state-20260912-1`，正式主站/Pages同一8d765e5，发布记录为brake-release-20260912.json。
+- 当前正式原作wire为`original-session-15.assets-12.story-8.original-train-authoring-10`；旧车厢wire及creator wire保持。发布身份为`carriage-creator-play-20260912-1`，正式主站/Pages同一b472da3，发布记录为creator-play-release-20260912.json。
 - `_qa/original-production-server.ts`仅供本机测试：原样导入已编译Worker、服务dist、全新临时SQLite，禁止服务器外发；浏览器脚本另拦截所有远程来源。它不是生产Worker，也不读取生产或个人存档。
 - 原作与车厢切换先保存位置；有待确认操作时不得切换。原作目录和两种故事的续玩键保留，不做自动存档迁移。平台账户恢复、全面设备状态美术、最终真实AlterU整段验收仍待完成；上线与实测结果另记发布证据，后文历史“原作关闭”不代表当前候选代码。
 
@@ -883,3 +883,5 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 背景、人物/设备、分层设备三个在线面板统一调用originalEntry(mode, hostname, ?story=original)判断是否可进入原作；不再只允许cloud-preflight。四种固定发布ID通过既有query交给原Session开户/续玩，不新建客户端权威，不替换当前或其他版本的旅程。Pages仍返回主站制作入口，本地未发布模式仍可查看文件。原作/creator协议与数据库均不变，本轮发布标识carriage-creator-play-20260912-1。
 
 17项针对性回归通过；四类publication HTTP fixture改为真实生产准入，保留必要的合成媒体下载适配，没有使用总是放行函数。原样cloud+编译Worker在320中文/390英文完成保留平台风机原图→透明分层→真实地图5项检查→显式确认→保存→发布丢回执重试→链接进入→隧道排烟/卸物→刷新→原旅程→同版本续玩的全过程。使用普通生产renderer，无QA观察器，零外部连接；这不是新生图或正式来源浏览器实测。详见creator-play-review-20260912.json。
+
+制作入口修复已正式双部署b472da3：主站与Pages各53份实际文件逐项SHA匹配，Pages34660472435构建/测试/部署成功，UUID入口与Remix检查通过。未新增线上模型/媒体请求，未读取生产玩家资料或存档；完整平台验收仍待此前浏览器来源权限。
