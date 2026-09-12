@@ -1,0 +1,89 @@
+{
+  "date": "2026-09-13",
+  "candidate": "platform-art-candidates/20260913/hero-leg-layer-08/candidate.png",
+  "sourceSha256": "c8769255e3b9943c0358f4fcf5f5850feedf7d7ea43b5e11ea6cfd1159185404",
+  "fixture": "_qa/leg-layer-review.html",
+  "server": "_qa/leg-layer-review-server.mjs",
+  "url": "http://127.0.0.1:5400/",
+  "method": "Read-only CSS frame crop and independent lower-body scaleX(-1), fixed mirror axis x155; compare with original two-cell alternation. No rewritten image.",
+  "staticVerification": {
+    "inlineJsSyntax": true,
+    "pageStatus": 200,
+    "sourceHashUnchanged": true,
+    "unlistedPathStatus": 404
+  },
+  "visualVerification": "performed; candidate not admitted",
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "limitations": [
+    "Leg layer only, no standing transition or upper-body seam.",
+    "Not actual RPG-JS movement or iPhone validation.",
+    "No visual verdict may be derived solely from CSS mirroring.",
+    "Asymmetric clothing, accessories and directional light require separate review."
+  ],
+  "observations": [
+    "Original pair repeats the screen-left leading boot and shifts hip width/position.",
+    "Mirroring a single layer produces opposite contacts and keeps the lowest sole at the same height.",
+    "Whole-layer mirror swaps the broad pelvis highlight; it is not a stable-lit full lower-body animation.",
+    "Keeping the top 65px static preserves pelvis light but creates a visible horizontal tonal/shape seam against the mirrored thighs."
+  ],
+  "browserChecks": {
+    "desktop": [
+      900,
+      760
+    ],
+    "smallScreen": [
+      320,
+      568
+    ],
+    "smallScreenNoHorizontalOverflow": true,
+    "stepControl": true,
+    "playPauseControl": true,
+    "fixedHipToggle": true,
+    "scope": "Local IAB CSS layer comparison, not RPG-JS or physical iPhone."
+  },
+  "evidence": [
+    "_qa/leg-layer-20260913/phase1.png",
+    "_qa/leg-layer-20260913/phase2.png",
+    "_qa/leg-layer-20260913/fixed-hip-seam.png",
+    "_qa/leg-layer-20260913/mobile-controls.png"
+  ],
+  "nextRequirement": "Test a four-phase contact/standing/opposite-contact/standing sequence with transparent candidate edges in the actual game renderer. Preserve body and bag, gate by explicit per-layer symmetry; a rear-view result does not license mirroring other directions or asymmetric costumes.",
+  "assembledFollowup": {
+    "method": "Existing immutable back-standing upper body is rendered unchanged in front of a scaled first candidate leg layer; only the leg display is mirrored. No output PNG is created.",
+    "upperSource": "public/art/overhead/hero-gait-v2.png",
+    "upperCrop": {
+      "cell": [
+        362,
+        1086,
+        362,
+        362
+      ],
+      "visibleHeight": 278
+    },
+    "legDisplay": {
+      "scale": 0.4,
+      "left": 99,
+      "top": 208,
+      "mirrorAxisX": 155
+    },
+    "observations": [
+      "Coat hem covers the exposed hip seam.",
+      "Upper body and asymmetric bag stay unchanged across contacts.",
+      "Lowest sole remains near the baseline foot height; opposite contacts are visible."
+    ],
+    "result": "candidate-for-further-map-test, not admitted",
+    "missing": [
+      "neutral standing transition",
+      "transparent edge preparation",
+      "actual movement and distance-driven gait",
+      "other directions",
+      "full silhouette and seam check against game scenery"
+    ],
+    "evidence": [
+      "_qa/leg-layer-20260913/assembled-phase1.png",
+      "_qa/leg-layer-20260913/assembled-phase2.png"
+    ]
+  },
+  "buildPassed": true
+}
