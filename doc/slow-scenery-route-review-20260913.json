@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-13",
+  "source": "Compiled production frontend and Worker; isolated temporary SQL; no external API fetches",
+  "fixture": "_qa/original-production-server.ts dist 5397 --platform-layout --slow-scenery",
+  "route": [
+    "north-cape",
+    "river",
+    "white-stone-tunnel",
+    "graystone-yard"
+  ],
+  "continuousTransitions": 3,
+  "reloadDuringRoute": false,
+  "actions": "starter repair, river route, bridge inspection, winch rescue, oxygen treatment, tunnel travel, fan inspection, self-organized passengers, fuel ventilation, yard travel",
+  "finalStats": {
+    "fuel": 38,
+    "condition": 87,
+    "morale": 61
+  },
+  "yardObservation": {
+    "actorVisibleWhileBackgroundLoading": true,
+    "actorVisibleAfterBackgroundReady": true,
+    "backgroundBytes": 3346737,
+    "backgroundElapsedMs": 20046,
+    "mapElapsedMs": 23,
+    "rendererScene": "train-at-graystone-yard",
+    "loadedScene": "train-at-graystone-yard",
+    "pending": null,
+    "logicalPosition": {
+      "x": 192,
+      "y": 430
+    },
+    "projectedPosition": {
+      "x": 192,
+      "y": 430
+    },
+    "connected": true,
+    "graphics": 1,
+    "sheets": 1,
+    "canvas": {
+      "width": 1440,
+      "height": 2160
+    },
+    "viewportXY": [
+      0,
+      0
+    ],
+    "displayNodes": 81,
+    "displayTextures": 6
+  },
+  "evidence": [
+    "_qa/slow-scenery-20260913/yard-loading.png",
+    "_qa/slow-scenery-20260913/yard-ready.png"
+  ],
+  "conclusion": "20-second background response delay did not reproduce actor disappearance in this three-transition desktop IAB route. Does not exclude intermittent native WebView/GPU/lifecycle failures or prove a fix.",
+  "productionCodeChanged": false,
+  "nativeCompletedJourneyUntouched": true
+}
