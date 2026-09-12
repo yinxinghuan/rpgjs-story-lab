@@ -28,8 +28,8 @@
   "remaining": [
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
-      "state": "unverified",
-      "currentBlocker": "AlterU Mini App blank content after unlock; awaiting host recovery."
+      "state": "in-progress",
+      "currentBlocker": "Actual platform rendering defect: actor absent; diagnosis pending. Login/entry no longer blocked."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -62,5 +62,5 @@
     }
   },
   "newBrowserChecksThisTurn": false,
-  "currentUiObservation": "Mac unlocked; Telegram Aigram renders, AlterU blank content. Native menu click unsupported and Cmd+R did not restore. User asked to reopen AlterU; authorization unchanged."
+  "currentUiObservation": "AlterU full game entry recovered; own new journey created under explicit authorization. Repair/valley/bridge steps passed, but hero absent in river screenshots; see alteru-original-playthrough-20260912.json."
 }

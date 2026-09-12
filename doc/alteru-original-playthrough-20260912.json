@@ -1,0 +1,45 @@
+{
+  "status": "in-progress-rendering-defect",
+  "surface": "Telegram macOS AlterU Mini App; user navigated to existing Carriage07 game entry",
+  "authorization": "User explicitly allowed journey-management operation after automatic review rejection. Created new journey with keep-old-and-start-again; did not continue existing journey.",
+  "actions": [
+    {
+      "action": "Create new journey",
+      "result": "Fresh opening at68/82/58"
+    },
+    {
+      "action": "Nearby -> approach starter -> repair",
+      "result": "Action panel arrived; condition82->87, fuel68/morale58; saved; repair option removed and routes added"
+    },
+    {
+      "action": "Map -> approach valley route -> choose valley",
+      "result": "Scene changed to valley; fuel68->62 once, condition87/morale58"
+    },
+    {
+      "action": "Retry scenery after failed initial background",
+      "result": "Background visible, unchanged62/87/58"
+    },
+    {
+      "action": "Nearby -> approach bridge -> inspect",
+      "result": "Investigation narrative added and winch/manual rescue choices unlocked; state saved"
+    }
+  ],
+  "defects": [
+    {
+      "id": "platform-actor-not-visible",
+      "severity": "P1",
+      "observations": "River scene screenshots after background retry and after successful bridge approach show no hero. Movement camera and action arrival still function. Initial north scene actor visibility not separately established; do not yet attribute loss specifically to transition.",
+      "evidence": "_qa/alteru-native-20260912/river-missing-actor.png",
+      "cause": "unconfirmed"
+    },
+    {
+      "id": "initial-valley-scenery-failure",
+      "severity": "P2",
+      "recovery": "Manual retry successful without repeating route cost",
+      "cause": "unconfirmed"
+    }
+  ],
+  "currentCheckpoint": "Own new platform test journey, valley after bridge inspection,62/87/58. Map open; continue this journey, do not create again.",
+  "fullPlaythrough": false,
+  "reentryVerified": false
+}
