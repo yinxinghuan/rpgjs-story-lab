@@ -35,6 +35,7 @@ for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','
  assert.deepEqual(h.save.blocks.slice(0,previousBlocks.length),previousBlocks)
  const departureBlocks=h.save.blocks.slice(previousBlocks.length)
  assert.ok(!departureBlocks.some(b=>b.id.startsWith('transition-')))
+ assert.ok(!departureBlocks.some(b=>b.kind==='image'&&b.data?.source==='director'&&b.data?.reason==='new-location'),'Bridge arrival must not enqueue a junction interior image')
  assert.ok(departureBlocks.some(b=>b.text===(locale==='zh'?'抵达：洪水桥 · 近岸检修台':'Arrived: Flood bridge · Near-bank platform')))
  assert.equal(h.save.facts['bridge-approach-reached'],true);assert.equal(h.save.facts['chapter-town-complete'],true);assert.equal(h.save.facts['chapter-bridge-complete'],undefined);assert.equal(h.save.facts['true-ending-ready'],undefined)
  assert.equal(canStartTrueEnding(h.save,originalCartridge(locale)),false);assert.equal(h.save.finale.status,'idle');assert.equal(h.save.sessionEnded,false)

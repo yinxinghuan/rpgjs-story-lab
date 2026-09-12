@@ -15,6 +15,12 @@ export function originalPlaceBlocks(blocks:StoryBlock[],locale:Locale):StoryBloc
   const effect=/^effect-(\d+)-\d+$/.exec(b.id)
   if(effect&&turns.has(effect[1])&&b.kind==='event'&&b.text===(locale==='zh'?'抵达：':'Arrived: ')+destination)
    return [{...b,text:(locale==='zh'?'抵达：':'Arrived: ')+originalBridgePlace(locale)}]
+  // The legacy region spans both sides of the bridge. Its automatic arrival
+  // image describes the junction interior before the crossing has happened.
+  // Drop only unstarted automatic proposals; never rewrite completed media or
+  // custom requests. Spatial journal generation uses its persisted scene plan.
+  const image=/^image-(\d+)$/.exec(b.id)
+  if(image&&turns.has(image[1])&&b.kind==='image'&&b.text===destination&&b.data?.source==='director'&&b.data?.reason==='new-location'&&b.data?.status==='queued'&&!b.data?.url&&!b.data?.videoTaskId)return []
   return [b]
  })
 }
