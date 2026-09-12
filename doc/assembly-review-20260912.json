@@ -1,0 +1,94 @@
+{
+  "date": "2026-09-12",
+  "release": "carriage-assembly-20260912-1",
+  "tests": {
+    "passed": 626,
+    "failed": 0
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "oldId": "7934e7c2-9ffe-4845-8e51-fb270a8033f7",
+      "journey": "0441cf4d-70a4-4c95-90c7-c2f44f069815",
+      "selection": {
+        "background": "8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.8641a52a-ef57-4363-99cd-2c6387882d26",
+        "actor": "8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.a3adb3aa-37f5-4b0e-b0ad-ceeef408fabc",
+        "device": "8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.17955951-853d-426a-87f1-69a2057f8ccb",
+        "fan": "8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.5034c8e4-e42a-49d7-87d7-36062591eb80"
+      },
+      "version": 1,
+      "loaded": [
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/releases/8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.8641a52a-ef57-4363-99cd-2c6387882d26/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/actor-releases/8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.a3adb3aa-37f5-4b0e-b0ad-ceeef408fabc/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.5034c8e4-e42a-49d7-87d7-36062591eb80/housing",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.5034c8e4-e42a-49d7-87d7-36062591eb80/rotor",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/device-releases/8431327fd97b42c751a06c80bbb66bf49a7e5555efbd3a76f049194e2007280e.17955951-853d-426a-87f1-69a2057f8ccb/file"
+      ],
+      "failedRefreshRetained": true,
+      "missingReleaseBlocked": true,
+      "oldJourneyRetained": true,
+      "combinationResumed": true,
+      "errors": [],
+      "externalRequests": 0,
+      "artQuality": "diagnostic actor; retained other samples, no new visual approval"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "oldId": "94b048a5-5930-48d4-b942-cc5c71b2c183",
+      "journey": "46ca4f0c-04e8-41fa-a55a-d76b0bbcd3e8",
+      "selection": {
+        "background": "773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.b92f84cd-65b3-450d-84a2-692facb2f6ba",
+        "actor": "773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.319a900f-fcb4-4fa4-9c2f-f62c4ee8f33f",
+        "device": "773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.67a93c90-ba16-4708-9501-5a95b7d7a4c9",
+        "fan": "773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.b25c0517-444e-4209-a9d4-a00dec70db3e"
+      },
+      "version": 1,
+      "loaded": [
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/releases/773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.b92f84cd-65b3-450d-84a2-692facb2f6ba/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/actor-releases/773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.319a900f-fcb4-4fa4-9c2f-f62c4ee8f33f/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.b25c0517-444e-4209-a9d4-a00dec70db3e/housing",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.b25c0517-444e-4209-a9d4-a00dec70db3e/rotor",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/device-releases/773d472fafb489c4c5ad037cd4415f324f98bb9b0285b5da60de6fa457fa7781.67a93c90-ba16-4708-9501-5a95b7d7a4c9/file"
+      ],
+      "failedRefreshRetained": true,
+      "missingReleaseBlocked": true,
+      "oldJourneyRetained": true,
+      "combinationResumed": true,
+      "errors": [],
+      "externalRequests": 0,
+      "artQuality": "diagnostic actor; retained other samples, no new visual approval"
+    }
+  ],
+  "observed": {
+    "newEntry": "creator.html?create_art=assembly",
+    "slots": [
+      "North Cape background",
+      "Ada actor",
+      "starter",
+      "tunnel fan"
+    ],
+    "source": "Private catalogs for the current creator; immutable published metadata only.",
+    "writes": "Only UUID-scoped browser selection until the player follows the journey link.",
+    "failedCatalog": "Retain selected values; hide entry until a successful complete refresh.",
+    "missingVersion": "Retain unavailable value visibly; require refresh or explicit replacement.",
+    "combinedBinding": "All four release ids resolve in one production-gated head; five corresponding PNG files loaded.",
+    "resume": "Same combination and reversed query order resume the same session; different combinations and default session are isolated."
+  },
+  "visualReview": {
+    "files": [
+      "assembly-320-zh-selection-platform-layout-local-qa.png",
+      "assembly-390-en-selection-platform-layout-local-qa.png"
+    ],
+    "notes": "Single-column scrolling creator page, 48px selects/buttons and at least44px preview links from existing CSS. Long source labels clip within selects; no horizontal overflow."
+  },
+  "limits": [
+    "Local fresh Chromium; not physical iPhone or real AlterU.",
+    "Actor fixture is a diagnostic directional grid; no new art-quality acceptance.",
+    "Retained background download is injected only in the QA server; zero model/media requests.",
+    "Selections are local to the creator browser; no platform account recovery or arbitrary game creation."
+  ]
+}

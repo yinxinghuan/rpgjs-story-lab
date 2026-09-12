@@ -182,10 +182,14 @@ export class CarriageJourneyAuthority{
     }
     if(path==='/drafts'&&request.method==='GET')return respond({drafts:this.creator.list(owner)})
     if(path==='/drafts'&&request.method==='POST')return respond(await this.creator.save(owner,await body(request)))
-    const match=path.match(/^\/drafts\/([a-f0-9-]{36})(\/(?:file|publish))?$/)
+    const match=path.match(/^\/drafts\/([a-f0-9-]{36})(\/(?:file|publish|release))?$/)
     if(match?.[2]==='/publish'&&request.method==='POST')return respond(await this.creator.publish(owner,match[1],await body(request)))
     if(match&&request.method==='GET'){
      if(!match[2])return respond(this.creator.get(owner,match[1]))
+     if(match[2]==='/release'){
+      this.creator.get(owner,match[1])
+      try{return respond({release:this.creator.published(owner,match[1])})}catch(e){if(e instanceof LabError&&e.code==='BACKGROUND_NOT_PUBLISHED')return respond({release:null});throw e}
+     }
      if(match[2]!=='/file')throw new LabError('NOT_FOUND',404)
      return new Response(new Uint8Array(await this.creator.file(owner,match[1])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
     }

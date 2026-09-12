@@ -9,6 +9,7 @@ export function creatorCloudTransport(storage:Storage,lock:SessionLock,request:t
 }
 export class CreatorCloudDrafts{
  constructor(private api:Transport){}
+ async publication(id:string):Promise<PublishedBackground|null>{const r=await this.api('/drafts/'+id+'/release');if(r?.release===null)return null;assertPublishedBackground(r?.release);if(r.release.id.split('.')[1]!==id)throw Error('BACKGROUND_RELEASE_INVALID');return r.release}
  async list(){const result=await this.api('/drafts');if(!Array.isArray(result?.drafts)||result.drafts.length>CREATOR_DRAFT_LIMIT)throw Error('INVALID_ART_RECORD');result.drafts.forEach(assertCloudArtRecord);return result.drafts as CloudArtRecord[]}
  async save(draft:ArtDraft){
   if(draft.state!=='candidate'||!draft.taskId||!draft.candidate)throw Error('ART_NOT_READY')

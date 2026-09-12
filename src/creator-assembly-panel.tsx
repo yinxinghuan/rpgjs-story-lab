@@ -1,0 +1,24 @@
+import React,{useEffect,useState} from 'react'
+import {creatorCloudTransport} from './creator-cloud'
+import {ASSEMBLY_SLOTS,emptyAssembly,readAssembly,loadAssemblyCatalog,assemblyJourneyHref,type AssemblySlot,type AssemblyCatalog,type AssemblySelection} from './creator-assembly'
+import {originalEntry} from './original-release'
+import {GAME_ID} from './game-id'
+export default function CreatorAssembly(){
+ const zh=navigator.language.startsWith('zh'),t=(a:string,b:string)=>zh?a:b,mirror=location.hostname.endsWith('.github.io')||import.meta.env.MODE==='pages'
+ const [api]=useState(()=>creatorCloudTransport(window.alteruLocalStorage,async(n,w)=>{if(!navigator.locks)throw Error('CLOUD_LOCKS_UNAVAILABLE');return navigator.locks.request(n,w)}))
+ const [selection,setSelection]=useState<AssemblySelection>(emptyAssembly),[catalog,setCatalog]=useState<AssemblyCatalog>(),[busy,setBusy]=useState(false),[error,setError]=useState(''),[storageError,setStorageError]=useState('')
+ const key='creator-assembly-1'
+ async function refresh(){setBusy(true);setError('');try{setCatalog(await loadAssemblyCatalog(api))}catch{setError(t('发布版本未能完整读取，所选组合保留。请重试。','Could not load all published versions. Your selection is retained; retry.'))}finally{setBusy(false)}}
+ useEffect(()=>{if(mirror)return;try{setSelection(readAssembly(window.alteruLocalStorage.getItem(key)))}catch{setStorageError(t('保存的选择无法读取，请重新选择。','Saved selection could not be read; select it again.'))}void refresh()},[])
+ function choose(slot:AssemblySlot,value:string){const next={...selection,[slot]:value};setSelection(next);try{window.alteruLocalStorage.setItem(key,JSON.stringify(next));setStorageError('')}catch{setStorageError(t('此浏览器未能保存选择，关闭页面前请保留组合链接。','This browser could not save the selection. Keep the combination link before closing.'))}}
+ const names={background:t('北岬背景','North Cape background'),actor:t('阿达人物','Ada character'),device:t('启动器','Starter'),fan:t('隧道通风机','Tunnel fan')}
+ let href:string|undefined;try{if(catalog&&!busy&&!error)href=assemblyJourneyHref(selection,catalog)}catch{}
+ const missing=catalog?ASSEMBLY_SLOTS.filter(s=>selection[s]&&!catalog[s].some(r=>r.id===selection[s])):[]
+ return <main className="cl-creator"><header><a href="./creator.html">{t('返回素材制作','Back to art creation')}</a><h1>{t('组合素材，进入旅程','Combine art and enter a journey')}</h1><p>{t('选择已经发布的版本。同一组合再次打开会续玩，其他旅程保持原样。','Choose published versions. Reopening the same combination resumes it; other journeys are kept.')}</p></header>{mirror?<section><p>{t('静态镜像不能读取在线素材，请前往主站。','The static mirror cannot read online art. Use the main site.')}</p><a href={`https://game.aiwaves.tech/${GAME_ID}/creator.html?create_art=assembly`}>{t('打开主站组合页','Open main-site assembly')}</a></section>:<>
+ <button disabled={busy} onClick={()=>void refresh()}>{busy?t('正在读取…','Loading…'):t('刷新已发布版本','Refresh published versions')}</button>{error&&<p role="alert">{error}</p>}{storageError&&<p role="status">{storageError}</p>}
+ {ASSEMBLY_SLOTS.map(slot=>{const selected=catalog?.[slot].find(r=>r.id===selection[slot]);return <section key={slot}><label htmlFor={'assembly-'+slot}>{names[slot]}</label><select id={'assembly-'+slot} value={selection[slot]} disabled={!catalog||busy} onChange={e=>choose(slot,e.target.value)}><option value="">{t('游戏默认素材','Game default art')}</option>{missing.includes(slot)&&<option value={selection[slot]}>{t('先前选择暂不可用','Previous selection unavailable')}</option>}{catalog?.[slot].map((r,i)=><option value={r.id} key={r.id}>{i+1} · {slot==='background'?(r.name==='warm'?t('暖灯','Warm light'):t('清晨','Dawn')):r.name} · {new Date(r.createdAt).toLocaleString(zh?'zh-CN':'en-US')}</option>)}</select>{selected&&<a href={selected.preview} target="_blank" rel="noreferrer">{t('查看此版本素材','View this version’s art')}</a>}{catalog&&!catalog[slot].length&&<p>{t('还没有已发布版本，可使用默认素材或先去制作。','No published versions yet. Use the default art or create one first.')}</p>}</section>})}
+ {missing.length>0&&<p role="alert">{t('这些选择当前无法确认：','These selections cannot currently be confirmed: ')}{missing.map(s=>names[s]).join(' / ')}{t('。请刷新或明确改选；不会自动替换。','. Refresh or explicitly select another version; no automatic replacement.')}</p>}
+ {href&&originalEntry(import.meta.env.MODE,location.hostname,'?story=original')&&<a className="cl-creator__action" href={href}>{t('进入或继续此组合的旅程','Enter or resume this combination')}</a>}
+ <p>{t('这里只组合已发布素材，不会生成图片、再次发布或改写旧存档。素材仍使用本浏览器的制作身份。','This combines published art. It does not generate images, publish again or rewrite older saves. Art access uses this browser’s creation identity.')}</p></>}
+ <footer><a href="./creator.html">{t('制作背景','Create background')}</a><a href="./creator.html?create_art=sprite">{t('制作人物与启动器','Create character and starter')}</a><a href="./creator.html?create_art=layers">{t('制作通风机','Create fan')}</a></footer></main>
+}
