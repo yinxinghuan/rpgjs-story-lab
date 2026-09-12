@@ -1,6 +1,6 @@
 import {artDraftDatabaseName} from './art-draft'
 import type {PixelRaster, PreparedSprite, SpritePreparationSpec} from './sprite-preparation'
-import {composeRepairFrames} from './sprite-composition'
+import {composeRepairFrames,replaceActorFrame} from './sprite-composition'
 import type {DeviceReview} from './device-publication'
 import type {SpriteGenerationSource} from './sprite-generation-recipe'
 import type {ActorSheetReview} from './actor-sheet-review'
@@ -10,6 +10,7 @@ export type SpriteDraft = {
   version: 'sprite-draft-1'; id: string; revision: number; parentId?: string; createdAt: number;
   source: SpritePng; sourceName: string; sourceKind?: 'actor'|'states'; spec?: SpritePreparationSpec;
   deviceStateSet?: 'repair'; composition?: {version:1;inputs:SpriteCompositionInput[]};
+  actorPatch?: {version:1;row:number;column:number;base:{source:SpritePng;sourceName:string};frame:{source:SpritePng;sourceName:string}};
   deviceReview?: DeviceReview;
   actorReview?: ActorSheetReview;
   generation?: SpriteGenerationSource;
@@ -39,7 +40,29 @@ export async function verifySpritePng(png: SpritePng) {
 export function newSpriteSource(source: SpritePng, sourceName: string,sourceKind:'actor'|'states'='actor'): SpriteDraft {
   return {version:'sprite-draft-1',id:crypto.randomUUID(),revision:0,createdAt:Date.now(),source,sourceName:sourceName.slice(0,100),sourceKind,state:'source'}
 }
+export async function newActorFrameSource(base:SpriteDraft,frame:SpritePng,frameName:string,row:number,column:number,io:{decode:(png:SpritePng)=>Promise<PixelRaster>;encode:(raster:PixelRaster)=>Promise<SpritePng>}):Promise<SpriteDraft>{
+ if(base.sourceKind!=='actor'||base.deviceStateSet||base.composition)throw Error('SPRITE_COMPOSITION_INVALID')
+ await verifySpritePng(base.source);await verifySpritePng(frame);await verifySpriteComposition(base,io.decode)
+ const raster=replaceActorFrame(await io.decode(base.source),await io.decode(frame),row,column)
+ const source=await io.encode(raster);await verifySpritePng(source)
+ if(source.width!==raster.width||source.height!==raster.height)throw Error('SPRITE_ENCODE')
+ const next=newSpriteSource(source,'actor-frame-'+row+'-'+column,'actor')
+ next.parentId=base.id
+ next.actorPatch={version:1,row,column,base:{source:structuredClone(base.source),sourceName:base.sourceName},frame:{source:structuredClone(frame),sourceName:frameName.slice(0,100)}}
+ await verifySpriteComposition(next,io.decode)
+ return next
+}
 export async function verifySpriteComposition(draft:SpriteDraft,decode:(png:SpritePng)=>Promise<PixelRaster>,decoded?:PixelRaster){
+ if(draft.actorPatch){
+  const p=draft.actorPatch
+  if(draft.composition||draft.sourceKind!=='actor'||p.version!==1)throw Error('SPRITE_COMPOSITION_INVALID')
+  await verifySpritePng(p.base.source);await verifySpritePng(p.frame.source)
+  const base=await decode(p.base.source),frame=await decode(p.frame.source)
+  if(base.width!==p.base.source.width||base.height!==p.base.source.height||frame.width!==p.frame.source.width||frame.height!==p.frame.source.height)throw Error('SPRITE_DECODE')
+  const expected=replaceActorFrame(base,frame,p.row,p.column),actual=decoded??await decode(draft.source)
+  if(expected.width!==actual.width||expected.height!==actual.height||expected.rgba.length!==actual.rgba.length||!expected.rgba.every((v,i)=>v===actual.rgba[i]))throw Error('SPRITE_COMPOSITION_MISMATCH')
+  return
+ }
  if(!draft.composition)return
  const c=draft.composition
  if(c.version!==1||!Array.isArray(c.inputs)||c.inputs.length!==2||draft.sourceKind!=='states'||draft.deviceStateSet!=='repair')throw Error('SPRITE_COMPOSITION_INVALID')

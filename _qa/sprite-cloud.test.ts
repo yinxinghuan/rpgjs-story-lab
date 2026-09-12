@@ -95,3 +95,20 @@ test('actual HTTP resumes a lost chunk response after authority restart and reje
   assert.equal((await createHandler(true)(new Request(base+'/api/creator/sprites'),env)).status,404)
  }finally{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));pool.close();rmSync(dir,{recursive:true,force:true})}
 })
+
+test('real actor patch archive retains both PNG inputs and cell provenance after SQL restart',async()=>{
+ const {newActorFrameSource}=await import('../src/sprite-draft')
+ const source=await inspectSpritePng(new Uint8Array(readFileSync(new URL('../doc/platform-art-candidates/20260912/hero-reproduce-01/candidate.png',import.meta.url))))
+ const patch=await inspectSpritePng(new Uint8Array(readFileSync(new URL('../doc/platform-art-candidates/20260912/hero-left-opposite-04/candidate.png',import.meta.url))))
+ const d=await newActorFrameSource(newSpriteSource(source,'platform actor','actor'),patch,'single pose',1,2,{encode,decode})
+ const spec={kind:'actor' as const,columns:3,rows:4,cellWidth:320,cellHeight:320,foot:{x:160,y:300},backgroundMode:'pale-neutral' as const,neutralMin:240,chromaMax:12}
+ const prepared=prepareSpritePixels(await decode(d.source),spec)
+ d.spec=spec;d.state='candidate';d.result={algorithm:prepared.algorithm,png:await encode(prepared.raster),frames:prepared.frames,metrics:prepared.metrics}
+ const f=fixture();try{
+  const manifest=upload(f.archive,d);await f.archive.finish('alice',d.id);f.restart()
+  const restored=await restoreSpriteManifest(manifest,file=>f.archive.file('alice',d.id,file.role))
+  assert.deepEqual(restored,d);await verifySpriteComposition(restored,decode)
+  assert.equal(restored.actorReview,undefined);assert.equal(restored.actorPatch!.base.source.sha256,source.sha256);assert.equal(restored.actorPatch!.frame.source.sha256,patch.sha256)
+  await assert.rejects(f.archive.file('bob',d.id,'input-1'),/NOT_FOUND/)
+ }finally{f.close()}
+})

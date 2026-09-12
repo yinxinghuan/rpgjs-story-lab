@@ -1055,3 +1055,9 @@ hero-left-opposite-04使用同一平台站姿裁片，一次edit要求近侧手�
 `sprite-composition.ts`新增replaceActorFrame，仅接受3×4已处理图集和同尺寸单帧；复制指定格，不推断缩放、镜像或重绘。`scripts/check-actor-frame-replacement.ts`实际用平台hero-reproduce-01和hero-left-opposite-04，经已有去底/脚点处理后替换左侧第3帧，其他11格字节差异为0。两项测试覆盖12个格位及尺寸/索引错误，TypeScript通过。
 
 候选源框高度236，原帧215，脚点对齐后仍有头部跳变；合成图已检查且保持未准入。此为制作流程的受控处理基础，尚未接入制作页持久化或连续播放；不能把拼接成功当作步态、角度、缩放通过。详情 `actor-frame-replacement-review-20260912.json`。
+
+### 单帧替换草稿与归档（2026-09-12）
+
+newActorFrameSource把原图集与单帧组成新的source草稿，记录parentId及actorPatch（版本、行列、两份原PNG和名称），不复制旧审核或整体生图来源。处理与恢复调用verifySpriteComposition重建指定格，摘要有效但拼接像素/格位不一致仍拒绝。归档沿用现有4文件角色source/candidate/input-0/input-1及24MiB上限，增加受限actorPatch字段，不影响旧repair composition。
+
+13项相关测试通过：12格位底层替换另有既有测试；本轮覆盖IndexedDB重开、归档序列化往返、真实平台两PNG通过现有SQL归档后重开、异主读取拒绝、格位篡改拒绝，以及旧设备归档/HTTP丢包恢复兼容。首次HTTP测试因沙箱监听EPERM未运行，启用本机监听后重跑全部通过。TypeScript通过。制作页入口/连续播放尚未接入，不宣称完整补帧流程或素材已准入；正式站保持acf2510。
