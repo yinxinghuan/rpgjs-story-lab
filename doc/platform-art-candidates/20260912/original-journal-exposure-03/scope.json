@@ -1,0 +1,5 @@
+{
+  "maxNewRequests": 1,
+  "purpose": "Preserve reference exposure rather than over-darken journal candidate",
+  "productionReplacement": false
+}

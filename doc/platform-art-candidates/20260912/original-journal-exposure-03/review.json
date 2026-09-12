@@ -1,0 +1,20 @@
+{
+  "status": "accepted-noncritical-journal-sample",
+  "taskId": "mt_07bf0b98727bb0282720d50b67844fa1",
+  "sha256": "4bed072bc21d79a40068fe45c124f10608e0338eec0eac1b16bf5380f7a4be43",
+  "bytes": 1529157,
+  "timingMs": 5371,
+  "cost": "not provided by public API",
+  "newMediaRequests": 1,
+  "findings": [
+    "Night palette and overhead orthographic structure retained; pavement, rails and locomotive readable in original and 320/390 journal UI.",
+    "Rain strokes and cyan reflections are stronger than the reference; acceptable as noncritical environment memory, not an exact playable map replacement.",
+    "Existing journal UI with retained candidate replay: explicit keep, reload and persisted active state passed; fuel68/condition82/morale58 unchanged."
+  ],
+  "runtimeAdmitted": false,
+  "productionFeatureEnabled": false,
+  "browser": "Local compiled production build with explicit fixture-only media producer; external calls disabled",
+  "evidence": "_qa/ui/journal-exposure-20260912/",
+  "next": "Integrate the tested exposure-preserving request as a new immutable recipe; old jobs retain prior prompts. Broader scenes and real platform runtime remain unverified.",
+  "furtherGenerationInThisBatch": false
+}

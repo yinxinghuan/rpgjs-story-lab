@@ -14,7 +14,7 @@ cpSync(sourceDir,dir,{recursive:true})
 // Optional retained-image response for isolated creator contract QA. No remote
 // media request is made; all other production behavior uses the compiled Worker.
 const retainedBackground=process.argv.includes('--retained-background-fixture')?async()=>new Uint8Array(readFileSync('doc/platform-art-candidates/20260911/environment-edit-02/candidate.png')):undefined
-const illustrationFile=process.argv.includes('--night-illustration-fixture')?'doc/platform-art-candidates/20260912/original-journal-night-02/candidate.png':'doc/platform-art-candidates/20260912/original-journal-01/candidate.png'
+const illustrationFile=process.argv.includes('--exposure-illustration-fixture')?'doc/platform-art-candidates/20260912/original-journal-exposure-03/candidate.png':process.argv.includes('--night-illustration-fixture')?'doc/platform-art-candidates/20260912/original-journal-night-02/candidate.png':'doc/platform-art-candidates/20260912/original-journal-01/candidate.png'
 const retainedIllustration=process.argv.includes('--retained-illustration-fixture')?async(job:{attempt:number})=>{if(process.argv.includes('--slow-illustration-fixture'))await new Promise(r=>setTimeout(r,15000));const file=process.argv.includes('--alternate-illustration-fixture')&&job.attempt===2?'doc/platform-art-candidates/20260912/original-journal-night-02/candidate.png':illustrationFile;return new Uint8Array(readFileSync(file))}:undefined
 if(!Number.isSafeInteger(port)||port<1024||port>65535)throw Error('QA_PORT')
 // Exact compiled Worker, fresh disposable SQL, no cookies or external requests.
