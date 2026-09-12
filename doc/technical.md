@@ -1109,3 +1109,5 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 2026-09-12 服务端图片下载兼容性
 
 正式诊断将原画页任务失败定位为 `ILLUSTRATION_ASSET_NETWORK`；任务与剧情版本未变。三个服务端图片下载入口移除 workerd 不支持的 `credentials` RequestInit 字段。服务端不持有浏览器 cookie jar，也不转发调用者请求头；继续保留 HTTPS/域名准入及 `redirect: error`。相关 27 项测试通过，正式环境恢复原任务的因果验证仍待执行。参见 `media-download-compatibility-20260912.json`。
+
+线上恢复表明仅移除 credentials 未解决下载失败。主游戏画页改用 manual 重定向模式并拒绝所有非 2xx 响应：仍不跟随 Location，但能区分重定向与网络异常。新增测试检查 302 只执行原地址请求，不访问目标地址。

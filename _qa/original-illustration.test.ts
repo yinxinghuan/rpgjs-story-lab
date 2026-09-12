@@ -176,7 +176,7 @@ test('current scene/version required for new intentions, HTTP gate closed by def
 })
 test('platform producer rejects foreign task identity and preserves original task after a download failure',async()=>{
  const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'en');s.images.start(owner,h.id,body(h));let submissions=0,downloads=0,lastRequest=''
- const producer=originalIllustrationProducer(async(input,init)=>{const u=String(input);if(u.includes('/v1/')){if(u.endsWith('generations')){submissions++;lastRequest=JSON.parse(String(init!.body)).request_id}return Response.json({request_id:lastRequest,task_id:'retained-task',status:'succeeded',type:'image',media:{type:'image',url:'https://cdn.aiwaves.tech/synthetic.png',format:'png',width:768,height:1024}})}assert.equal(init?.credentials,undefined);assert.equal(init?.headers,undefined);assert.equal(init?.redirect,'error');downloads++;return downloads===1?new Response('',{status:503}):new Response(fixture)})
+ const producer=originalIllustrationProducer(async(input,init)=>{const u=String(input);if(u.includes('/v1/')){if(u.endsWith('generations')){submissions++;lastRequest=JSON.parse(String(init!.body)).request_id}return Response.json({request_id:lastRequest,task_id:'retained-task',status:'succeeded',type:'image',media:{type:'image',url:'https://cdn.aiwaves.tech/synthetic.png',format:'png',width:768,height:1024}})}assert.equal(init?.credentials,undefined);assert.equal(init?.headers,undefined);assert.equal(init?.redirect,'manual');downloads++;return downloads===1?new Response('',{status:503}):new Response(fixture)})
  await s.images.run(owner,h.id,h.sceneId,producer);assert.equal(s.images.list(owner,h.id)[0].state,'failed')
  s.db.run('UPDATE original_illustrations SET data=json_set(data,\'$.nextAt\',0)')
  await s.images.run(owner,h.id,h.sceneId,producer);assert.equal(submissions,1);assert.equal(downloads,2);assert.equal(s.images.list(owner,h.id)[0].state,'candidate')
@@ -247,5 +247,12 @@ test('new illustration requests are limited to reviewed reference versions witho
   assert.equal(s.images.list(owner,h.id).length,0)
   assert.deepEqual(s.authority.get(owner,h.id),h)
   s.images.start(owner,h.id,body(h));assert.equal(s.images.list(owner,h.id).length,1)
+ }finally{s.raw.close()}
+})
+
+test('platform illustration rejects a redirect without fetching its destination',async()=>{
+ const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'en');s.images.start(owner,h.id,body(h));let calls=0
+ const producer=originalIllustrationProducer(async(input,init)=>{calls++;if(String(input).includes('/v1/'))return Response.json({request_id:JSON.parse(String(init!.body)).request_id,task_id:'redirect-task',status:'succeeded',media:{type:'image',url:'https://cdn.aiwaves.tech/redirect.png',format:'png',width:768,height:1024}});assert.equal(init?.redirect,'manual');return new Response(null,{status:302,headers:{location:'https://untrusted.invalid/private'}})})
+ await s.images.run(owner,h.id,h.sceneId,producer);assert.equal(calls,2);assert.equal(s.images.list(owner,h.id)[0].error,'ILLUSTRATION_ASSET_HTTP_302');assert.equal(s.images.list(owner,h.id)[0].state,'failed')
  }finally{s.raw.close()}
 })

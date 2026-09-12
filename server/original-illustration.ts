@@ -123,7 +123,7 @@ export const originalIllustrationProducer=(request:typeof fetch=fetch):Illustrat
  // Server-only fetch has no ambient cookie jar. Do not pass browser credentials:
  // workerd rejects that RequestInit field; never forward incoming request headers.
  let r:Response
- try{r=await request(u,{signal,redirect:'error'})}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_ASSET_NETWORK')}
+ try{r=await request(u,{signal,redirect:'manual'})}catch{throw Error(signal.aborted?'TIMEOUT':'ILLUSTRATION_ASSET_NETWORK')}
  if(!r.ok)throw Error('ILLUSTRATION_ASSET_HTTP_'+r.status)
  if(!r.body)throw Error('ILLUSTRATION_ASSET_STREAM')
  const reader=r.body.getReader(),chunks:Uint8Array[]=[];let n=0

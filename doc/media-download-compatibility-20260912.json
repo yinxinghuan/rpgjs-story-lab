@@ -48,5 +48,30 @@
       "sameLocalBuild": true,
       "at": "2026-09-12T12:12:12.544Z"
     }
-  }
+  },
+  "afterCredentialsFix": {
+    "outcome": {
+      "ok": true
+    },
+    "job": {
+      "id": "61855f13-1e91-4133-8b33-6556001a88fa",
+      "scene": "train-at-dead-station",
+      "sourceVersion": 0,
+      "referenceVersion": "north-cape-platform-8fc11a96",
+      "reference": {
+        "url": "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260911/environment-edit-02/candidate.png",
+        "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031"
+      },
+      "state": "failed",
+      "attempt": 1,
+      "recoverable": true,
+      "nextAt": 1789215373463,
+      "error": "ILLUSTRATION_ASSET_NETWORK"
+    },
+    "sameJob": true,
+    "sameAttempt": true,
+    "storyUnchanged": true,
+    "artReviewed": false
+  },
+  "conclusion": "credentials removal did not resolve the production asset network failure. Manual redirect rejection adds bounded HTTP evidence without following redirects."
 }
