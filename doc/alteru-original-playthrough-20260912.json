@@ -208,5 +208,19 @@
     "routeBoard": "bridge approach is not crossing; inspect support and people first; finale choice only after arrival",
     "evidence": "_qa/alteru-native-20260912/town-c697052-background-ready.png",
     "fullPlaythrough": false
+  },
+  "townPublicRulesNative": {
+    "action": "公开危险物资岗位与乘客离站权利",
+    "saved": true,
+    "visiblePromise": "公开危险、物资、岗位登记，乘客可以核对记录、追问路线，并在下一站选择离开",
+    "moraleDelta": 8,
+    "resourcesAfter": {
+      "fuel": 28,
+      "condition": 77,
+      "morale": 83
+    },
+    "next": "town supplies and departure not yet executed",
+    "interruption": "Mac locked after action result",
+    "fullPlaythrough": false
   }
 }
