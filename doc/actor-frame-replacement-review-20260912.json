@@ -1,0 +1,55 @@
+{
+  "base": "doc/platform-art-candidates/20260912/hero-reproduce-01/candidate.png",
+  "baseSha256": "8eadfcf1f93a95dabbb5dc1ee7c9e6ad4007e4be48682739de41c3df65566076",
+  "patch": "doc/platform-art-candidates/20260912/hero-left-opposite-04/candidate.png",
+  "patchSha256": "08798d54c48befa243e27c790cf736e3fb838251b3fbe1de51a264088aa92d25",
+  "outputSha256": "8237561b50ae473a3789a62df13474d01a3947e673bf2c90a59e29903ff62c91",
+  "cell": {
+    "row": 1,
+    "column": 2
+  },
+  "changedOutside": 0,
+  "changedTarget": 61534,
+  "sourceBoxes": {
+    "base": [
+      745,
+      401,
+      860,
+      616
+    ],
+    "patch": [
+      105,
+      45,
+      235,
+      281
+    ]
+  },
+  "anchors": {
+    "base": {
+      "x": 162,
+      "y": 296
+    },
+    "patch": {
+      "x": 170,
+      "y": 281
+    },
+    "target": {
+      "x": 160,
+      "y": 300
+    }
+  },
+  "runtimeAdmission": false,
+  "limits": [
+    "Only deterministic matte preparation, translation and cell replacement verified",
+    "No rescaling, mirroring or repainting",
+    "Input pose remains rejected for anatomy/scale; composition is not approval",
+    "No creator archive or runtime binding changed"
+  ],
+  "validation": {
+    "unitTests": 2,
+    "allCellSelections": 12,
+    "typecheck": "passed",
+    "visualInspection": "Composite inspected; replacement remains visibly taller and pose identity differs",
+    "continuousPlayback": "not yet verified"
+  }
+}
