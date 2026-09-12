@@ -1,5 +1,5 @@
 {
-  "status": "source-review-passed-mobile-review-pending",
+  "status": "accepted-noncritical-journal-sample",
   "taskId": "mt_6e3adeb83ed447bd27dc9705b7e0e2f8",
   "recipeVersion": 3,
   "sha256": "486d600b74603319fc4fd3c24daa5eac576609a45647bbb2a13336b7908ecdb3",
@@ -9,11 +9,25 @@
   "findings": [
     "Neutral gray lighting and main roof/rail/shed arrangement preserved.",
     "Texture remains visible; no new people, repair outcome or extra vehicle.",
-    "Not yet tested in the actual tunnel journal UI."
+    "Actual 320/390 journal UI inspected after six authored actions through river rescue to tunnel; image retained and recovered after reload, then fan inspection remained usable."
   ],
   "runtimeAdmitted": false,
   "productionReplaced": false,
   "furtherGenerationInThisBatch": false,
   "source": "Existing public game background only; no real player data",
-  "scope": "Two intended generation requests total: tunnel and bridge, one each"
+  "scope": "Two intended generation requests total: tunnel and bridge, one each",
+  "browser": {
+    "environment": "Local compiled production build, fixed PNG producer; no external media calls",
+    "viewportWidths": [
+      320,
+      390
+    ],
+    "fuel": 50,
+    "condition": 87,
+    "morale": 64,
+    "savedAfterReload": true,
+    "nextAction": "检查隧道通风机与烟流",
+    "evidence": "_qa/ui/journal-tunnel-20260912/",
+    "realPlatform": false
+  }
 }
