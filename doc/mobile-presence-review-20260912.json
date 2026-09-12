@@ -1,0 +1,166 @@
+{
+  "release": "original-mobile-presence-20260912-1",
+  "runtimeCommit": "d10b8f8",
+  "production": false,
+  "scope": "Local compiled production Worker with a disposable synthetic journey. Native pointer capture plus synthetic held input through React handlers. Not iPhone hardware or authenticated AlterU certification.",
+  "input": {
+    "mobile390": {
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "mapWidth": 650
+      },
+      "hold": {
+        "start": {
+          "x": 157.8,
+          "y": 397.7
+        },
+        "moved": {
+          "x": 230.57,
+          "y": 397.7
+        },
+        "stopped": {
+          "x": 230.57,
+          "y": 397.7
+        }
+      },
+      "takeover": {
+        "routed": {
+          "x": 251.75,
+          "y": 396
+        },
+        "taken": {
+          "x": 206.68,
+          "y": 396
+        },
+        "stopped": {
+          "x": 206.68,
+          "y": 396
+        },
+        "destination": false
+      },
+      "panel": {
+        "paused": {
+          "x": 206.68,
+          "y": 410.51
+        },
+        "after": {
+          "x": 206.68,
+          "y": 410.51
+        }
+      },
+      "blur": {
+        "blurred": {
+          "x": 218.37,
+          "y": 410.51
+        },
+        "after": {
+          "x": 218.37,
+          "y": 410.51
+        }
+      },
+      "passed": true
+    },
+    "mobile320": {
+      "viewport": {
+        "width": 320,
+        "height": 568,
+        "mapWidth": 650
+      },
+      "hold": {
+        "start": {
+          "x": 144.67,
+          "y": 410.51
+        },
+        "moved": {
+          "x": 218.45,
+          "y": 410.51
+        },
+        "stopped": {
+          "x": 218.45,
+          "y": 410.51
+        },
+        "after": {
+          "x": 218.45,
+          "y": 410.51
+        }
+      },
+      "takeover": {
+        "routed": {
+          "x": 241.72,
+          "y": 412
+        },
+        "taken": {
+          "x": 196.51,
+          "y": 412
+        },
+        "stopped": {
+          "x": 196.51,
+          "y": 412
+        },
+        "destination": false
+      },
+      "panel": {
+        "paused": {
+          "x": 196.51,
+          "y": 417.4
+        },
+        "after": {
+          "x": 196.51,
+          "y": 417.4
+        }
+      },
+      "blur": {
+        "blurred": {
+          "x": 207.56,
+          "y": 417.4
+        },
+        "after": {
+          "x": 207.56,
+          "y": 417.4
+        }
+      },
+      "passed": true
+    },
+    "probeCorrection": "Initial narrow-screen stop assertion read DOM before React painted a previously reported frame (2.70 world pixels). The probe now records the settled DOM after 80ms and verifies it remains unchanged for another 250ms, with a maximum 6-pixel prior-frame gap. No game runtime change was needed."
+  },
+  "nativePointerCapture": {
+    "observed": [
+      "pointerdown on og-joystick",
+      "pointermove outside bounds still targets og-joystick",
+      "pointerup on og-joystick"
+    ],
+    "limitation": "Native CUA drag coalesces move/up within one frame. Synthetic held probe bypasses only OS capture lookup for its invented pointer."
+  },
+  "backgroundRecovery": {
+    "fault": "Injected 503 on the first background request only",
+    "enteredWithSilhouette": true,
+    "walkedToFuelShed": true,
+    "openedActionPanel": true,
+    "retryRestoredImage": true,
+    "positionRetained": true
+  },
+  "visual": {
+    "viewports": [
+      "390x844",
+      "320x568",
+      "568x320",
+      "desktop"
+    ],
+    "externalGuestObserved": true,
+    "platformLayoutObserved": true,
+    "temporaryViewportResetPending": false,
+    "evidence": "Local ignored _qa/ui/mobile-presence-20260912/ native screenshots; browser chrome is not published."
+  },
+  "automated": {
+    "tests": 673,
+    "passed": 673,
+    "build": true,
+    "secretAudit": true
+  },
+  "pending": [
+    "same-commit production and Pages deployment",
+    "authenticated AlterU full-game playthrough",
+    "real iPhone final experience"
+  ]
+}
