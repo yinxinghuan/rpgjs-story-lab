@@ -18,5 +18,26 @@
   ],
   "cleanup": "Emulation.clearDeviceMetricsOverride and browser viewport reset completed. User zoom setting not changed.",
   "release": "No release this turn. Latest functional browser evidence remains navigation-keyboard-browser-20260912.json; full regression evidence remains single-player-verification-20260912.json.",
-  "next": "Use native browser surface or corrected screenshot control for remaining small-screen check; avoid changing production CSS to compensate for tooling artifacts."
+  "next": "Use native browser surface or corrected screenshot control for remaining small-screen check; avoid changing production CSS to compensate for tooling artifacts.",
+  "smallScreenFollowup": {
+    "cssViewport": [
+      320,
+      568
+    ],
+    "capturePixels": [
+      640,
+      1136
+    ],
+    "method": "CDP explicit clip CSS320x568 scale2; page read-only DOM verified innerWidth320 innerHeight568 root320x568, dpr1. Default scale1 capture cropped; scale2 includes entire viewport.",
+    "map": "_qa/calibrated-mobile/platform-layout-320-map-2x.png",
+    "keptPanel": "_qa/calibrated-mobile/platform-layout-320-kept-2x.png",
+    "observations": [
+      "All four footer buttons within x12..308 and y516..560, each71x44 CSSpx.",
+      "Joystick80x80 at16,367; goal text and HUD fit.",
+      "Record -> kept illustration -> close actions exercised; no story action submitted.",
+      "Kept panel content extends vertically with scroll region; close remains accessible."
+    ],
+    "scope": "Existing local5392 synthetic journey and fixture; not authenticated platform or iPhone hardware proof.",
+    "cleanup": "Device metrics cleared, viewport reset, returned to map."
+  }
 }

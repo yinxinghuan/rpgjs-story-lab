@@ -29,12 +29,12 @@
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "unverified",
-      "currentBlocker": "CUA getState returned Mac locked; preceding unlocked Mini App observation was Unable to Load, not missing authorization."
+      "currentBlocker": "AlterU Mini App blank content after unlock; awaiting host recovery."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
-      "state": "unverified",
-      "reason": "Earlier screenshots were cropped by tooling; 390 proof does not cover 320."
+      "state": "local-layout-verified",
+      "reason": "See calibrated-mobile-review-20260912.json smallScreenFollowup; local CSS320x568 full capture and panel interactions passed. Not iPhone hardware/platform proof."
     },
     {
       "requirement": "Platform character production with consistent four-direction gait",
@@ -62,5 +62,5 @@
     }
   },
   "newBrowserChecksThisTurn": false,
-  "currentUiObservation": "CUA getState repeated: Mac locked, automatic unlock failed. No new UI verification."
+  "currentUiObservation": "Mac unlocked; Telegram Aigram renders, AlterU blank content. Native menu click unsupported and Cmd+R did not restore. User asked to reopen AlterU; authorization unchanged."
 }
