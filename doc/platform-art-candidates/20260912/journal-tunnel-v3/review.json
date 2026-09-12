@@ -1,0 +1,19 @@
+{
+  "status": "source-review-passed-mobile-review-pending",
+  "taskId": "mt_6e3adeb83ed447bd27dc9705b7e0e2f8",
+  "recipeVersion": 3,
+  "sha256": "486d600b74603319fc4fd3c24daa5eac576609a45647bbb2a13336b7908ecdb3",
+  "bytes": 1525224,
+  "timingMs": 4635,
+  "cost": "not provided by API",
+  "findings": [
+    "Neutral gray lighting and main roof/rail/shed arrangement preserved.",
+    "Texture remains visible; no new people, repair outcome or extra vehicle.",
+    "Not yet tested in the actual tunnel journal UI."
+  ],
+  "runtimeAdmitted": false,
+  "productionReplaced": false,
+  "furtherGenerationInThisBatch": false,
+  "source": "Existing public game background only; no real player data",
+  "scope": "Two intended generation requests total: tunnel and bridge, one each"
+}

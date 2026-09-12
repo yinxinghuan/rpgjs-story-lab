@@ -1,0 +1,19 @@
+{
+  "status": "rejected-material-style-drift",
+  "taskId": "mt_7327d024ba23abb2691d162f1d9017ba",
+  "recipeVersion": 3,
+  "sha256": "ed6ed3f2b24e5c0f9fe85b091b4d8a0688c623501c085221ebd41f160ea0d9a8",
+  "bytes": 1128986,
+  "timingMs": 4305,
+  "cost": "not provided by API",
+  "findings": [
+    "Track, bridge rails and water-side structure retained.",
+    "Roof, pavement and water flattened into broad graphic patches, losing reference texture and material continuity.",
+    "Not admitted despite correct scene identity and readable geometry."
+  ],
+  "runtimeAdmitted": false,
+  "productionReplaced": false,
+  "furtherGenerationInThisBatch": false,
+  "source": "Existing public game background only; no real player data",
+  "scope": "Two intended generation requests total: tunnel and bridge, one each"
+}

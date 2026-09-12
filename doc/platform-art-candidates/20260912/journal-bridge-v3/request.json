@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/8c4ebb1d42397286d91a7d511fc0d41d1f7a144a/doc/platform-art-candidates/20260912/flood-bridge-edit-02/candidate.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 1024
+  },
+  "prompt": "Create a faithful travel-journal illustration of the railway environment in the reference. Match the reference exposure, midtone brightness, local contrast, colors and textured pixel detail. Preserve the reference time of day, weather and existing lighting; do not add new light sources or change exposure. Preserve every existing structure, track, narrow walkway, vehicle silhouette and its relative position, using the same overhead orthographic camera and proportions. Environment only; no people, faces, animals, writing or labels. No new objects, doors, buildings, vehicles or story events. Fit the full reference location into a 3:4 portrait composition without stretching its geometry. This is a visual memory, not a new map.",
+  "requestId": "1002aa8a-0af6-4b05-8f80-bfc1c569ce81"
+}
