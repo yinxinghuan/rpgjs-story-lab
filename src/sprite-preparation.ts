@@ -18,6 +18,9 @@ export type SpritePreparationSpec = {
     };
     kind: 'actor' | 'states';
     backgroundMode: 'pale-neutral' | 'alpha';
+    /** Explicitly reviewed background points, in source-image coordinates.
+     * Never infer these from pale clothing or apply them to another source. */
+    matteSeeds?: Array<{x: number; y: number}>;
     sourceAnchors?: Array<{
         x: number;
         y: number;
@@ -80,6 +83,11 @@ export function prepareSpritePixels(input: PixelRaster, spec: SpritePreparationS
         background[p] = 1;
         queue[tail++] = p;
     } }
+    if (spec.matteSeeds !== undefined) {
+        if (!Array.isArray(spec.matteSeeds) || spec.matteSeeds.length > 64 || spec.backgroundMode !== 'pale-neutral' || spec.matteSeeds.some(p => !p || !integer(p.x, 0, w - 1) || !integer(p.y, 0, h - 1) || !eligible(p.y * w + p.x)))
+            reject('MATTE_SEEDS');
+        for (const p of spec.matteSeeds) visit(p.y * w + p.x);
+    }
     for (let x = 0; x < w; x++) {
         visit(x);
         visit((h - 1) * w + x);

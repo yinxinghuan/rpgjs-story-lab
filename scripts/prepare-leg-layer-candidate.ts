@@ -11,6 +11,8 @@ const candidates={
 }
 const name=process.argv[2]??'hero-leg-layer-08'
 if(!Object.hasOwn(candidates,name))throw Error('UNKNOWN_LEG_CANDIDATE')
+const clearGap=process.argv.includes('--clear-declared-gap')
+if(clearGap&&name!=='hero-leg-neutral-09')throw Error('NO_REVIEWED_MATTE_SEED')
 const candidate=candidates[name as keyof typeof candidates]
 const dir='doc/platform-art-candidates/20260913/'+name
 const source=readFileSync(dir+'/candidate.png'),hash=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex')
@@ -18,10 +20,10 @@ if(hash(source)!==candidate.sha256)throw Error('LEG_SOURCE_CHANGED')
 const input=PNG.sync.read(source)
 // Only matte/edge cleanup and explicitly inspected anchor alignment; mirrored
 // motion remains a read-only renderer experiment, never baked into this PNG.
-const spec={columns:2,rows:1,cellWidth:320,cellHeight:320,foot:{x:155,y:305},sourceAnchors:candidate.anchors,kind:'states' as const,backgroundMode:'pale-neutral' as const,neutralMin:200,chromaMax:20}
+const spec={columns:2,rows:1,cellWidth:320,cellHeight:320,foot:{x:155,y:305},sourceAnchors:candidate.anchors,kind:'states' as const,backgroundMode:'pale-neutral' as const,neutralMin:200,chromaMax:20,...(clearGap?{matteSeeds:[{x:153,y:150}]}:{})}
 const prepared=prepareSpritePixels({width:input.width,height:input.height,rgba:new Uint8ClampedArray(input.data)},spec)
 const bytes=PNG.sync.write({width:640,height:320,data:Buffer.from(prepared.raster.rgba)})
-const path=dir+'/candidate-alpha.png'
+const path=dir+(clearGap?'/candidate-alpha-gap.png':'/candidate-alpha.png')
 if(existsSync(path)){if(!readFileSync(path).equals(bytes))throw Error('LEG_OUTPUT_EXISTS')}else writeFileSync(path,bytes,{flag:'wx'})
 const report={path,sha256:hash(bytes),sourceSha256:hash(source),bytes:bytes.length,spec,metrics:prepared.metrics,frames:prepared.frames,sourceUnchanged:true,admitted:false}
-writeFileSync(dir+'/preparation.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report))
+writeFileSync(dir+(clearGap?'/preparation-gap.json':'/preparation.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report))

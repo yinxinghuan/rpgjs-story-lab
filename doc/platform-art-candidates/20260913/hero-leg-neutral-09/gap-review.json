@@ -1,0 +1,24 @@
+{
+  "sourceSha256": "e342a40ebc4d72dd87ad952a3d1d8d232c3a0e2fb516581233db95da88c12518",
+  "changedPixelsByCell": [
+    678,
+    0
+  ],
+  "changedBoundsInclusive": [
+    150,
+    86,
+    159,
+    219
+  ],
+  "unchangedNeutralCell": true,
+  "extraMattePixelsRemoved": 471,
+  "originalAndPriorCandidateRetained": true,
+  "visualInspection": "Previously visible white gap no longer visible in static transparent PNG; animation/hem and dark/light-background playback not yet reviewed.",
+  "runtimeAdmission": false,
+  "validation": {
+    "preparationTests": 10,
+    "draftCompositionAndMapTests": 16,
+    "buildPassed": true,
+    "prior08And09OutputsByteIdenticalWithoutSeeds": true
+  }
+}

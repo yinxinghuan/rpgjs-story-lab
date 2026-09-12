@@ -1,0 +1,81 @@
+{
+  "path": "doc/platform-art-candidates/20260913/hero-leg-neutral-09/candidate-alpha-gap.png",
+  "sha256": "e2e512f5e927b2cc4557376ae3ad904a46c0cd1ad53290e8a7a8e38272b5bcbe",
+  "sourceSha256": "e342a40ebc4d72dd87ad952a3d1d8d232c3a0e2fb516581233db95da88c12518",
+  "bytes": 66759,
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 320,
+    "cellHeight": 320,
+    "foot": {
+      "x": 155,
+      "y": 305
+    },
+    "sourceAnchors": [
+      {
+        "x": 152,
+        "y": 306
+      },
+      {
+        "x": 168,
+        "y": 306
+      }
+    ],
+    "kind": "states",
+    "backgroundMode": "pale-neutral",
+    "neutralMin": 200,
+    "chromaMax": 20,
+    "matteSeeds": [
+      {
+        "x": 153,
+        "y": 150
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 130633,
+    "edgeCorrected": 2120,
+    "corePreserved": 68677
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        77,
+        6,
+        225,
+        309
+      ],
+      "sourceAnchor": {
+        "x": 152,
+        "y": 306
+      },
+      "offset": {
+        "x": 3,
+        "y": -1
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        413,
+        6,
+        561,
+        310
+      ],
+      "sourceAnchor": {
+        "x": 168,
+        "y": 306
+      },
+      "offset": {
+        "x": -13,
+        "y": -1
+      }
+    }
+  ],
+  "sourceUnchanged": true,
+  "admitted": false
+}

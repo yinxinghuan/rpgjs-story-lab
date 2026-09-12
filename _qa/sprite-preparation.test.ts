@@ -110,3 +110,22 @@ test('native alpha mode preserves white edge pixels and arbitrary transparent RG
   assert.equal(out.metrics.edgeCorrected, 0)
   assert.deepEqual(pixel(out.raster, 0, 0), [0, 0, 0, 0])
 })
+
+test('explicit matte seed removes only its connected enclosed gap, preserving separate pale fabric',()=>{
+ const input=raster();rect(input,4,3,16,18);rect(input,7,7,2,8,[255,255,255,255]);rect(input,14,7,3,8,[255,255,255,255])
+ const before=new Uint8ClampedArray(input.rgba),unseeded=prepareSpritePixels(input,spec)
+ assert.deepEqual(sourcePixel(unseeded,8,10),[255,255,255,255])
+ const out=prepareSpritePixels(input,{...spec,matteSeeds:[{x:8,y:10}]})
+ assert.deepEqual(sourcePixel(out,8,10),[0,0,0,0])
+ assert.deepEqual(sourcePixel(out,15,10),[255,255,255,255])
+ assert.deepEqual(sourcePixel(out,11,10),DARK)
+ assert.deepEqual(input.rgba,before)
+ assert.equal(out.metrics.removed-unseeded.metrics.removed,16)
+ assert.deepEqual(prepareSpritePixels(input,{...spec,matteSeeds:[]}),unseeded)
+})
+
+test('background point outside the image, on colored foreground, or under alpha mode is rejected',()=>{
+ const input=raster();rect(input,6,5,12,13)
+ for(const seeds of [[{x:10,y:10}],[{x:-1,y:4}],[{x:24,y:4}],[{x:NaN,y:4}],Array(65).fill({x:0,y:0})])assert.throws(()=>prepareSpritePixels(input,{...spec,matteSeeds:seeds}),/MATTE_SEEDS/)
+ assert.throws(()=>prepareSpritePixels(input,{...spec,backgroundMode:'alpha',matteSeeds:[{x:0,y:0}]}),/MATTE_SEEDS/)
+})
