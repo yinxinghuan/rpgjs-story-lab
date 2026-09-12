@@ -877,3 +877,9 @@ RPG-JS默认按房间ID请求同名TMX。渲染器新增可选mapIds，将稳定
 `server/original-spatial-turn.ts`编排已绑定的原规则行动：保留原始resolveDomainAction、协议解析、applyParsedScene、明确encounter命令和domain danger效果，不调用无空间绑定的buildDangerDirective。章节仍使用原reducer处理显式险情，维修钥匙仍能解决合法险情；不修改冻结vendor、不重写历史、不返还旧档已扣资源。此修正来自390英文浏览器实测：检查/换管/修启动器/选河谷后车况意外从预期97变成85；通用导演在检修回合中插入险情并执行−12兜底代价，中文与英文输入哈希又使结果不同。新增双语测试覆盖正常检修精确资源、无自动插曲，以及河谷显式预警、救援消耗与解除。
 
 本轮双部署已完成：8d765e5主站与Pages实际各53份文件和本机测试构建逐项SHA一致，Pages运行34656888493成功。线上新建中文42版本/英文39版本旅程均完成settle-basic结局，180次合成HTTP请求、零模型调用，换管及开场资源精确、开户/行动/结局丢回执恢复通过。没有读取真实玩家存档。此结果不代替真实iPhone/AlterU全程验收；整体目标保持推进。
+
+### 2026-09-12 正式制作页发布后游玩入口
+
+背景、人物/设备、分层设备三个在线面板统一调用originalEntry(mode, hostname, ?story=original)判断是否可进入原作；不再只允许cloud-preflight。四种固定发布ID通过既有query交给原Session开户/续玩，不新建客户端权威，不替换当前或其他版本的旅程。Pages仍返回主站制作入口，本地未发布模式仍可查看文件。原作/creator协议与数据库均不变，本轮发布标识carriage-creator-play-20260912-1。
+
+17项针对性回归通过；四类publication HTTP fixture改为真实生产准入，保留必要的合成媒体下载适配，没有使用总是放行函数。原样cloud+编译Worker在320中文/390英文完成保留平台风机原图→透明分层→真实地图5项检查→显式确认→保存→发布丢回执重试→链接进入→隧道排烟/卸物→刷新→原旅程→同版本续玩的全过程。使用普通生产renderer，无QA观察器，零外部连接；这不是新生图或正式来源浏览器实测。详见creator-play-review-20260912.json。

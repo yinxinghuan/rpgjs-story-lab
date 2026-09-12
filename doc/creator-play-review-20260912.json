@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-12",
+  "release": "carriage-creator-play-20260912-1",
+  "change": "Production creator publications enter the released original story, sharing originalEntry gate with the game.",
+  "fixedSlots": [
+    "background_release",
+    "actor_release",
+    "device_release",
+    "fan_release"
+  ],
+  "targetedTests": {
+    "passed": 17,
+    "failed": 0,
+    "productionAdmission": true,
+    "files": [
+      "original-release.test.ts",
+      "background-publication.test.ts",
+      "actor-publication.test.ts",
+      "device-publication.test.ts",
+      "layered-publication.test.ts"
+    ]
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "oldId": "1543c188-313b-4b91-a924-ff606879e7ec",
+      "journey": "3399a139-af94-4994-aaf5-43ff783e69df",
+      "release": "b84a69e2baeaba0536e79be73dae65d59435a5103d8725b4177b41160f86e3ae.a87723ba-0a46-4dfe-9ee5-c46e05598b12",
+      "version": 9,
+      "loaded": [
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/b84a69e2baeaba0536e79be73dae65d59435a5103d8725b4177b41160f86e3ae.a87723ba-0a46-4dfe-9ee5-c46e05598b12/housing",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/b84a69e2baeaba0536e79be73dae65d59435a5103d8725b4177b41160f86e3ae.a87723ba-0a46-4dfe-9ee5-c46e05598b12/rotor"
+      ],
+      "publicationLostResponseRecovered": true,
+      "oldJourneyPreserved": true,
+      "reopenContinues": true,
+      "errors": [],
+      "externalRequests": 0,
+      "rendererObservers": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "oldId": "f44a7113-0685-4e85-bd4f-33048443fb1b",
+      "journey": "278002f3-2bed-4fd7-8059-33a06cce3082",
+      "release": "fba4d24e481b37eeb019181dfaa011c1252d0c561ec4fb774bbd35e29c6cf054.8c7c62cd-dc91-428e-9346-7d228f10c6b4",
+      "version": 9,
+      "loaded": [
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/fba4d24e481b37eeb019181dfaa011c1252d0c561ec4fb774bbd35e29c6cf054.8c7c62cd-dc91-428e-9346-7d228f10c6b4/housing",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/fba4d24e481b37eeb019181dfaa011c1252d0c561ec4fb774bbd35e29c6cf054.8c7c62cd-dc91-428e-9346-7d228f10c6b4/rotor"
+      ],
+      "publicationLostResponseRecovered": true,
+      "oldJourneyPreserved": true,
+      "reopenContinues": true,
+      "errors": [],
+      "externalRequests": 0,
+      "rendererObservers": false
+    }
+  ],
+  "visualReview": {
+    "reviewed": [
+      "creator-play-320-zh-review-local-qa.png",
+      "creator-play-390-en-published-local-qa.png",
+      "creator-play-390-en-story-local-qa.png"
+    ],
+    "notes": "Ordinary renderer map checks completed; published fan loaded in the playable tunnel. No horizontal overflow or page errors. Publication link was exercised after scroll; publication screenshot does not show the link below the fold."
+  },
+  "limits": [
+    "Fresh localhost Chromium only; no logged production browser or real iPhone/AlterU access.",
+    "End-to-end browser production flow exercised fan. All four slots exercised in real HTTP with production admission.",
+    "Retained platform sample; zero new media/model requests.",
+    "Does not yet provide multi-slot selection UI, account recovery, arbitrary games or runtime generation."
+  ]
+}
