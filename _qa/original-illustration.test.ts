@@ -35,12 +35,29 @@ test('plans use exact packaged repository sources, not generated dist URLs or pr
 test('palette recipe updates affect new intentions only; stored v1 requests resume unchanged',async()=>{
  const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h))
  const stored=JSON.parse(s.db.all<{data:string}>('SELECT data FROM original_illustrations')[0].data)
- assert.equal(stored.plan.version,2);assert.match(stored.plan.request.prompt,/DARK RAINY NIGHT/)
+ assert.equal(stored.plan.version,3);assert.equal(stored.plan.request.prompt,JSON.parse(readFileSync('doc/platform-art-candidates/20260912/original-journal-exposure-03/request.json','utf8')).prompt)
  const old=JSON.parse(readFileSync('doc/platform-art-candidates/20260912/original-journal-01/intent.json','utf8')).plan
  stored.plan=old;s.db.run('UPDATE original_illustrations SET data=?',JSON.stringify(stored))
  await s.images.run(owner,h.id,h.sceneId,async j=>{assert.deepEqual(j.plan,old);assert.equal(j.requestId,stored.requestId);return fixture})
  assert.equal(s.images.list(owner,h.id)[0].state,'candidate')
  }finally{s.raw.close()}
+})
+test('stored v2 recipe survives disk reopen, discard and retry without adopting v3',async()=>{
+ const dir=mkdtempSync(join(tmpdir(),'illustration-v2-')),path=join(dir,'state.sqlite');let s=setup(path)
+ try{
+  const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h))
+  const stored=JSON.parse(s.db.all<{data:string}>('SELECT data FROM original_illustrations')[0].data)
+  const {requestId:unused,...request}=JSON.parse(readFileSync('doc/platform-art-candidates/20260912/original-journal-night-02/request.json','utf8'))
+  const old={...stored.plan,version:2,request};stored.plan=old
+  s.db.run('UPDATE original_illustrations SET data=?',JSON.stringify(stored));s.raw.close();s=setup(path)
+  await s.images.run(owner,h.id,h.sceneId,async job=>{assert.deepEqual(job.plan,old);assert.equal(job.requestId,stored.requestId);return fixture})
+  const first=s.images.list(owner,h.id)[0]
+  s.images.decide(owner,h.id,{scene:h.sceneId,attempt:1,sha256:first.asset!.sha256,decision:'discard'})
+  s.images.start(owner,h.id,body(h,true));s.raw.close();s=setup(path)
+  await s.images.run(owner,h.id,h.sceneId,async job=>{assert.deepEqual(job.plan,old);assert.equal(job.attempt,2);assert.notEqual(job.requestId,stored.requestId);return fixture})
+  assert.deepEqual(s.authority.get(owner,h.id),h)
+  assert.deepEqual(s.images.history(owner,h.id,h.sceneId).map(j=>j.state),['discarded','candidate'])
+ }finally{s.raw.close();rmSync(dir,{recursive:true,force:true})}
 })
 test('keeping is explicit and idempotent; opposite decisions and foreign digests cannot alter the saved choice',async()=>{
  const s=setup();try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h));await s.images.run(owner,h.id,h.sceneId,async()=>fixture)

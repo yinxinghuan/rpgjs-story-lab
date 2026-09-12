@@ -1,0 +1,28 @@
+{
+  "recipeVersion": 3,
+  "productionEnabled": false,
+  "approvedSample": "platform-art-candidates/20260912/original-journal-exposure-03/review.json",
+  "checks": {
+    "targetedPassed": 12,
+    "fullPassed": 676,
+    "fullFailed": 0,
+    "build": "Passed TypeScript, frontend, 9 scenes/27 SHA checks and compiled Worker startup",
+    "secrets": "passed"
+  },
+  "initialRestrictedRun": {
+    "passed": 641,
+    "failed": 35,
+    "reason": "localhost listen EPERM; rerun with local-network permission passed"
+  },
+  "compatibility": [
+    "v1 stored request remains unchanged",
+    "v2 disk reopen retains original request ID and plan",
+    "v2 discard/retry allocates new request ID but retains v2 plan",
+    "No changes to StorySave or production image gate"
+  ],
+  "limits": [
+    "Single night sample only",
+    "Other scenes and custom backgrounds not visually verified",
+    "Authenticated AlterU full run and trusted account recovery remain incomplete"
+  ]
+}
