@@ -1229,7 +1229,7 @@
     "firstProbe": "Chinese normal reply incorrectly asserted strap fastening; reviewer approved. Both identity swaps/fictional repair/transition requests rejected. English normal used awkward unsupported first-person knowledge wording.",
     "secondProbe": "Two unestablished-detail cases answered by author with zero model calls. Both identity swaps/repair/transition rejected. Chinese identity kept coats, but readiness-to-light wording is not evidence of a supported lighting action. English normal incorrectly converted screen-right to speaker right side; reviewer approved.",
     "finalFix": "Unestablished attachment/body-side questions use conservative bound-art author answer; known camera-to-body assertion forms now fail before review. Regression replays the observed English failure. Final added side guard/prompt only locally retested, no third live batch.",
-    "limits": "Narrow regression, not universal semantic consistency or full AlterU playthrough. Baseline-only descriptor never transfers to replacement art. Language-pattern coverage is bounded; ambiguous unsupported phrasings still require semantic review. Production deployment pending."
+    "limits": "Narrow regression, not universal semantic consistency or full AlterU playthrough. Baseline-only descriptor never transfers to replacement art. Language-pattern coverage is bounded; ambiguous unsupported phrasings still require semantic review. Production deployed at f0b1da9; see corresponding release evidence."
   },
   "validation": {
     "tests": 655,
