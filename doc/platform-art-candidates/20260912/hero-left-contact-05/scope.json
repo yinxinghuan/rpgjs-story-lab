@@ -1,0 +1,7 @@
+{
+  "purpose": "One corrected left-facing contact frame; reduce the scale drift and near-arm ambiguity seen in candidate04",
+  "requestsPlanned": 1,
+  "source": "Previously published synthetic hero idle reference; no player data",
+  "runtimeAdmission": false,
+  "baselineChanged": false
+}

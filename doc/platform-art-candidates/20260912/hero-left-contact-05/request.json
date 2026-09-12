@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "84bd7b37-1161-4efa-b0c2-f6ae76fc36d6",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/7d5194f/doc/platform-art-candidates/20260912/hero-left-single-03/reference.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Edit this exact 320x320 sprite into one left-facing walking contact pose. Keep the head, face, hood, body, satchel, camera and character scale at the same pixel locations as the reference. Hair top stays at y=80; both boot soles stay above y=294. Change only the arm and leg pose. The arm attached to the large visible yellow sleeve on the RIGHT edge of the torso swings BACK to screen RIGHT, with its hand clearly to the right of the hip. The leg on that same visible side swings FORWARD to screen LEFT; its boot is clearly to the left of the hip. The opposite leg extends back to screen RIGHT. Show two separated boots. This is an ordinary alternating walk, not a kick. Preserve the high overhead orthographic view, pixel-painted edges, yellow coat, teal trousers and brown boots. White background. One figure, no diagram or annotations."
+}

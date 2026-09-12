@@ -1,0 +1,19 @@
+{
+  "status": "generation-failed",
+  "error": "PROVIDER_REJECTED",
+  "retryable": false,
+  "requestId": "84bd7b37-1161-4efa-b0c2-f6ae76fc36d6",
+  "uniqueGenerationIntents": 1,
+  "transportAttempts": 2,
+  "taskId": null,
+  "imageProduced": false,
+  "artReviewed": false,
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "observations": [
+    "The first sandboxed transport failed before any task ID was received. The authorized network retry reused the identical request ID.",
+    "The public media service returned terminal PROVIDER_REJECTED after 53817 ms. No image was available for camera, anatomy or anchor assessment.",
+    "This result does not establish whether the revised prompt fixes the prior gait defect; do not infer visual quality from a service rejection."
+  ],
+  "next": "Do not resubmit this terminal request. Retain approved runtime art and resume actual navigation/illustration release verification when the screen is accessible; actor production parity remains open."
+}
