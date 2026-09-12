@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-13",
+  "change": "Add spatial shell routing to existing RPG creation entry; preserve stateful/cinematic.",
+  "files": {
+    "SKILL.md": "f3d89c31143b9757fe5c1d0f34623564bd592d66bcaefa112d111b0c40bcdb17",
+    "references/spatial-production.md": "3a84edfa503c7fd9612bd0d0696b716a43feb06cdc517bb2bf98311f45b5da71"
+  },
+  "validation": "skill-creator quick_validate passed",
+  "scope": "Routing and production contract only; no third frozen Story Session overlay claimed.",
+  "boundaries": [
+    "Keep one story authority",
+    "Real renderer and native route evidence are separate from source/CI success",
+    "Anonymous capability is not trusted account binding",
+    "Prompt-only regional media edits do not prove unchanged anatomy",
+    "Internal experiment does not require separate handoff package"
+  ],
+  "goalComplete": false
+}
