@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
 import {createRequire} from 'node:module'
 import {dirname,join} from 'node:path'
+import {tmpdir} from 'node:os'
 import {mkdtempSync,rmSync,readFileSync} from 'node:fs'
 import {createHash} from 'node:crypto'
 import {OriginalTrainAuthority,originalTrainRuntime,type OriginalHead} from '../server/original-train-runtime'
@@ -53,7 +54,7 @@ test('keeping is explicit and idempotent; opposite decisions and foreign digests
  }finally{s.raw.close()}
 })
 test('discard, cross-scene retry and late decisions retain both original attempts and bytes after restart',async()=>{
- const dir=mkdtempSync('/private/tmp/illustration-decisions-'),path=join(dir,'state.sqlite');let s=setup(path)
+ const dir=mkdtempSync(join(tmpdir(),'illustration-decisions-')),path=join(dir,'state.sqlite');let s=setup(path)
  try{const h=s.authority.create(owner,crypto.randomUUID(),'zh');s.images.start(owner,h.id,body(h));await s.images.run(owner,h.id,h.sceneId,async()=>fixture)
  const old=s.images.list(owner,h.id)[0],discard={scene:h.sceneId,attempt:1,sha256:old.asset!.sha256,decision:'discard'}
  s.images.decide(owner,h.id,discard);await assert.rejects(s.images.file(owner,h.id,h.sceneId),/NOT_READY/)
@@ -79,7 +80,7 @@ test('previous unreviewed active rows return as candidates; two discarded attemp
  }finally{s.raw.close()}
 })
 test('task records and immutable PNG survive restart, lost responses and source-scene departure without touching story',async()=>{
- const dir=mkdtempSync('/private/tmp/original-illustration-'),path=join(dir,'test.sqlite');let s=setup(path)
+ const dir=mkdtempSync(join(tmpdir(),'original-illustration-')),path=join(dir,'test.sqlite');let s=setup(path)
  try{
   const h=s.authority.create(owner,crypto.randomUUID(),'zh'),first=s.images.start(owner,h.id,body(h));let finish!:(bytes:Uint8Array)=>void,calls=0
   const pending=s.images.run(owner,h.id,h.sceneId,async(_j,onTask)=>{calls++;onTask('synthetic-task');return new Promise(r=>finish=r)})
