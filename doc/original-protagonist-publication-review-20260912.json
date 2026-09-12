@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-12",
+  "release": "carriage-protagonist-publication-20260912-1",
+  "scope": "player protagonist publication, five-slot assembly, immutable original-story binding",
+  "checks": {
+    "fullSuite": {
+      "passed": 660,
+      "failed": 0
+    },
+    "additionalFullRouteTests": {
+      "passed": 2,
+      "locales": [
+        "zh",
+        "en"
+      ],
+      "actionsPerJourney": 36,
+      "endingAndLostReplyRecovery": true
+    },
+    "build": "tsc, spatial contract, Vite cloud, 27 immutable resources, opaque Worker startup passed",
+    "audits": [
+      "public secrets",
+      "UUID API base",
+      "media integration",
+      "UI foundation",
+      "UUID match",
+      "145-game storage isolation"
+    ]
+  },
+  "browser": [
+    {
+      "width": 320,
+      "height": 568,
+      "lang": "zh",
+      "oldId": "2344e3dc-3a31-4626-ad39-b8422c5d6012",
+      "journey": "b4a0e16b-55ef-4470-a98d-6d01992904aa",
+      "selection": {
+        "hero": "f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.7b9dc6be-73da-4094-af58-978c53d00258",
+        "background": "f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.a0ef8575-db0c-4966-be3b-559ac790f1c9",
+        "actor": "f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.7b9dc6be-73da-4094-af58-978c53d00258",
+        "device": "f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.5e60a467-a955-4284-ae93-b6da3fe5c6b0",
+        "fan": "f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.4be5f044-8123-4068-a06b-c54e15522d5a"
+      },
+      "version": 1,
+      "loaded": [
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/releases/f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.a0ef8575-db0c-4966-be3b-559ac790f1c9/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/hero-releases/f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.7b9dc6be-73da-4094-af58-978c53d00258/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/actor-releases/f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.7b9dc6be-73da-4094-af58-978c53d00258/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.4be5f044-8123-4068-a06b-c54e15522d5a/housing",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.4be5f044-8123-4068-a06b-c54e15522d5a/rotor",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/device-releases/f33aa09a043021fe6a9fd22d31fd044e04498e8b94f076dfb792012d914f8965.5e60a467-a955-4284-ae93-b6da3fe5c6b0/file"
+      ],
+      "failedRefreshRetained": true,
+      "missingReleaseBlocked": true,
+      "oldJourneyRetained": true,
+      "combinationResumed": true,
+      "heroFailureRecovered": true,
+      "heroPublishedViaUI": true,
+      "errors": [],
+      "externalRequests": 0,
+      "artQuality": "diagnostic actor; retained other samples, no new visual approval"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "lang": "en",
+      "oldId": "632fef7b-619a-456a-9732-dc5beb9f674c",
+      "journey": "a2069245-9e66-4664-aa70-b4af885f97f8",
+      "selection": {
+        "hero": "2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.6c2b4066-ecb9-447e-96cb-60467ec16dd6",
+        "background": "2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.d1796e04-e72c-4512-8c2d-898afc84fa5d",
+        "actor": "2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.6c2b4066-ecb9-447e-96cb-60467ec16dd6",
+        "device": "2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.1c6f3d9e-60b9-46df-948e-7ace54627a46",
+        "fan": "2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.936d186a-65b2-40e8-9e36-5ae8a5b7c14d"
+      },
+      "version": 1,
+      "loaded": [
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/releases/2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.d1796e04-e72c-4512-8c2d-898afc84fa5d/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/hero-releases/2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.6c2b4066-ecb9-447e-96cb-60467ec16dd6/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/actor-releases/2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.6c2b4066-ecb9-447e-96cb-60467ec16dd6/file",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.936d186a-65b2-40e8-9e36-5ae8a5b7c14d/housing",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/layer-releases/2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.936d186a-65b2-40e8-9e36-5ae8a5b7c14d/rotor",
+        "/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/creator/device-releases/2adbfa553bce3c514c8e878012bd3785bea95fa935f72a9e005ace115c70688a.1c6f3d9e-60b9-46df-948e-7ace54627a46/file"
+      ],
+      "failedRefreshRetained": true,
+      "missingReleaseBlocked": true,
+      "oldJourneyRetained": true,
+      "combinationResumed": true,
+      "heroFailureRecovered": true,
+      "heroPublishedViaUI": true,
+      "errors": [],
+      "externalRequests": 0,
+      "artQuality": "diagnostic actor; retained other samples, no new visual approval"
+    }
+  ],
+  "limits": [
+    "Synthetic directional grid proves publication, geometry and rendering, not real-character anatomy or quality.",
+    "No new model/media requests; no new production art admitted.",
+    "Fresh local Chrome at 320x568 and 390x844 is not actual iPhone or authenticated AlterU evidence.",
+    "Platform account identity/recovery and future protagonist avatar generation remain unfinished."
+  ],
+  "next": "Platform-generated protagonist candidate with explicit left/right stride review, followed by full single-player platform verification when browser origin permission is available."
+}

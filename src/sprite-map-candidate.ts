@@ -1,4 +1,4 @@
-import {assertPublishedActor,type PublishedActor} from './actor-publication'
+import {assertPublishedActor,type PublishedActor,assertPublishedHero,type PublishedHero} from './actor-publication'
 import type {SpriteDraft,SpritePng} from './sprite-draft'
 import {verifySpritePng} from './sprite-draft'
 import type {PixelRaster} from './sprite-preparation'
@@ -43,6 +43,14 @@ export async function inspectActorImage(png:SpritePng,s:{cellWidth:number;cellHe
 
 export async function verifyPublishedActorPixels(release:PublishedActor,png:SpritePng,decode:(png:SpritePng)=>Promise<PixelRaster>){
  assertPublishedActor(release)
+ if(png.sha256!==release.sha256||png.bytes.length!==release.bytes||png.width!==release.width||png.height!==release.height)return invalid()
+ const c=await inspectActorImage(png,{cellWidth:release.width/3,cellHeight:release.height/4,foot:release.foot},decode,'published-actor')
+ if(c.scale!==release.review.scale||JSON.stringify(c.frameBounds)!==JSON.stringify(release.review.bounds))throw Error('ACTOR_GEOMETRY_MISMATCH')
+ return c
+}
+
+export async function verifyPublishedHeroPixels(release:PublishedHero,png:SpritePng,decode:(png:SpritePng)=>Promise<PixelRaster>){
+ assertPublishedHero(release)
  if(png.sha256!==release.sha256||png.bytes.length!==release.bytes||png.width!==release.width||png.height!==release.height)return invalid()
  const c=await inspectActorImage(png,{cellWidth:release.width/3,cellHeight:release.height/4,foot:release.foot},decode,'published-actor')
  if(c.scale!==release.review.scale||JSON.stringify(c.frameBounds)!==JSON.stringify(release.review.bounds))throw Error('ACTOR_GEOMETRY_MISMATCH')

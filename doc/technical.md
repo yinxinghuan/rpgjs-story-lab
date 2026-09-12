@@ -956,3 +956,9 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 2026-09-12 弃车结局承诺修复：originalEndingCartridge只在bridge-train-fate=anchored时将rescue-network的长期义务转换为维护步行通道、预留人员/物资/剩余燃料；资格、其他能力与行驶路线不变，不修改冻结vendor。结局代价集合与已选方案完全相等，拒绝额外义务。枢纽UI只读重新投射当前choices，避免旧未选择菜单继续显示错误车厢代价；不改历史正文和已完成结局。原作wire17强制旧前端重载，存档schema8与assets13不变。
 
 弃车结局修复d9962ed已正式双部署，Pages34672060673成功；两站各54份文件一致。线上40请求、新建一份英文合成旅程，32作者行动+结局到v33，选择时与结局均使用步行通道义务；强取代价、回执重放、重读与资产保持，配额行为空。未读取真实玩家，未新增模型/媒体调用。
+
+
+### 玩家主角的不可变发布（2026-09-12）
+`actor-publication.ts` 共享图集结构校验，但 `PublishedHero.slot=protagonist` 与 `PublishedActor.slot=ada-mechanic` 分别严格检查。`CreatorSpriteArchive` 使用独立的 `creator_hero_releases` 表；`/sprites/:id/publish-hero` 必须引用已归档最新合格图集/地图检查，回执丢失可重试同一发布，后续检查不能覆盖已发布版本。原图接口继续要求制作身份，公开 `/hero-releases/:id/file` 只提供不可变结果 PNG。
+`originalEnrollmentAssets` 将可选 `protagonist` 元数据复制进原有背景绑定层，与 v3 启动器、v4 阿达及通风机组合；未带字段的存档仍使用原 B 主角，不迁移或重写。`originalBoundHero` 统一提供 renderer 和模型上下文所需版本；自定义图集在入场前核验 SHA、尺寸、alpha、脚点与全部主体边界，外形描述设为 not-described。
+`hero_release` 追加到原有组合续玩 key，空值保持历史 key。组合页兼容旧四槽选择，并增加玩家主角槽。原作线协议更新至 original-session-18.assets-14；制作档案既有版本保持不变。主体资源仍来自同一游戏 UUID、同一权威旅程，未新增账号认证或另一套后台。

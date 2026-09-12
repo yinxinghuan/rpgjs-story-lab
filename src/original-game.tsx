@@ -9,15 +9,15 @@ import {originalFanResources,originalBoundFanSheets,originalEquipmentResource,or
 import {Assets} from 'pixi.js'
 import {inspectSpritePng} from './sprite-draft'
 import {decodeSpritePixels} from './sprite-browser-io'
-import {verifyPublishedActorPixels} from './sprite-map-candidate'
+import {verifyPublishedActorPixels,verifyPublishedHeroPixels} from './sprite-map-candidate'
 import {verifyPublishedDevicePixels} from './device-map-candidate'
 import type {RpgPlayer} from '@rpgjs/server'
 import {originalActorResource,originalActorDirection,originalCharacterHasArt,originalFixedStandingArt,originalFixedStandingSheet,originalStandingSheet,originalCharacterArtSlots,originalCharacterArtAnimation} from './original-character-art'
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react'
 import {createRpgRenderer,type RpgRendererRuntime,type RendererPoint} from './rpg-renderer'
 import {originalHeroSheet} from './original-hero-sheet'
-import {originalHeroRelease} from './original-hero-release'
-import {originalHeroVersion} from './original-asset-releases'
+import {originalPublishedHero} from './original-asset-releases'
+import {originalBoundHero} from './original-bound-hero'
 import {findGridPath} from './grid-path'
 import {originalTrainChapterSpatialPlan} from './original-train-spatial-plan'
 import {SceneReadiness,ScenePreparationError,loadBrowserSceneResource,type SceneResourceManifest} from './scene-readiness'
@@ -34,7 +34,7 @@ type Entity=ReturnType<typeof originalGameEntities>[number]
 type Panel='nearby'|'log'|'bag'|'people'|'ending'|'action'|'journeys'|'pictures'|null
 /** One authority and renderer for the released single-player story. */
 export default function OriginalGame(){
- const [connection]=useState(()=>originalSessionHttp(window.alteruLocalStorage,async(name,work)=>{if(!navigator.locks)throw Error('CLOUD_LOCKS_UNAVAILABLE');return navigator.locks.request(name,work)},undefined,undefined,async plan=>{await loaderFor(plan).prepare(plan.destinationScene,true)},new URLSearchParams(location.search).get('background_release')??undefined,new URLSearchParams(location.search).get('device_release')??undefined,new URLSearchParams(location.search).get('actor_release')??undefined,new URLSearchParams(location.search).get('fan_release')??undefined))
+ const [connection]=useState(()=>originalSessionHttp(window.alteruLocalStorage,async(name,work)=>{if(!navigator.locks)throw Error('CLOUD_LOCKS_UNAVAILABLE');return navigator.locks.request(name,work)},undefined,undefined,async plan=>{await loaderFor(plan).prepare(plan.destinationScene,true)},new URLSearchParams(location.search).get('background_release')??undefined,new URLSearchParams(location.search).get('device_release')??undefined,new URLSearchParams(location.search).get('actor_release')??undefined,new URLSearchParams(location.search).get('fan_release')??undefined,new URLSearchParams(location.search).get('hero_release')??undefined))
  const loaders=useRef(new Map<string,SceneReadiness>())
  function loaderFor(h:Pick<OriginalHead,'assets'>){const id=originalEnvironmentVersion(h.assets);let loader=loaders.current.get(id);if(!loader){loader=new SceneReadiness(originalBoundSceneResources(__ORIGINAL_STORY_PREVIEW__!,h.assets),loadBrowserSceneResource);loaders.current.set(id,loader)}return loader}
  const [head,setHead]=useState<OriginalHead|null>(null),headRef=useRef(head);headRef.current=head
@@ -47,10 +47,10 @@ export default function OriginalGame(){
  const [illustrationsAvailable,setIllustrationsAvailable]=useState(false)
  const heroBlob=useRef(''),heroKey=useRef('')
  async function prepareHero(h:OriginalHead){
-  const version=originalHeroVersion(h.assets),{resource}=originalHeroRelease(version)
+  const {id:version,resource}=originalBoundHero(h.assets)
   if(heroBlob.current){if(heroKey.current!==version)throw new ScenePreparationError('characters','HERO_VERSION_CHANGED');return}
   const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);let blob=''
-  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');if(!mounted.current){void Assets.unload(blob).catch(()=>{});URL.revokeObjectURL(blob);return}heroBlob.current=blob;heroKey.current=version}
+  try{blob=(await loadBrowserSceneResource(resource,abort.signal))!;const release=originalPublishedHero(h.assets);if(release){const png=await inspectSpritePng(new Uint8Array(await (await fetch(blob,{signal:abort.signal})).arrayBuffer()));await verifyPublishedHeroPixels(release,png,decodeSpritePixels)}const texture=await Assets.load({src:blob,parser:'loadTextures'});if(texture?.width!==resource.width||texture?.height!==resource.height)throw Error('RESOURCE_DECODE');if(!mounted.current){void Assets.unload(blob).catch(()=>{});URL.revokeObjectURL(blob);return}heroBlob.current=blob;heroKey.current=version}
   catch{if(blob)URL.revokeObjectURL(blob);throw new ScenePreparationError('characters','HERO_ART_UNAVAILABLE')}finally{clearTimeout(timer);abort.abort()}
  }
  const brakeBlob=useRef('')

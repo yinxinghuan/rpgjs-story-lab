@@ -4,7 +4,7 @@ import {createOriginalActionInterpreter} from '../server/original-action-interpr
 import {createOriginalDialogueGenerator} from '../server/original-dialogue'
 import {CreatorLayerArchive} from '../server/creator-layers'
 import {assertPublishedLayer,layerReleaseId} from '../src/layered-archive-contract'
-import {assertPublishedActor,actorReleaseId} from '../src/actor-publication'
+import {assertPublishedActor,assertPublishedHero,actorReleaseId} from '../src/actor-publication'
 import {assertPublishedDevice,deviceReleaseId} from '../src/device-publication'
 import {CreatorSpriteArchive} from '../server/creator-sprites'
 import {spriteArchiveBodyLimit} from '../src/sprite-archive-contract'
@@ -45,7 +45,7 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=creator?creatorJson:original?originalJson:json
  if(creator&&!creatorEnabled)return reply({error:'NOT_FOUND'},404)
  if(creator&&path===CREATOR_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,runtimeContract:CREATOR_RUNTIME_CONTRACT,identityMode:'anonymous-capability-v1'})
- const published=path.match(/^\/api\/creator\/(?:releases|device-releases|actor-releases|layer-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/(?:file|housing|rotor))?$/)
+ const published=path.match(/^\/api\/creator\/(?:releases|device-releases|actor-releases|hero-releases|layer-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/(?:file|housing|rotor))?$/)
  if(creator&&published&&request.method==='GET'){
   if(!backgroundReleaseId(published[1])||!env.CARRIAGE_JOURNEYS)return reply({error:'NOT_FOUND'},404)
   const owner=published[1].split('.')[0]
@@ -123,6 +123,14 @@ export class CarriageJourneyAuthority{
      if(!actorPublished[3])return respond(release)
      return new Response(new Uint8Array(await this.sprites.file(owner,actorPublished[2],'candidate')),{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
     }
+    const heroPublished=path.match(/^\/hero-releases\/([a-f0-9]{64})\.([a-f0-9-]{36})(\/file)?$/)
+    if(heroPublished&&request.method==='GET'){
+     if(heroPublished[1]!==owner)throw new LabError('HERO_NOT_PUBLISHED',404)
+     this.sprites??=new CreatorSpriteArchive(this.db)
+     const release=this.sprites.heroPublication(owner,heroPublished[2]);if(!release)throw new LabError('HERO_NOT_PUBLISHED',404)
+     if(!heroPublished[3])return respond(release)
+     return new Response(new Uint8Array(await this.sprites.file(owner,heroPublished[2],'candidate')),{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
+    }
     const layerPublished=path.match(/^\/layer-releases\/([a-f0-9]{64})\.([a-f0-9-]{36})(?:\/(housing|rotor))?$/)
     if(layerPublished&&request.method==='GET'){
      this.layers??=new CreatorLayerArchive(this.db);const release=this.layers.publication(owner,layerPublished[2]);if(!release)throw new LabError('LAYER_NOT_PUBLISHED',404)
@@ -155,19 +163,21 @@ export class CarriageJourneyAuthority{
      this.sprites??=new CreatorSpriteArchive(this.db)
      if(path==='/sprites'&&request.method==='GET')return respond({sprites:this.sprites.list(owner)})
      if(path==='/sprites'&&request.method==='POST')return respond(this.sprites.begin(owner,await body(request)))
-     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|actor-reviews|actor-release|publish-actor|file\/(source|candidate|input-0|input-1)))?$/)
+     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|actor-reviews|actor-release|publish-actor|hero-release|publish-hero|file\/(source|candidate|input-0|input-1)))?$/)
      if(!m)throw new LabError('NOT_FOUND',404)
      if(request.method==='GET'){
       if(!m[2])return respond(this.sprites.get(owner,m[1]))
       if(m[2]==='release'){this.sprites.get(owner,m[1]);return respond({release:this.sprites.publication(owner,m[1])})}
       if(m[2]==='parts')return respond(this.sprites.progress(owner,m[1]))
       if(m[2]==='actor-release'){this.sprites.get(owner,m[1]);return respond({release:this.sprites.actorPublication(owner,m[1])})}
+      if(m[2]==='hero-release'){this.sprites.get(owner,m[1]);return respond({release:this.sprites.heroPublication(owner,m[1])})}
       if(m[2]==='actor-reviews')return respond({reviews:this.sprites.actorReviews(owner,m[1])})
       if(m[3])return new Response(new Uint8Array(await this.sprites.file(owner,m[1],m[3])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
      }
      if(request.method==='POST'){
       if(m[2]==='parts')return respond(this.sprites.part(owner,m[1],await body(request,spriteArchiveBodyLimit(url.pathname))))
       if(m[2]==='publish-actor')return respond(await this.sprites.publishActor(owner,m[1],await body(request)))
+      if(m[2]==='publish-hero')return respond(await this.sprites.publishHero(owner,m[1],await body(request)))
       if(m[2]==='publish')return respond(await this.sprites.publish(owner,m[1],await body(request)))
       if(m[2]==='actor-reviews')return respond(await this.sprites.saveActorReview(owner,m[1],await body(request)))
       if(m[2]==='finish')return respond(await this.sprites.finish(owner,m[1]))
@@ -221,7 +231,12 @@ export class CarriageJourneyAuthority{
     const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/layer-releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
     if(!r.ok)throw new LabError('LAYER_NOT_PUBLISHED',404)
     const release=await r.json();assertPublishedLayer(release);if(release.id!==id)throw new LabError('LAYER_RELEASE_INVALID',409);return release
-   },this.illustrations&&this.illustrationProducer?{store:this.illustrations,produce:this.illustrationProducer}:undefined)
+   },this.illustrations&&this.illustrationProducer?{store:this.illustrations,produce:this.illustrationProducer}:undefined,async id=>{
+    if(!actorReleaseId(id)||!this.env?.CARRIAGE_JOURNEYS)throw new LabError('HERO_NOT_PUBLISHED',404)
+    const publisher=id.split('.')[0],r=await this.env.CARRIAGE_JOURNEYS.get(this.env.CARRIAGE_JOURNEYS.idFromName('creator-art-v1:'+publisher)).fetch(new Request('https://authority.invalid/api/creator/hero-releases/'+id,{headers:{'X-Authority-Owner':publisher,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}}))
+    if(!r.ok)throw new LabError('HERO_NOT_PUBLISHED',404)
+    const release=await r.json();assertPublishedHero(release);if(release.id!==id)throw new LabError('ACTOR_RELEASE_INVALID',409);return release
+   })
   }
   const path=url.pathname.slice('/api/lab'.length)
   if(path==='/sessions'&&request.method==='GET')return json({sessions:this.authority.directory(owner)})

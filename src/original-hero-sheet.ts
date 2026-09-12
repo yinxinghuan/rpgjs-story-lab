@@ -1,7 +1,7 @@
 import {actorSheet} from './actor-sheet'
-import {originalHeroVersion,type OriginalAssetBindings} from './original-asset-releases'
-import {originalHeroRelease} from './original-hero-release'
+import type {OriginalAssetBindings} from './original-asset-releases'
+import {originalBoundHero} from './original-bound-hero'
 export function originalHeroSheet(image:string,assets?:OriginalAssetBindings){
- const r=originalHeroRelease(originalHeroVersion(assets))
+ const r=originalBoundHero(assets)
  return actorSheet('hero',image,r.resource.width,r.resource.height,r.baselines,r.scale,r.centers)
 }

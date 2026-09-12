@@ -2,7 +2,7 @@ import type {Transport} from './recoverable-session-client'
 import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from './device-publication'
 import {verifySpritePng,type SpriteDraft} from './sprite-draft'
 import {assertActorSheetReview} from './actor-sheet-review'
-import {assertPublishedActor,type PublishedActor} from './actor-publication'
+import {assertPublishedActor,type PublishedActor,assertPublishedHero,type PublishedHero} from './actor-publication'
 import {ACTOR_REVIEW_LIMIT,actorReviewId,actorReviewTarget,assertArchivedActorReview,type ArchivedActorReview} from './actor-review-archive'
 import {assertSpriteArchiveRecord,restoreSpriteManifest,spriteManifest,spriteManifestSignature,spritePartText,SPRITE_ARCHIVE_LIMIT,SPRITE_ARCHIVE_PART,type SpriteArchiveRecord} from './sprite-archive-contract'
 export class SpriteCloudArchive{
@@ -64,6 +64,15 @@ export class SpriteCloudArchive{
   if(!snapshot.actorReview.map)throw Error('ACTOR_REVIEW_REQUIRED')
   await this.saveWithReview(snapshot)
   const r=await this.api('/sprites/'+snapshot.id+'/publish-actor',{reviewId:await actorReviewId(snapshot.actorReview)});assertPublishedActor(r)
+  if(r.id.split('.')[1]!==snapshot.id||r.sha256!==snapshot.result!.png.sha256||r.bytes!==snapshot.result!.png.bytes.length||JSON.stringify(r.foot)!==JSON.stringify(snapshot.spec!.foot)||JSON.stringify(r.review)!==JSON.stringify(snapshot.actorReview.map))throw Error('ACTOR_RELEASE_INVALID')
+  return r
+ }
+ async heroPublication(id:string){const r=await this.api('/sprites/'+id+'/hero-release');if(r?.release===null)return null;assertPublishedHero(r?.release);if(r.release.id.split('.')[1]!==id)throw Error('ACTOR_RELEASE_INVALID');return r.release as PublishedHero}
+ async publishHero(draft:SpriteDraft){
+  const snapshot=structuredClone(draft);assertActorSheetReview(snapshot.actorReview,snapshot)
+  if(!snapshot.actorReview.map)throw Error('ACTOR_REVIEW_REQUIRED')
+  await this.saveWithReview(snapshot)
+  const r=await this.api('/sprites/'+snapshot.id+'/publish-hero',{reviewId:await actorReviewId(snapshot.actorReview)});assertPublishedHero(r)
   if(r.id.split('.')[1]!==snapshot.id||r.sha256!==snapshot.result!.png.sha256||r.bytes!==snapshot.result!.png.bytes.length||JSON.stringify(r.foot)!==JSON.stringify(snapshot.spec!.foot)||JSON.stringify(r.review)!==JSON.stringify(snapshot.actorReview.map))throw Error('ACTOR_RELEASE_INVALID')
   return r
  }

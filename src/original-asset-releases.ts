@@ -4,7 +4,7 @@ import {JUNCTION_BACKGROUND,FLOOD_BRIDGE_BACKGROUND,PASS_BACKGROUND,PINE_BACKGRO
 import type {SceneResource,SceneResourceManifest} from './scene-readiness'
 import {assertPublishedBackground,backgroundReleasePath,type PublishedBackground} from './background-publication'
 import {assertPublishedDevice,type PublishedDevice} from './device-publication'
-import {assertPublishedActor,type PublishedActor} from './actor-publication'
+import {assertPublishedActor,type PublishedActor,assertPublishedHero,type PublishedHero} from './actor-publication'
 import {fixedStandingReleases,type FixedStandingBindings} from './original-art-identities'
 import {fixedEquipmentReleases,type FixedEquipmentBindings} from './original-fixed-equipment'
 
@@ -23,7 +23,7 @@ export const originalBackgroundReleases:Record<string,SceneResource&{scene:strin
  [FLOOD_BRIDGE_BACKGROUND]:{scene:'train-at-flood-bridge',source:'alteru-media',taskId:'mt_1a711a43966e36311c8f7b2cbc94a1cc',kind:'background',path:'./art/approved/flood-bridge-e38ff237.png',sha256:'e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210',bytes:2685518,width:1024,height:1536},
  [JUNCTION_BACKGROUND]:{scene:'train-at-dawn-junction',source:'alteru-media',taskId:'mt_d4a642fa46a1cb5c82565d28016df02b',kind:'background',path:'./art/approved/dawn-junction-c0b4a545.png',sha256:'c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893',bytes:2472753,width:1024,height:1536},
 }
-type BackgroundBindings=({version:1;backgrounds:Record<string,string>}|{version:2;published:PublishedBackground;additional?:Record<string,string>})&{hero?:string;standingCast?:FixedStandingBindings;fixedEquipment?:FixedEquipmentBindings;fan?:PublishedLayer}
+type BackgroundBindings=({version:1;backgrounds:Record<string,string>}|{version:2;published:PublishedBackground;additional?:Record<string,string>})&{protagonist?:PublishedHero;hero?:string;standingCast?:FixedStandingBindings;fixedEquipment?:FixedEquipmentBindings;fan?:PublishedLayer}
 type LegacyBindings=BackgroundBindings|{version:3;background:BackgroundBindings;starter:PublishedDevice}
 export type OriginalAssetBindings=LegacyBindings|{version:4;base:LegacyBindings;ada:PublishedActor}
 export const originalBaseAssets=(a?:OriginalAssetBindings):LegacyBindings|undefined=>a?.version===4?a.base:a
@@ -41,12 +41,13 @@ export function assertOriginalAssetBindings(value:unknown):asserts value is Orig
  const a=value as OriginalAssetBindings
  if(a?.version===4){if(Object.keys(a).sort().join(',')!=='ada,base,version'||![1,2,3].includes(a.base?.version))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertOriginalAssetBindings(a.base);assertPublishedActor(a.ada);return}
  if(a?.version===3){if(Object.keys(a).sort().join(',')!=='background,starter,version'||![1,2].includes(a.background?.version))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertOriginalAssetBindings(a.background);assertPublishedDevice(a.starter);return}
+ if(a?.protagonist!==undefined)assertPublishedHero(a.protagonist)
  if(a?.hero!==undefined)originalHeroRelease(a.hero)
  if(a?.fan!==undefined)assertPublishedLayer(a.fan)
  if(a?.standingCast!==undefined){const cast=a.standingCast;if(!cast||typeof cast!=='object'||Array.isArray(cast)||Object.entries(cast).some(([id,version])=>typeof version!=='string'||!Object.hasOwn(fixedStandingReleases,version)||fixedStandingReleases[version as keyof typeof fixedStandingReleases].characterId!==id))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')}
  if(a?.fixedEquipment!==undefined){const e=a.fixedEquipment;if(!e||typeof e!=='object'||Array.isArray(e)||Object.entries(e).some(([id,version])=>typeof version!=='string'||!Object.hasOwn(fixedEquipmentReleases,version)||fixedEquipmentReleases[version as keyof typeof fixedEquipmentReleases].entityId!==id))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')}
- if(a?.version===2){if(Object.keys(a).filter(k=>!['hero','standingCast','fixedEquipment','fan'].includes(k)).sort().join(',')!==(a.additional===undefined?'published,version':'additional,published,version'))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedBackground(a.published);if(a.additional!==undefined)assertAdditionalBackgrounds(a.additional);return}
- if(!a||a.version!==1||Object.keys(a).some(k=>!['version','backgrounds','hero','standingCast','fixedEquipment','fan'].includes(k))||!a.backgrounds||Array.isArray(a.backgrounds)||typeof a.backgrounds!=='object'||Object.keys(a.backgrounds).length>9||!Object.hasOwn(a.backgrounds,northCape))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')
+ if(a?.version===2){if(Object.keys(a).filter(k=>!['protagonist','hero','standingCast','fixedEquipment','fan'].includes(k)).sort().join(',')!==(a.additional===undefined?'published,version':'additional,published,version'))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedBackground(a.published);if(a.additional!==undefined)assertAdditionalBackgrounds(a.additional);return}
+ if(!a||a.version!==1||Object.keys(a).some(k=>!['version','backgrounds','protagonist','hero','standingCast','fixedEquipment','fan'].includes(k))||!a.backgrounds||Array.isArray(a.backgrounds)||typeof a.backgrounds!=='object'||Object.keys(a.backgrounds).length>9||!Object.hasOwn(a.backgrounds,northCape))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')
  for(const [scene,id] of Object.entries(a.backgrounds))if(typeof id!=='string'||!Object.hasOwn(originalBackgroundReleases,id)||originalBackgroundReleases[id].scene!==scene)throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED')
 }
 export function originalBackgroundVersion(bindings?:OriginalAssetBindings):string{assertOriginalAssetBindings(bindings);if(bindings?.version===4)return originalBackgroundVersion(bindings.base);if(bindings?.version===3)return originalBackgroundVersion(bindings.background);return bindings?.version===2?bindings.published.id:bindings?.backgrounds[northCape]??ORIGINAL_BACKGROUND_BASELINE}
@@ -55,6 +56,7 @@ function backgroundOnly(bindings?:OriginalAssetBindings):BackgroundBindings|unde
  const base=originalBaseAssets(bindings);return base?.version===3?base.background:base
 }
 /** Missing hero fields read the first released B version without rewriting the save. */
+export function originalPublishedHero(bindings?:OriginalAssetBindings){return backgroundOnly(bindings)?.protagonist}
 export function originalHeroVersion(bindings?:OriginalAssetBindings){return backgroundOnly(bindings)?.hero??ORIGINAL_HERO_V2}
 /** Absence means the legacy marker, never an implicit upgrade of an old save. */
 export function originalStandingCast(bindings?:OriginalAssetBindings){return backgroundOnly(bindings)?.standingCast??{}}
@@ -85,6 +87,7 @@ export function originalBoundSceneResources(base:SceneResourceManifest,bindings?
 }
 export function originalEnrollmentAssets(options:unknown):OriginalAssetBindings{
  if(options===undefined)return newOriginalAssetBindings()
+ if((options as any)?.protagonist){const {protagonist,...rest}=options as any;if(Object.keys(rest).some(k=>!['actor','starter','background','fan'].includes(k)))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedHero(protagonist);const bindings=originalEnrollmentAssets(rest.actor||rest.starter||rest.fan?rest:rest.background);backgroundOnly(bindings)!.protagonist=structuredClone(protagonist);return bindings}
  if((options as any)?.fan){const {fan,...rest}=options as any;if(Object.keys(rest).some(k=>!['actor','starter','background'].includes(k)))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedLayer(fan);const bindings=originalEnrollmentAssets(rest.actor||rest.starter?rest:rest.background),base=backgroundOnly(bindings)!;base.fan=structuredClone(fan);return bindings}
  if((options as any)?.actor){const o=options as {actor:PublishedActor;starter?:PublishedDevice;background?:PublishedBackground};if(Object.keys(o).some(k=>!['actor','starter','background'].includes(k)))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedActor(o.actor);const base=originalEnrollmentAssets(o.starter?{starter:o.starter,...(o.background?{background:o.background}:{})}:o.background) as LegacyBindings;return {version:4,base,ada:structuredClone(o.actor)}}
  if((options as any)?.starter){const o=options as {starter:PublishedDevice;background?:PublishedBackground};if(Object.keys(o).some(k=>!['starter','background'].includes(k)))throw Error('ORIGINAL_ASSET_VERSION_UNSUPPORTED');assertPublishedDevice(o.starter);if(o.background)assertPublishedBackground(o.background);return {version:3,background:o.background?publishedBackgroundBinding(o.background):newOriginalAssetBindings() as BackgroundBindings,starter:structuredClone(o.starter)}}
