@@ -1037,3 +1037,7 @@ GET /api/creator/drafts/:id/release补上背景的私有发布查询，与人物
 正式河谷合成测试发现：底层八地区地图使用dawn-junction同时表示桥边和枢纽内部，旧电影式director在town-depart附加的new-location图片错误描绘枢纽。`originalPlaceBlocks`现在只过滤同回合、精确枢纽标题、source=director/reason=new-location/status=queued、无URL或视频任务的自动图片建议。新town-depart保存时采用该过滤；旧档仅在既有显示投射处处理，原始历史和回执不迁移。完成图片、生成中、自定义来源及其他回合保持。`playerVisible`表示图片中的主角是否出镜，不能用它推断UI可见性；本修正不依赖该字段。
 
 55项定向测试通过（含中英三路线/各选择的实际转场，以及不变历史与已完成媒体保留）；全套685测试通过，构建、9场景27资源SHA、Worker启动通过。未改地图/角色像素或B镜头，未发起媒体请求。本轮代码尚未双部署，生产画页开关仍关闭。
+
+### 原图一致性修正双部署（2026-09-12）
+
+acf2510 / original-reference-grounding-20260912-1 已发布原UUID正式主站与Pages，Pages运行34686525847成功。两站各58份真实HTML/JS/CSS/地图/美术/许可证文件与同一本地构建SHA一致，页面/API/源码ZIP检查通过。此前正式河谷合成旅程发布后保持版本37、资源和完整结局不变。画页开关仍false；已登录AlterU、可信账号恢复和全部平台素材质量仍未完成。详细证据见 `original-reference-grounding-release-20260912.json`。
