@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "2e483096-eaee-469e-a0c5-cf76154de1eb",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/7d5194f/doc/platform-art-candidates/20260912/hero-left-single-03/reference.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Edit only the teal trousers and brown boots BELOW the yellow coat hem in this image. Keep every part above the hem unchanged: exact head location, hair, face, coat, arm, bag, scale, lighting and overhead viewing angle. Turn the standing lower body into ONE small slow walking contact pose facing screen left. The near leg moves only slightly toward screen left (about 12 pixels from its standing position); the far leg moves slightly toward screen right. Keep both boot soles at the original ground height, flat on the ground, with knees almost straight. Preserve leg lengths and boot sizes. Do not lift either foot into a running pose. Do not move, enlarge, rotate or redraw the upper body. Preserve the plain white canvas and one figure. No extra figures, text or diagram."
+}

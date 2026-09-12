@@ -1,0 +1,23 @@
+{
+  "taskId": "mt_8508b87b8ad27a2720354197569693c3",
+  "sha256": "fb9bfee3f08ae8edf39dc9ebb45baff9f84f0bca317cf5ada37ecbb26543b3fe",
+  "bytes": 47875,
+  "size": [
+    320,
+    320
+  ],
+  "timingMs": 2381,
+  "requests": 1,
+  "status": "not-admitted",
+  "hypothesis": "Restrict edit prompt to trousers/boots below hem to preserve upper body and avoid exaggerated contact stride.",
+  "observations": [
+    "Arms were redrawn: an additional forward hand/arm is visible relative to standing reference, violating upper-body preservation.",
+    "Boot separation is still a large stride relative to the reference standing width, not the requested small movement.",
+    "Yellow coat and satchel remain recognizable; single frame cannot prove alternating anatomical legs or stable playback."
+  ],
+  "runtimeAdmission": false,
+  "baselineChanged": false,
+  "postprocessingPerformed": false,
+  "conclusion": "Single-reference edit with prompt-only regional constraints did not preserve the requested upper-body region. Current public API has no mask parameter; do not invent one or treat edit as deterministic inpainting.",
+  "next": "Retain approved B runtime. Do not repeat this prompt-only regional-edit approach without a changed method or service capability. Existing four-direction review and actual map trial remain mandatory."
+}
