@@ -41,5 +41,13 @@
   ],
   "currentCheckpoint": "Own new platform test journey, valley after bridge inspection,62/87/58. Map open; continue this journey, do not create again.",
   "fullPlaythrough": false,
-  "reentryVerified": false
+  "reentryVerified": false,
+  "diagnosis": {
+    "localComparison": "Existing local5392 journey took same valley route; hero visible after transition and no captured warn/error logs. Local fixture is not proof of platform renderer.",
+    "confirmedCodeDefect": "fixed-map-camera cached detached-but-not-destroyed viewport; new room offset survived. Regression reproduced -90,-180 instead of0,0.",
+    "fix": "Resolve viewport from live stage using pinned engine traversal; no stale WeakMap retention.",
+    "tests": "9 camera and transition tests passed, including new regression.",
+    "platformCauseConfirmed": false,
+    "next": "Build and real renderer verification, then same-commit deploy and resume existing platform test journey."
+  }
 }

@@ -1115,3 +1115,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 正式画页闭环实测
 
 4bfad43 发布后原失败任务恢复为 candidate；attempt 仍为 1，剧情版本/完整状态不变。实际读取 PNG 与服务端 SHA 一致，合成测试旅程保留画页后以新客户端重读，active/kept 状态与原图片字节保持一致。图像可作为非关键旅途插画，雨线与青色更强，不作为地图替换。证据见 `platform-art-candidates/20260912/live-retained-journal/review.json`。未观察到成功请求的 3xx，不能将先前失败确认为 CDN 重定向；完整 AlterU 平台内验收仍未完成。
+
+### 活跃地图视口
+
+相机适配器从当前 canvas stage 查找 viewport，与固定 RPG-JS 版本的查找方式一致，不再跨地图持有 viewport 缓存。场景树已脱离但未销毁的旧 viewport 会使新地图偏移漏清；新增回归先复现再修复。此缺陷已获单元实证，但尚不能认定它就是 Telegram 平台角色缺失的原因，仍需实际平台复验。

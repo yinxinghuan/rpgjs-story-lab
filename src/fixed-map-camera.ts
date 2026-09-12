@@ -4,7 +4,6 @@
  */
 const fixedTarget='__alteru-fixed-map-origin__'
 type DisplayNode={children?:DisplayNode[];x?:number;y?:number;destroyed?:boolean;toWorld?:unknown;moveCorner?:(x:number,y:number)=>unknown}
-const viewports=new WeakMap<object,DisplayNode>()
 export function keepWholeMapCamera(engine:{cameraFollowTargetId:()=>string|null;setCameraFollow:(id:string,smooth:boolean)=>void}){
  if(engine.cameraFollowTargetId()!==fixedTarget)engine.setCameraFollow(fixedTarget,false)
  // beta.34 has no public viewport getter. This isolated adapter follows its
@@ -15,7 +14,8 @@ export function keepWholeMapCamera(engine:{cameraFollowTargetId:()=>string|null;
   if(typeof node.toWorld==='function'&&typeof node.moveCorner==='function')return node
   for(const child of node.children??[]){const viewport=find(child);if(viewport)return viewport}
  }
- let viewport=viewports.get(engine)
- if(!viewport||viewport.destroyed){viewport=find((engine as unknown as {canvasApp?:{stage?:DisplayNode}}).canvasApp?.stage);if(viewport)viewports.set(engine,viewport)}
+ // A room may detach a viewport before destroying it. Resolve from the live
+ // stage, as the pinned engine does, instead of retaining the previous room.
+ const viewport=find((engine as unknown as {canvasApp?:{stage?:DisplayNode}}).canvasApp?.stage)
  if(viewport&&(viewport.x!==0||viewport.y!==0))viewport.moveCorner!(0,0)
 }
