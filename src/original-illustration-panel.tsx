@@ -1,4 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react'
+import OriginalReferencePicture from './original-reference-picture'
 import JourneyLoading from './journey-loading'
 import type {OriginalHead} from '../server/original-train-runtime'
 import type {Transport} from './session-client'
@@ -11,6 +12,7 @@ import {readOriginalIllustrations,illustrationAction,type OriginalIllustration} 
 export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head:OriginalHead;api:Transport;onReadJournal:()=>void}){
  const t=(zh:string,en:string)=>head.save.locale==='zh'?zh:en,alive=useRef(true),readVersion=useRef(0)
  const [jobs,setJobs]=useState<OriginalIllustration[]>([]),[selected,setSelected]=useState(head.sceneId),[ready,setReady]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[clock,setClock]=useState(Date.now())
+ const [comparing,setComparing]=useState(false)
  const [picture,setPicture]=useState<{key:string;url:string}|null>(null),[imageError,setImageError]=useState(false),[imageRetry,setImageRetry]=useState(0)
  const endpoint='/sessions/'+head.id+'/illustrations',job=jobs.find(j=>j.scene===selected),key=selected+':'+(job?.asset?.sha256??'')+':'+job?.state
  const label=(scene:string)=>scene==='train-at-flood-bridge'?originalBridgePlace(head.save.locale):head.save.map.find(m=>'train-at-'+m.id===scene)?.label??t('已到达的场景','Visited place')
@@ -18,7 +20,7 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
  useEffect(()=>{alive.current=true;void refresh();const timer=setInterval(()=>setClock(Date.now()),1000);return()=>{alive.current=false;readVersion.current++;clearInterval(timer)}},[head.id,api])
  useEffect(()=>{if(!jobs.some(j=>j.state==='preparing'))return;const timer=setTimeout(()=>void refresh(),8000);return()=>clearTimeout(timer)},[jobs,ready])
  useEffect(()=>{
-  setPicture(null);setImageError(false)
+  setPicture(null);setImageError(false);setComparing(false)
   if(!job||!['candidate','active'].includes(job.state)||!job.asset)return
   let live=true,url='';const asset=job.asset
   void(async()=>{try{
@@ -52,6 +54,10 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal}:{head
   {job?.state==='active'&&<p role="status">{t('已保留为这段旅程的环境回忆。','Kept as an illustrated memory of this journey.')}</p>}
   {job?.state==='discarded'&&<><p role="status">{t('这张候选未保留。原场景与文字记录保持不变。','This candidate was not kept. The original scene and written journal are unchanged.')}</p><button className="og-choice" onClick={onReadJournal}>{t('继续阅读旅程记录','Continue reading the journal')}</button></>}
   {picture?.key===key?<figure><img src={picture.url} width="768" height="1024" alt={t('环境回忆：','Illustrated memory: ')+label(selected)} draggable={false}/><figcaption>{t('这是发起制作时的环境回忆，不是新事件或当前地图。','A memory of the place when requested, not a new event or the current map.')}</figcaption></figure>:job&&['active','candidate'].includes(job.state)&&!imageError?<p role="status">{t('正在读取图片…','Loading image…')}</p>:null}
+  {picture?.key===key&&job?.reference&&<div>
+   <button className="og-choice" aria-expanded={comparing} aria-controls="og-reference-comparison" onClick={()=>setComparing(v=>!v)}>{comparing?t('收起原场景','Hide original scene'):t('对照生成时的原场景','Compare with original scene')}</button>
+   {comparing&&<div id="og-reference-comparison"><OriginalReferencePicture key={job.reference.sha256} reference={job.reference} locale={head.save.locale}/></div>}
+  </div>}
   {ready&&job?.state==='candidate'&&<div><button className="og-choice" disabled={busy||picture?.key!==key} onClick={()=>void decide('keep')}>{t('保留这张画页','Keep this illustration')}</button><button className="og-choice" disabled={busy} onClick={()=>void decide('discard')}>{t('不保留这张候选','Do not keep this candidate')}</button></div>}
   {job?.state==='preparing'&&<><div className="og-generation-preview"><JourneyLoading locale={head.save.locale} detail={t('这段旅途正在绘成画页…','This journey is becoming an illustration…')}/></div><p>{t('可以继续探索，回来后查看同一张画页的进展。','Keep exploring and return to check this same illustration.')}</p><button className="og-choice" onClick={onReadJournal}>{t('继续旅程','Continue the journey')}</button></>}
   {issue&&<p role="status">{explanation}</p>}
