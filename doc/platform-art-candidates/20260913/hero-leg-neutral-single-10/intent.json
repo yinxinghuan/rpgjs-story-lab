@@ -1,0 +1,7 @@
+{
+  "purpose": "one neutral replacement; preserve previous contact bytes",
+  "baseline": "../hero-leg-neutral-09/candidate-alpha-gap.png",
+  "productionAdmission": false,
+  "maximumNewRequests": 1,
+  "differenceFromPrior": "single pose; only left cell is identity reference; explicit no brown rolled cuffs; does not regenerate contact"
+}

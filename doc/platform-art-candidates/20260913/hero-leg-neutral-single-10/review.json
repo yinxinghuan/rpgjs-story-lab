@@ -1,0 +1,19 @@
+{
+  "verdict": "rejected",
+  "productionAdmission": false,
+  "sourceSha256": "c056b3a8fe3a9556f919544ec6d748593c0fb954ce913bd2abf29966754312f7",
+  "newRequests": 1,
+  "elapsedMs": 9980,
+  "size": [
+    320,
+    320
+  ],
+  "observations": [
+    "Neutral heels level and centered; usable pose intent.",
+    "Both ankles still have conspicuous brown rolled cuff bands despite explicit prohibition.",
+    "Reference contact frame has teal trouser hems meeting boot; candidate construction does not match.",
+    "Outlined flat treatment persists; no proof of full four-direction family continuity."
+  ],
+  "consequence": "retain raw result and request; no alpha processing, no composition, no production replacement, no repeat in this batch",
+  "nextRequirement": "a controllable shared boot/trouser layer or mask/rig workflow with actual continuity evidence; prompt-only editing not sufficient"
+}

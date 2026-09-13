@@ -27,6 +27,23 @@
     "component fixture, not a new live model request",
     "not physical iPhone",
     "no proof of historical renderer disappearance cause",
-    "not deployed yet"
-  ]
+    "new Pages deployment and updated native reentry not yet verified"
+  ],
+  "deployment": {
+    "commit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d",
+    "main": "114 actual files match local build",
+    "pagesRun": 34736476676,
+    "pages": "in progress"
+  },
+  "nativeFollowup": {
+    "visibleScene": "dawn-junction",
+    "stats": {
+      "fuel": 32,
+      "condition": 73,
+      "morale": 83
+    },
+    "existingJourneyDisplayed": true,
+    "updatedReentry": false,
+    "reason": "native back control returned AXError.notImplemented; Escape did not navigate; no newer session version inferred from visible old view"
+  }
 }

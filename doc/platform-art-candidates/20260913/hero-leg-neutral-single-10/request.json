@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "1e2fb061-a2ef-4060-baa7-a07cf94d30c9",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789241352102019.png"
+  ],
+  "size": {
+    "width": 320,
+    "height": 320
+  },
+  "prompt": "Draw ONE neutral standing lower-body sprite, using ONLY the LEFT walking pose in the reference as the identity and material source. Ignore the right pose. Overhead orthographic BACK VIEW, same dark teal trousers and brown work boots as that LEFT pose. Both legs straight, feet close together and the two heels at the same height. The teal trouser hems extend over the top of the boots: NO brown rolled cuffs, NO ankle bands, NO added horizontal straps. Preserve the left-pose boot width, brown panels, squared heel and thick dark sole; do not invent round shoes. Match its small pixel-art edge treatment and colors. Output one 320x320 cell, centered hip axis x155, flat hip cutoff at y20, lowest sole y300. Only trousers and boots; no torso, belt, head, arms, jacket, bag or shadow. Plain solid white background, no checkerboard, text or labels. This isolated replacement neutral frame will be used next to the unchanged left walking frame; its proportions and boot construction must match that walking frame."
+}
