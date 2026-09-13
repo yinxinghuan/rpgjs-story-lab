@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d",
+  "liveCommit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
@@ -30,7 +30,7 @@
     "backLayerMapTrial": "leg-layer-map-review-20260913.json",
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
     "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
-    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: current context action visible, same ending/stats/companions restored; post-ending conversation rejection discovered and locally fixed, not yet released."
+    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: same ending/stats/companions restored and context action visible; post-ending rejection fixed and production API retry/reload passed; native bubble retry awaits unlocked Mac."
   },
   "remaining": [
     {
@@ -107,5 +107,12 @@
   },
   "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json",
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
-  "contextLossRecovery": "context-loss-recovery-review-20260913.json"
+  "contextLossRecovery": "context-loss-recovery-review-20260913.json",
+  "deploymentInProgress": {
+    "mainCommit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
+    "mainFilesMatched": 114,
+    "pagesRun": 34738431178,
+    "pagesState": "in_progress",
+    "lastCompletedDualCommit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d"
+  }
 }

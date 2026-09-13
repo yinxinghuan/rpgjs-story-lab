@@ -33,11 +33,46 @@
       "failed": 0,
       "scope": "original-ending and original-dialogue tests"
     },
-    "deployed": false
+    "deployed": true,
+    "productionApi": {
+      "passed": true,
+      "commit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
+      "scope": "Existing agent-created API synthetic journey; not native UI",
+      "modelRequests": 0,
+      "previousVersion": 37,
+      "version": 38,
+      "endingPreserved": true,
+      "allNonDialogueSaveFieldsPreserved": true,
+      "exactReload": true,
+      "reply": "我在听。你想先谈哪件事？"
+    }
   },
   "limits": [
-    "Current native reentry verified, not a new full route on latest deployment",
-    "Local fix still requires production deployment and native retry",
+    "Native latest UI reentry proved before this backend fix; not a new full route",
+    "Production API post-ending dialogue and exact reload passed; native bubble after this fix still unverified",
+    "Mac locked and tool automatic unlock failed on native retry",
+    "Pages actual bundle verification pending running workflow",
     "Earlier intermittent renderer failure cause remains unproven"
-  ]
+  ],
+  "release": {
+    "commit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
+    "tests": 721,
+    "passed": 721,
+    "sampledJourneys": 120,
+    "journeyFailures": 0,
+    "actionIds": 82,
+    "mainFilesMatched": 114,
+    "publicReleaseChecks": {
+      "ok": true,
+      "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+      "page": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "health": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/health",
+      "remix": "https://github.com/yinxinghuan/rpgjs-story-lab/archive/refs/heads/main.zip",
+      "storage": "durable-object-sqlite",
+      "identity_mode": "anonymous-capability-v1"
+    },
+    "pagesRun": 34738431178,
+    "pagesState": "in_progress",
+    "dualDeploymentVerified": false
+  }
 }
