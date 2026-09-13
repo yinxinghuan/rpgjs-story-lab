@@ -1,12 +1,12 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "951dd1c038032f714fe3ad88fd3d24d42e116ae8",
+  "liveCommit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "published-pixel-decode-review-20260913.json deployment: 951dd1c, 58 files each main/Pages, actual SHA equality.",
+    "sameCommitDualDeployment": "Previous completed pair: 951dd1c. New main 73bdd75 verified 114 files; Pages run 34735274030 still running; new dual deployment pending.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",
@@ -27,7 +27,8 @@
     "decoderRecovery": "decoder-recovery-review-20260913.json: local production stalled Image.decode and explicit same-journey recovery; 706 CI tests; main/Pages each 58 actual files match the same tested build.",
     "publishedPixelDecodeRecovery": "published-pixel-decode-review-20260913.json: both decode waits cancel; local real-PNG browser retry; 710 tests; same-commit dual deployment.",
     "storyAndPhysicalReachability": "spatial-story-route-review-20260913.json: 120 offline sampled journeys, actual ground/character/equipment collision, 82 action IDs, all complete; not renderer or iPhone proof.",
-    "backLayerMapTrial": "leg-layer-map-review-20260913.json"
+    "backLayerMapTrial": "leg-layer-map-review-20260913.json",
+    "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json"
   },
   "remaining": [
     {

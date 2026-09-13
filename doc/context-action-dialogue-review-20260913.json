@@ -1,0 +1,34 @@
+{
+  "codeCommit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
+  "localTests": {
+    "passed": 715,
+    "failed": 0,
+    "initialRestrictedRun": "35 HTTP listen EPERM; same suite rerun with local-listening permission passed"
+  },
+  "productionBuild": "passed",
+  "uiEvidence": {
+    "source": "5403 original story, owned synthetic journey, zero model budget",
+    "contextTalkAndE": "both open Ada conversation",
+    "shortReply": "two original sentences, excludes player input, bottom rounded card without tail",
+    "singleAction": "fuel-shed via context button advances version 3 to 4 exactly once",
+    "consequences": [
+      "fuel 68 to 82",
+      "two sealed diesel barrels acquired"
+    ],
+    "reload": "fuel 82 retained; fuel-shed absent; no nearby action disabled"
+  },
+  "limits": [
+    "local browser, not physical iPhone",
+    "390 CSS geometry inspected but capture scaling unstable",
+    "formal deployment verification pending",
+    "does not prove entire production goal complete"
+  ],
+  "deployment": {
+    "commit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
+    "main": "deployed; all 114 actual static files SHA match local build",
+    "pagesRun": 34735274030,
+    "pages": "running spatial-story verification after tests/build passed",
+    "publicReleaseChecks": "page, health and source ZIP passed",
+    "backend": "existing UUID and durable-object-sqlite; anonymous-capability-v1 unchanged"
+  }
+}
