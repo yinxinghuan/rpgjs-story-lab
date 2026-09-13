@@ -17,6 +17,6 @@ export default defineConfig(env=>{
    const active="new URLSearchParams(location.search).get('leg_trial')==='1'"
    return {code:"import {legTrialSheets} from '../_qa/leg-layer-sheets'\n"+code.replace(before,`heroGraphic:(${active}?['hero','trial-legs','trial-body']:'hero') as any,spritesheets:[...(${active}?legTrialSheets(heroBlob.current,next.assets):[originalHeroSheet(heroBlob.current,next.assets)]),`),map:null}
   },
-  transformIndexHtml(html:string){return html.replace('</body>','<aside style="position:fixed;right:8px;top:8px;z-index:99999;background:#18242b;color:#fff;padding:8px;font:14px system-ui">背向图层试验 · 未准入<br><a style="color:#fff;display:inline-block;padding:14px" href="?story=original&leg_trial=1">背向候选</a><a style="color:#fff;display:inline-block;padding:14px" href="?story=original&leg_trial=0">基准角色</a></aside></body>')}
+  transformIndexHtml(html:string){return html.replace('</body>','<aside id="qa-art-switch" style="position:fixed;right:8px;top:8px;z-index:99999;background:#18242b;color:#fff;padding:8px;font:14px system-ui">背向图层试验 · 未准入<br><a style="color:#fff;display:inline-block;padding:14px" href="?story=original&leg_trial=1">背向候选</a><a style="color:#fff;display:inline-block;padding:14px" href="?story=original&leg_trial=0">基准角色</a></aside><script>if(new URLSearchParams(location.search).has("ui_trial"))document.getElementById("qa-art-switch").hidden=true</script></body>')}
  }]})
 })
