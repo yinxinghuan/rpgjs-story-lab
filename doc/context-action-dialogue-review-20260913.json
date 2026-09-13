@@ -29,6 +29,14 @@
     "pages": "completed; all 114 actual static files SHA match same local build",
     "publicReleaseChecks": "page, health and source ZIP passed",
     "backend": "existing UUID and durable-object-sqlite; anonymous-capability-v1 unchanged",
-    "dualDeploymentVerified": true
+    "dualDeploymentVerified": true,
+    "ci": {
+      "tests": 715,
+      "passed": 715,
+      "failed": 0,
+      "sampledJourneys": 120,
+      "journeyFailures": 0,
+      "actionIds": 82
+    }
   }
 }

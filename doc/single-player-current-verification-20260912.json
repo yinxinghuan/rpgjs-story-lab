@@ -57,13 +57,13 @@
     "downloadCompatibility": 27,
     "redirectRejectionIllustrationSuite": 17,
     "fullCIRegression": {
-      "commit": "951dd1c038032f714fe3ad88fd3d24d42e116ae8",
-      "run": 34713418426,
-      "tests": 710,
-      "passed": 710,
+      "commit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
+      "run": 34735274030,
+      "tests": 715,
+      "passed": 715,
       "failed": 0,
       "skipped": 0,
-      "source": "gh run view --log; actual npm test TAP totals"
+      "source": "gh run view --log; actual TAP totals"
     },
     "displayDiagnostics": {
       "targetedTests": 11,
