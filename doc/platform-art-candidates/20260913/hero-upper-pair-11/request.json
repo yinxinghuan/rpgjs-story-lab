@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "cbf90ccf-6bab-4661-b19d-97e87379a6a7",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/overhead/hero-gait-v2.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 384
+  },
+  "prompt": "SUBJECT A: use ONLY the bottom-row back view of the mustard-yellow hooded traveler in the reference. Preserve short dark-brown hair, jacket, brown diagonal satchel strap and satchel on the SAME anatomical left hip in BOTH poses. Preserve the reference overhead orthographic camera and pixel-art material. Draw exactly TWO back-view UPPER-BODY animation cells side by side, each 320x384. No legs, boots, floor or shadow. Flat cutoff through hips at y350; head top at y45; hip center x160 in each cell. Keep head, torso, hood and bag registration identical. LEFT CELL: anatomical LEFT arm swings forward, hand mostly hidden alongside the forward waist; RIGHT arm swings backward, right hand clearly visible below jacket hem. RIGHT CELL: anatomical RIGHT arm swings forward with right hand mostly hidden; LEFT arm swings backward with left hand clearly visible below jacket hem, visible beside the satchel without moving it. This must be alternating counter-swing, not two identical arm poses. Do NOT mirror the whole character: strap and bag remain on the same side. Natural modest walking swing, no outstretched arms. Match silhouette, proportions, palette and edge detail of the original bottom-row character, not a redesigned character. Isolated sprites on solid white background; no checkerboard, grid, text or labels."
+}

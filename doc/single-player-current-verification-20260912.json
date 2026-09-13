@@ -36,7 +36,7 @@
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "route-and-reentry-verified-with-known-display-defects",
-      "currentBlocker": "No login or lock blocker now. Same native journey reached ending and reentered with stats, companions, inventory and consequences retained. Earlier intermittent renderer/resource failures still prevent full acceptance."
+      "currentBlocker": "2026-09-13 current CUA observation: Mac locked and automatic unlock failed. Prior native route and latest UI reentry remain valid historical evidence; native post-fix bubble and intermittent renderer acceptance cannot be completed while locked."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -46,7 +46,7 @@
     {
       "requirement": "Platform character production with consistent four-direction gait",
       "state": "back-layer-map-trial-verified-full-family-unverified",
-      "latest": "hero-leg-neutral-09 fixed upper body plus generated lower layers exercised in actual RPG-JS map, desktop and calibrated CSS390x844 captures. Opposite contact/neutral visible; tap and joystick right turn exercised. Mac no longer blocking. Cuff/boot continuity and full four-direction family remain; not admitted or deployed."
+      "latest": "Shared-pixel neutral and opposite contact poses observed in actual renderer. Fixed upper body remains stiff. Proposed upper-body pair 11 is authored but NOT submitted; automatic approval rejected new generation as exceeding the prior one-edit scope. Awaiting explicit reply, not retrying."
     },
     {
       "requirement": "Trusted platform identity and account recovery",
@@ -76,7 +76,7 @@
       "nativeReadout": false
     }
   },
-  "newBrowserChecksThisTurn": true,
+  "newBrowserChecksThisTurn": false,
   "currentUiObservation": {
     "date": "2026-09-13",
     "platform": "Telegram AlterU",
@@ -87,7 +87,7 @@
     "lastAction": "选择「共同线路」",
     "visibleFinalOwnership": true,
     "nativeStoryRouteReachedEnding": true,
-    "blocker": null,
+    "blocker": "Current recheck: Mac locked; automatic unlock failed. Last successful scene observation above is historical.",
     "next": "Resolve intermittent rendering/resource failures and remaining platform media quality/identity contracts",
     "fullPlaythroughAcceptance": false,
     "reentryAfterEndingVerified": true,
@@ -107,5 +107,10 @@
   },
   "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json",
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
-  "contextLossRecovery": "context-loss-recovery-review-20260913.json"
+  "contextLossRecovery": "context-loss-recovery-review-20260913.json",
+  "pendingExternalActions": {
+    "nativePlaytest": "Unlock Mac and keep Telegram AlterU accessible; existing operation authorization remains valid.",
+    "newUpperBodyPair": "Reply to the pending request for one additional platform edit; no request sent and no generation currently running.",
+    "identity": "Trusted platform identity adapter contract still absent; current anonymous capability saves preserved."
+  }
 }
