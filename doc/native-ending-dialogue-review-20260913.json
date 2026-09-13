@@ -45,6 +45,14 @@
       "allNonDialogueSaveFieldsPreserved": true,
       "exactReload": true,
       "reply": "我在听。你想先谈哪件事？"
+    },
+    "productionDirectory": {
+      "readOnly": true,
+      "directoryValid": true,
+      "version": 38,
+      "cursor": 37,
+      "lastEvent": "dialogue",
+      "ending": "complete"
     }
   },
   "limits": [
@@ -74,5 +82,6 @@
     "pagesRun": 34738431178,
     "pagesState": "in_progress",
     "dualDeploymentVerified": false
-  }
+  },
+  "workflowRule": "Shared build-spatial-story-game/references/chapter-closure.md now specifies terminal dialogue versus action permissions, non-dialogue save invariants, replay/reload and native acceptance boundaries."
 }
