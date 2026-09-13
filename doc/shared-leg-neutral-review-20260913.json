@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-13",
+  "productionChanged": false,
+  "admitted": false,
+  "source": "platform-art-candidates/20260913/hero-leg-neutral-09/candidate-alpha-gap.png",
+  "sourceSha256": "e2e512f5e927b2cc4557376ae3ad904a46c0cd1ad53290e8a7a8e38272b5bcbe",
+  "method": "renderer texture crop and mirror; same contact leg pixels form both neutral legs; full contact poses remain original/mirrored",
+  "crop": {
+    "x": 80,
+    "y": 60,
+    "width": 80,
+    "height": 250,
+    "anchor": [
+      0.9375,
+      0.98
+    ]
+  },
+  "url": "http://127.0.0.1:5403/?story=original&leg_trial=1&ui_trial=1&leg_neutral=shared",
+  "checks": {
+    "typescript": true,
+    "qaBuild": true,
+    "actualMapEntry": true,
+    "sameJourneyStats": [
+      82,
+      82,
+      58
+    ],
+    "noImageEditsOrNewGeneration": true
+  },
+  "evidence": "_qa/shared-leg-20260913/map-shared-neutral.png",
+  "limits": [
+    "static pose visible in actual RPG-JS map",
+    "cropped screenshot scaling was unreliable; not used as gait-quality proof",
+    "complete phase sequence and all four directions not yet admitted",
+    "do not mirror asymmetric boots/costume as a universal rule"
+  ]
+}
