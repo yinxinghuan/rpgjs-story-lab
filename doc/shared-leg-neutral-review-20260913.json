@@ -29,9 +29,28 @@
   },
   "evidence": "_qa/shared-leg-20260913/map-shared-neutral.png",
   "limits": [
-    "static pose visible in actual RPG-JS map",
-    "cropped screenshot scaling was unreliable; not used as gait-quality proof",
-    "complete phase sequence and all four directions not yet admitted",
-    "do not mirror asymmetric boots/costume as a universal rule"
-  ]
+    "Three up-direction phases visible in actual RPG-JS renderer; not smooth-motion video or physical iPhone evidence",
+    "Fixed upper-body layer lacks arm/torso swing",
+    "New stop-neutral and side-direction follow-up not captured because prior browser tab no longer exists",
+    "Full four-direction family not admitted; production remains unchanged",
+    "Do not mirror asymmetric boots/costume as a universal rule"
+  ],
+  "phaseSequenceReview": {
+    "date": "2026-09-13",
+    "actualRenderer": true,
+    "frames": [
+      "../_qa/shared-leg-20260913/up-3.png",
+      "../_qa/shared-leg-20260913/up-0.png",
+      "../_qa/shared-leg-20260913/up-1.png"
+    ],
+    "poses": [
+      "stride-0",
+      "stride-1",
+      "stride-2"
+    ],
+    "observation": "Actual screenshots show opposite feet advanced in contact poses and matching boot construction in shared-pixel neutral pose. Upper body stays fixed, so this does not establish natural complete gait.",
+    "captureLimit": "Diagnostic output sampled before screenshot can lag by a frame; pose labels also inspected in screenshot.",
+    "reconnect": "Prior tab 124 absent on follow-up; no new stop/turn observation claimed.",
+    "qaSafety": "Directional QA controls automatically stop after 1500ms; production controls unchanged."
+  }
 }
