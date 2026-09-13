@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-13",
+  "sourceCommit": "b015485",
+  "skill": "build-spatial-story-game",
+  "files": {
+    "SKILL.md": "4c6ebfe96093df73b224fec5d8747e572a47e4ffbeaf499f7d17c35d23e5a144",
+    "assets/spatial-binding.ts": "2cb74b363630124ee8e68d7881c04953406adbe39c5badd6c049b36d42437963",
+    "assets/spatial-attachment.ts": "b52c1ea11c6780906bff38489724253091bf821f94ce5f87c030f3609076cd15",
+    "scripts/verify-story-binding.mjs": "dc54af387bbdcc0a8c1d94bc2c582a55d56738da9abb68b3623869c0c3ed1b64",
+    "references/story-binding.md": "1962ae05bf8e08b70e9e0eba566a43fbf2bf142f0d84caccc0f2a7621b237f7e"
+  },
+  "sourceByteEquality": true,
+  "tests": {
+    "actualGameModules": 7,
+    "skillModules": 7,
+    "relocatedIndependentModules": 7,
+    "skillValidation": "both spatial and create-rpg-game valid",
+    "actualProductionBinding": "carriage plus full-game legacy/current: each9scenes,78entities,89actions,13portals"
+  },
+  "scope": "Portable binding compiler and read-only old-save attachment planning. No frozen generic backend overlay, new game, model request or production change.",
+  "currentConsumerVerification": {
+    "commit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
+    "tests": 7,
+    "passed": 7,
+    "installedSkillHashesStillMatch": true
+  }
+}
