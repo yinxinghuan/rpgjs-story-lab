@@ -9,19 +9,26 @@
   "observations": [
     "Reference-style contact and neutral/feet-level poses are both present, instead of two repeated same-leg contacts.",
     "Trouser and boot material broadly follows the reference, but cuff geometry and leg silhouettes still require playback comparison.",
-    "The previously enclosed white gap is removed using the explicitly inspected source point (153,150). Neutral cell remains byte-identical; static PNG reviewed, playback still pending.",
+    "The previously enclosed white gap is removed using inspected point (153,150); dark CSS and actual-map captures reviewed. Neutral cell remains byte-identical.",
     "Anchors align hip centers by explicit per-cell translations; no scaling, mirroring or repainting is baked into the PNG."
   ],
   "runtimeAdmission": false,
   "baselineChanged": false,
   "browser": {
     "fixture": "_qa/leg-layer-review.html",
-    "comparison": "Old generated contact + original full standing versus new generated contact + same-sheet neutral; opposite contact mirrors only lower layer.",
-    "status": "not-observed",
-    "blocker": "CUA reports Mac locked and automatic unlock failed."
+    "status": "observed",
+    "blocker": null,
+    "actualMap": "../../../leg-layer-map-review-20260913.json",
+    "observations": [
+      "Same-family contact/neutral poses reviewed on dark CSS background; previously enclosed white patch absent.",
+      "Actual RPG-JS map preview at 5403 uses fixed upper-body crop with independent contact/neutral lower sheet; opposed contact mirrors only lower sheet.",
+      "Desktop consecutive captures show opposite boots and neutral phases; upper bag does not swap sides.",
+      "390x844 CSS viewport confirmed by DOM and calibrated CDP clip scale2. Tap movement and held joystick right turn exercised.",
+      "Cuff silhouette still changes between neutral/contact; no full four-direction material-consistency acceptance."
+    ]
   },
   "next": [
-    "Inspect neutral/contact boot shape, cuffs, hem seam and soles during playback before actual-map trial."
+    "Resolve remaining cuff/boot continuity and evaluate full four-direction sheet before runtime admission."
   ],
   "generationRequests": 1,
   "platformCost": "not provided by public API",

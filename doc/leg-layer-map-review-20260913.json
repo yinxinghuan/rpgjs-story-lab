@@ -1,0 +1,63 @@
+{
+  "date": "2026-09-13",
+  "sourceCommit": "ad144a7",
+  "candidate": "platform-art-candidates/20260913/hero-leg-neutral-09/candidate-alpha-gap.png",
+  "candidateSha256": "e2e512f5e927b2cc4557376ae3ad904a46c0cd1ad53290e8a7a8e38272b5bcbe",
+  "fixture": [
+    "_qa/leg-layer-vite.config.ts",
+    "_qa/leg-layer-sheets.ts"
+  ],
+  "url": "http://127.0.0.1:5403/?story=original&leg_trial=1",
+  "productionChanged": false,
+  "runtimeAdmission": false,
+  "environment": {
+    "runtime": "actual existing original game and RPG-JS renderer",
+    "storage": "dedicated loopback preflight database, synthetic journey only",
+    "modelBudget": 0,
+    "assets": "immutable baseline PNG plus prepared candidate PNG; crop/mirror only renderer transforms",
+    "display": [
+      "desktop1280x720",
+      "CSS390x844, capture780x1688 using CDP explicit clip scale2"
+    ],
+    "notHardwareIphone": true
+  },
+  "observations": [
+    "Map entry, up movement, neutral stop and down turn observed.",
+    "Desktop map-walk-00 and map-walk-01 show opposite trailing boots; map-walk-02 neutral. Upper coat and bag stay in same orientation.",
+    "Phone-size up sequence has opposite contacts in platform-layout-390-up-1-2x and up-4-2x.",
+    "Held joystick right moves to side walkway and switches to original side sprite without visible extra back layer.",
+    "No enclosed white gap seen in selected reviewed phases. Neutral/contact cuff silhouettes still differ.",
+    "Temporary QA selector overlaps phone HUD; it is absent from production and this review does not approve UI layout.",
+    "Baseline link and candidate link reload successfully with the same visible opening narrative and stats68/82/58."
+  ],
+  "evidenceRoot": "_qa/leg-neutral-20260913/",
+  "evidence": [
+    "map-up-neutral.png",
+    "map-walk-00.png",
+    "map-walk-01.png",
+    "map-walk-02.png",
+    "platform-layout-390-up-neutral-2x.png",
+    "platform-layout-390-up-1-2x.png",
+    "platform-layout-390-up-4-2x.png",
+    "platform-layout-390-joystick-right-2x.png",
+    "map-baseline-restored.png"
+  ],
+  "harnessCorrections": [
+    "Vite dev serve lacked generated original maps; use build then preview.",
+    "Stable dedicated database across preview/config restarts.",
+    "Ordinary browser screenshots mis-scaled with viewport override; rejected those captures and used calibrated CDP clip scale2. Viewport reset afterward."
+  ],
+  "validation": {
+    "qaBuild": true,
+    "typescript": true,
+    "fullSuiteRerun": false
+  },
+  "remaining": [
+    "Cuff and boot shape continuity across contact/neutral.",
+    "Full four-direction consistent platform-generated family before production admission."
+  ],
+  "commands": [
+    "vite build --config _qa/leg-layer-vite.config.ts --mode cloud-preflight --outDir /private/tmp/rpg-leg-layer-dist",
+    "vite preview --config _qa/leg-layer-vite.config.ts --mode cloud-preflight --outDir /private/tmp/rpg-leg-layer-dist --host 127.0.0.1 --port 5403 --strictPort"
+  ]
+}

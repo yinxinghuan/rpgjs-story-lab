@@ -26,7 +26,8 @@
     },
     "decoderRecovery": "decoder-recovery-review-20260913.json: local production stalled Image.decode and explicit same-journey recovery; 706 CI tests; main/Pages each 58 actual files match the same tested build.",
     "publishedPixelDecodeRecovery": "published-pixel-decode-review-20260913.json: both decode waits cancel; local real-PNG browser retry; 710 tests; same-commit dual deployment.",
-    "storyAndPhysicalReachability": "spatial-story-route-review-20260913.json: 120 offline sampled journeys, actual ground/character/equipment collision, 82 action IDs, all complete; not renderer or iPhone proof."
+    "storyAndPhysicalReachability": "spatial-story-route-review-20260913.json: 120 offline sampled journeys, actual ground/character/equipment collision, 82 action IDs, all complete; not renderer or iPhone proof.",
+    "backLayerMapTrial": "leg-layer-map-review-20260913.json"
   },
   "remaining": [
     {
@@ -41,8 +42,8 @@
     },
     {
       "requirement": "Platform character production with consistent four-direction gait",
-      "state": "unverified",
-      "latest": "hero-leg-neutral-09 contact/neutral pair has an explicitly seeded enclosed-matte cleanup. Static image gap removed, only contact-cell 678 pixels changed and neutral cell unchanged; originals retained. Dynamic layered playback remains blocked by locked Mac, so no runtime admission."
+      "state": "back-layer-map-trial-verified-full-family-unverified",
+      "latest": "hero-leg-neutral-09 fixed upper body plus generated lower layers exercised in actual RPG-JS map, desktop and calibrated CSS390x844 captures. Opposite contact/neutral visible; tap and joystick right turn exercised. Mac no longer blocking. Cuff/boot continuity and full four-direction family remain; not admitted or deployed."
     },
     {
       "requirement": "Trusted platform identity and account recovery",

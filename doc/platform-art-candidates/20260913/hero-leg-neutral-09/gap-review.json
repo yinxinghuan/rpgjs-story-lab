@@ -13,7 +13,7 @@
   "unchangedNeutralCell": true,
   "extraMattePixelsRemoved": 471,
   "originalAndPriorCandidateRetained": true,
-  "visualInspection": "Previously visible white gap no longer visible in static transparent PNG; animation/hem and dark/light-background playback not yet reviewed.",
+  "visualInspection": "White gap absent in reviewed static PNG, dark CSS contact/neutral comparison and actual RPG-JS map captures. Cuff continuity remains incomplete; see leg-layer-map-review-20260913.json.",
   "runtimeAdmission": false,
   "validation": {
     "preparationTests": 10,
