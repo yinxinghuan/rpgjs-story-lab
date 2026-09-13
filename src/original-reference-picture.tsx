@@ -1,4 +1,5 @@
 import React,{useEffect,useState} from 'react'
+import {decodeBrowserPicture} from './decode-browser-picture'
 import {downloadOriginalReference} from './original-reference-download'
 import type {OriginalIllustration} from './original-illustration-contract'
 
@@ -12,7 +13,7 @@ export default function OriginalReferencePicture({reference,locale}:{reference:N
   const timeout=setTimeout(()=>controller.abort(),20000)
   void(async()=>{try{
    const bytes=await downloadOriginalReference(reference,controller.signal)
-   objectUrl=URL.createObjectURL(new Blob([bytes],{type:'image/png'}));const image=new Image();image.src=objectUrl;await image.decode()
+   objectUrl=await decodeBrowserPicture(bytes,controller.signal)
    if(live)setUrl(objectUrl)
   }catch{if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=''}if(live)setFailed(true)}finally{clearTimeout(timeout);if(!live&&objectUrl)URL.revokeObjectURL(objectUrl)}})()
   return()=>{live=false;controller.abort();clearTimeout(timeout);if(objectUrl)URL.revokeObjectURL(objectUrl)}

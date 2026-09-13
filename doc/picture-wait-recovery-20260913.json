@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-13",
+  "scope": "optional illustration and persisted reference picture read/decode cancellation",
+  "deadlineMs": 20000,
+  "unitTests": {
+    "fullSuite": 719,
+    "passed": 719,
+    "failed": 0
+  },
+  "browser": {
+    "fixture": "_qa/picture-recovery.html",
+    "source": "existing original-journal-exposure-03 PNG",
+    "productionComponents": [
+      "OriginalIllustrationPanel",
+      "OriginalReferencePicture"
+    ],
+    "fault": "HTMLImageElement.decode promise never settles",
+    "results": [
+      "both display failure/retry after deadline",
+      "explicit retry after releasing fault decodes same 768x1024 image",
+      "retry/loading state clears after success"
+    ],
+    "newMediaRequests": 0,
+    "authorityWrites": 0
+  },
+  "limits": [
+    "component fixture, not a new live model request",
+    "not physical iPhone",
+    "no proof of historical renderer disappearance cause",
+    "not deployed yet"
+  ]
+}

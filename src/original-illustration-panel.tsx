@@ -1,4 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react'
+import {abortableArtLoad} from './abortable-art-load'
+import {decodeBrowserPicture} from './decode-browser-picture'
 import OriginalReferencePicture from './original-reference-picture'
 import JourneyLoading from './journey-loading'
 import type {OriginalHead} from '../server/original-train-runtime'
@@ -22,16 +24,16 @@ export default function OriginalIllustrationPanel({head,api,onReadJournal,onCont
  useEffect(()=>{
   setPicture(null);setImageError(false);setComparing(false)
   if(!job||!['candidate','active'].includes(job.state)||!job.asset)return
-  let live=true,url='';const asset=job.asset
+  let live=true,url='';const asset=job.asset,controller=new AbortController()
+  const timeout=setTimeout(()=>controller.abort(),20000)
   void(async()=>{try{
-   const bytes=new Uint8Array(await api(endpoint+'/'+selected+'/file'))
+   const bytes=new Uint8Array(await abortableArtLoad(()=>api(endpoint+'/'+selected+'/file'),controller.signal))
    const sha=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),v=>v.toString(16).padStart(2,'0')).join('')
    if(bytes.length!==asset.bytes||sha!==asset.sha256)throw Error('ILLUSTRATION_ASSET_CHANGED')
-   url=URL.createObjectURL(new Blob([bytes],{type:'image/png'}));const image=new Image();image.src=url;await image.decode()
-   if(image.naturalWidth!==768||image.naturalHeight!==1024)throw Error('IMAGE_INVALID')
+   url=await decodeBrowserPicture(bytes,controller.signal,{width:768,height:1024})
    if(live)setPicture({key,url});else URL.revokeObjectURL(url)
-  }catch{if(url)URL.revokeObjectURL(url);if(live)setImageError(true)}})()
-  return()=>{live=false;if(url)URL.revokeObjectURL(url)}
+  }catch{if(url)URL.revokeObjectURL(url);if(live)setImageError(true)}finally{clearTimeout(timeout)}})()
+  return()=>{live=false;controller.abort();clearTimeout(timeout);if(url)URL.revokeObjectURL(url)}
  },[key,imageRetry,head.id,api])
  const action=illustrationAction(job,head.sceneId,selected,clock),supported=originalIllustrationEligible(head.assets,head.sceneId)
  async function start(){setBusy(true);setGenerating(true);setError('');readVersion.current++;try{
