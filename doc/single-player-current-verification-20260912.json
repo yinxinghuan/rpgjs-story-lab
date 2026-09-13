@@ -6,7 +6,7 @@
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "Previous completed pair73bdd75: each114 actual files. New main828ef4d114 files match; Pages34736476676 still running.",
+    "sameCommitDualDeployment": "picture-wait-recovery-20260913.json:828ef4d main and Pages each114 actual files match same local build; Pages34736476676 passed.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",
@@ -58,10 +58,10 @@
     "downloadCompatibility": 27,
     "redirectRejectionIllustrationSuite": 17,
     "fullCIRegression": {
-      "commit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
-      "run": 34735274030,
-      "tests": 715,
-      "passed": 715,
+      "commit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d",
+      "run": 34736476676,
+      "tests": 719,
+      "passed": 719,
       "failed": 0,
       "skipped": 0,
       "source": "gh run view --log; actual TAP totals"

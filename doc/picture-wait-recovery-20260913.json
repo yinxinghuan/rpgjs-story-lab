@@ -27,13 +27,22 @@
     "component fixture, not a new live model request",
     "not physical iPhone",
     "no proof of historical renderer disappearance cause",
-    "new Pages deployment and updated native reentry not yet verified"
+    "updated native reentry not yet verified"
   ],
   "deployment": {
     "commit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d",
     "main": "114 actual files match local build",
     "pagesRun": 34736476676,
-    "pages": "in progress"
+    "pages": "completed; all 114 actual files match same local build",
+    "dualDeploymentVerified": true,
+    "ci": {
+      "tests": 719,
+      "passed": 719,
+      "failed": 0,
+      "journeys": 120,
+      "journeyFailures": 0,
+      "actionIds": 82
+    }
   },
   "nativeFollowup": {
     "visibleScene": "dawn-junction",
