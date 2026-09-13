@@ -6,7 +6,7 @@
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "Previous completed pair: 951dd1c. New main 73bdd75 verified 114 files; Pages run 34735274030 still running; new dual deployment pending.",
+    "sameCommitDualDeployment": "context-action-dialogue-review-20260913.json: 73bdd75 main and Pages each114 actual files match same local build; Pages34735274030 passed.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",

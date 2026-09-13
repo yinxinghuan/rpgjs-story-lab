@@ -20,15 +20,15 @@
   "limits": [
     "local browser, not physical iPhone",
     "390 CSS geometry inspected but capture scaling unstable",
-    "formal deployment verification pending",
     "does not prove entire production goal complete"
   ],
   "deployment": {
     "commit": "73bdd75f85863caf88a7d74701b196cb9c0e3129",
     "main": "deployed; all 114 actual static files SHA match local build",
     "pagesRun": 34735274030,
-    "pages": "running spatial-story verification after tests/build passed",
+    "pages": "completed; all 114 actual static files SHA match same local build",
     "publicReleaseChecks": "page, health and source ZIP passed",
-    "backend": "existing UUID and durable-object-sqlite; anonymous-capability-v1 unchanged"
+    "backend": "existing UUID and durable-object-sqlite; anonymous-capability-v1 unchanged",
+    "dualDeploymentVerified": true
   }
 }
