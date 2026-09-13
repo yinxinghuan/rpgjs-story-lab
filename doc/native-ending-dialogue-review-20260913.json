@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-13",
+  "platform": "Telegram AlterU native mini app",
+  "productionReentry": {
+    "from": "existing platform game list Play button",
+    "scene": "dawn-junction",
+    "ending": "共同线路",
+    "stats": {
+      "fuel": 32,
+      "condition": 73,
+      "morale": 83
+    },
+    "companions": [
+      "阿达",
+      "任医生",
+      "玛柯"
+    ],
+    "latestContextActionVisible": true,
+    "contextTalkApproachesAndOpensPerson": true
+  },
+  "discoveredDefect": {
+    "input": "任医生，回想河谷的救援，你最在意的是什么？",
+    "visibleResult": "这项行动当前未能执行。",
+    "sourceCause": "original-train-runtime prepare rejected all input for finale.complete, including dialogue, before model invocation",
+    "nativeShortBubbleVerified": false
+  },
+  "fix": {
+    "completedDialogue": "existing paired conversation blocks may append after finale.complete",
+    "preserved": "ending snapshot, story facts, resources, choices and relationships unchanged",
+    "blocked": "actions/free-input after ending; all input while finale ready/generating/failed",
+    "regression": {
+      "passed": 23,
+      "failed": 0,
+      "scope": "original-ending and original-dialogue tests"
+    },
+    "deployed": false
+  },
+  "limits": [
+    "Current native reentry verified, not a new full route on latest deployment",
+    "Local fix still requires production deployment and native retry",
+    "Earlier intermittent renderer failure cause remains unproven"
+  ]
+}

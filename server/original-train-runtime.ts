@@ -54,7 +54,9 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
   preserveConcurrent:()=>{},assertPrepared:(candidate,current,actionId)=>check(candidate,current,actionId),ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body,reserveNarration)=>{
    assertOriginalHead(h);validateAction(body)
-   if(['ready','generating','failed','complete'].includes(h.save.finale.status)&&!h.save.finale.epilogueActive)throw new LabError('ORIGINAL_FINALE_PENDING',409)
+   // Completed endings permit conversation only; final facts and actions stay frozen.
+   const completedConversation=h.save.finale.status==='complete'&&body.type==='dialogue'
+   if(['ready','generating','failed','complete'].includes(h.save.finale.status)&&!h.save.finale.epilogueActive&&!completedConversation)throw new LabError('ORIGINAL_FINALE_PENDING',409)
    if(body.expected_version!==h.version)throw new LabError('VERSION_CONFLICT',409)
    if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
    if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')

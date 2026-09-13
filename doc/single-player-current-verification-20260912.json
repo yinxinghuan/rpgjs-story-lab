@@ -29,7 +29,8 @@
     "storyAndPhysicalReachability": "spatial-story-route-review-20260913.json: 120 offline sampled journeys, actual ground/character/equipment collision, 82 action IDs, all complete; not renderer or iPhone proof.",
     "backLayerMapTrial": "leg-layer-map-review-20260913.json",
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
-    "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified"
+    "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
+    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: current context action visible, same ending/stats/companions restored; post-ending conversation rejection discovered and locally fixed, not yet released."
   },
   "remaining": [
     {

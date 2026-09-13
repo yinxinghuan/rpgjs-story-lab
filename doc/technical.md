@@ -1178,3 +1178,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `decode-browser-picture.ts` 对不接收AbortSignal的浏览器PNG解码提供取消等待，失败时回收本次Blob URL并清理Image引用；成功URL交还组件管理。旅途画页对下载/解码设20秒总等待上限，对照图沿用20秒下载上限并纳入解码取消。关闭、换地点或重试会终止旧等待；迟到结果不会替换新一次读取。原图SHA、尺寸及候选保留门禁继续生效；没有新增模型、媒体生成或存档写入。
 
 `_qa/picture-recovery.html` 是生产组件故障测试页，使用已有PNG和只读假API，拒绝提交，不是独立游戏。画页与对照图分别强制Image.decode停滞，验证超时提示和重试。正式构建不包含此测试入口和故障开关。
+
+### 结局后的交谈（2026-09-13）
+
+`original-train-runtime.ts` 对已完成结局只开放 `dialogue`：沿用当前人物在场、空间接近、素材准入和对白审查，追加成对交谈记录。结局快照、资源、关系与剧情事实不变；`action` / `free-input` 仍冻结，结局准备或生成期间也不放行。回执重放不能重复追加。平台发现与验证范围见 `native-ending-dialogue-review-20260913.json`；此次本地修复尚待发布后复验。

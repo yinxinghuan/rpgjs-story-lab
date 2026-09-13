@@ -102,3 +102,27 @@ test('ending receipt failure rolls back head; ending IDs do not collide with ord
  const r=await s.ending('synthetic-owner',h.id,b);assert.equal(r.kind,'ending')
  assert.equal(db.all<{n:number}>('SELECT COUNT(*) AS n FROM receipts')[0].n,2);raw.close()
 })
+
+
+test('completed ending allows persistent conversation but never reopens plot actions',async()=>{
+ const {raw,s,h}=setup()
+ try{
+  const ended=(await s.ending('synthetic-owner',h.id,request(h))).head
+  const {originalTrainChapterSpatialPlan}=await import('../src/original-train-spatial-plan')
+  const world=originalTrainChapterSpatialPlan(),ada=world.characters.find(p=>p.id==='ada-mechanic')!
+  const entity=world.entities.find(e=>e.scene===ended.sceneId&&ada.entities.includes(e.id))!
+  const body={action_id:randomUUID(),expected_version:ended.version,sceneId:ended.sceneId,position:entity.approach,target:entity.id,type:'dialogue',text:'Hello',mode:'local'}
+  const reply=await s.action('synthetic-owner',h.id,body)
+  assert.equal(reply.accepted,true)
+  assert.deepEqual({...reply.head.save,blocks:ended.save.blocks},ended.save)
+  assert.equal(reply.head.save.blocks.length,ended.save.blocks.length+2)
+  assert.deepEqual(await s.action('synthetic-owner',h.id,body),reply)
+  assert.deepEqual(s.get('synthetic-owner',h.id),reply.head)
+  for(const type of ['action','free-input'])await assert.rejects(s.action('synthetic-owner',h.id,{...body,action_id:randomUUID(),expected_version:reply.head.version,type}),/ORIGINAL_FINALE_PENDING/)
+ }finally{raw.close()}
+})
+
+test('pending ending still rejects conversation before generation completes',async()=>{
+ const {raw,s,h}=setup()
+ try{await assert.rejects(s.action('synthetic-owner',h.id,{action_id:randomUUID(),expected_version:h.version,type:'dialogue'}),/ORIGINAL_FINALE_PENDING/)}finally{raw.close()}
+})
