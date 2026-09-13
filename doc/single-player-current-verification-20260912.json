@@ -6,7 +6,7 @@
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "picture-wait-recovery-20260913.json:828ef4d main and Pages each114 actual files match same local build; Pages34736476676 passed.",
+    "sameCommitDualDeployment": "native-ending-dialogue-review-20260913.json: f34c4eb main and Pages each114 actual files match same local production build; Pages34738431178 passed.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",
@@ -59,10 +59,10 @@
     "downloadCompatibility": 27,
     "redirectRejectionIllustrationSuite": 17,
     "fullCIRegression": {
-      "commit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d",
-      "run": 34736476676,
-      "tests": 719,
-      "passed": 719,
+      "commit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
+      "run": 34738431178,
+      "tests": 721,
+      "passed": 721,
       "failed": 0,
       "skipped": 0,
       "source": "gh run view --log; actual TAP totals"
@@ -107,12 +107,5 @@
   },
   "resourceDiagnosticsRelease": "resource-diagnostics-review-20260912.json",
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
-  "contextLossRecovery": "context-loss-recovery-review-20260913.json",
-  "deploymentInProgress": {
-    "mainCommit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
-    "mainFilesMatched": 114,
-    "pagesRun": 34738431178,
-    "pagesState": "in_progress",
-    "lastCompletedDualCommit": "828ef4d1ec87fa15e737dbe4e9bda021aac7fe0d"
-  }
+  "contextLossRecovery": "context-loss-recovery-review-20260913.json"
 }

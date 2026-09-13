@@ -59,7 +59,6 @@
     "Native latest UI reentry proved before this backend fix; not a new full route",
     "Production API post-ending dialogue and exact reload passed; native bubble after this fix still unverified",
     "Mac locked and tool automatic unlock failed on native retry",
-    "Pages actual bundle verification pending running workflow",
     "Earlier intermittent renderer failure cause remains unproven"
   ],
   "release": {
@@ -80,8 +79,18 @@
       "identity_mode": "anonymous-capability-v1"
     },
     "pagesRun": 34738431178,
-    "pagesState": "in_progress",
-    "dualDeploymentVerified": false
+    "pagesState": "completed",
+    "dualDeploymentVerified": true,
+    "pagesFilesMatched": 114,
+    "ci": {
+      "run": 34738431178,
+      "tests": 721,
+      "passed": 721,
+      "failed": 0,
+      "journeys": 120,
+      "journeyFailures": 0,
+      "actionIds": 82
+    }
   },
   "workflowRule": "Shared build-spatial-story-game/references/chapter-closure.md now specifies terminal dialogue versus action permissions, non-dialogue save invariants, replay/reload and native acceptance boundaries."
 }

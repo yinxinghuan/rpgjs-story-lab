@@ -1181,4 +1181,4 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 
 ### 结局后的交谈（2026-09-13）
 
-`original-train-runtime.ts` 对已完成结局只开放 `dialogue`：沿用当前人物在场、空间接近、素材准入和对白审查，追加成对交谈记录。结局快照、资源、关系与剧情事实不变；`action` / `free-input` 仍冻结，结局准备或生成期间也不放行。回执重放不能重复追加。平台发现与验证范围见 `native-ending-dialogue-review-20260913.json`；主站已发布 f34c4eb，原有合成 API 旅程的结局后对白与精确重载通过；原生卡片复验仍待解锁，Pages 发布核对见该记录。
+`original-train-runtime.ts` 对已完成结局只开放 `dialogue`：沿用当前人物在场、空间接近、素材准入和对白审查，追加成对交谈记录。结局快照、资源、关系与剧情事实不变；`action` / `free-input` 仍冻结，结局准备或生成期间也不放行。回执重放不能重复追加。平台发现与验证范围见 `native-ending-dialogue-review-20260913.json`；主站已发布 f34c4eb，原有合成 API 旅程的结局后对白与精确重载通过；主站与 Pages 的同提交 114 个实际文件均已逐一核对通过；原生卡片复验仍待解锁。
