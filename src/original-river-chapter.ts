@@ -76,7 +76,7 @@ export function executeRiverTurn(save:StorySave,c:StoryCartridge,id:RiverActionI
   objective=s('沿近岸返回列车，离开继续上涨的河水','Return along the near bank and leave the rising river behind')
  }
  if(id==='river-refuel'){
-  text=s('岸边铁路应急油柜里还剩一份干净柴油。阿达用手泵把它抽进列车油箱，随后翻转空柜的标牌；这里没有第二份储备。','One clean reserve remains in the shore railway fuel locker. Ada hand-pumps it into the train’s tank and turns the locker’s tag over. No second reserve remains here.')
+  text=s('岸边铁路应急储罐里还剩一份干净柴油。阿达用手泵把它抽进列车油箱，液位窗随之见底；空罐留在原位，这里没有第二份储备。','One clean reserve remains in the shore railway fuel tank. Ada hand-pumps it into the train; the sight glass runs dry. The empty tank stays in place. No second reserve remains here.')
   stat('fuel',12);fact('river-reserve-used',true)
  }
  if(id==='river-stabilize'){

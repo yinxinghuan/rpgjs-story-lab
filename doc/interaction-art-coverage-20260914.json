@@ -1,0 +1,567 @@
+{
+  "date": "2026-09-14",
+  "source": "Actual originalTrainChapterSpatialPlan and default new-journey originalEquipmentHasArt bindings",
+  "count": 42,
+  "independentStateArt": 3,
+  "markerOnly": 39,
+  "scope": "All declared non-character action entities, not simultaneously visible entities. Marker-only does not prove background is missing the location. Background landmarks and exits require separate visual classification.",
+  "next": "One full/empty emergency diesel reserve candidate for river, pine, tunnel, pass and bridge; actual facts leave the emptied vessel in place. No collision/state changes before art admission.",
+  "entities": [
+    {
+      "id": "starter",
+      "scene": "train-at-dead-station",
+      "states": [
+        "broken",
+        "repaired"
+      ],
+      "actions": [
+        "repair-starter"
+      ],
+      "independentStateArt": true
+    },
+    {
+      "id": "brakes",
+      "scene": "train-at-dead-station",
+      "states": [
+        "unchecked",
+        "cracked",
+        "replaced"
+      ],
+      "actions": [
+        "inspect-brakes",
+        "replace-brake-hose"
+      ],
+      "independentStateArt": true
+    },
+    {
+      "id": "fuel-shed",
+      "scene": "train-at-dead-station",
+      "states": [
+        "sealed",
+        "salvaged"
+      ],
+      "actions": [
+        "salvage-fuel-shed"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "departure-control",
+      "scene": "train-at-dead-station",
+      "states": [
+        "unset",
+        "valley",
+        "quarry",
+        "forest"
+      ],
+      "actions": [
+        "commit-valley-route",
+        "commit-quarry-route",
+        "commit-forest-route"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-dead-station-switch",
+      "scene": "train-at-dead-station",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-river-valley-switch",
+      "scene": "train-at-river-valley",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-graystone-yard-switch",
+      "scene": "train-at-graystone-yard",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-pine-line-switch",
+      "scene": "train-at-pine-line",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-tunnel-switch",
+      "scene": "train-at-tunnel",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-mountain-pass-switch",
+      "scene": "train-at-mountain-pass",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-sleeping-town-switch",
+      "scene": "train-at-sleeping-town",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "train-at-dawn-junction-switch",
+      "scene": "train-at-dawn-junction",
+      "states": [
+        "sealed",
+        "overridden"
+      ],
+      "actions": [
+        "use-master-switch-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "river-bridge",
+      "scene": "train-at-river-valley",
+      "states": [
+        "unchecked",
+        "surveyed",
+        "evacuated"
+      ],
+      "actions": [
+        "river-survey",
+        "river-rescue-powered",
+        "river-rescue-manual"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "river-fuel-locker",
+      "scene": "train-at-river-valley",
+      "states": [
+        "reserve",
+        "empty"
+      ],
+      "actions": [
+        "river-refuel"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "river-return-track",
+      "scene": "train-at-river-valley",
+      "states": [
+        "waiting",
+        "departed"
+      ],
+      "actions": [
+        "river-depart"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "tunnel-fan",
+      "scene": "train-at-tunnel",
+      "states": [
+        "stopped",
+        "inspected",
+        "running"
+      ],
+      "actions": [
+        "tunnel-inspect",
+        "tunnel-ventilate"
+      ],
+      "independentStateArt": true
+    },
+    {
+      "id": "tunnel-carriage-aisle",
+      "scene": "train-at-tunnel",
+      "states": [
+        "unaccounted",
+        "grouped"
+      ],
+      "actions": [
+        "tunnel-captain-led"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "tunnel-cargo",
+      "scene": "train-at-tunnel",
+      "states": [
+        "retained",
+        "unloaded"
+      ],
+      "actions": [
+        "tunnel-discard"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "tunnel-reserve",
+      "scene": "train-at-tunnel",
+      "states": [
+        "reserve",
+        "empty"
+      ],
+      "actions": [
+        "tunnel-refuel"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "tunnel-exit",
+      "scene": "train-at-tunnel",
+      "states": [
+        "waiting",
+        "clear"
+      ],
+      "actions": [
+        "tunnel-depart"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "yard-gate",
+      "scene": "train-at-graystone-yard",
+      "states": [
+        "guarded",
+        "introduced"
+      ],
+      "actions": [
+        "yard-meet"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "yard-pump",
+      "scene": "train-at-graystone-yard",
+      "states": [
+        "broken",
+        "repaired",
+        "forced"
+      ],
+      "actions": [
+        "yard-work-pact",
+        "yard-force-pump",
+        "yard-starting-reserve"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "yard-exit",
+      "scene": "train-at-graystone-yard",
+      "states": [
+        "waiting",
+        "tunnel",
+        "pass"
+      ],
+      "actions": [
+        "yard-first-exit",
+        "yard-depart"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pine-signal",
+      "scene": "train-at-pine-line",
+      "states": [
+        "unchecked",
+        "false-safe",
+        "tagged"
+      ],
+      "actions": [
+        "pine-inspect",
+        "pine-reverse",
+        "pine-confirm-siding"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pine-rescue-car",
+      "scene": "train-at-pine-line",
+      "states": [
+        "jammed",
+        "open"
+      ],
+      "actions": [
+        "pine-meet"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pine-reserve",
+      "scene": "train-at-pine-line",
+      "states": [
+        "reserve",
+        "empty"
+      ],
+      "actions": [
+        "pine-refuel"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pine-exit",
+      "scene": "train-at-pine-line",
+      "states": [
+        "waiting",
+        "verified"
+      ],
+      "actions": [
+        "pine-depart"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pass-grade-marker",
+      "scene": "train-at-mountain-pass",
+      "states": [
+        "unchecked",
+        "measured"
+      ],
+      "actions": [
+        "pass-inspect",
+        "pass-player-watch"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pass-carriage-post",
+      "scene": "train-at-mountain-pass",
+      "states": [
+        "unset",
+        "assigned",
+        "accounted"
+      ],
+      "actions": [
+        "pass-crew-duty",
+        "pass-debrief"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pass-brake-control",
+      "scene": "train-at-mountain-pass",
+      "states": [
+        "waiting",
+        "air",
+        "dynamic",
+        "gravel",
+        "key"
+      ],
+      "actions": [
+        "pass-air-brake",
+        "pass-dynamic-brake",
+        "pass-gravel-siding",
+        "pass-confirm-key"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pass-reserve",
+      "scene": "train-at-mountain-pass",
+      "states": [
+        "reserve",
+        "empty"
+      ],
+      "actions": [
+        "pass-refuel"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "pass-exit",
+      "scene": "train-at-mountain-pass",
+      "states": [
+        "waiting",
+        "clear"
+      ],
+      "actions": [
+        "pass-depart"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "town-platform-board",
+      "scene": "train-at-sleeping-town",
+      "states": [
+        "unchecked",
+        "read"
+      ],
+      "actions": [
+        "town-inspect",
+        "town-route-brief"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "town-generator",
+      "scene": "train-at-sleeping-town",
+      "states": [
+        "silent",
+        "broadcast"
+      ],
+      "actions": [
+        "town-grid-aid",
+        "town-keep-reserve"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "town-carriage-register",
+      "scene": "train-at-sleeping-town",
+      "states": [
+        "undecided",
+        "public",
+        "emergency"
+      ],
+      "actions": [
+        "town-public-rules",
+        "town-emergency-command",
+        "town-rest"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "town-supply-point",
+      "scene": "train-at-sleeping-town",
+      "states": [
+        "stocked",
+        "empty"
+      ],
+      "actions": [
+        "town-refuel",
+        "town-use-diesel",
+        "town-pack-kit"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "town-exit",
+      "scene": "train-at-sleeping-town",
+      "states": [
+        "waiting",
+        "bridge"
+      ],
+      "actions": [
+        "town-depart"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "bridge-near-bank",
+      "scene": "train-at-flood-bridge",
+      "states": [
+        "unchecked",
+        "surveyed"
+      ],
+      "actions": [
+        "bridge-inspect",
+        "bridge-kit-survey",
+        "bridge-manual-survey"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "bridge-passenger-order",
+      "scene": "train-at-flood-bridge",
+      "states": [
+        "waiting",
+        "arranged"
+      ],
+      "actions": [
+        "bridge-arrange"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "bridge-crossing-control",
+      "scene": "train-at-flood-bridge",
+      "states": [
+        "waiting",
+        "rail",
+        "key",
+        "anchor"
+      ],
+      "actions": [
+        "bridge-rail-crossing",
+        "bridge-key-crossing",
+        "bridge-anchor-crossing"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "bridge-reserve",
+      "scene": "train-at-flood-bridge",
+      "states": [
+        "reserve",
+        "empty"
+      ],
+      "actions": [
+        "bridge-refuel"
+      ],
+      "independentStateArt": false
+    },
+    {
+      "id": "junction-route-table",
+      "scene": "train-at-dawn-junction",
+      "states": [
+        "waiting",
+        "reviewed",
+        "decided"
+      ],
+      "actions": [
+        "junction-review",
+        "junction-common-line",
+        "junction-endless-rescue",
+        "junction-first-street",
+        "junction-the-last-bridge",
+        "junction-open-ledger",
+        "junction-many-hands",
+        "junction-emergency-conductor",
+        "junction-quiet-platform",
+        "junction-settle-basic",
+        "junction-bridge-basic"
+      ],
+      "independentStateArt": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "cefe7dd2-e2f7-42de-b5c6-d804bb43fed5",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789368543434128.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 640
+  },
+  "prompt": "Make ONE precise correction to this two-cell railway diesel-tank sprite image. The LEFT tank is the reference full state and must stay unchanged. The RIGHT tank is the SAME device in its empty state, but its front level window was accidentally omitted. Restore on the RIGHT tank exactly the same narrow vertical brass-framed glass window as on the LEFT: same position, height, width, rounded outline and mounting. Inside the RIGHT window show dark empty glass with only a tiny residual amber line at its bottom. Preserve every other tank feature and the entire LEFT tank: no changes to camera, scale, alignment, top hand pumps, hoses, ribs, texture, highlights or silhouettes. Keep two equal columns in the same 640x640 canvas and the same pure white background. Do not remove the right window rim. Do not fill the right window with orange liquid. Do not introduce any other difference, caption, symbol, shadow or background."
+}

@@ -1,0 +1,38 @@
+{
+  "status": "river-renderer-reviewed-other-scenes-pending",
+  "method": "Viewed original generated sheets and combined transparent output",
+  "observed": [
+    "Full amber level versus empty dark glass is distinguishable; both retain physical glass rim",
+    "Dark olive tank, ribs, hand pump and attached hose remain recognizable across selected frames",
+    "Pale outside background and enclosed hose gap removed",
+    "Source body boxes differ by three pixels in width and four in height; translation aligns reviewed tank base without scaling"
+  ],
+  "sources": "preparation.json",
+  "productionAdopted": false,
+  "next": "Review remaining four scenes and small-screen composition before enabling new-journey defaults. Run spatial regressions and release checks before deployment.",
+  "runtimeReview": {
+    "method": "CUA in-app browser, actual RPG renderer and compiled Worker with QA-only candidate asset bindings; fresh temporary SQLite, external Worker fetch disabled",
+    "url": "http://127.0.0.1:5418/",
+    "viewportObserved": [
+      1280,
+      720
+    ],
+    "route": [
+      "repair-starter",
+      "commit-valley-route",
+      "river-refuel"
+    ],
+    "observed": [
+      "Original scale 0.1 made tank taller than hero; reduced to 0.065 and reviewed again",
+      "Full amber sight glass became dark empty glass after refuel; physical tank remained at the same location",
+      "Fuel changed from 62 to 74; refuel marker disappeared",
+      "Browser refresh retained empty tank and fuel 74",
+      "Generated pale background was not visible on the dark map"
+    ],
+    "limits": [
+      "Desktop river scene only; not mobile or all five scenes",
+      "No claim of frame-exact switching or continuous collision video",
+      "Preview preceded the source correction replacing the old locker/tag narrative with tank/sight-glass wording"
+    ]
+  }
+}

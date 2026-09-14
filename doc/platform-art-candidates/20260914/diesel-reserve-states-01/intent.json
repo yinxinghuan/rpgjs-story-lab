@@ -1,0 +1,20 @@
+{
+  "purpose": "Replace emergency diesel reserve interaction placeholders in the existing original single-player game with grounded full/empty state art",
+  "scope": "One platform edit request, using only the publicly released starter equipment as style/camera reference",
+  "referenceSha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+  "targets": [
+    "river-fuel-locker",
+    "pine-reserve",
+    "tunnel-reserve",
+    "pass-reserve",
+    "bridge-reserve"
+  ],
+  "acceptance": [
+    "same approved B camera/material",
+    "two equal cells, same silhouette and foot anchor",
+    "left fuel gauge full, right fuel gauge empty",
+    "empty tank remains; no removed body or collision change",
+    "no checkerboard, labels or background geometry"
+  ],
+  "productionAdopted": false
+}

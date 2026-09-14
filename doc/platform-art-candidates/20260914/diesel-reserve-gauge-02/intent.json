@@ -1,0 +1,6 @@
+{
+  "purpose": "Correct a specific missing invariant in diesel-reserve-states-01: the empty tank must retain its physical level window",
+  "scope": "One platform edit using preceding candidate only",
+  "sourceSha256": "3faa7453cdb91296f7bb5a686be1b6f31c88a68588885d035b5b8b15af2751c0",
+  "productionAdopted": false
+}

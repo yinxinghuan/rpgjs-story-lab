@@ -1,0 +1,101 @@
+{
+  "sources": [
+    {
+      "folder": "diesel-reserve-states-01",
+      "sha256": "3faa7453cdb91296f7bb5a686be1b6f31c88a68588885d035b5b8b15af2751c0",
+      "state": "full",
+      "column": 0
+    },
+    {
+      "folder": "diesel-reserve-gauge-02",
+      "sha256": "a8734396bca36df59161b758b7dfe5d6768f2b625f5afc6f7f267e24037497f0",
+      "state": "empty",
+      "column": 0
+    }
+  ],
+  "operations": [
+    "lossless left-column selection",
+    "pale neutral connected matte removal including reviewed hose gap seeds",
+    "translation to common tank-base anchor"
+  ],
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 320,
+    "cellHeight": 640,
+    "foot": {
+      "x": 160,
+      "y": 550
+    },
+    "kind": "states",
+    "backgroundMode": "pale-neutral",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 160,
+        "y": 542
+      },
+      {
+        "x": 160,
+        "y": 545
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 292,
+        "y": 300
+      },
+      {
+        "x": 612,
+        "y": 300
+      }
+    ]
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        42,
+        93,
+        309,
+        543
+      ],
+      "sourceAnchor": {
+        "x": 160,
+        "y": 542
+      },
+      "offset": {
+        "x": 0,
+        "y": 8
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        362,
+        92,
+        632,
+        546
+      ],
+      "sourceAnchor": {
+        "x": 160,
+        "y": 545
+      },
+      "offset": {
+        "x": 0,
+        "y": 5
+      }
+    }
+  ],
+  "metrics": {
+    "removed": 222797,
+    "edgeCorrected": 5446,
+    "corePreserved": 177597
+  },
+  "sha256": "4a1bc15a8fdad211335bd89f2856554ac704e1b8122e218e6d133422aa787386",
+  "productionAdopted": false,
+  "scope": "Candidate preparation only; requires visual, in-map scale, collision and state-transition review"
+}

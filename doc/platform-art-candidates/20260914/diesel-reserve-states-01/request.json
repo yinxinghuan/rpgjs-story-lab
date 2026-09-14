@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "d752597a-f68a-4218-9894-a16b3c224d3c",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/starter-states-v1.png"
+  ],
+  "size": {
+    "width": 640,
+    "height": 640
+  },
+  "prompt": "Use the attached approved railway equipment ONLY as the camera, material and lighting reference. Create one two-state game sprite strip: exactly TWO identical compact vertical cylindrical steel DIESEL RESERVE TANKS, one in each equal 320x640 cell, left full and right empty. Preserve the reference camera elevation and straight-on orthographic orientation, broad visible top surface, parallel verticals, no isometric diagonal turn. Both are the SAME squat dark olive steel tank with two horizontal reinforcing ribs, worn fine-grain paint, a small brass manual hand pump and a neatly attached short dark hose. A protected narrow vertical amber level glass on the FRONT is full on the LEFT tank, empty on the RIGHT tank. The whole exterior, pump, hose, top cap and silhouette remain identical in both states; only the level inside the glass changes. Same scale, centered x=160 and x=480, common bottom anchor y=550; each tank fits within width220 and height350 with generous clear margins. Match the reference restrained dark weathered metal, subtle brass edges, warm highlights and detailed pixel-painted texture; no smooth cartoon or thick outlines. Pure white background, no ground shadow, no floor, no checkerboard, no captions, letters, icons, arrows, framing, extra objects, people or additional cells."
+}

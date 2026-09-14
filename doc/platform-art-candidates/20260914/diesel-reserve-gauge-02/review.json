@@ -1,0 +1,10 @@
+{
+  "status": "left-frame-selected-only",
+  "observed": [
+    "Targeted correction changed both tanks to empty, so the whole strip is not a valid full/empty pair",
+    "Left empty frame retains a level-window silhouette closer to the preceding left full frame",
+    "Right frame has an oversized level-window rim and is not selected"
+  ],
+  "next": "Select column zero from this image as empty, column zero from states-01 as full; use existing composeRepairFrames and prepareSpritePixels, without rescaling or repainting",
+  "productionAdopted": false
+}
