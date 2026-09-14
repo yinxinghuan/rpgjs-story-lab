@@ -351,7 +351,9 @@ export interface StoryCartridge {
   domainRules?: StoryDomainRules
   endingDirector?: StoryEndingDirector
   initialFacts?: Record<string, StoryFactValue>
-  statDefinitions: [StatDefinition, StatDefinition, StatDefinition]
+  // Spatial stories may have no numeric resources. Existing three-stat
+  // cartridges retain their exact definitions and saved values.
+  statDefinitions: StatDefinition[]
   drawerLabels: Record<DrawerId, string>
   opening: { location: string; time: string; objective: string; imagePrompt: string; blocks: StoryBlock[]; choices: Choice[] }
   characters: CharacterDefinition[]

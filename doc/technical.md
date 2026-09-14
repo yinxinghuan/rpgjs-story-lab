@@ -1411,3 +1411,7 @@ Renderer 暴露当前移动意图，CompanionMotion 在玩家前进方向受队�
 普通移动不重算无关的回合道具指标，也不替换当前 choices、追加到达正文或推进场次。缺失 portal、伪造目标、非移动副作用或当前落点不可行走均拒绝，原 save 不变。旧 `prepareStationTravel` 保留为薄包装，站区内容仍处于暂停候选状态。
 
 验证：`node --import tsx --test _qa/spatial-door-travel.test.ts _qa/exploration-station-plan.test.ts` 共 10 项通过，其中 7 项覆盖通用准备函数，包括同地点 20 次往返、JSON 序列化后的房间恢复、跨地点返回、锁状态/落点变化及拒绝副作用。JSON 回读不是正式持久化验证。这一函数尚未接新故事的 Session/UI；没有新美术、浏览器通关或部署完成的含义。完整旧街设计假设在 `doc/requirements.md`，题材尚非用户最终选择。
+
+
+### 空指标故事类型适配（2026-09-15）
+本项目 `src/vendor/original-train/types.ts` 将 `statDefinitions` 从恰好三项放宽为 `StatDefinition[]`。现有初始化、规则更新与危险计算使用遍历/查找，可接受空列表；未修改原作三条定义或已有存档。`_qa/spatial-core-resources.test.ts` 4 项覆盖中英空指标初始化、物件/事实规则执行、未定义数值不被创建，以及原列车 68/82/58 初值保持。与出入口测试合计 14 项通过。这是本地 vendor 适配，不声称其他项目或冻结模板已同步；正式空间入口、电影式开场图片和新故事 renderer 仍待接入。
