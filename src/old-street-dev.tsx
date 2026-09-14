@@ -93,7 +93,7 @@ export default function OldStreetDev() {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
-      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:'free-input',text:input}),target,position:{...position.current}})
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current}})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)

@@ -1,3 +1,6 @@
+import type {OriginalActionInterpreter} from './original-action-interpreter'
+import {originalActionIntentIssues} from '../src/original-action-intent'
+import {oldStreetActionNames} from '../src/old-street-action-input'
 import {completeOldStreetEnding} from '../src/old-street-ending'
 import {resolveOldStreetInput} from '../src/old-street-action-input'
 import {recordOldStreetInteraction} from '../src/old-street-characters'
@@ -17,7 +20,7 @@ const unavailable:OldStreetGate = () => {throw new LabError('OLD_STREET_PRESENTA
 const plan = oldStreetSpatialPlan()
 /** Installs story semantics in the existing transaction authority, not a second save engine.
  * No production route is enabled until real presentation admission is supplied. */
-export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime<OldStreetHead> {
+export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter):SessionRuntime<OldStreetHead> {
   const check=(h:OldStreetHead,previous?:OldStreetHead,id?:string)=>{
     assertOldStreetHead(h)
     if(admit(structuredClone(h),previous?structuredClone(previous):undefined,id)!==true)throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)
@@ -32,20 +35,30 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime
     upgrade:value=>{assertOldStreetHead(value);const next=structuredClone(value);if(next.save.facts.departed)completeOldStreetEnding(next.save,oldStreetCartridge(next.save.locale));return next},assertReadable:assertOldStreetHead,
     scene:h=>h.sceneId,position,validateAction,preserveConcurrent:()=>{},
     assertPrepared:(candidate,current,id)=>check(candidate,current,id),
-    prepare:async(h,body)=>{
+    prepare:async(h,body,reserveNarration)=>{
       assertOldStreetHead(h);validateAction(body)
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
       if(!['action','free-input'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
-      if(body.mode!==undefined&&body.mode!=='local')throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
+      if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
       if(body.type==='free-input'){
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         const entity=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
         if(!entity||!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
-        const action=resolveOldStreetInput(body.text,h.save.locale,entity.actions)
+        let action=resolveOldStreetInput(body.text,h.save.locale,entity.actions)
+        if(!action&&body.mode==='live'){
+          if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
+          const c=oldStreetCartridge(h.save.locale)
+          const actions=entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,c,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
+          if(!actions.length||originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
+          check({...h,position:pos})
+          if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+          const candidate=await interpreter(body.text,{locale:h.save.locale,sceneId:h.sceneId,target:entity.id,objective:h.save.objective,actions:structuredClone(actions)})
+          if(candidate&&actions.some(a=>a.id===candidate))action=candidate
+        }
         if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
         body={...body,action}
       }
@@ -64,10 +77,10 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime
       }
       if(next.save.facts.departed)completeOldStreetEnding(next.save,c)
       check(next,h,body.action)
-      return {head:next,kind:'action',accepted:true,actionId:body.action,source:'author',text}
+      return {head:next,kind:'action',accepted:true,actionId:body.action,source:'author',text,...(body.type==='free-input'?{interpretation:{input:body.text,actionId:body.action}}:{})}
     },
   }
 }
 export class OldStreetAuthority extends SessionAuthority<OldStreetHead> {
-  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable){super(db,oldStreetRuntime(admit))}
+  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter){super(db,oldStreetRuntime(admit,interpreter))}
 }

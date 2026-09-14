@@ -1500,3 +1500,12 @@ Session 套件 10 项通过，其中新增中英文字借推车、同回执重�
 实际 CUA 在 5453 同一本机旅程完成：洗衣店→合住院→地下储物室→工作棚，借钥匙、打开插销、经院落回修表铺开格拿信，回街口确认回家。结果显示信件已交付，并准确显示未归还的小格钥匙；未列出未完成的钟/照片支线。oldstreet-dev 构建通过。
 
 结局刷新实证：同一页面 reload 后仍显示同一标题、交付结果及未还钥匙，未回到开场，也未生成第二份信。截图为 external-guest 开发白盒，不能作为平台内最终视觉验收。
+
+
+## 2026-09-15：受限意图解释器接线
+
+`oldStreetRuntime` 可注入既有 `OriginalActionInterpreter`。free-input 先执行完整短句匹配；仅未匹配且显式 mode=live 时调用解释器。候选只包含当前实体、当前位置已经可做的动作，排除离开确认和未支持的过门文字动作；上下文仅含 locale/sceneId/target/objective/actions，不包含未来人物、地图或整份存档。位置、距离和展示准入在模型调用前检查，调用后再走同一 binding/Core/事务版本验证。所有效果仍为 author 规则，回执附已采用的 interpretation，不将模型答案当作故事正文。
+
+本机 plugin 使用既有 `originalPreflightModels` 的双请求解释/复核 provider，需显式 `OLDSTREET_MODEL_TEST_BUDGET`（2–12 次上游调用）启用，重启时可传 `OLDSTREET_MODEL_TEST_USED`；未配置默认禁用。开发 URL `interpret=live` 仅选择调用模式，不能自行获得服务端预算。未进行真实网络调用，未改平台生产 provider。进程内预算不是云端计费限额，正式接入仍需平台验收。
+
+Session 12 项通过，新增注入式合成模型实证：只收到借推车动作；丢回执不重复解释；返回拿信等外部动作拒绝；模型返回前已有新操作时旧结果版本冲突；模型抛错不更改状态。原有 provider 包含独立语义复核和 20 秒超时，但这些测试不证明真实模型语义质量。

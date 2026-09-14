@@ -121,3 +121,38 @@ for(const locale of ['zh','en'] as const)test(`typed input uses the same target 
   await assert.rejects(s.action('owner',h.id,other),/INPUT_UNSUPPORTED/)
  }finally{raw.close()}
 })
+test('bounded interpreter sees only eligible target actions and cannot grant a foreign action',async()=>{
+ const raw=new DatabaseSync(':memory:'),db=storage(raw),contexts:any[]=[];let answer='oldstreet:borrow-trolley'
+ const s=new OldStreetAuthority(db,admit,async(_input,context)=>{contexts.push(structuredClone(context));return answer})
+ try{
+  let h=s.create('owner',randomUUID(),'en')
+  for(const room of ['yard','laundry'])h=(await s.action('owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId))).head
+  const b={...request(h,'oldstreet:borrow-trolley'),type:'free-input',mode:'live',text:'I will use the cart now.'}
+  const result=await s.action('owner',h.id,b);h=result.head
+  assert.deepEqual(contexts[0].actions.map((a:any)=>a.id),['oldstreet:borrow-trolley'])
+  assert.deepEqual(Object.keys(contexts[0]).sort(),['actions','locale','objective','sceneId','target'])
+  assert.equal(h.save.inventory.find(i=>i.id==='trolley')?.count,1)
+  assert.deepEqual(await s.action('owner',h.id,b),result);assert.equal(contexts.length,1)
+  answer='oldstreet:take-letter'
+  await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:return-trolley'),type:'free-input',mode:'live',text:'I will put the cart away now.'}),/INPUT_UNSUPPORTED/)
+  assert.deepEqual(s.get('owner',h.id),h)
+ }finally{raw.close()}
+})
+test('a model result cannot overwrite a newer action and model failure never mutates the save',async()=>{
+ const raw=new DatabaseSync(':memory:'),db=storage(raw)
+ let release!:(s:string)=>void,started!:()=>void
+ const ready=new Promise<void>(r=>started=r)
+ const slow=new OldStreetAuthority(db,admit,async()=>{started();return new Promise<string>(r=>release=r)}),fast=new OldStreetAuthority(db,admit)
+ try{
+  let h=fast.create('owner',randomUUID(),'en')
+  for(const room of ['yard','laundry'])h=(await fast.action('owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId))).head
+  const b={...request(h,'oldstreet:borrow-trolley'),type:'free-input',mode:'live',text:'I take this cart for moving those boxes.'}
+  const pending=slow.action('owner',h.id,b);await ready
+  const newer=await fast.action('owner',h.id,request(h,'oldstreet:borrow-trolley'))
+  release('oldstreet:borrow-trolley');await assert.rejects(pending,/VERSION_CONFLICT/)
+  assert.deepEqual(fast.get('owner',h.id),newer.head)
+  const failing=new OldStreetAuthority(db,admit,async()=>{throw Error('TEST_MODEL_OFFLINE')})
+  await assert.rejects(failing.action('owner',h.id,{...request(newer.head,'oldstreet:return-trolley'),type:'free-input',mode:'live',text:'I put the cart back where it belongs.'}),/TEST_MODEL_OFFLINE/)
+  assert.deepEqual(fast.get('owner',h.id),newer.head)
+ }finally{raw.close()}
+})
