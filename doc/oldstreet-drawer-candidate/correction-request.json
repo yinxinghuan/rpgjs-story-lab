@@ -1,0 +1,13 @@
+{
+  "request_id": "e009e6a1-df35-439a-9f9a-0227f877a604",
+  "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "reference_urls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789419166871002.png"
+  ],
+  "prompt": "Correct this game sprite sheet while preserving exactly three equal cells, wooden desk identity, colors, pixel-painted texture, desk sizes, leg baseline and solid magenta background. Two mandatory corrections. FIRST: change ALL three tabletops to true orthographic projection: front edge and back edge exactly equal length, left and right edges parallel, no trapezoid and no vanishing point. Show the tabletop as a rectangle seen from steep overhead, with a short front face and much shorter visible legs; the camera looks down about 55 degrees. SECOND: in LEFT cell the drawer must be completely CLOSED, and an obviously EMPTY OPEN cardboard box with visible hollow interior sits on the floor just in front of the drawer, obstructing its opening. Box is absent from middle and right cells. MIDDLE cell drawer open, one large magnifying glass and one receipt inside. RIGHT cell identical open drawer with only the receipt. Do not add anything else. Keep each desk independently framed, no contact across cells, no floor, no shadows outside objects, no background gradients, no labels or lettering. Magenta background is chroma key, never put magenta within objects. Three equal 512x768 cells, one horizontal row.",
+  "size": {
+    "width": 1536,
+    "height": 768
+  }
+}

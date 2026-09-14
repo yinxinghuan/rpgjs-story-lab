@@ -1,0 +1,40 @@
+[
+  {
+    "task_id": "mt_97e46f1c3e5aa04ecb334f5f2c454cdd",
+    "request_id": "dbeca9de-4018-4b9a-8708-c151e8722d3e",
+    "type": "image",
+    "status": "succeeded",
+    "created_at": 1789419164273,
+    "updated_at": 1789419167076,
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789419166871002.png",
+      "width": 1536,
+      "height": 768,
+      "format": "png"
+    },
+    "timing_ms": 1835,
+    "local_path": "doc/oldstreet-drawer-candidate/source.png",
+    "sha256": "ac876504f2d1a239390be7234e08f67ab6c404ebf6e68b8e0b5d2da5398f740c",
+    "admitted": false
+  },
+  {
+    "task_id": "mt_a71658eb7361be786e87269d3cc9d17e",
+    "request_id": "e009e6a1-df35-439a-9f9a-0227f877a604",
+    "type": "image",
+    "status": "succeeded",
+    "created_at": 1789419246578,
+    "updated_at": 1789419251420,
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789419251241472.png",
+      "width": 1536,
+      "height": 768,
+      "format": "png"
+    },
+    "timing_ms": 4139,
+    "local_path": "doc/oldstreet-drawer-candidate/corrected.png",
+    "sha256": "426ce6b06ccedc5fc9c1bb8b8be107f091d86c3567c2eee8f14ce25b7512e6bf",
+    "admitted": false
+  }
+]

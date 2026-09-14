@@ -1,0 +1,10 @@
+{
+  "request_id": "dbeca9de-4018-4b9a-8708-c151e8722d3e",
+  "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "prompt": "Create a production sprite sheet for a 2D orthographic exploration game: exactly THREE columns and ONE row, equal 512x768 cells on a 1536x768 canvas. In every cell show the SAME small vintage wooden watchmaker desk with ONE wide shallow drawer, matching size, position, color, outline, camera and lighting perfectly. Orthographic projection with camera looking downward about 55 degrees, centered facing south: broad visible rectangular tabletop, short front face, parallel verticals, no vanishing point, no isometric diagonal rotation. Detailed painterly pixel-art, warm worn medium-brown wood, brass handle, clear dark outlines, no blur. Each desk fits inside its own cell with generous empty margins and feet baseline at y=600. Left cell: closed drawer, an EMPTY small cardboard box blocks the drawer front. Middle cell: box removed, drawer OPEN showing one large brass magnifying glass and one cream receipt. Right cell: identical OPEN drawer with ONLY the receipt, magnifying glass removed. Keep desk footprint and drawer silhouette consistent. NO people, no room, no floor, no scenery, no labels, no lettering, no grid, no shadows outside the desk. Entire surrounding background must be perfectly uniform solid bright magenta RGB 255,0,255 for chroma key; never use magenta in the desk or objects. Do not draw a checkerboard. Output only this three-state sprite sheet.",
+  "size": {
+    "width": 1536,
+    "height": 768
+  }
+}
