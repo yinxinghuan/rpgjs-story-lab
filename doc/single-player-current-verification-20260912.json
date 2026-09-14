@@ -121,9 +121,16 @@
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
   "contextLossRecovery": "context-loss-recovery-review-20260913.json",
   "pendingExternalActions": {
-    "nativePlaytest": "Original native graystone fault journey awaits Mini App reload; native toolbar unsupported. User request already pending, not a new origin permission request.",
+    "nativePlaytest": "Current native game window is closed. Open button is unsupported by automation; new concrete request to reopen AlterU/game page is pending. Existing site authorization persists.",
     "newUpperBodyPair": "Reply to the pending request for one additional platform edit; no request sent and no generation currently running.",
     "identity": "Trusted platform identity adapter contract still absent; current anonymous capability saves preserved."
   },
-  "lastUpdated": "2026-09-14"
+  "lastUpdated": "2026-09-14",
+  "nativeEntryRecheck20260914": {
+    "observed": "Telegram AlterU chat visible; game Mini App no longer open",
+    "attempt": "Click visible Open button",
+    "result": "AXError.notImplemented; screenshot unchanged",
+    "request": "User asked to manually open AlterU and the existing game page; do not create or clear journey",
+    "authenticatedGameStateRead": false
+  }
 }
