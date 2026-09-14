@@ -1434,3 +1434,16 @@ Renderer 暴露当前移动意图，CompanionMotion 在玩家前进方向受队�
 `_qa/old-street-space.test.ts` 5 项通过：清箱前后所有行动目标从出生点可达；屋顶/地下两条路线逐门运行真实路径搜索、接近准入及 `prepareDoorTravel`，通过捷径回店取信并离开；关闭台阶拒绝，清理箱子不消耗推车且实际碰撞位置改变。每次过门 JSON 回读保存准备结果，不等于服务器事务或真实存储验收。类型检查通过。
 
 仍未挂到实际 RPG-JS 页面：当前无渲染截图、人物动画、触控手感或正式部署证据。下一步使用现有 `createRpgRenderer` 和独立开发入口接此同源布局，不能另建一个只为演示的地图真源，也不能把规则测试当作可操作画面完成。
+
+
+## 2026-09-15：旧街实际 renderer 装配与清障复验
+
+本节更新上节“尚未挂到页面”的阶段状态。`src/old-street-dev.tsx` 在现有工程内使用 `createRpgRenderer`，仅 `oldstreet-dev` 构建模式、本机 hostname 与 `?debug=1` 同时满足时从 `src/main.tsx` 进入。未新增游戏 UUID、公开入口或后端。当前旅程仅保存在组件内存，刷新重开；不能用于正式续玩。
+
+8 张 `public/map/oldstreet-*.tmx` 由 `scripts/export-old-street-maps.ts` 从 `oldStreetTmx` 导出，边界与空间路径共享 floor 定义。可变箱子的绘图占地、目标标签、接近点和碰撞统一读取 `oldStreetProjectedProps(save)`，清箱后一起移到院墙空地。UI 按钮先由 RPG-JS 寻路走近，再用既有 Core 执行动作；过门调用 `prepareDoorTravel`。这仍是客户端准备过程，不能冒充服务器原子提交。
+
+启动实测中，仅浏览器 `Image.decode()` 成功时角色仍不可见；显式 `Assets.load({src, parser:'loadTextures'})` 预载同一图集后，实际 RPG-JS 人物正常显示。宿主固定为 384×576，再由已有 renderer 缩放；避免宿主百分比尺寸与引擎重复缩放。未修改第三方引擎，也未使用 DOM 人物替代。
+
+CUA 实际点击记录：屋顶路线已完成借钥匙、打开院门捷径、返回取信并确认回家；地下路线已完成先被旧箱阻止、去洗衣店借推车、清箱、下楼并进入工作棚。随后发现清箱标签滞留旧位置，修复后在 5452 构建页新建内存旅程复验：箱子与标签同时移到院墙，地下储物室可进入，背包仍保留推车。截图观察为约 365×676 的 in-app 浏览器 external-guest 状态，非真实 iPhone、非 AlterU 内完整验收，不能据此判定手机构图通过。
+
+本轮自动检查：路线、空间与零资源兼容共 19 项通过。地图文件一致性检查覆盖实际导出的 TMX。仍缺正式 Session 接入、断线/刷新恢复、实体角色及关系、照片比对输入、自由输入适配、新场景美术和正式结局提交；`oldStreetAdmission.ready` 继续为 false。人物位置按钮与白盒矩形仅属于这个隔离开发入口。

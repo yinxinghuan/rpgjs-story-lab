@@ -65,12 +65,16 @@ export const oldStreetProps = [
   prop('street-exit', 'street', .5, .88, ['leave']),
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
-export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>): Rect[] {
-  return oldStreetProps.filter(p => p.room === room && p.id !== 'street-exit').map(p => {
-    // The crate remains visible but moves out of the stair approach, never vanishes.
-    if (p.id === 'crates' && save.facts['crates-cleared'] === true) return {...p.body, x: oldStreetFloors.yard.x + 32, y: oldStreetFloors.yard.y + 220}
-    return {...p.body}
+export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>) {
+  return oldStreetProps.map(p => {
+    if (p.id !== 'crates' || save.facts['crates-cleared'] !== true) return p
+    const body = {...p.body, x: oldStreetFloors.yard.x + 32, y: oldStreetFloors.yard.y + 220}
+    const position = {x: body.x + 12, y: body.y + 12}
+    return {...p, body, position, approach: {x: position.x, y: position.y + 28}}
   })
+}
+export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>): Rect[] {
+  return oldStreetProjectedProps(save).filter(p => p.room === room && p.id !== 'street-exit').map(p => ({...p.body}))
 }
 export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>) {
   const r = oldStreetFloors[room as OldStreetRoom]
@@ -80,17 +84,30 @@ export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<Stor
     && !oldStreetObstacleBodies(room as OldStreetRoom, save).some(body => intersects(feet, body))
 }
 export const oldStreetPath = (room: string, start: SpatialPoint, end: SpatialPoint, save: Pick<StorySave, 'facts'>) => findGridPath(start, end, p => oldStreetWalkable(room, p, save))
-export function oldStreetSpatialPlan(): SpatialBindingDefinition {
+export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}}): SpatialBindingDefinition {
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
   return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-blockout-1', interactionDistance: 54,
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn: pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),
-      ...oldStreetProps.map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
+      ...oldStreetProjectedProps(save).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
     ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: [],
   }
 }
 export function bindOldStreet(locale: Locale, save: Pick<StorySave, 'facts'>) {
-  return compileSpatialBinding(oldStreetCartridge(locale), oldStreetSpatialPlan(), (room, p) => oldStreetWalkable(room, p, save))
+  return compileSpatialBinding(oldStreetCartridge(locale), oldStreetSpatialPlan(save), (room, p) => oldStreetWalkable(room, p, save))
+}
+
+/** RPG-JS requires a Tiled object layer for its character/event layer. Export
+ * the same floor boundaries as static walls; changing props remain in the
+ * shared runtime collision projection so map files cannot freeze their state. */
+export function oldStreetTmx(room: OldStreetRoom) {
+  const f = oldStreetFloors[room]
+  const walls = [
+    {x: 0, y: 0, w: 384, h: f.y}, {x: 0, y: f.y + f.h, w: 384, h: 576 - f.y - f.h},
+    {x: 0, y: f.y, w: f.x, h: f.h}, {x: f.x + f.w, y: f.y, w: 384 - f.x - f.w, h: f.h},
+  ]
+  const objects = walls.map((r, i) => `<object id="${i + 1}" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"><properties><property name="collision" type="bool" value="true"/></properties></object>`).join('')
+  return `<?xml version="1.0"?><map version="1.10" orientation="orthogonal" renderorder="right-down" width="12" height="18" tilewidth="32" tileheight="32" infinite="0"><tileset firstgid="1" source="carriage.tsx"/><layer id="1" name="floor" width="12" height="18"><data encoding="csv">${Array(216).fill(1).join(',')}</data></layer><objectgroup id="2" name="collision">${objects}</objectgroup></map>`
 }

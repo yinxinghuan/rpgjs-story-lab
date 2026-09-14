@@ -9,7 +9,7 @@ import {prepareDoorTravel} from '../src/spatial-door-travel'
 for (const cleared of [false, true]) test(`every authored interaction can be approached in blockout, crates cleared=${cleared}`, () => {
   const cartridge = oldStreetCartridge('zh'), save = createInitialSave(cartridge)
   save.facts['crates-cleared'] = cleared
-  const plan = oldStreetSpatialPlan(), binding = bindOldStreet('zh', save)
+  const plan = oldStreetSpatialPlan(save), binding = bindOldStreet('zh', save)
   assert.equal(binding.actionIds().length, cartridge.domainRules!.rules.length)
   for (const entity of plan.entities) {
     const start = plan.scenes.find(s => s.id === entity.scene)!.spawn
@@ -25,7 +25,7 @@ for (const choice of ['roof', 'cellar']) test(`real pathfinder and bound door pr
   let state = {save: createInitialSave(cartridge), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}
   function approach(id: string) {
     const binding = bindOldStreet('zh', state.save), target = binding.targetFor(id, state.scene)
-    const entity = plan.entities.find(e => e.id === target)!
+    const entity = oldStreetSpatialPlan(state.save).entities.find(e => e.id === target)!
     assert.ok(entity)
     const route = oldStreetPath(state.scene, state.position, entity.approach, state.save)
     assert.ok(route.length, `no walking path to ${id}`)
@@ -69,4 +69,14 @@ test('closed stairs reject travel and crate relocation changes collision without
   assert.equal(oldStreetWalkable('yard', crates.position, save), true)
   assert.equal(save.inventory.find(i => i.id === 'trolley')?.count, 1)
   assert.equal(prepareDoorTravel(save, cartridge, bindOldStreet('zh', save), input).scene, 'cellar')
+})
+
+test('served Tiled maps match the same floor contract and retain an event layer', async () => {
+  const {readFileSync} = await import('node:fs')
+  const {oldStreetFloors, oldStreetTmx} = await import('../src/old-street-space')
+  for (const room of Object.keys(oldStreetFloors) as OldStreetRoom[]) {
+    const map = readFileSync(new URL(`../public/map/oldstreet-${room}.tmx`, import.meta.url), 'utf8')
+    assert.equal(map, oldStreetTmx(room))
+    assert.match(map, /<objectgroup /)
+  }
 })
