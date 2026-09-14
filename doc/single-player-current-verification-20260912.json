@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
+  "liveCommit": "e02438b77b9543d5d8da5123517d925cd97bcaa3",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
@@ -30,13 +30,16 @@
     "backLayerMapTrial": "leg-layer-map-review-20260913.json",
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
     "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
-    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: previous reentry preserved ending/stats/companions; 2026-09-14 actual native post-ending short dialogue and close-to-map passed. New exit/reentry after dialogue not verified."
+    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: previous reentry preserved ending/stats/companions; 2026-09-14 actual native post-ending short dialogue and close-to-map passed. New exit/reentry after dialogue not verified.",
+    "currentMainRelease": "map-focus-review-20260914.json#yardReturnRelease: main 114 files SHA256 match local production build; page/API/source ZIP pass. Pages34803181418 still running; do not claim current dual deployment complete.",
+    "continuousQuarryPublicLogJourney": "map-focus-review-20260914.json#bridgeAndFinaleWalkthrough: frozen 378b765 localhost production frontend/Worker; UI journey through quarry loop, tunnel, pass, town, bridge, public-log ending and reload. Fuel25/condition75/morale75; Ada/Mako. Not native or iPhone proof.",
+    "mapFocusScrolling": "map-focus-review-20260914.json: hidden overflow browser-focus scrolling reproduced; clip prevents extra map scroll, journal remains scrollable. Local real renderer continued through final scene; native fault-state recheck pending."
   },
   "remaining": [
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "route-and-reentry-verified-with-known-display-defects",
-      "currentBlocker": "2026-09-14 Mac accessible; native post-ending dialogue/card passed. Native toolbar Back still returns AXError.notImplemented; new exit/reentry after this dialogue and historical intermittent renderer acceptance remain open."
+      "currentBlocker": "Latest map-focus correction and yard-return guidance are on main e02438b. Original native graystone fault-state reload remains pending; local full quarry route/reload passed but does not close native stability gap."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -74,6 +77,15 @@
       "workflow": 34698466229,
       "localUiReadout": true,
       "nativeReadout": false
+    },
+    "latestLocalFullRegression": {
+      "commit": "e02438b77b9543d5d8da5123517d925cd97bcaa3",
+      "tests": 723,
+      "passed": 723,
+      "failed": 0,
+      "skipped": 0,
+      "source": "/private/tmp/rpg-yard-return-full-tests-unrestricted.log",
+      "scope": "Local synthetic regression, not live model/media or native platform acceptance"
     }
   },
   "newBrowserChecksThisTurn": true,
@@ -109,8 +121,9 @@
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
   "contextLossRecovery": "context-loss-recovery-review-20260913.json",
   "pendingExternalActions": {
-    "nativePlaytest": "No lock blocker now. Post-ending native bubble passed; toolbar Back unsupported for fresh exit/reentry.",
+    "nativePlaytest": "Original native graystone fault journey awaits Mini App reload; native toolbar unsupported. User request already pending, not a new origin permission request.",
     "newUpperBodyPair": "Reply to the pending request for one additional platform edit; no request sent and no generation currently running.",
     "identity": "Trusted platform identity adapter contract still absent; current anonymous capability saves preserved."
-  }
+  },
+  "lastUpdated": "2026-09-14"
 }
