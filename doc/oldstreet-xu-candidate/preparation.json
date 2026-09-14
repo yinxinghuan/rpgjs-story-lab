@@ -1,0 +1,89 @@
+{
+  "algorithm": "reviewed-magenta-connected-matte-no-scale-1",
+  "sourceRetained": true,
+  "removed": 1133658,
+  "frames": [
+    {
+      "direction": "down",
+      "mirrored": false,
+      "sourceBox": [
+        437,
+        52,
+        586,
+        319
+      ],
+      "offset": [
+        -384,
+        9
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    },
+    {
+      "direction": "left",
+      "mirrored": true,
+      "sourceBox": [
+        453,
+        759,
+        569,
+        1027
+      ],
+      "offset": [
+        -383,
+        -699
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    },
+    {
+      "direction": "right",
+      "mirrored": false,
+      "sourceBox": [
+        453,
+        759,
+        569,
+        1027
+      ],
+      "offset": [
+        -383,
+        -699
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    },
+    {
+      "direction": "up",
+      "mirrored": false,
+      "sourceBox": [
+        440,
+        1118,
+        584,
+        1382
+      ],
+      "offset": [
+        -384,
+        -1054
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    }
+  ],
+  "width": 1024,
+  "height": 352,
+  "sha256": "dfc33ddc2ea1ef3130b210c7fe850ae2cd040ee318ac7f3c66c1d12570b02416",
+  "productionAdmitted": false,
+  "limitations": [
+    "West idle is a mirror of east idle; no independent west pose",
+    "Walking frames contain wrong directions; excluded",
+    "Hairstyle consistency remains candidate quality",
+    "No generative repair performed by cutout"
+  ]
+}

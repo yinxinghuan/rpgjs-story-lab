@@ -1612,3 +1612,7 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 ### 照片特写对话框（2026-09-15）
 
 `old-street-photo-view.tsx` 使用 `HTMLDialogElement.showModal()` 和卸载时 close，cancel 事件统一到受 busy 保护的 dismiss。继续由父组件暂停/恢复 RPG renderer，证明输入仍经 Story Session 验证，不在组件内修改库存或发现。
+
+### 摄影师实体候选（2026-09-15）
+
+old-street-dev 加载 xu standing 图集并创建摄影师 RPG event，共享 NPC 靠近转向、深度排序和销毁资源流程；old-street-space 将其接近点统一到+44。prepare-oldstreet-xu.mjs 输出来源锁定的去底、分帧及镜像记录。叙事介绍仍由原有 Session 提交，修改介绍只影响未来首次登场。

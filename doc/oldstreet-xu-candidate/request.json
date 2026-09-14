@@ -1,0 +1,13 @@
+{
+  "requestId": "1f9396d1-92f1-45ce-be98-09057359bcf2",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/1bfe1e7240994bb137cd7cadc88ad082098f7684/public/art/overhead/mechanic.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "Use this sprite sheet as the exact camera elevation, foreshortening, body proportions, crisp pixel-art and 3-column 4-row grid reference. Replace every man with the SAME East Asian woman photographer aged about 35: black hair in a compact low bun, thin dark round glasses, muted blue rolled-sleeve shirt, charcoal trousers, brown practical shoes. No apron, no beard, no hat, no camera and no held object. Preserve steep overhead view, visible crown, compressed face and short torso. Exactly THREE equal columns and FOUR equal rows on 1024x1408 canvas. Row 1 faces SOUTH toward viewer, row 2 WEST left profile, row 3 EAST right profile, row 4 NORTH away. Each cell is an IDLE standing pose: feet together, arms relaxed, no walking, all three poses within each row identical. All four directions must be distinct, with the bun on the back of the head. Each figure fully isolated inside its cell with generous margin, same size and foot baseline. Uniform flat saturated magenta RGB255,0,255 background, no checkerboard, no shadows, no text, no grid. No magenta on the woman. The reference is only style and camera; replace its clothing, face and hairstyle entirely."
+}

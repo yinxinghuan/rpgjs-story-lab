@@ -1,0 +1,13 @@
+{
+  "requestId": "2a5b267f-12bd-4124-a1cb-dcae8d9e089b",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/1bfe1e7240994bb137cd7cadc88ad082098f7684/public/art/overhead/mechanic.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "EDIT THE REFERENCE IN PLACE. Retain EXACTLY the reference silhouettes, head-to-body proportions, downward camera, pixel shading and all 12 poses and positions. Only change identity/clothing to a woman photographer: dark tied-back hair, thin dark eyeglasses, muted blue work shirt, charcoal trousers and brown shoes. Do NOT redraw as a tall front-view human. The reference large visible TOP of head and very compressed face must remain unchanged in every cell. Three columns four rows: SOUTH, WEST, EAST, NORTH. Row 3 is a RIGHT-FACING SIDE PROFILE with nose pointing right; never a back view. Middle column remains reference idle stance. Head crown dominates from this high overhead camera. No large face facing eye-level. Preserve reference detailed textured pixel shading, not flat cartoon outlines. Replace pale checkerboard only with uniform bright magenta background, including between limbs. No grid lines, no cast shadows, no text. No magenta on the character. Keep exact reference limb lengths and torso foreshortening."
+}
