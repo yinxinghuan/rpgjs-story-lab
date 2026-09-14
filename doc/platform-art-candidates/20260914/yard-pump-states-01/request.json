@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "25a898fe-1cce-40b2-91a6-e906520b6a25",
+  "mode": "edit",
+  "prompt": "Create a game equipment sprite sheet with exactly THREE equal 320x640 cells in one horizontal row, total 960x640. Use the reference ONLY for its camera and material style: orthographic elevated RPG view, visible top and front, verticals upright, parallel edges, dark worn olive iron and restrained brass, finely textured painterly pixels. Make a NEW compact railway diesel transfer pump on a rectangular plinth: horizontal electric motor, visible short shaft coupling joining a small pump housing, one pressure dial and a thick black hose neatly looped on the RIGHT side. A low protective iron rail with two short posts and a chain spans the front edge of the plinth. No cabinet, no fuel canister, no starter coil.\nAll three cells show the EXACT SAME pump at the exact same angle, size, coordinates and lighting. Entire assembly fits within x=40..280 of each cell and y=180..500; bottom-center contact point x=160,y=500. Opaque plain pure white background, absolutely NO checkerboard, NO ground, NO cast shadow, NO text, NO labels, NO people.\nLEFT: stopped/broken mechanical coupling, visibly separated short shaft ends; front protective chain intact and taut between posts. MIDDLE: repaired coupling firmly joined by a copper sleeve; front chain still intact, every other detail unchanged. RIGHT: the original stopped coupling remains separated; front guard post bent outward and chain broken open, indicating forced entry, NOT successful pump repair. Keep every tank, hose, dial and plinth identical in all three cells. No glow, no flames, no smoke, no floating debris. Clear silhouettes readable when each assembly is about 40 pixels wide in the map.",
+  "referenceUrls": [
+    "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/starter-states-v1.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 640
+  }
+}

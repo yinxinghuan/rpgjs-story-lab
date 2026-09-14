@@ -1,0 +1,11 @@
+{
+  "status": "rejected",
+  "productionAdopted": false,
+  "observed": [
+    "All three frames repeat an upright cabinet despite explicit pump-only instruction",
+    "Shaft/motor identity changes across cells, with copper coil copied from starter reference",
+    "Gauge appears in middle/right but not left; hose routing changes",
+    "Guard posts remain upright in forced state; repair and forced consequences cannot be read reliably"
+  ],
+  "next": "Do not process or admit this sheet. Try one independent single pump design before any state edits; stop this round after the base review."
+}

@@ -1,0 +1,6 @@
+{
+  "scope": "One independent stopped pump base, not a runtime asset or completed state set",
+  "reason": "Previous edit overfit reference cabinet geometry and changed identity between frames",
+  "source": "src/original-yard-chapter.ts",
+  "next": "Review base only; no automatic repair/forced variants in this round"
+}

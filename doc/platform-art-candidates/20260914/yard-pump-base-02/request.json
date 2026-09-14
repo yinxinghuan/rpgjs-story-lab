@@ -1,0 +1,10 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "26dd5615-ad8a-4811-921f-6e267e8c1347",
+  "mode": "text",
+  "prompt": "Single isolated game prop, a compact horizontal railway diesel TRANSFER PUMP on a low rectangular metal skid. Orthographic elevated view looking down about 40 degrees: front and top visible, verticals upright, parallel edges, no vanishing point. Fine painterly pixel-game texture, worn dark olive iron, black rubber and restrained tarnished brass, warm light from upper left, clear dark outline. Left half: short HORIZONTAL cylindrical electric motor with cooling fins. Right half: squat rounded cast-metal pump housing. Between them: a short exposed horizontal shaft coupling, disconnected at its center with a clearly visible narrow gap. A small round pressure gauge on top of the right pump housing. One thick hose loops beside the right edge of the skid. A low front guard has two short upright posts and a single taut chain between them, below the machinery. Keep the motor and pump low and wide; total silhouette wider than tall. NO upright cabinet, NO roof or canopy, NO cupboard, NO copper coil, NO big storage tank. One single assembly, no variants, no human, no labels, no lettering, no diagrams, no scenery, no floor, no cast shadow. Plain opaque pure white background, no checkerboard. 512x640 canvas. Keep the complete object within x=55..457,y=180..500, bottom-center contact point x=256,y=500; generous empty margins. This must be readable as a grounded pump when scaled to 40 pixels wide.",
+  "size": {
+    "width": 512,
+    "height": 640
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "status": "base-accepted-for-state-authoring-only",
+  "productionAdopted": false,
+  "observed": [
+    "Distinct horizontal finned motor and squat cast pump on one low skid",
+    "Disconnected shaft ends clearly visible in source",
+    "Single gauge, attached right hose and continuous front chain",
+    "Elevated front/top view and dark olive/brass materials plausible against existing B equipment",
+    "No cabinet or copied starter coil; opaque near-white matte remains",
+    "Chain sags rather than requested tautness; treat this as the fixed base identity for later edits"
+  ],
+  "pending": [
+    "Generate repaired coupling while keeping all other base identity fixed",
+    "Generate forced guard state while keeping original stopped coupling",
+    "Validate 3-state identity, cutout, frame alignment and actual map scale",
+    "Medical agreement must not be represented as repaired pump"
+  ],
+  "stop": "No more image requests in this round; candidate remains separate from public runtime assets"
+}
