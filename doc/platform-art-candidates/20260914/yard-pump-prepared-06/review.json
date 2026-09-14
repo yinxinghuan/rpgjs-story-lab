@@ -1,0 +1,16 @@
+{
+  "status": "partial-candidate-only",
+  "productionAdopted": false,
+  "sha256": "e347d122ed70543c0ee15bb85064498427fe1df9ceca4ec8be87409dd4a20a1b",
+  "observed": [
+    "Stopped and repaired pump identity recognizable, front support feet aligned",
+    "Initial prepared sheet retained a white island below repaired coupling",
+    "Verified source seed (250,310) is RGB 253/253/253; connected matte removal eliminates island on repeat visual inspection",
+    "Repaired gauge/body proportions still differ slightly from stopped source"
+  ],
+  "missing": [
+    "Valid forced guard state",
+    "Actual renderer size, collision, depth and state transition review"
+  ],
+  "scope": "Source PNG and prepared sheet inspection only, not runtime acceptance"
+}

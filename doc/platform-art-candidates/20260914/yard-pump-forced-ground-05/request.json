@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "ab8ab69d-c8cd-4dc6-bf67-371554ac0124",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789373199917353.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 640
+  },
+  "prompt": "Correct ONLY the broken front guard chains in this exact pump image. The two front posts stand on the ground at approximately image y=480. The dangling chain ends currently extend below that ground: shorten BOTH loose chain segments so their bottom ends stop around y=448, clearly ABOVE the feet of the posts. Leave a clearly open gap between the two ends. Keep both posts, all machinery, the disconnected shaft gap, gauge, hose, skid, perspective, size, exact position, material texture and white background unchanged. Do not join the shaft or repair the chain. Do not add a floor, shadow, debris or text. One 512x640 image."
+}

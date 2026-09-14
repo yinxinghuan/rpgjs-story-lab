@@ -1,0 +1,11 @@
+{
+  "status": "requires-ground-contact-correction",
+  "productionAdopted": false,
+  "observed": [
+    "Coupling remains disconnected",
+    "Chain correctly broken",
+    "Chain ends project well below front post feet; ground contact ambiguous",
+    "Right post not visibly bent"
+  ],
+  "next": "One targeted correction keeping chain ends within ground baseline; do not admit this frame"
+}

@@ -1,0 +1,114 @@
+{
+  "sources": [
+    {
+      "folder": "yard-pump-base-02",
+      "state": "stopped",
+      "sha256": "55e856d34dd96b6339dba5fd75ab0db52cd99f465619f6b2eeb7186621542a3a"
+    },
+    {
+      "folder": "yard-pump-repaired-03",
+      "state": "repaired",
+      "sha256": "17663f050a0a1a18552690957562ab862f29e84bf2850150f60169b9b0831889"
+    }
+  ],
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 512,
+    "cellHeight": 640,
+    "foot": {
+      "x": 256,
+      "y": 500
+    },
+    "kind": "states",
+    "backgroundMode": "pale-neutral",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 244,
+        "y": 472
+      },
+      {
+        "x": 244,
+        "y": 480
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 250,
+        "y": 430
+      },
+      {
+        "x": 450,
+        "y": 350
+      },
+      {
+        "x": 762,
+        "y": 430
+      },
+      {
+        "x": 962,
+        "y": 350
+      },
+      {
+        "x": 762,
+        "y": 310
+      }
+    ]
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        30,
+        151,
+        483,
+        473
+      ],
+      "sourceAnchor": {
+        "x": 244,
+        "y": 472
+      },
+      "offset": {
+        "x": 12,
+        "y": 28
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        539,
+        152,
+        1000,
+        481
+      ],
+      "sourceAnchor": {
+        "x": 244,
+        "y": 480
+      },
+      "offset": {
+        "x": 12,
+        "y": 20
+      }
+    }
+  ],
+  "metrics": {
+    "removed": 490007,
+    "edgeCorrected": 4680,
+    "corePreserved": 152982
+  },
+  "sha256": "e347d122ed70543c0ee15bb85064498427fe1df9ceca4ec8be87409dd4a20a1b",
+  "bytes": 335293,
+  "productionAdopted": false,
+  "missingStates": [
+    "forced"
+  ],
+  "operations": [
+    "lossless source frame composition",
+    "connected neutral background removal with reviewed hose and guard interior seeds",
+    "translation aligning front support feet; no scaling or repainting"
+  ]
+}

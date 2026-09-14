@@ -1,0 +1,7 @@
+{
+  "scope": "One targeted state edit, no automatic runtime admission",
+  "referenceSha256": "55e856d34dd96b6339dba5fd75ab0db52cd99f465619f6b2eeb7186621542a3a",
+  "fact": "yard-agreement=work",
+  "source": "src/original-yard-chapter.ts",
+  "unchanged": "All structure except the explicitly requested mechanical or guard edit"
+}

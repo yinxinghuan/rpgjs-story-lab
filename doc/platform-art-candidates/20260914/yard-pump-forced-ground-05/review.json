@@ -1,0 +1,9 @@
+{
+  "status": "rejected",
+  "productionAdopted": false,
+  "observed": [
+    "Correction introduced extra chains hanging from both support feet",
+    "Chain geometry and ground contact worse than source forced-04"
+  ],
+  "next": "Stop this generation round; retain existing playable art. Do not cut or repaint machine geometry to claim a valid forced state."
+}

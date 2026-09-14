@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "7492f3c7-f154-44ff-b9f4-8325d429425f",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789372975080245.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 640
+  },
+  "prompt": "Edit this exact 512x640 pump image. Preserve pixel-level identity as closely as possible: same silhouette, camera, scale, image coordinates, textured dark olive material, brass gauge, motor fins, pump bolts, skid, right hose and opaque white background. Do not redesign, rescale, shift or rotate the assembly. Return one image, not a sheet. Only repair the disconnected horizontal shaft coupling in the small gap between the left electric motor and right pump housing, around image center x=247,y=280. Join the existing shaft ends with one short solid brass cylindrical coupling sleeve. No wire, coil, glow or new machinery. Front guard chain and both posts remain exactly as in the reference. Every other part remains unchanged."
+}

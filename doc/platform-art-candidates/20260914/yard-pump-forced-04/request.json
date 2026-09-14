@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "4f3aa5e9-433b-4985-9080-d72658956e62",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789372975080245.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 640
+  },
+  "prompt": "Edit this exact 512x640 pump image. Preserve pixel-level identity as closely as possible: same silhouette, camera, scale, image coordinates, textured dark olive material, brass gauge, motor fins, pump bolts, skid, right hose and opaque white background. Do not redesign, rescale, shift or rotate the assembly. Return one image, not a sheet. Only change the low FRONT protective barrier: break the chain at its middle, leaving two visibly separated hanging ends with a clear gap; bend the upper section of the RIGHT front post outward slightly while its foot stays in place. The motor and pump, especially the DISCONNECTED shaft coupling gap near x=247,y=280, must remain EXACTLY in the original broken/stopped condition. Do not repair or join the shaft. No fire, sparks, spilled fuel, extra machinery or ground. All non-barrier pixels retain the reference design."
+}
