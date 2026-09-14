@@ -1,0 +1,51 @@
+{
+  "commit": "7ff4d4d1351947820c2f7c53bee2fabfd3427248",
+  "status": "main-verified-pages-running",
+  "changes": [
+    "New journeys bind reviewed diesel reserve art at five existing locations; legacy bindings remain unchanged",
+    "Backup downloads verify digest, journey identity and current revision before creating the download",
+    "Definite online rate refusals clear their pending action after recovery, allowing authored play to continue"
+  ],
+  "preflight": {
+    "tests": 742,
+    "passed": 742,
+    "failed": 0,
+    "build": "TypeScript, spatial cartridge, cloud frontend, scene resource validation and Worker opaque-module startup passed",
+    "audits": "Public secrets and UUID API base passed; UUID matches games.json; third-party notices included",
+    "artReview": "platform-art-candidates/20260914/diesel-reserve-assembled-03/review.json"
+  },
+  "manifest": "diesel-release-20260914-manifest.json",
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "filesMatched": 115,
+    "pageHealthZip": "passed",
+    "storage": "durable-object-sqlite",
+    "identityMode": "anonymous-capability-v1"
+  },
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "runId": 34818701686,
+    "status": "in_progress",
+    "filesMatched": null
+  },
+  "limits": [
+    "Local and CI suites are not exhaustive branch or physical iPhone verification",
+    "No platform account binding or cross-device identity proof",
+    "Pages is a static mirror; it has no second database or backend"
+  ],
+  "browser": {
+    "environment": "Exact release frontend and compiled Worker on loopback, fresh disposable SQLite, server external network disabled; remote guest-shell retained",
+    "url": "http://127.0.0.1:5430/",
+    "scope": "Desktop external-guest startup, authored repair, reload, backup preparation",
+    "observed": [
+      "Guest banner present; map, protagonist, dialogue, joystick and actions loaded",
+      "Map click reached starter and authored repair succeeded",
+      "Refresh retained fuel68/condition87/morale58, Ada and valley route; repair no longer offered",
+      "Backup preparation successfully produced progress1 download link after integrity validation"
+    ],
+    "limits": [
+      "Did not exercise operating-system download save dialog",
+      "Not another complete native AlterU or physical iPhone route"
+    ]
+  }
+}
