@@ -1,0 +1,21 @@
+{
+  "request": {
+    "request_id": "88dde574-ded6-4068-b9c1-783a62dde0b3",
+    "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "mode": "edit",
+    "reference_urls": [
+      "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/ada-standing-v1.png"
+    ],
+    "size": {
+      "width": 1152,
+      "height": 384
+    },
+    "prompt": "A single horizontal row of THREE complete pixel-art sprites, all STRICT LEFT SIDE PROFILE, nose and toes pointing to the LEFT EDGE of the image. Transform the reference mechanic into this left-facing elevated orthographic view, showing top of head and shoulders. Preserve navy coat, cream collar, dark teal trousers, brown boots, short brown hair, strap and brown tool pouch. Three equal square cells, 384x384 each: first cell a clear walking stride with anatomical left foot forward and right arm forward; middle cell a neutral standing left profile; third cell opposite walking stride with right foot forward and left arm forward. Entire body visible within each cell, identical scale, feet baseline y340. Only three figures, all looking LEFT, never facing viewer or back. Flat solid magenta background #FF00FF with no white lines or cell borders. No shadows, text, ground or extra panels. This is a horizontal left-facing walk cycle, NOT a multi-row character sheet."
+  },
+  "taskId": "mt_37e3bc02cebb5983454e8047eeb021bf",
+  "status": "succeeded",
+  "rawSha256": "1bc7d537f8ee5a96bb0c0750143544170c62770e77c0969f48021bc8a9f1e5a1",
+  "decision": "rejected-as-cycle",
+  "observed": "Three columns returned. First is left-facing stride, middle left-facing standing, third back/diagonal-facing stride. Opposite stride does not preserve direction. White separators and magenta matte remain. Not admissible as left walk cycle.",
+  "rawLocalPath": "/private/tmp/rpg-follow-art/ada-left-raw.png"
+}

@@ -1,0 +1,21 @@
+{
+  "request": {
+    "request_id": "77e71dfa-8b51-4c17-9332-3a376f060d68",
+    "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "mode": "edit",
+    "reference_urls": [
+      "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/ada-standing-v1.png"
+    ],
+    "size": {
+      "width": 768,
+      "height": 1024
+    },
+    "prompt": "Create a game-ready 3-column by 4-row sprite sheet of the EXACT mechanic character in the reference, preserving the same navy work coat, cream collar, dark teal trousers, brown boots, short dark brown hair, diagonal brown strap, brown tool pouch and small brass lamp. Preserve the reference pixel-art treatment and elevated orthographic RPG camera: visible top of head, no perspective foreshortening change between directions. Precisely equal 256x256 cells. One complete character centered per cell, consistent body scale and foot pivot at cell x128 y230, never cropped. Rows top to bottom: walking toward viewer, walking left, walking right, walking away from viewer. Columns: LEFT anatomical leg forward with RIGHT arm forward; neutral standing feet together and arms down; RIGHT anatomical leg forward with LEFT arm forward. Back row MUST show clearly alternating opposite feet in outer frames, never the same leg twice. Keep torso identity identical in all 12 frames; only natural small opposing arm swing and leg stride. Solid perfectly uniform bright magenta #FF00FF background, no checkerboard, no cast shadows, no ground, no text, no separators, no border, no other objects. Crisp edges suitable for color-key transparency."
+  },
+  "taskId": "mt_f290d3a2479b885f519f42991fc56d9e",
+  "status": "succeeded",
+  "rawSha256": "31516f0fbeac555a5e89d589d2eee5b5c60b4391a04f2bc487c65bf6ab15cd79",
+  "decision": "rejected",
+  "observed": "3x3 nine-cell sheet instead of 3x4; most frames face front; no usable four-direction alternating gait. Do not publish or bind.",
+  "rawLocalPath": "/private/tmp/rpg-follow-art/ada-walk-raw.png"
+}
