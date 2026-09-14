@@ -2,3 +2,5 @@
 .os-actions form{display:flex;gap:6px;margin:8px 0}.os-actions input{min-width:0;flex:1;min-height:44px;padding:8px;border:1px solid #9b9e91;border-radius:4px;background:var(--os-paper);color:var(--os-ink);font:inherit;-webkit-user-select:text;user-select:text}
 .os-modal section{max-height:85dvh;overflow:auto;touch-action:pan-y}
 .os-photo{width:min(94vw,460px)}.os-photo__joined{display:flex;aspect-ratio:4/3;background:#aba18a;border:2px solid #81786c}.os-photo__joined>div{width:50%;height:100%;background-size:200% 100%;background-repeat:no-repeat}.os-photo__pieces{display:flex;gap:8px;margin:12px 0}.os-photo__pieces button{padding:4px;flex:1}.os-photo__pieces button[aria-pressed=true]{outline:3px solid var(--os-accent)}.os-photo__pieces span{display:block;aspect-ratio:2/3;background-size:200% 100%;background-repeat:no-repeat}
+
+.os-target--actor{background:transparent!important;border:0!important;color:transparent!important;text-indent:-9999px;overflow:hidden;box-shadow:none}.os-target--actor:focus-visible{outline:2px solid var(--os-paper);outline-offset:2px}

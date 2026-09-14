@@ -1,0 +1,18 @@
+{
+  "source": "public/art/overhead/mechanic.png",
+  "sha256": "528735d4e01625854f42a82afbe79468edd8502b6c7def1bdfe7f947d0ba0c9b",
+  "identity": "zhou-watchmaker",
+  "usage": "Existing internally generated B-perspective gray-haired repairman sprite, intentionally reused as a watchmaker visual candidate in the rewritten story. Original train remains unchanged.",
+  "scale": 0.22,
+  "body": {
+    "w": 32,
+    "h": 28
+  },
+  "foot": {
+    "x": 16,
+    "y": 28
+  },
+  "pose": "stand only, direction may face approaching player",
+  "fullMotionAdmitted": false,
+  "productionAdmitted": false
+}

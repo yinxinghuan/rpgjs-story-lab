@@ -1562,3 +1562,7 @@ src/old-street-conversation.ts 从权威 facts 生成短话题，按 oldStreetSp
 ### 旧街在线短对白（2026-09-15）
 
 server/old-street-dialogue.ts 构建当前人物的最小已知上下文，createOldStreetDialogueGenerator 用同一截止时间执行生成与语义复核。只接受 text/knowledgeIds，最多300字符，不返回动作命令；未准入外貌显式标记为未知。OldStreetAuthority 先检查场景/距离/介绍/美术，再选作者回答或在线生成，最终只追加成对 blocks。超时、拒绝及未开启均为可恢复终止错误。Worker 和两种本机适配器支持独立对白注入，本机请求与行动理解共享原有进程额度；额度未开启不联网。scripts/test-oldstreet-live-dialogue.ts 需显式开关，最多四次真实请求，普通测试不调用。
+
+### 修表师实体候选（2026-09-15）
+
+old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorSheet 注册 oldstreet-watchmaker。在工作棚 mapEvents 创建 RPG-JS 事件，through=true 只避免引擎重复碰撞，实际碰撞仍由 oldStreetProjectedProps/oldStreetWalkable 权威数据处理。近处玩家位置变化时更新站姿朝向，其他场景不更新该引用；跨场景重新 onInit 绑定事件。NPC图集对象URL在卸载时释放。

@@ -1,6 +1,6 @@
 import type {CharacterDefinition,Locale,StorySave,StoryBlock} from './vendor/original-train/types'
 const cast = [
- {id:'zhou-watchmaker',entity:'watchmaker',room:'shed',name:['老周','Zhou'],role:['修表师','Watchmaker'],intro:['擦钟的老人抬起头：“叫我老周就好，我在这儿修表。你是来取信的吧？”','The old man polishing a clock looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”']},
+ {id:'zhou-watchmaker',entity:'watchmaker',room:'shed',name:['老周','Zhou'],role:['修表师','Watchmaker'],intro:['灰发老人抬起头：“叫我老周就好，我在这儿修表。你是来取信的吧？”','The gray-haired man looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”']},
  {id:'lan-laundry',entity:'laundry-owner',room:'laundry',name:['阿岚','Lan'],role:['洗衣店主','Laundry owner'],intro:['卷着袖子的女人放下衣篮：“我是阿岚，这家洗衣店的店主。有事就叫我。”','A woman with rolled sleeves sets down a laundry basket. “I’m Lan, the owner. Let me know if you need anything.”']},
  {id:'xu-photographer',entity:'photographer',room:'photo',name:['许青','Xu Qing'],role:['摄影师','Photographer'],intro:['戴眼镜的女人抬起相纸：“我叫许青，在这里洗照片。你可以先看看。”','A woman in glasses lifts a photographic print. “I’m Xu Qing. I develop photos here. Feel free to look around.”']},
 ] as const
