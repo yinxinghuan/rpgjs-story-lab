@@ -1,3 +1,4 @@
+import {oldStreetRequiredInspection} from './old-street-inspection'
 import {OldStreetClockView} from './old-street-clock-view'
 import type {RpgPlayer} from '@rpgjs/server'
 import {Direction} from '@rpgjs/common'
@@ -5,7 +6,7 @@ import {oldStreetTalkTopics} from './old-street-conversation'
 import {OldStreetJournalView} from './old-street-journal-view'
 import {OldStreetMapView} from './old-street-map-view'
 import {OldStreetPhotoView} from './old-street-photo-view'
-import {oldStreetActionNames as actionNames} from './old-street-action-input'
+import {oldStreetActionNames as actionNames,resolveOldStreetInput} from './old-street-action-input'
 import {oldStreetPerson} from './old-street-characters'
 import {oldStreetSession,oldStreetSessionHttp} from './old-street-session'
 import type {OldStreetHead} from './old-street-head'
@@ -143,10 +144,15 @@ export default function OldStreetDev() {
       current.current = next
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
-      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
+      const blockedReason=attemptedAction?resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons.join(' '):undefined
+      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      const requiredInspection=oldStreetRequiredInspection(next.save,next.scene,target,result.rejectionCode)
+      if(requiredInspection==='clock'){setClockOpen(true);setClockMessage('');if(input!==undefined)setNotice(text(['拿近看看钟底。','Bring the clock closer to inspect its underside.']))}
+      if(requiredInspection==='photo'){setPhotoOpen(true);setPhotoMessage('');if(input!==undefined)setNotice(text(['把照片放到放大台上比对。','Place the photographs on the viewing table.']))}
       if(id==='oldstreet:inspect-clock'){if(result.accepted)setClockOpen(false);else setClockMessage(text(['再仔细看看刻记，也可以换一处观察。','Look more closely at the mark, or examine another area.']))}
       if(id==='oldstreet:match-photos'){if(result.accepted)setPhotoOpen(false);else setPhotoMessage(text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']))}
-      runtime.current!.pause(Boolean(nextHead.save.facts.departed)||((photoOpen||clockOpen)&&!result.accepted))
+      runtime.current!.pause(Boolean(nextHead.save.facts.departed)||Boolean(requiredInspection)||((photoOpen||clockOpen)&&!result.accepted))
     } catch (e) {setError(String(e)); runtime.current?.pause(true)}
     finally {busyRef.current = false; setBusy(false)}
   }
