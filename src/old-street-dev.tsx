@@ -1,3 +1,4 @@
+import {oldStreetTalkTopics} from './old-street-conversation'
 import {OldStreetPhotoView} from './old-street-photo-view'
 import {oldStreetActionNames as actionNames} from './old-street-action-input'
 import {oldStreetPerson} from './old-street-characters'
@@ -106,11 +107,11 @@ export default function OldStreetDev() {
     }catch(e){setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
-  async function execute(id: string, target: string, input?:string, photoMatch?:unknown) {
+  async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false) {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
-      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{})})
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{})})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
@@ -132,17 +133,19 @@ export default function OldStreetDev() {
     const started = runtime.current.walkTo(entity.approach, () => {if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
     if (!started) {busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
   }
-  function sendInput(){
-    if(!chosen||!typed.trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
-    const input=typed.trim(),target=chosen.id
+  function sendInput(dialogue=false,provided?:string){
+    if(!chosen||!(provided??typed).trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
+    const input=(provided??typed).trim(),target=chosen.id
     busyRef.current=true;setBusy(true)
-    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input)})){busyRef.current=false;setBusy(false)}
+    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){busyRef.current=false;setBusy(false)}
     else setTyped('')
   }
   const entities = oldStreetSpatialPlan(head.save).entities.filter(e => e.scene === head.scene)
   const nearest = [...entities].filter(e => Math.hypot(e.position.x - feet.x, e.position.y - feet.y) < 54)
     .sort((a, b) => Math.hypot(a.position.x - feet.x, a.position.y - feet.y) - Math.hypot(b.position.x - feet.x, b.position.y - feet.y))[0]
   const chosen = entities.find(e => e.id === selected) ?? nearest
+  const knownSpeaker=chosen&&oldStreetPerson(chosen.id)&&head.save.characters.some(c=>c.id===oldStreetPerson(chosen.id)?.id)
+  const talkTopics=chosen?oldStreetTalkTopics(head.save,chosen.id):[]
   const actions = chosen?.actions.filter(id => ruleFor(id)?.status === 'accepted') ?? []
   const label = (id: string) => {
     const door = oldStreetDoors().find(d => d.actionId === id)
@@ -174,7 +177,8 @@ export default function OldStreetDev() {
     <section className="os-actions" aria-label={text(['当前行动', 'Current actions'])}>
       <p role="status">{error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
-      {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput()}}><input aria-label={text(['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(['发送','Send'])}</button></form>}
+      {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
+      {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
       <small>{text(['随身：', 'Carrying: '])}{head.save.inventory.map(i => i.label).join(' · ') || text(['无', 'Nothing'])}</small>
     </section>
     <footer>

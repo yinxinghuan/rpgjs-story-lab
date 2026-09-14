@@ -1,4 +1,6 @@
 import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
+import {oldStreetTalkReply,oldStreetTalkBlocks} from '../src/old-street-conversation'
+import {oldStreetPerson} from '../src/old-street-characters'
 import type {OriginalActionInterpreter} from './original-action-interpreter'
 import {originalActionIntentIssues} from '../src/original-action-intent'
 import {oldStreetActionNames} from '../src/old-street-action-input'
@@ -41,10 +43,20 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(!['action','free-input'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(!['action','free-input','dialogue'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='dialogue'){
+        const person=oldStreetPerson(body.target)
+        if(!person||person.room!==h.sceneId||!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('OLD_STREET_DIALOGUE_TARGET_REQUIRED',409)
+        if(!h.save.characters.some(c=>c.id===person.id))throw new LabError('OLD_STREET_DIALOGUE_INTRODUCTION_REQUIRED',409)
+        if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
+        const text=body.text.trim(),reply=oldStreetTalkReply(h.save,body.target,text)
+        const save=structuredClone(h.save);save.blocks.push(...oldStreetTalkBlocks(save,body.target,body.action_id,text,reply))
+        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:'author',text:reply}
+      }
       if(body.type==='free-input'){
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         const entity=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)

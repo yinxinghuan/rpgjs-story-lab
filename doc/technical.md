@@ -1554,3 +1554,7 @@ CUA 5453：从结局点击重新探索，走完整清障取照片路线到照相
 ### 旧街解释器注入与调用边界（2026-09-15）
 
 CarriageJourneyAuthority 接受独立 oldStreetInterpreter 注入，传入 OldStreetAuthority；正式 release 为 false 时不默认创建旧街在线解释器。本机 Worker 预检复用 originalPreflightModels 的显式 2–12 请求额度，所有预检对象共享本进程预算。src/old-street-action-input.ts 在规范化及别名匹配前运行 originalActionIntentIssues。scripts/test-oldstreet-live-actions.ts 新建内存旅程，真实模型调用上限 6，逐例保存不含玩家身份的结果与用量；不作为日常单测执行。
+
+### 人物短交谈与分别记忆（2026-09-15）
+
+src/old-street-conversation.ts 从权威 facts 生成短话题，按 oldStreetSpeakerId/oldStreetConversationId 配对保存玩家输入与回复，只读取该人物最近四轮完整记录。OldStreetAuthority 新增 dialogue 请求类型，先校验当前场景、距离、人物身份与可见介绍，随后只追加 blocks 并增加旅程版本，沿用 SessionAuthority 的事务和幂等回执。回忆只引用历史玩家原话，不把玩家声称发生的事变成权威事实。前端话题按钮及输入通过同一 execute/send 入口走近后提交。

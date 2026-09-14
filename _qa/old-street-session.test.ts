@@ -208,3 +208,26 @@ test('returning trolley while standing in its vacant bay restores collision safe
   assert.deepEqual(s.get('owner',h.id),result.head)
  }finally{raw.close()}
 })
+
+
+test('short conversations require introductions, preserve facts, isolate memory and replay once',async()=>{
+ const {oldStreetConversation}=await import('../src/old-street-conversation')
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('owner',randomUUID(),'zh')
+  for(const room of ['photo','roof','shed'])h=(await s.action('owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId))).head
+  const talk=(text:string)=>({...request(h,'oldstreet:greet-watchmaker'),type:'dialogue',text})
+  await assert.rejects(s.action('owner',h.id,talk('信在哪里？')),/INTRODUCTION_REQUIRED/)
+  h=(await s.action('owner',h.id,request(h,'oldstreet:greet-watchmaker'))).head
+  const unchanged=structuredClone(h.save),body=talk('我担心找不到这封信。'),result=await s.action('owner',h.id,body)
+  h=result.head
+  assert.deepEqual(h.save.facts,unchanged.facts);assert.deepEqual(h.save.inventory,unchanged.inventory);assert.deepEqual(h.save.relationships,unchanged.relationships);assert.deepEqual(h.save.map,unchanged.map)
+  assert.deepEqual(await s.action('owner',h.id,body),result)
+  assert.equal(oldStreetConversation(h.save,'zhou-watchmaker').length,1)
+  assert.equal(oldStreetConversation(h.save,'lan-laundry').length,0)
+  const reply=await s.action('owner',h.id,talk('你记得我刚才说什么吗？'));h=reply.head
+  assert.match(String(reply.text),/我担心找不到这封信/)
+  assert.deepEqual(s.get('owner',h.id),h)
+  await assert.rejects(s.action('owner',h.id,{...talk('你好'),target:'drawer'}),/TARGET_REQUIRED/)
+ }finally{raw.close()}
+})
