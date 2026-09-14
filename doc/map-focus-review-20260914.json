@@ -181,7 +181,8 @@
     "build": "pass",
     "log": "/private/tmp/rpg-yard-return-build.log",
     "liveReleaseUnchanged": "378b765",
-    "notDeployed": true
+    "notDeployed": false,
+    "supersededByRelease": "e02438b77b9543d5d8da5123517d925cd97bcaa3"
   },
   "bridgeAndFinaleWalkthrough": {
     "environment": "same frozen 378b765 production frontend and Worker; localhost synthetic journey, not native AlterU or real iPhone",
@@ -245,17 +246,29 @@
     "mainDeployCommand": "completed",
     "pages": {
       "run": 34803181418,
-      "status": "in_progress",
-      "currentStep": "check:spatial-story; build and tests completed",
-      "lastVerified": "2026-09-14; original run queried successfully outside sandbox"
+      "status": "completed",
+      "conclusion": "success",
+      "ciTests": 723,
+      "ciFailures": 0,
+      "spatialJourneys": 120,
+      "spatialFailures": 0,
+      "spatialActions": 82
     },
-    "dualDeploymentComplete": false,
+    "dualDeploymentComplete": true,
     "mainVerification": {
       "files": 114,
       "sha256": "all match local build",
       "pageApiSourceZip": "pass",
       "identityMode": "anonymous-capability-v1",
       "hashEvidence": "/private/tmp/rpg-yard-return-release-hashes.json"
+    },
+    "dualHashVerification": {
+      "commit": "e02438b77b9543d5d8da5123517d925cd97bcaa3",
+      "mainFiles": 114,
+      "pagesFiles": 114,
+      "allMatchSameLocalBuild": true,
+      "evidence": "/private/tmp/rpg-yard-return-release-hashes.json",
+      "ciLog": "/private/tmp/rpg-yard-return-ci.log"
     }
   }
 }

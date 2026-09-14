@@ -6,7 +6,7 @@
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "native-ending-dialogue-review-20260913.json: f34c4eb main and Pages each114 actual files match same local production build; Pages34738431178 passed.",
+    "sameCommitDualDeployment": "map-focus-review-20260914.json#yardReturnRelease: e02438b77b9543d5d8da5123517d925cd97bcaa3; main and Pages each114 actual files SHA256 match same local build. Pages34803181418 completed success.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",
@@ -31,7 +31,7 @@
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
     "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
     "latestNativeReentry": "native-ending-dialogue-review-20260913.json: previous reentry preserved ending/stats/companions; 2026-09-14 actual native post-ending short dialogue and close-to-map passed. New exit/reentry after dialogue not verified.",
-    "currentMainRelease": "map-focus-review-20260914.json#yardReturnRelease: main 114 files SHA256 match local production build; page/API/source ZIP pass. Pages34803181418 still running; do not claim current dual deployment complete.",
+    "currentMainRelease": "map-focus-review-20260914.json#yardReturnRelease: e02438b main page/API/source ZIP pass; same-commit main/Pages each114 files match local production build.",
     "continuousQuarryPublicLogJourney": "map-focus-review-20260914.json#bridgeAndFinaleWalkthrough: frozen 378b765 localhost production frontend/Worker; UI journey through quarry loop, tunnel, pass, town, bridge, public-log ending and reload. Fuel25/condition75/morale75; Ada/Mako. Not native or iPhone proof.",
     "mapFocusScrolling": "map-focus-review-20260914.json: hidden overflow browser-focus scrolling reproduced; clip prevents extra map scroll, journal remains scrollable. Local real renderer continued through final scene; native fault-state recheck pending."
   },
@@ -62,13 +62,16 @@
     "downloadCompatibility": 27,
     "redirectRejectionIllustrationSuite": 17,
     "fullCIRegression": {
-      "commit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
-      "run": 34738431178,
-      "tests": 721,
-      "passed": 721,
+      "commit": "e02438b77b9543d5d8da5123517d925cd97bcaa3",
+      "run": 34803181418,
+      "tests": 723,
+      "passed": 723,
       "failed": 0,
       "skipped": 0,
-      "source": "gh run view --log; actual TAP totals"
+      "spatialJourneys": 120,
+      "spatialFailures": 0,
+      "spatialActions": 82,
+      "source": "/private/tmp/rpg-yard-return-ci.log; actual TAP totals and spatial summary"
     },
     "displayDiagnostics": {
       "targetedTests": 11,
