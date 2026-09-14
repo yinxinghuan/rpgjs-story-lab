@@ -1341,3 +1341,7 @@ OriginalHead 新增可选 companionPositions（角色 id → 碰撞左上角）�
 
 ### 跟随 renderer 试运行
 `?companion_motion=1` 在当前主游戏启用 CompanionMotion，保持默认产品入口关闭直到行走素材验收。移动快照同步 RPG-JS 实体、DOM 人物热点、寻路碰撞、位置 checkpoint 和行动请求；交谈/菜单暂停队形。已在合成小城旅程真实跨站台移动并成功向移动后的阿达提交对白，保存成功。当前使用站立图，仅证明位置链路，不能作为行走动画验收；工作驻留和狭窄通道避让仍未完成。
+
+
+### 山口工作驻留
+`original-companion-duties.ts` 从当前场景、显式岗位事实和实际在队状态派生工作目的地；CompanionMotion 的 workPosts 覆盖跟随目的地，抵达后停步，删除岗位目标即恢复跟随。不会新增岗位事实或更改队伍。13 项运动/岗位/互动位置测试通过，画面仍待验证。一次单帧平台生成返回 PROVIDER_REJECTED、retryable=false，无图片；失败证据保留在 companion-motion-20260915，未纳入资产。

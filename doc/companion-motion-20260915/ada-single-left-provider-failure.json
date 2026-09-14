@@ -1,0 +1,23 @@
+{
+  "request": {
+    "request_id": "f40a1360-8bf0-4abb-aee4-e4ca30ef3d29",
+    "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "mode": "edit",
+    "reference_urls": [
+      "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/ada-standing-v1.png"
+    ],
+    "size": {
+      "width": 512,
+      "height": 640
+    },
+    "prompt": "Create ONE full-body pixel-art sprite of this exact mechanic character, facing strictly LEFT, in a walking contact pose. Elevated orthographic RPG view matching the reference: top of head and shoulders visible, no vanishing point. Keep short brown hair, navy double-breasted work coat, cream collar, dark teal trousers, brown boots, diagonal brown strap and brass lamp in brown hip pouch. The nearer leg is extended toward image LEFT, far leg extended toward image RIGHT; far arm swings forward, near arm backward. Head, torso and both feet all point LEFT. Only ONE character centered, entire silhouette visible with generous margin. Crisp pixel edges and the same muted palette. A uniform solid magenta #FF00FF background, no shadow, floor, checkerboard, text, borders or extra figures. Do not produce a sprite sheet. Preserve the reference proportions and elevated camera angle."
+  },
+  "response": {
+    "error": {
+      "code": "PROVIDER_REJECTED",
+      "message": "ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "retryable": false
+    }
+  },
+  "decision": "no-image-returned; no asset admitted; not retried because retryable=false"
+}

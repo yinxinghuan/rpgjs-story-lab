@@ -48,3 +48,13 @@ test('frame rate does not turn following into faster movement or slower footstep
  assert.ok(Math.max(...results.map(r=>r.x))-Math.min(...results.map(r=>r.x))<5)
  assert.ok(Math.max(...results.map(r=>r.travelled))-Math.min(...results.map(r=>r.travelled))<5)
 })
+test('explicit work post overrides following until duty is released',()=>{
+ const m=new CompanionMotion();m.reset({x:200,y:100},[{id:'ada',position:{x:80,y:100}}])
+ const workPosts={ada:{x:100,y:100}}
+ for(let i=0;i<120;i++)m.update(1/60,{x:200,y:100},{...options(),workPosts})
+ assert.ok(Math.abs(m.snapshot()[0].position.x-100)<3)
+ for(let i=0;i<60;i++)m.update(1/60,{x:200+i,y:100},{...options(),workPosts})
+ assert.ok(Math.abs(m.snapshot()[0].position.x-100)<3);assert.equal(m.snapshot()[0].pose,'stand')
+ for(let i=0;i<30;i++)m.update(1/60,{x:259,y:100},options())
+ assert.ok(m.snapshot()[0].position.x>120)
+})

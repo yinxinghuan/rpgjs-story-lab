@@ -1,0 +1,8 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {randomUUID} from 'node:crypto'
+import {originalTrainRuntime} from '../server/original-train-runtime'
+import {originalCompanionDutyTargets} from '../src/original-companion-duties'
+const fixture=()=>{const h=originalTrainRuntime(()=>true).initial('zh',randomUUID());h.sceneId='train-at-mountain-pass';h.save.partyMemberIds=['ada-mechanic','mara-raider','lin-scout'];for(const id of ['mara-raider','lin-scout'])if(!h.save.characters.some(c=>c.id===id))h.save.characters.push({...h.save.characters[0],id,name:id,status:'companion'});for(const c of h.save.characters)if(h.save.partyMemberIds.includes(c.id))c.status='companion';return h}
+test('only explicit current duties hold present companions at their posts',()=>{const h=fixture();assert.deepEqual(originalCompanionDutyTargets(h),{});h.save.facts['pass-duty']='mara-raider';h.save.facts['pass-lookout']='lin-scout';const before=structuredClone(h);assert.deepEqual(Object.keys(originalCompanionDutyTargets(h)).sort(),['ada-mechanic','lin-scout','mara-raider']);assert.deepEqual(h,before);h.save.partyMemberIds=['ada-mechanic'];assert.deepEqual(Object.keys(originalCompanionDutyTargets(h)),['ada-mechanic'])})
+test('debrief and scene departure release duties without deleting historical facts',()=>{const h=fixture();h.save.facts['pass-duty']='mara-raider';h.save.facts['pass-debriefed']=true;assert.deepEqual(originalCompanionDutyTargets(h),{});h.save.facts['pass-debriefed']=false;h.sceneId='train-at-sleeping-town';assert.deepEqual(originalCompanionDutyTargets(h),{});assert.equal(h.save.facts['pass-duty'],'mara-raider')})

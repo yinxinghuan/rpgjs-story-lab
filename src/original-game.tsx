@@ -1,3 +1,4 @@
+import {originalCompanionDutyTargets} from './original-companion-duties'
 import {CompanionMotion} from './companion-motion'
 import {originalCharacterBodies} from './original-character-space'
 import {originalPassengers,originalPassengerConversation,passengerArt} from './original-passengers'
@@ -190,7 +191,7 @@ export default function OriginalGame(){
   const tick=(now:number)=>{const dt=(now-last)/1000;last=now;const h=spatialHead()
    if(h&&runtime.current?.renderedScene()===h.sceneId){
     const members=formation.current.snapshot(),ids=new Set(members.map(m=>m.id)),ground={...h,save:{...h.save,characters:h.save.characters.filter(c=>!ids.has(c.id))}},walk=originalWorldWalkabilitySnapshot(ground)
-    const states=formation.current.update(dt,pos.current,{paused:busyRef.current||Boolean(panel)||Boolean(error)||document.hidden||Boolean(frozenCompanion.current),talkingTo:frozenCompanion.current,walkable:walk,findPath:(a,b)=>findGridPath(a,b,walk)})
+    const states=formation.current.update(dt,pos.current,{paused:busyRef.current||Boolean(panel)||Boolean(error)||document.hidden||Boolean(frozenCompanion.current),talkingTo:frozenCompanion.current,workPosts:originalCompanionDutyTargets(h),walkable:walk,findPath:(a,b)=>findGridPath(a,b,walk)})
     if(states.length){companionPositions.current=Object.fromEntries(states.map(s=>[s.id,s.position]));projectActors();if(now-paint>50){refreshFormation(n=>n+1);paint=now}}
    }
    raf=requestAnimationFrame(tick)
