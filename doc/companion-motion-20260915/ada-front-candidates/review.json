@@ -1,0 +1,123 @@
+{
+  "date": "2026-09-15",
+  "provider": "AlterU media service public v1",
+  "runtimeAdmitted": false,
+  "originalsPreserved": true,
+  "candidates": [
+    {
+      "id": "ada-front-contact",
+      "file": "ada-front-contact.png",
+      "sha256": "86b335391a2c7f7bbb7615374849baf22f2a85b69749fc8d7267f4f8286bc190",
+      "request": {
+        "request_id": "cd5f642f-5f1b-4cb1-9ff4-5d686356cee6",
+        "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+        "mode": "edit",
+        "reference_urls": [
+          "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/ada-standing-v1.png"
+        ],
+        "size": {
+          "width": 512,
+          "height": 640
+        },
+        "prompt": "Edit the supplied RPG sprite into ONE walking contact pose facing DOWN toward the viewer, retaining exactly the elevated orthographic camera and character design. Full body, large visible top of short brown hair, face partly hidden by fringe, navy double-breasted work coat, cream collar, teal trousers, brown boots, diagonal brown strap, brass lamp in brown pouch on viewer right. Preserve compact proportions and crisp pixel-art detailing. Advance the character anatomical RIGHT foot toward the viewer: this is the boot on the LEFT side of the image, lower in the picture. The other boot on image RIGHT is higher, behind the body. The left arm on image RIGHT swings forward and the other arm back; keep the lamp attached to its pouch. Only this single figure centered with generous margin. Uniform flat magenta #FF00FF background, no ground or cast shadow, no checkerboard, text, panels, duplicates or sprite sheet. Do not change viewing direction; match the reference head and body tilt."
+      },
+      "response": {
+        "task_id": "mt_113747f0009e0f237ce2a88f81c10188",
+        "request_id": "cd5f642f-5f1b-4cb1-9ff4-5d686356cee6",
+        "type": "image",
+        "status": "succeeded",
+        "created_at": 1789408328948,
+        "updated_at": 1789408334587,
+        "media": {
+          "type": "image",
+          "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408334387861.png",
+          "width": 512,
+          "height": 640,
+          "format": "png"
+        },
+        "timing_ms": 3108
+      },
+      "decision": "candidate",
+      "visualReview": "Reference identity and elevated view broadly retained. Actual image-right boot advances, opposite the requested leg. Relabel by observed pose. Large stride and exposed sole need runtime review."
+    },
+    {
+      "id": "ada-front-opposite",
+      "file": "ada-front-opposite.png",
+      "sha256": "5d4f304ace52a68dc49caed7725e58d3d3cd8eff53d1ae888e9093d9237de2c3",
+      "request": {
+        "request_id": "7c8d7393-bdc1-48db-ac99-a05ce98a8b4d",
+        "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+        "mode": "edit",
+        "reference_urls": [
+          "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408334387861.png"
+        ],
+        "size": {
+          "width": 512,
+          "height": 640
+        },
+        "prompt": "Create the OPPOSITE walking contact pose from this single character reference. Keep exactly the same down-facing elevated orthographic camera, short brown hair, navy coat, cream collar, diagonal brown strap, brass lamp and brown pouch on IMAGE RIGHT. Keep all costume asymmetry unchanged, do NOT mirror the entire character. Change the legs: the boot on IMAGE LEFT must now be the lowest point in the picture, extended forward toward the viewer; the boot on IMAGE RIGHT must be raised higher in the picture, behind. The reference currently has the IMAGE RIGHT boot lowest: reverse that leg stride. Swing arms oppositely too. Only one full body figure at identical scale and placement, on uniform flat magenta background. Preserve pixel-art edges, no floor, shadow, labels, text or additional figures."
+      },
+      "response": {
+        "task_id": "mt_9c2aac88994d789a9d24942725ada113",
+        "request_id": "7c8d7393-bdc1-48db-ac99-a05ce98a8b4d",
+        "type": "image",
+        "status": "succeeded",
+        "created_at": 1789408410675,
+        "updated_at": 1789408413928,
+        "media": {
+          "type": "image",
+          "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408413720275.png",
+          "width": 512,
+          "height": 640,
+          "format": "png"
+        },
+        "timing_ms": 2514
+      },
+      "decision": "rejected",
+      "visualReview": "Opposite leg is visible but raised arm reads as waving/running; unsuitable normal walking pose."
+    },
+    {
+      "id": "ada-front-opposite-arms",
+      "file": "ada-front-opposite-arms.png",
+      "sha256": "404d527df4c1ad7f8537db3eb6087dbdb2db8c39f6015ce597cc0426b8733879",
+      "request": {
+        "request_id": "bd549164-287c-41bb-b968-e154dc94b957",
+        "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+        "mode": "edit",
+        "reference_urls": [
+          "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408413720275.png"
+        ],
+        "size": {
+          "width": 512,
+          "height": 640
+        },
+        "prompt": "Correct ONLY the arms of this sprite into an ordinary relaxed walking pose. Both upper arms hang DOWN close beside the coat. Both elbows remain BELOW the waist, both hands near the hips. The hand on image RIGHT is slightly forward at hip height, image LEFT hand slightly back. No raised arm, no waving, no jumping, no wide spread arms. Keep EVERYTHING ELSE the same: exact head position, elevated down-facing orthographic view, both legs and boots in exactly their existing positions, image LEFT boot lower and forward, image RIGHT boot higher and behind, navy coat, brown strap, brass lamp and pouch on image RIGHT. Single full body pixel-art sprite on uniform magenta background, same placement, no shadow, text or additional figures."
+      },
+      "response": {
+        "task_id": "mt_1bd7d422623238d9c61967c4a0af17bd",
+        "request_id": "bd549164-287c-41bb-b968-e154dc94b957",
+        "type": "image",
+        "status": "succeeded",
+        "created_at": 1789408466471,
+        "updated_at": 1789408469550,
+        "media": {
+          "type": "image",
+          "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408469345778.png",
+          "width": 512,
+          "height": 640,
+          "format": "png"
+        },
+        "timing_ms": 2328
+      },
+      "decision": "candidate",
+      "visualReview": "Opposite leg retained; raised arm corrected. Pouch stays on image right. Large stride and exposed sole need runtime review."
+    }
+  ],
+  "remaining": [
+    "Remove magenta matte without damaging dark edges",
+    "Normalize scale and foot anchor against standing reference",
+    "Review contact-neutral-opposite-neutral playback in actual renderer",
+    "Generate and review remaining directions",
+    "Preserve costume asymmetry; do not mirror whole character to manufacture opposite stride"
+  ]
+}
