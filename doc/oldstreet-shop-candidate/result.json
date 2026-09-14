@@ -1,0 +1,8 @@
+{
+  "request_id": "d70c8c2e-a586-412b-9309-ba0d8b7f86d6",
+  "task_id": "mt_34ef7da79fe42fc2fb764f3d1c403eaa",
+  "source_url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789418020435503.png",
+  "sha256": "91b05ceddefdb524747948ba4221b1ddf4b0f97d4f5b648c067cc4da4455ba6a",
+  "admitted": false,
+  "reason": "Rejected: converging perspective, floor and threshold locations violate shared orthogonal layout. Not loaded by game. Next candidate uses exact layout reference."
+}

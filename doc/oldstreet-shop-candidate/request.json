@@ -1,0 +1,10 @@
+{
+  "request_id": "d70c8c2e-a586-412b-9309-ba0d8b7f86d6",
+  "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "prompt": "A playable 2D orthographic overhead RPG background, portrait 1024x1536. A small old neighborhood watch repair shop viewed with a steep overhead camera, parallel projection, NO vanishing point, NO isometric diamond, NO perspective corridor. Warm restrained painterly pixel-art texture, muted cream plaster, walnut trim, worn brown floorboards, gentle afternoon light. STRICT composition: the rectangular WALKABLE FLOOR has corners (213,213) and (811,1323) in this 1024x1536 image. Its top/bottom edges are horizontal, left/right edges vertical, a long narrow little room. Outside this rectangle show a dark desaturated ground and the thick cutaway exterior walls, not more accessible rooms. The floor is completely unobstructed, with subtle floorboard texture only. No furniture, no tables, no objects, no people, no text or signs, no UI. Show decorative watch faces, shelves and small repair tools ONLY on the exterior wall tops OUTSIDE the floor rectangle; none occupy the open floor. A narrow open doorway is centered at x542 on the TOP floor edge y213; a narrow open doorway centered at x574 on the BOTTOM floor edge y1323. Each opening is about 96 pixels wide, the full floor visibly connects through both thresholds. Closed walls on left and right. Do not add other doors. No roof. No cast shadows across the door thresholds. Entire output is the game background, no border or labels. Dynamic furniture will be separate sprites and must not be drawn here.",
+  "size": {
+    "width": 1024,
+    "height": 1536
+  }
+}
