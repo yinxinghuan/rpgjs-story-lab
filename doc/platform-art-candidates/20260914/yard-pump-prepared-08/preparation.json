@@ -1,0 +1,147 @@
+{
+  "sources": [
+    {
+      "folder": "yard-pump-base-02",
+      "state": "stopped",
+      "sha256": "55e856d34dd96b6339dba5fd75ab0db52cd99f465619f6b2eeb7186621542a3a"
+    },
+    {
+      "folder": "yard-pump-repaired-03",
+      "state": "repaired",
+      "sha256": "17663f050a0a1a18552690957562ab862f29e84bf2850150f60169b9b0831889"
+    },
+    {
+      "folder": "yard-pump-open-barrier-07",
+      "state": "forced",
+      "sha256": "15f7cd15455b6547b829f1af45f4bbe7c35ec7e65841189315e703e9190e9994"
+    }
+  ],
+  "spec": {
+    "columns": 3,
+    "rows": 1,
+    "cellWidth": 512,
+    "cellHeight": 640,
+    "foot": {
+      "x": 256,
+      "y": 500
+    },
+    "kind": "states",
+    "backgroundMode": "pale-neutral",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 244,
+        "y": 472
+      },
+      {
+        "x": 244,
+        "y": 480
+      },
+      {
+        "x": 244,
+        "y": 485
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 250,
+        "y": 430
+      },
+      {
+        "x": 450,
+        "y": 350
+      },
+      {
+        "x": 762,
+        "y": 430
+      },
+      {
+        "x": 962,
+        "y": 350
+      },
+      {
+        "x": 762,
+        "y": 310
+      },
+      {
+        "x": 1474,
+        "y": 350
+      },
+      {
+        "x": 1274,
+        "y": 310
+      }
+    ]
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        30,
+        151,
+        483,
+        473
+      ],
+      "sourceAnchor": {
+        "x": 244,
+        "y": 472
+      },
+      "offset": {
+        "x": 12,
+        "y": 28
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        539,
+        152,
+        1000,
+        481
+      ],
+      "sourceAnchor": {
+        "x": 244,
+        "y": 480
+      },
+      "offset": {
+        "x": 12,
+        "y": 20
+      }
+    },
+    {
+      "row": 0,
+      "column": 2,
+      "sourceBox": [
+        1054,
+        158,
+        1508,
+        486
+      ],
+      "sourceAnchor": {
+        "x": 244,
+        "y": 485
+      },
+      "offset": {
+        "x": 12,
+        "y": 15
+      }
+    }
+  ],
+  "metrics": {
+    "removed": 738194,
+    "edgeCorrected": 6937,
+    "corePreserved": 227474
+  },
+  "sha256": "4b477baffa31247f6c1ba946d5060e3ac60e9821020772922ff4197130c18f6e",
+  "bytes": 471277,
+  "productionAdopted": false,
+  "missingStates": [],
+  "operations": [
+    "lossless source frame composition",
+    "connected neutral background removal with reviewed hose and guard interior seeds",
+    "translation aligning front support feet; no scaling or repainting"
+  ]
+}

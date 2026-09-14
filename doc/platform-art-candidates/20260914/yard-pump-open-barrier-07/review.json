@@ -1,0 +1,10 @@
+{
+  "status": "accepted-for-preparation",
+  "productionAdopted": false,
+  "observed": [
+    "Chain removed completely; both posts retained without hanging fragments",
+    "Shaft remains disconnected",
+    "Motor, pump, gauge and right hose identity preserved; minor texture and size drift"
+  ],
+  "scope": "Source image visual review, not map admission"
+}

@@ -1,0 +1,23 @@
+{
+  "status": "ready-for-map-trial",
+  "productionAdopted": false,
+  "sha256": "4b477baffa31247f6c1ba946d5060e3ac60e9821020772922ff4197130c18f6e",
+  "observed": [
+    "Three frames show stopped, repaired and guard-open states",
+    "Foot alignment retained; enclosed white matte removed",
+    "Source images retained, no rescaling, mirroring or painting",
+    "Small differences in gauge and pump outline remain; evaluate at actual map scale"
+  ],
+  "factMapping": {
+    "default": "stopped",
+    "yard-agreement=medical": "stopped",
+    "yard-agreement=work": "repaired",
+    "yard-agreement=forced": "forced"
+  },
+  "remaining": [
+    "Renderer placement and scale",
+    "Same-scene state transitions and refresh",
+    "Collision and approach accessibility",
+    "Old saves without binding must retain current presentation"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "a5a2ca46-7b89-45e2-b89a-fce1c8248d13",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789372975080245.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 640
+  },
+  "prompt": "Edit this exact pump reference, one 512x640 image on pure white. Preserve the same elevated orthographic camera, position, scale, olive motor on left, pump on right, brass gauge, bolts, low skid, right hose, both front support posts and their feet. Make ONLY ONE change: completely REMOVE the chain stretched between the two front posts. The passage between posts is now open. No chain anywhere, no hanging pieces, no replacement rails, no new objects. Keep both posts upright in the identical position. Keep the disconnected shaft coupling between motor and pump DISCONNECTED exactly as in the reference. The pump is stopped, NOT repaired. All machine geometry and texture should remain as close to reference as possible. Do not add ground or shadows outside the machine. No checkerboard."
+}

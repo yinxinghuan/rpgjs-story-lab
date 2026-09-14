@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {createRequire} from 'node:module'
 import {dirname,join} from 'node:path'
 import {IDBFactory} from 'fake-indexeddb'
-import {composeRepairFrames} from '../src/sprite-composition'
+import {composeRepairFrames,composeStateFrames} from '../src/sprite-composition'
 import {BrowserSpriteDrafts,inspectSpritePng,newSpriteSource,runSpriteDraft,verifySpriteComposition,type SpritePng,type SpriteDraft} from '../src/sprite-draft'
 import {prepareSpritePixels,type PixelRaster} from '../src/sprite-preparation'
 import {inspectDeviceMapCandidate,deviceCandidateSheet} from '../src/device-map-candidate'
@@ -13,6 +13,18 @@ const require=createRequire(import.meta.url),{PNG}=require(join(dirname(require.
 const encode=async(r:PixelRaster)=>inspectSpritePng(PNG.sync.write({width:r.width,height:r.height,data:Buffer.from(r.rgba)}))
 const decode=async(p:SpritePng)=>{const r=PNG.sync.read(Buffer.from(p.bytes));return {width:r.width,height:r.height,rgba:new Uint8ClampedArray(r.data)}}
 function raster(columns:number){const width=columns*20,height=28,rgba=new Uint8ClampedArray(width*height*4).fill(255);for(let col=0;col<columns;col++)for(let y=6;y<24;y++)for(let x=6;x<15;x++)rgba.set([20+col*25,40,90,255],(y*width+col*20+x)*4);return {width,height,rgba}}
+test('multi-state composition preserves ordered RGBA selections and existing repair contract',()=>{
+ const source=raster(3),before=structuredClone(source),order=[2,0,1]
+ const selections=order.map(column=>({raster:source,columns:3,column}))
+ const result=composeStateFrames(selections)
+ for(let y=0;y<28;y++)for(let i=0;i<3;i++)assert.deepEqual(result.rgba.slice((y*60+i*20)*4,(y*60+(i+1)*20)*4),source.rgba.slice((y*60+order[i]*20)*4,(y*60+(order[i]+1)*20)*4))
+ assert.deepEqual(source,before)
+ assert.throws(()=>composeRepairFrames(selections),/INPUTS/)
+ assert.throws(()=>composeStateFrames([]),/INPUTS/)
+ assert.throws(()=>composeStateFrames([...selections,{raster:raster(1),columns:1,column:1}]),/GRID/)
+ const large={width:768,height:640,rgba:new Uint8ClampedArray(768*640*4)}
+ assert.throws(()=>composeStateFrames(Array.from({length:3},()=>({raster:large,columns:1,column:0}))),/SIZE/)
+})
 async function fixture(){
  const a=raster(3),b=raster(1),source=composeRepairFrames([{raster:a,columns:3,column:1},{raster:b,columns:1,column:0}])
  const draft:SpriteDraft={...newSpriteSource(await encode(source),'composite','states'),deviceStateSet:'repair',composition:{version:1,inputs:[{source:await encode(a),sourceName:'before',columns:3,column:1},{source:await encode(b),sourceName:'after',columns:1,column:0}]}}
