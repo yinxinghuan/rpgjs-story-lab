@@ -1,0 +1,49 @@
+{
+  "commit": "c93230ca7c8b5ac225586111d948651e2aa9b74b",
+  "status": "main-verified-pages-running",
+  "changes": [
+    "Bound both sprite preview and pixel extraction decode waits; cancelled or late decodes cannot resume pixel processing",
+    "Bind optional legless glide review semantics into versioned protagonist provenance; legacy biped reviews remain unchanged",
+    "Reject a recovery queued behind another tab's completed journey selection before reading the old story"
+  ],
+  "preflight": {
+    "tests": 732,
+    "passed": 732,
+    "failed": 0,
+    "initialSandboxRun": "36 HTTP tests could not listen on loopback; same full suite passed after loopback authorization",
+    "spatial": {"journeys": 120, "actions": 82, "failures": 0, "scope": "Deterministic sampled paths, collision and authored text/button equivalence; not exhaustive state coverage"},
+    "build": "TypeScript, cloud frontend, nine scenes / 27 resource hashes, Worker startup passed",
+    "audits": "Public secrets, UUID API base and scoped browser storage passed; third party notices present"
+  },
+  "browser": {
+    "url": "http://127.0.0.1:5416/",
+    "environment": "Exact compiled frontend/Worker; disposable SQL, server external requests disabled; platform-layout desktop",
+    "observed": [
+      "Short opening dialogue, actual map, hero, joystick and contextual controls visible",
+      "Map starter click walks to the interaction and opens authored action",
+      "Typed exact authored repair action succeeds",
+      "Reload retains fuel 68 / condition 87 / morale 58; repair removed, valley route offered, hero and Ada visible"
+    ],
+    "limit": "One action/reload smoke, not a fresh full native or physical iPhone playthrough"
+  },
+  "main": {
+    "url": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "deploymentExitCode": 0,
+    "frozenFilesMatched": 114,
+    "pageHealthAndSourceZip": "passed",
+    "storage": "durable-object-sqlite",
+    "identityMode": "anonymous-capability-v1"
+  },
+  "pages": {
+    "url": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "workflow": 34812812054,
+    "status": "in_progress",
+    "actualFilesVerified": false
+  },
+  "limits": [
+    "Not yet a completed dual deployment",
+    "No new art admitted; human back-strip candidate rejected",
+    "No account identity binding or cross-device recovery claim",
+    "Whole single-player and workflow objective remains active"
+  ]
+}
