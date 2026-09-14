@@ -1,8 +1,17 @@
+import type {StorySave} from './vendor/original-train/types'
 import type {OriginalDialogueContext} from '../server/original-dialogue'
 export type OriginalTalkTopic={text:string;reply:string;actionId?:string}
+export function originalEndingTalkContext(save:StorySave){
+ const ending=save.finale.status==='complete'?save.finale.ending:undefined
+ return ending?{title:ending.title,thesis:ending.thesis,costs:[...ending.irreversibleCosts]}:undefined
+}
 /** Authored conversation choices. Questions only: authority owns all consequences. */
-export function originalTalkTopics(c:Pick<OriginalDialogueContext,'locale'|'speaker'|'sceneId'|'objective'|'availableActions'|'recentTurns'>):OriginalTalkTopic[]{
+export function originalTalkTopics(c:Pick<OriginalDialogueContext,'locale'|'speaker'|'sceneId'|'objective'|'availableActions'|'recentTurns'|'ending'>):OriginalTalkTopic[]{
  const zh=c.locale==='zh',t=(a:string,b:string)=>zh?a:b
+ if(c.ending)return [
+  {text:t('我们最后选择了什么？','What did we choose in the end?'),reply:t('我们选择了「','We chose “')+c.ending.title+t('」。','”. ')+c.ending.thesis},
+  ...c.ending.costs.map((cost,index)=>({text:c.ending!.costs.length===1?t('这次选择留下了什么代价？','What did this choice cost us?'):t(`说说第 ${index+1} 项代价。`,`Tell me about cost ${index+1}.`),reply:cost})),
+ ]
  if(c.speaker.id==='ada-mechanic'&&c.sceneId==='train-at-dead-station'&&c.availableActions.some(a=>a.id==='repair-starter'))return [
   {actionId:'repair-starter',text:t('启动机哪里坏了？','What is wrong with the starter?'),reply:t('继电器烧坏了。先把启动电路重新接通，列车才能动起来。','The relay is burnt out. We need to reconnect the starter circuit before the train can move.')},
   {text:t('修好以后往哪走？','Where do we go after the repair?'),reply:t('先让列车能启动，再核对出站道岔。走哪条线路，得由你来决定。','First get the train running, then check the departure points. You will have to choose our route.')},

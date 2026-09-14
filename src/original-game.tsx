@@ -5,7 +5,7 @@ import {CompanionMotion} from './companion-motion'
 import {originalCharacterBodies} from './original-character-space'
 import {originalPassengers,originalPassengerConversation,passengerArt} from './original-passengers'
 import {actorSheet} from './actor-sheet'
-import {originalTalkTopics,originalTalkDestination} from './original-talk-topics'
+import {originalTalkTopics,originalTalkDestination,originalEndingTalkContext} from './original-talk-topics'
 import {originalConversation,originalCurrentConversation} from './original-conversation'
 import {yardPumpResource,originalYardPumpSheet} from './original-yard-pump-art'
 import {dieselResource,dieselFacts,originalDieselSheet} from './original-diesel-art'
@@ -239,7 +239,7 @@ export default function OriginalGame(){
  const latest=save?originalReadingBlocks(save).at(-1):undefined
  const closest=nearestInteraction<Entity|Passenger>([...entities,...passengers],position,world.interactionDistance),nearPassenger=closest&&'ambient' in closest?closest:undefined,nearby=closest&&!('ambient' in closest)?closest:undefined,beat=beats[beatIndex]
  const conversation=entity?.person&&save?originalCurrentConversation(save,entity.person.id):undefined
- const talkTopics=entity?.person&&head?originalTalkTopics({locale,speaker:entity.person,sceneId:head.sceneId,objective:originalGameObjective(head),availableActions:entities.flatMap(e=>e.actions.map(a=>({...a,target:e.id}))),recentTurns:originalConversation(head.save,entity.person.id)}):[]
+ const talkTopics=entity?.person&&head?originalTalkTopics({ending:originalEndingTalkContext(head.save),locale,speaker:entity.person,sceneId:head.sceneId,objective:originalGameObjective(head),availableActions:entities.flatMap(e=>e.actions.map(a=>({...a,target:e.id}))),recentTurns:originalConversation(head.save,entity.person.id)}):[]
  const talkDestination=entity?originalTalkDestination(talkTopics,conversation?.input,entities,entity.id):undefined
  return <main className="og-game" data-scene={scene??''} data-player-x={position.x.toFixed(2)} data-player-y={position.y.toFixed(2)} data-ready={ready} data-scenery={backgroundState} data-version={head?.version??-1} data-background-version={head?originalBackgroundVersion(head.assets):undefined} data-device-version={originalStarterRelease(head?.assets)?.id??'baseline'} data-actor-version={originalActorRelease(head?.assets)?.id??'baseline'}>
   <section className="og-world" aria-label={t('原作地图','Original map')}><div ref={frame} className="og-map" onClick={ground}>
