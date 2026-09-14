@@ -93,6 +93,32 @@ test('original exhausted model budget clears pending without losing the journey 
  }finally{raw.close()}
 })
 
+for(const prepared of [false,true])test(`real online rate refusal (${prepared?'prepared':'direct'}) settles without blocking authored play and a later window can use online input`,async()=>{
+ const {raw,db,storage,owner}=setup();let calls=0
+ const service=new OriginalTrainAuthority(db,()=>true,undefined,undefined,async()=>{calls++;return 'repair-starter'})
+ const transport:Transport=async(path,body:any)=>{
+  if(path==='/sessions')return service.create(owner,body.enrollment_id,body.locale)
+  const match=path.match(/^\/sessions\/([^/]+)(\/actions|\/prepare-action|\/commit-action)?$/)!
+  if(match[2]==='/prepare-action')return service.prepareAction(owner,match[1],body)
+  if(match[2]==='/commit-action')return service.commitPreparedAction(owner,match[1],body)
+  return match[2]?service.action(owner,match[1],body):service.get(owner,match[1])
+ }
+ try{
+  const client=new OriginalSessionClient(storage,'original-',transport,undefined,async()=>{}),h=await client.enroll('zh')
+  // A synthetic full window exercises the real authority refusal before any provider call.
+  db.run('INSERT INTO narration_usage VALUES(?,?,?)',owner,Date.now(),6)
+  const body={...input(h,'repair-starter'),type:'free-input',text:'请帮我把坏掉的启动装置修好',mode:'live'}
+  const refused=await (prepared?client.sendPrepared(h,body):client.send(h,body))
+  assert.equal(refused.rejectionCode,'NARRATION_RATE_LIMIT');assert.equal(refused.accepted,false)
+  assert.deepEqual(refused.head,h);assert.equal(client.hasPending(),false);assert.equal(calls,0)
+  const inspected=await client.send(h,input(h,'inspect-brakes'))
+  assert.equal(inspected.accepted,true)
+  db.run('UPDATE narration_usage SET window_start=? WHERE owner=?',Date.now()-60001,owner)
+  const retried=await client.send(inspected.head,body)
+  assert.equal(retried.accepted,true);assert.equal(calls,1);assert.equal(client.hasPending(),false)
+ }finally{raw.close()}
+})
+
 test('saved journey selection preserves both original stories, refuses unknown ownership and stops stale-tab writes',async()=>{
  const {raw,client,service,owner,storage,transport}=setup()
  try{let a=await client.enroll('zh');a=(await client.send(a,input(a,'repair-starter'))).head
