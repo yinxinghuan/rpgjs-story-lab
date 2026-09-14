@@ -12,7 +12,7 @@ test('each circuit action binds to one reachable device and rejects distant or o
   assert.ok(findGridPath(scene.spawn,entity.approach,p=>explorationCircuitWalkable(scene.id,p)).length)
   for(const action of entity.actions){
    assert.ok(binding.admits(action,entity.id,entity.scene,entity.approach))
-   assert.equal(binding.admits(action,entity.id,entity.scene,scene.spawn),false)
+   assert.equal(binding.admits(action,entity.id,entity.scene,{x:70,y:70}),false)
    assert.equal(binding.admits(action,entity.id,entity.scene==='explore-power'?'explore-signal-inside':'explore-power',entity.approach),false)
   }
  }
