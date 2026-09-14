@@ -93,3 +93,23 @@ test('resource download diagnostics distinguish transport and body failures with
  await assert.rejects(loadBrowserSceneResource(resource,signal,'https://example.test/',async()=>new Response(new ReadableStream({start(c){c.error(Error('private body URL'))}})),stage=>stages.push(stage)),/^Error: RESOURCE_BODY$/)
  assert.deepEqual(stages,['download','body'])
 })
+
+test('oversized streaming resource is cancelled before hash or decode',async()=>{
+ const resource=manifest.scenes.walkway.assets.find(r=>r.kind==='map')!
+ let cancelled=false;const stages:string[]=[]
+ const body=new ReadableStream<Uint8Array>({start(c){c.enqueue(new Uint8Array(resource.bytes+1))},cancel(){cancelled=true}})
+ await assert.rejects(loadBrowserSceneResource(resource,new AbortController().signal,'https://example.test/',async()=>new Response(body),s=>stages.push(s)),/RESOURCE_SIZE/)
+ assert.equal(cancelled,true);assert.deepEqual(stages,['download','body'])
+})
+
+test('aborting a stalled body releases the reader and permits an independent retry',async()=>{
+ const resource=manifest.scenes.walkway.assets.find(r=>r.kind==='map')!,controller=new AbortController()
+ let cancelled=false,started!:()=>void;const reading=new Promise<void>(r=>started=r)
+ const body=new ReadableStream<Uint8Array>({pull(){started()},cancel(){cancelled=true}})
+ const pending=loadBrowserSceneResource(resource,controller.signal,'https://example.test/',async()=>new Response(body))
+ await reading;controller.abort();await assert.rejects(pending,/RESOURCE_ABORTED/)
+ assert.equal(cancelled,true);assert.equal(body.locked,false)
+ const bytes=readFileSync('public/'+resource.path.slice(2))
+ const retryBody=new ReadableStream<Uint8Array>({start(c){c.enqueue(bytes.subarray(0,17));c.enqueue(bytes.subarray(17));c.close()}})
+ await loadBrowserSceneResource(resource,new AbortController().signal,'https://example.test/',async()=>new Response(retryBody))
+})

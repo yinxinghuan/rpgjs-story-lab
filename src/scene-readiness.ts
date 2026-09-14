@@ -32,6 +32,30 @@ export class SceneReadiness{
  }
 }
 declare const __SCENE_RESOURCES__:SceneResourceManifest
+async function readResourceBody(response:Response,expected:number,signal:AbortSignal):Promise<ArrayBuffer>{
+ if(!Number.isSafeInteger(expected)||expected<0)throw Error('RESOURCE_SIZE')
+ if(!response.body)throw new ResourceLoadError('RESOURCE_BODY')
+ const reader=response.body.getReader(),parts:Uint8Array[]=[];let size=0,complete=false
+ try{
+  for(;;){
+   const part=await abortableArtLoad(()=>reader.read(),signal)
+   if(part.done)break
+   size+=part.value.byteLength
+   if(size>expected)throw Error('RESOURCE_SIZE')
+   parts.push(part.value)
+  }
+  if(size!==expected)throw Error('RESOURCE_SIZE')
+  const bytes=new Uint8Array(size);let offset=0
+  for(const part of parts){bytes.set(part,offset);offset+=part.byteLength}
+  complete=true;return bytes.buffer
+ }catch(error){
+  if(error instanceof Error&&['RESOURCE_SIZE','RESOURCE_ABORTED'].includes(error.message))throw error
+  throw new ResourceLoadError('RESOURCE_BODY')
+ }finally{
+  if(!complete)void reader.cancel().catch(()=>{})
+  reader.releaseLock()
+ }
+}
 export async function loadBrowserSceneResource(resource:SceneResource,signal:AbortSignal,baseUrl:string|((stage:ResourceStage)=>void)=document.baseURI,fetcher:typeof fetch=fetch,report?:(stage:ResourceStage)=>void){
  if(typeof baseUrl==='function'){report=baseUrl;baseUrl=document.baseURI}
  const url=new URL(resource.path,baseUrl);url.searchParams.set('scene_asset',resource.sha256)
@@ -39,8 +63,7 @@ export async function loadBrowserSceneResource(resource:SceneResource,signal:Abo
  let response:Response;try{response=await fetcher(url,{signal,credentials:'omit'})}catch{throw new ResourceLoadError('RESOURCE_NETWORK')}
  if(!response.ok)throw new ResourceLoadError('RESOURCE_HTTP',response.status)
  report?.('body')
- let bytes:ArrayBuffer;try{bytes=await response.arrayBuffer()}catch{throw new ResourceLoadError('RESOURCE_BODY')}
- if(bytes.byteLength!==resource.bytes)throw new Error('RESOURCE_SIZE')
+ const bytes=await readResourceBody(response,resource.bytes,signal)
  report?.('hash')
  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('')
  if(digest!==resource.sha256)throw new Error('RESOURCE_VERSION')
