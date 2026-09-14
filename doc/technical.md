@@ -1387,3 +1387,9 @@ Renderer 暴露当前移动意图，CompanionMotion 在玩家前进方向受队�
 `exploration-circuit-rules.ts` 使用现有 original Story Core 的 `DomainActionRule`/库存/事实命令，提供两槽插入取回、照明下观察止挡、放置门撑和仅门内可用的机械释放。`explorationCircuitState` 从同一事实导出灯、锁、门和保险丝位置，未新增 reducer 或存储后端。测试直接走现有 `resolveDomainAction` 和 `applyDomainResolution`，覆盖中英文取放/门撑、重复取物拒绝、错误顺序、序列化恢复和 20 次换槽不复制物品。
 
 该模块尚未装入任何生产 Cartridge 或 Session，未改旧存档；它不等于谜题已在游戏里出现。机械释放带地图内侧前置，正式接入还需实体、距离与门两侧空间检查。实际房间/碰撞、道具来源、线索和工具的两种探索顺序、故事版本路由、生成素材与完整通关仍待完成。测试中预置一枚保险丝和门撑只验证供电规则，不能算取得物品和空间探索路径已经通过。
+
+### 供电谜题空间绑定候选（2026-09-15）
+
+`exploration-circuit-space.ts` 将七个供电/门撑动作逐项绑定到两个候选房间的四个实际布局实体，使用现有 `compileSpatialBinding` 检查对象、房间、距离与脚底碰撞。规则自身也要求对应地图位置；内侧释放不能从外侧执行。布局中的可行走边界和设备占地供同一寻路函数读取。5 项合成测试覆盖全部动作绑定、各物件从入口可达、远处与跨房间拒绝，以及原供电规则；TypeScript 通过。
+
+这仍是主项目内待装配内容，不是新游戏或新运行时。`explorationCircuitAdmission.ready` 明确为 false：两房间目前没有连接门户、合格背景或正式故事版本入口，未改变真实 renderer 的地图，也没有证明门状态碰撞或整个探索路径已完成。后续必须接门户、取物链、门两侧状态、完整 Cartridge/Session 和素材后再做真实试玩。

@@ -9,7 +9,7 @@ export function explorationCircuitRules(locale:Locale):DomainActionRule[]{
  const slot=(value:string)=>fact('explore-fuse-slot',value,t('先检查保险丝现在装在哪里。','Check where the fuse is installed first.'))
  const mark=(id:string,value:string|boolean):DomainEffect=>({type:'fact',id,value})
  const fuse={id:'explore-fuse',label:t('可回收保险丝','Reusable fuse'),count:1,rarity:'common' as const,detail:t('可在断电后取回，换到另一条支路。','Can be removed with power off and moved to the other circuit.'),effect:''}
- const rule=(id:string,requirements:DomainRequirement[],effects:DomainEffect[],zh:string,en:string):DomainActionRule=>({id,intent:id,match:[id],requirements,effects,successText:t(zh,en),successChoices:['','','']})
+ const rule=(id:string,requirements:DomainRequirement[],effects:DomainEffect[],zh:string,en:string):DomainActionRule=>({id,intent:id,match:[id],requirements:[{type:'map',nodeId:id==='explore-inside-release'?'explore-signal-inside':'explore-power',reason:t('先走到对应的装置旁。','Approach the relevant device first.')},...requirements],effects,successText:t(zh,en),successChoices:['','','']})
  const rules:DomainActionRule[]=[]
  for(const circuit of ['light','lock']){
   const place=t(circuit==='light'?'照明槽':'门锁槽',circuit==='light'?'lighting socket':'door-lock socket')
