@@ -1,6 +1,7 @@
 import type {RpgPlayer} from '@rpgjs/server'
 import {Direction} from '@rpgjs/common'
 import {oldStreetTalkTopics} from './old-street-conversation'
+import {OldStreetJournalView} from './old-street-journal-view'
 import {OldStreetMapView} from './old-street-map-view'
 import {OldStreetPhotoView} from './old-street-photo-view'
 import {oldStreetActionNames as actionNames} from './old-street-action-input'
@@ -47,6 +48,7 @@ export default function OldStreetDev() {
   useEffect(()=>{if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
+  const [journalOpen,setJournalOpen]=useState(false),journalButton=useRef<HTMLButtonElement>(null)
   const [mapOpen,setMapOpen]=useState(false),mapButton=useRef<HTMLButtonElement>(null)
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
   const [typed, setTyped] = useState('')
@@ -175,7 +177,7 @@ export default function OldStreetDev() {
   }
   const outcome = oldStreetOutcome(head.save)
   return <main className="os-dev">
-    <header><small>{text(workerPreview?['开发白盒 · Worker 本机预检','Development blockout · Local Worker preflight']:['开发白盒 · 本机服务存档', 'Development blockout · Local server save'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1><button ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}>{text(['街区','Neighbourhood'])}</button></header>
+    <header><small>{text(workerPreview?['开发白盒 · Worker 本机预检','Development blockout · Local Worker preflight']:['开发白盒 · 本机服务存档', 'Development blockout · Local server save'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1><nav className="os-tools"><button ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}>{text(['街区','Neighbourhood'])}</button><button ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setJournalOpen(true)}}>{text(['随身与发现','Items & discoveries'])}</button></nav></header>
     <div className="os-stage" ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving) return
       const r = e.currentTarget.getBoundingClientRect()
@@ -210,6 +212,7 @@ export default function OldStreetDev() {
     </footer>
     {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     <details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>
+    {journalOpen&&<OldStreetJournalView save={head.save} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(false)}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p><button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
