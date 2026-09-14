@@ -594,7 +594,7 @@
     "next": "Separate nonhuman locomotion review from humanoid leg alternation before another conversion; human identity fixture still required"
   },
   "creatorMatteAndLoading20260914": {
-    "status": "development-verified-not-deployed",
+    "status": "local-browser-and-build-verified-not-deployed",
     "implemented": [
       "Creator source-coordinate matte picking and persistence",
       "Matte seed recipe accepted by private archive with bounded validation",
@@ -610,14 +610,31 @@
       "secrets": "passed"
     },
     "remaining": [
-      "Creator actual refresh and mobile layout verification after desktop unlock",
-      "Real runtime review before deployment"
+      "Release current code on both hosts and verify same commit bytes",
+      "Continue platform art family and verified identity requirements"
     ],
     "productionCommit": "23568b7d0055274c008145184d068974486d9587",
     "limits": [
       "Synthetic test identities only",
       "Does not establish production character gait quality or cross-device verified account recovery",
       "Not whole-game completion"
-    ]
+    ],
+    "browser": {
+      "source": "http://127.0.0.1:5434/creator.html?create_art=sprite",
+      "draft": "96026d16-3f6d-4ce6-b700-cf7c41fd502e",
+      "seed": "5,5",
+      "restored": "Opening a fresh tab restored candidate and seed; returning from map retained them and enabled checked-device publication.",
+      "map": "Actual compiled renderer: before/after states, walk in front/behind, blocked cabinet approach, saved 5/5 review. Visible stable feet, transparent outline and occlusion.",
+      "smallScreen": {
+        "width": 320,
+        "height": 568,
+        "scrollWidth": 320
+      },
+      "limits": [
+        "Desktop browser, not physical iPhone",
+        "Local static compiled preview; private cloud tested separately with synthetic archive suite"
+      ]
+    },
+    "localPreviewIncident": "Development Vite server omitted build-generated map resources, returned wrong byte length. Switched same test origin to compiled preview, retained draft and map loaded. No production resource check bypass."
   }
 }
