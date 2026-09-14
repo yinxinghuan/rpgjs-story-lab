@@ -30,13 +30,13 @@
     "backLayerMapTrial": "leg-layer-map-review-20260913.json",
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
     "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
-    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: same ending/stats/companions restored and context action visible; post-ending rejection fixed and production API retry/reload passed; native bubble retry awaits unlocked Mac."
+    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: previous reentry preserved ending/stats/companions; 2026-09-14 actual native post-ending short dialogue and close-to-map passed. New exit/reentry after dialogue not verified."
   },
   "remaining": [
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "route-and-reentry-verified-with-known-display-defects",
-      "currentBlocker": "2026-09-13 current CUA observation: Mac locked and automatic unlock failed. Prior native route and latest UI reentry remain valid historical evidence; native post-fix bubble and intermittent renderer acceptance cannot be completed while locked."
+      "currentBlocker": "2026-09-14 Mac accessible; native post-ending dialogue/card passed. Native toolbar Back still returns AXError.notImplemented; new exit/reentry after this dialogue and historical intermittent renderer acceptance remain open."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -76,18 +76,18 @@
       "nativeReadout": false
     }
   },
-  "newBrowserChecksThisTurn": false,
+  "newBrowserChecksThisTurn": true,
   "currentUiObservation": {
-    "date": "2026-09-13",
+    "date": "2026-09-14",
     "platform": "Telegram AlterU",
     "scene": "dawn-junction",
     "fuel": 32,
     "condition": 73,
     "morale": 83,
-    "lastAction": "选择「共同线路」",
+    "lastAction": "结局后向任医生说你好，收到短对白并关闭回图",
     "visibleFinalOwnership": true,
     "nativeStoryRouteReachedEnding": true,
-    "blocker": "Current recheck: Mac locked; automatic unlock failed. Last successful scene observation above is historical.",
+    "blocker": "Mac unlocked; native toolbar Back unsupported by tool",
     "next": "Resolve intermittent rendering/resource failures and remaining platform media quality/identity contracts",
     "fullPlaythroughAcceptance": false,
     "reentryAfterEndingVerified": true,
@@ -109,7 +109,7 @@
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
   "contextLossRecovery": "context-loss-recovery-review-20260913.json",
   "pendingExternalActions": {
-    "nativePlaytest": "Unlock Mac and keep Telegram AlterU accessible; existing operation authorization remains valid.",
+    "nativePlaytest": "No lock blocker now. Post-ending native bubble passed; toolbar Back unsupported for fresh exit/reentry.",
     "newUpperBodyPair": "Reply to the pending request for one additional platform edit; no request sent and no generation currently running.",
     "identity": "Trusted platform identity adapter contract still absent; current anonymous capability saves preserved."
   }

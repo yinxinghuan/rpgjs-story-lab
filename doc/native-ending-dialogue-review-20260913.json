@@ -56,10 +56,10 @@
     }
   },
   "limits": [
-    "Native latest UI reentry proved before this backend fix; not a new full route",
-    "Production API post-ending dialogue and exact reload passed; native bubble after this fix still unverified",
-    "Mac locked and tool automatic unlock failed on native retry",
-    "Earlier intermittent renderer failure cause remains unproven"
+    "Native post-ending short dialogue and close-to-map verified 2026-09-14; not a new complete route",
+    "New exit/reentry after this dialogue remains unverified because native toolbar Back is unsupported by current tool",
+    "Earlier intermittent renderer failure cause remains unproven",
+    "Additional upper-body image request still unsubmitted awaiting explicit approval"
   ],
   "release": {
     "commit": "f34c4eb06d504ca993b6681cb99c47a0c12657bb",
@@ -92,5 +92,24 @@
       "actionIds": 82
     }
   },
-  "workflowRule": "Shared build-spatial-story-game/references/chapter-closure.md now specifies terminal dialogue versus action permissions, non-dialogue save invariants, replay/reload and native acceptance boundaries."
+  "workflowRule": "Shared build-spatial-story-game/references/chapter-closure.md now specifies terminal dialogue versus action permissions, non-dialogue save invariants, replay/reload and native acceptance boundaries.",
+  "nativeFollowup20260914": {
+    "platform": "Telegram AlterU on Mac",
+    "sameOwnedTestJourney": true,
+    "input": "你好",
+    "onlineModelEnabled": false,
+    "reply": "我在听。你想先谈哪件事？",
+    "bottomRoundedCardWithoutTail": true,
+    "closeReturnsSameMap": true,
+    "scene": "dawn-junction",
+    "stats": {
+      "fuel": 32,
+      "condition": 73,
+      "morale": 83
+    },
+    "screenshot": "../_qa/native-ending-20260914/platform-layout-short-dialogue.png",
+    "newExitReentry": false,
+    "exitFailure": "native toolbar Back coordinate action returned AXError.notImplemented",
+    "physicalIPhone": false
+  }
 }
