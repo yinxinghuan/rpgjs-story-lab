@@ -1403,3 +1403,11 @@ Renderer 暴露当前移动意图，CompanionMotion 在玩家前进方向受队�
 ### 空背包取物候选验证（2026-09-15）
 
 供电规则候选初态改为保险丝仍在柜内、柜门未开、门撑未取走。开柜/取保险丝/取门撑均为现有 Core 的事实及库存命令，空间投射提供柜内保险丝和架上门撑的可见性。空背包路径覆盖先取工具和先读亮灯线索，重复取得被拒绝，序列化后仍只有一枚保险丝。尚不是完整地图两条探索路线：候选工具架仍在供电布局内；需要按需求中的自然出入口空间方案重新装配。
+
+## 2026-09-15：新故事前的普通出入口适配
+
+`src/spatial-door-travel.ts` 从站区候选中提取普通过门准备逻辑，输入为当前 `StorySave`、实际 `StoryCartridge`、已编译空间绑定和 action/target/scene/position。它检查故事身份、距离、动作唯一性与门的当前条件，只允许零个或一个 map 效果；同一故事地点内的两个房间可用零 map 效果配显式 portal。使用已有 Core resolver/reducer，不调用 AI，不创建数据库。返回新的 save/scene/position，由后续正式 Session 在版本检查下原子提交。
+
+普通移动不重算无关的回合道具指标，也不替换当前 choices、追加到达正文或推进场次。缺失 portal、伪造目标、非移动副作用或当前落点不可行走均拒绝，原 save 不变。旧 `prepareStationTravel` 保留为薄包装，站区内容仍处于暂停候选状态。
+
+验证：`node --import tsx --test _qa/spatial-door-travel.test.ts _qa/exploration-station-plan.test.ts` 共 10 项通过，其中 7 项覆盖通用准备函数，包括同地点 20 次往返、JSON 序列化后的房间恢复、跨地点返回、锁状态/落点变化及拒绝副作用。JSON 回读不是正式持久化验证。这一函数尚未接新故事的 Session/UI；没有新美术、浏览器通关或部署完成的含义。完整旧街设计假设在 `doc/requirements.md`，题材尚非用户最终选择。
