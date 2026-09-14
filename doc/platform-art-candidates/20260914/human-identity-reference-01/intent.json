@@ -1,0 +1,12 @@
+{
+  "purpose": "Normal human counterpart to dedicated covered identity test, no real player or NPC identity",
+  "scope": "one platform text request",
+  "acceptance": [
+    "full readable identity",
+    "one satchel fixed to anatomical right",
+    "strong overhead parallel projection",
+    "no clipping",
+    "B-compatible pixel-painted detail"
+  ],
+  "productionAdoption": false
+}

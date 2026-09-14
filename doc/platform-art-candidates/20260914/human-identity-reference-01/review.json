@@ -1,0 +1,13 @@
+{
+  "status": "identity-test-reference-only",
+  "actualIdentity": [
+    "adult human, short auburn bob, freckles",
+    "teal long coat, mustard scarf, navy trousers, brown boots",
+    "one brown satchel on image-right in front view: anatomical LEFT hip; strap over anatomical RIGHT shoulder"
+  ],
+  "deviations": [
+    "satchel side is opposite requested anatomical side; subsequent test must follow actual reference",
+    "view is mildly overhead, not yet accepted as locked B angle"
+  ],
+  "productionAdopted": false
+}

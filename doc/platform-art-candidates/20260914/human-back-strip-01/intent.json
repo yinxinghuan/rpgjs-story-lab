@@ -1,0 +1,13 @@
+{
+  "purpose": "Bounded normal-human identity and opposite-back-stride test using one row instead of failed full-sheet layout",
+  "scope": "one edit request with synthetic reference only",
+  "referenceSha256": "48ed5c4c4ea34b05aeb78e2bc65a8160085c863691d383b438e369e27366879d",
+  "acceptance": [
+    "three equal cells",
+    "all back-facing",
+    "left and right leading legs alternate",
+    "actual anatomical-left bag retained",
+    "same proportions and strong overhead camera"
+  ],
+  "productionAdoption": false
+}

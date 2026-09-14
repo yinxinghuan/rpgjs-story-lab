@@ -1,0 +1,18 @@
+{
+  "status": "rejected",
+  "reviewDate": "2026-09-14",
+  "method": "Direct visual inspection of the original 960x640 candidate PNG; no image editing",
+  "sourceSha256": "bbfd78c2b465fd4e556e5359e28542f43a26ce0047591f4b7ee9750a5a1b713c",
+  "observed": [
+    "Three separated back-facing figures; auburn bob and teal coat remain recognizable",
+    "First frame satchel is image-right, while middle and third are image-left: accessory identity flips within the strip",
+    "First and third moving poses do not clearly establish opposite leading legs; both show the image-left foot lower, and the coat obscures upper-leg motion",
+    "View exposes little top surface of head and shoulders; not the accepted B overhead view",
+    "Smooth illustrated shading differs from the current production character material",
+    "PNG is opaque, with light background, not a usable alpha sheet"
+  ],
+  "productionAdopted": false,
+  "mapReviewPerformed": false,
+  "conclusion": "Reducing generation to one facing and three frames did not solve identity, camera or gait consistency. Do not spend postprocessing effort or adopt this strip as a repaired back walk.",
+  "next": "Keep the admitted production actor. End this generation round; any future motion candidate needs controlled anatomical pose references and must preserve accessory side before background cleanup and actual renderer review."
+}

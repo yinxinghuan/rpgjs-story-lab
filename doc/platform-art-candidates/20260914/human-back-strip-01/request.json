@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "cec95eb7-3da0-48d1-983e-9b8b2aa48bf6",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789365032928483.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 640
+  },
+  "prompt": "SUBJECT A: preserve this exact adult human identity, short auburn bob, teal long coat, mustard scarf, navy trousers and brown boots. The ACTUAL reference satchel is at anatomical LEFT hip (image-right in front view), strap over anatomical RIGHT shoulder. Keep that physical side: in back view bag appears on image-left. Do not swap sides. Produce ONLY ONE horizontal strip of EXACTLY THREE full-body BACK-FACING frames in equal 320x640 cells on a 960x640 canvas. All three face directly UP away from the viewer: no face, eyes or nose visible. Fixed strong overhead ORTHOGRAPHIC camera about 55 degrees above the ground plane, visible crown and shoulder tops, no perspective convergence. Preserve proportions, pixel-painted material, coat length and accessories. Frame 1: anatomical LEFT leg steps forward away from viewer, its boot is higher in the image; RIGHT leg trails toward viewer with boot lower. Frame 2: resting, both boots planted side by side. Frame 3: anatomical RIGHT leg steps forward away from viewer, its boot higher; LEFT leg trails toward viewer with boot lower. Opposite leading legs must be obvious below the coat. Arms swing opposite the leading leg, attached naturally at shoulders. Same body center, head size, camera, scale and ground-anchor height; enough margin around every figure. Do not mirror the whole body or duplicate the same stride. Pure white background. No checkerboard, floor, shadow, labels, grid, extra panels, extra figures or accessories."
+}

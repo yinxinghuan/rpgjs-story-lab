@@ -559,6 +559,21 @@
     "spatialJourneysPassed": 120,
     "scope": "Creator and archive identity checks; not avatar-generation or account recovery completion"
   },
+  "humanIdentityProbe20260914": {
+    "requests": 2,
+    "reference": "platform-art-candidates/20260914/human-identity-reference-01/review.json",
+    "backStrip": "platform-art-candidates/20260914/human-back-strip-01/review.json",
+    "result": "Reference recorded with actual accessory side; three-frame back strip rejected for accessory flipping, unclear alternate stride, insufficient overhead angle and material mismatch",
+    "productionArtChanged": false,
+    "next": "Stop this generation round; retain admitted B actor. Controlled pose references required before another walking conversion; no avatar-to-production quality claim."
+  },
+  "spritePixelDecodeRecovery20260914": {
+    "status": "development-only",
+    "change": "Both browser decode passes have a 15-second per-pass ceiling, including callers without AbortSignal",
+    "tests": "5/5 timeout and cancellation regressions passed; TypeScript passed; public secrets audit passed",
+    "observed": "Synthetic stalled second decode times out or cancels, releases Blob URL and image source, does not draw after late completion, and next attempt succeeds",
+    "limit": "Not an entire media-task budget or physical iPhone test; main and Pages remain at 846e2ad"
+  },
   "coveredIdentityProbe20260914": {
     "requests": 2,
     "reference": "platform-art-candidates/20260914/covered-identity-reference-01/review.json",
