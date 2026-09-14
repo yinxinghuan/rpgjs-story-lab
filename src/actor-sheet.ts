@@ -7,3 +7,8 @@ export function actorSheet(id:string,image:string,width:number,height:number,bas
  const pose=(column:number)=>({animations:({direction}:{direction:Direction})=>[[frame(rowFor(direction),column,0)]]})
  return {id,image,width,height,framesWidth:3,framesHeight:4,textures:{stand:pose(1),'stride-0':pose(0),'stride-1':pose(1),'stride-2':pose(2),walk:{animations:({direction}:{direction:Direction})=>[[frame(rowFor(direction),0,0),frame(rowFor(direction),1,10),frame(rowFor(direction),2,20),{time:30}]]}}}
 }
+
+/** Four reviewed static directions in one row; never masquerades as a walk cycle. */
+export function standingActorSheet(id:string,image:string,cellWidth:number,cellHeight:number,sourceFoot:{x:number;y:number},scale:number,foot:{x:number;y:number}){
+ return {id,image,width:cellWidth*4,height:cellHeight,framesWidth:4,framesHeight:1,textures:{stand:{animations:({direction}:{direction:Direction})=>[[{frameX:rowFor(direction),frameY:0,time:0,anchor:[sourceFoot.x/cellWidth,sourceFoot.y/cellHeight],scale:[scale,scale],x:foot.x,y:foot.y}]]}}}
+}

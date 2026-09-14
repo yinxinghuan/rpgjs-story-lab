@@ -9,7 +9,8 @@ import type {OldStreetHead} from './old-street-head'
 import {Assets} from 'pixi.js'
 import React, {useEffect, useRef, useState} from 'react'
 import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
-import {actorSheet} from './actor-sheet'
+import {actorSheet,standingActorSheet} from './actor-sheet'
+import lanStandingUrl from '../doc/oldstreet-lan-candidate/standing.png'
 import {actorArt} from './art-catalog'
 import {oldStreetCartridge, oldStreetRooms, oldStreetOutcome, type OldStreetRoom} from './old-street-cartridge'
 import {oldStreetBody, oldStreetHeroScale, oldStreetStride, bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetObstacleBodies, oldStreetProjectedProps, oldStreetPath, oldStreetWalkable} from './old-street-space'
@@ -38,7 +39,7 @@ export default function OldStreetDev() {
   const position = useRef(head.position)
   const runtime = useRef<RpgRendererRuntime>()
   const engine = useRef<any>()
-  const watchmakerEvent=useRef<RpgPlayer>()
+  const npcEvents=useRef<Record<string,RpgPlayer>>({})
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
@@ -53,6 +54,7 @@ export default function OldStreetDev() {
     let mounted = true
     let heroBlob: string | undefined
     let watchmakerBlob: string | undefined
+    let lanBlob: string | undefined
     void (async () => {try {
       let restored = await connection.client.enroll(locale)
       const recovered = await connection.client.recover()
@@ -72,21 +74,23 @@ export default function OldStreetDev() {
       const npcArt=actorArt.balanced.mechanic
       const npcResponse=await fetch(new URL(npcArt.path,document.baseURI));if(!npcResponse.ok)throw Error('WATCHMAKER_LOAD_FAILED')
       watchmakerBlob=URL.createObjectURL(await npcResponse.blob());await Assets.load({src:watchmakerBlob,parser:'loadTextures'})
+      const lanResponse=await fetch(lanStandingUrl);if(!lanResponse.ok)throw Error('LAN_LOAD_FAILED')
+      lanBlob=URL.createObjectURL(await lanResponse.blob());await Assets.load({src:lanBlob,parser:'loadTextures'})
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
         initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
-        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28})], mapEvents: room => room==='shed'?[{id:'oldstreet-watchmaker',...(()=>{const p=oldStreetProjectedProps(current.current.save).find(p=>p.id==='watchmaker')!;return {x:p.body.x,y:p.body.y}})(),event:{onInit(this:RpgPlayer){this.setHitbox(32,28);this.through=true;this.animationFixed=true;this.setGraphic('oldstreet-watchmaker');this.animationName.set('stand');this.direction.set(Direction.Down);watchmakerEvent.current=this;this.syncChanges()}}}]:[],
+        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28})], mapEvents: room => {npcEvents.current={};return oldStreetProjectedProps(current.current.save).filter(p=>p.room===room&&['watchmaker','laundry-owner'].includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(p.id==='watchmaker'?'oldstreet-watchmaker':'oldstreet-lan');this.animationName.set('stand');this.direction.set(Direction.Down);npcEvents.current[p.id]=this;this.syncChanges()}}}))},
         walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
-        onPosition: p => {position.current = p; if (mounted) setFeet(p);if(runtime.current?.scene()==='shed'&&watchmakerEvent.current){const at=oldStreetProjectedProps(current.current.save).find(e=>e.id==='watchmaker')!.position,dx=p.x-at.x,dy=p.y-at.y;if(Math.hypot(dx,dy)<96){const event=watchmakerEvent.current;event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}}, onDestination: p => {if (mounted) setDestination(p)},
+        onPosition: p => {position.current = p; if (mounted) setFeet(p);for(const [id,event] of Object.entries(npcEvents.current)){const prop=oldStreetProjectedProps(current.current.save).find(e=>e.id===id);if(!prop||prop.room!==runtime.current?.scene())continue;const dx=p.x-prop.position.x,dy=p.y-prop.position.y;if(Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}}, onDestination: p => {if (mounted) setDestination(p)},
         onEngine: e => {engine.current = e},
         onReady: r => {runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)},
         onFailure: code => {if (mounted) setError(code)},
       })
     } catch (e) {if (mounted) setError(String(e))}})()
-    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob)}
+    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob)}
   }, [])
   useEffect(() => {
     const timer = setInterval(() => {
@@ -169,7 +173,7 @@ export default function OldStreetDev() {
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
         <OldStreetFloor room={head.scene as OldStreetRoom}/>
-        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>{const actor=oldStreetProjectedProps(head.save).find(p=>p.id==='watchmaker');return head.scene!=='shed'||b.x!==actor?.body.x||b.y!==actor?.body.y}).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
+        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&['watchmaker','laundry-owner'].includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
@@ -177,7 +181,7 @@ export default function OldStreetDev() {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
-        return <button className={'os-target' + (door ? ' os-target--door' : '')+(e.id==='watchmaker'?' os-target--actor':'')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
+        return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner'].includes(e.id)?' os-target--actor':'')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
       })}
     </div>

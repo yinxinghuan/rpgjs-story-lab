@@ -1,0 +1,84 @@
+{
+  "algorithm": "reviewed-magenta-connected-matte-no-scale-1",
+  "sourceRetained": true,
+  "removed": 1141894,
+  "frames": [
+    {
+      "direction": "down",
+      "sourceBox": [
+        428,
+        52,
+        580,
+        328
+      ],
+      "offset": [
+        -376,
+        0
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    },
+    {
+      "direction": "left",
+      "sourceBox": [
+        451,
+        411,
+        575,
+        672
+      ],
+      "offset": [
+        -385,
+        -344
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    },
+    {
+      "direction": "right",
+      "sourceBox": [
+        457,
+        763,
+        560,
+        1027
+      ],
+      "offset": [
+        -381,
+        -699
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    },
+    {
+      "direction": "up",
+      "sourceBox": [
+        432,
+        1110,
+        582,
+        1381
+      ],
+      "offset": [
+        -379,
+        -1053
+      ],
+      "foot": [
+        128,
+        328
+      ]
+    }
+  ],
+  "width": 1024,
+  "height": 352,
+  "sha256": "004dc0d9959da5cb124348ab5e7c503492849bf8c24a505ffbe10221320ee3d9",
+  "productionAdmitted": false,
+  "limitations": [
+    "South pose has staggered feet; standing candidate only",
+    "Walking frames contain wrong directions; excluded",
+    "No generative repair performed by cutout"
+  ]
+}

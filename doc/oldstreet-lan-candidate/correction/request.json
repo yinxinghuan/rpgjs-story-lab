@@ -1,0 +1,13 @@
+{
+  "requestId": "31cadafb-8c18-44cc-aa40-16ebdcc5394e",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/1bfe1e7240994bb137cd7cadc88ad082098f7684/public/art/overhead/mechanic.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "Use this sprite sheet as an EXACT camera elevation, foreshortening, body proportion, pixel-art, pose and grid reference. Replace the man in ALL TWELVE cells with the SAME middle-aged East Asian laundry owner woman: short dark hair tucked behind ears, moss green rolled-sleeve blouse, cream waist apron, dark brown trousers, practical brown shoes. No beard, glasses, hat or held object. Preserve the steep TOP-DOWN view: large visible crown of head, compressed face and short torso, do not change to an eye-level portrait or tall realistic proportions. Preserve THREE equal columns and FOUR equal rows. Row 1 south-facing, row 2 west-facing, row 3 east-facing, row 4 north-facing. In each row: left step, standing idle, right step. Middle column is feet together arms relaxed. Same character scale and foot position in every cell. Crucially row 3 must show right-facing profile, not front view. Preserve blank generous margins. Replace all background with perfectly flat bright magenta RGB255,0,255; no checkerboard, no grid lines, no shadows outside the body. No magenta within the figure. Exactly twelve independent complete figures."
+}

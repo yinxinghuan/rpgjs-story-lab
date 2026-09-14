@@ -1566,3 +1566,7 @@ server/old-street-dialogue.ts 构建当前人物的最小已知上下文，creat
 ### 修表师实体候选（2026-09-15）
 
 old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorSheet 注册 oldstreet-watchmaker。在工作棚 mapEvents 创建 RPG-JS 事件，through=true 只避免引擎重复碰撞，实际碰撞仍由 oldStreetProjectedProps/oldStreetWalkable 权威数据处理。近处玩家位置变化时更新站姿朝向，其他场景不更新该引用；跨场景重新 onInit 绑定事件。NPC图集对象URL在卸载时释放。
+
+### 旧街第二实体角色候选（2026-09-15）
+
+`old-street-dev.tsx` 在洗衣店装配平台生成的阿岚四向静态候选，工作棚仍用 B 视角修表师。`actor-sheet.ts` 的 `standingActorSheet` 接受4×1帧格、源脚点、缩放和碰撞脚点，只暴露stand；它与旧3×4步态图集独立。两位NPC的实际RPG事件和透明触控入口共用空间实体坐标，靠近时转向，不增加独立剧情状态。候选原图、失败记录与去底脚本位于 `doc/oldstreet-lan-candidate`、`scripts/prepare-oldstreet-lan.mjs`；正面站姿与部分原走动帧仍不合格，当前开发入口使用静态候选，正式发布准入保持关闭。

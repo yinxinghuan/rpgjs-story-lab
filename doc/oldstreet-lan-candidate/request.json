@@ -1,0 +1,10 @@
+{
+  "request_id": "2bede546-36f6-4d7d-88ac-558a512a65f7",
+  "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "prompt": "A precise character sprite sheet for a 2D top-down orthographic exploration RPG. FOUR equal columns, ONE row, 1536x768 canvas, each cell 384x768. Same distinctive middle-aged East Asian woman laundry shop owner in every cell: short dark hair tucked behind ears, muted moss-green blouse with sleeves rolled to elbows, cream working apron tied at waist, dark brown trousers and practical brown shoes. No glasses, no beard, no hat, no carried object. Detailed hand-painted pixel-art with crisp dark outlines and restrained warm palette. Steep overhead camera looking down at about 55 degrees, orthographic and no vanishing point. Head top is clearly visible, face vertically compressed, short visible torso front; feet project just beyond the body. Match the same camera elevation in all four views. Left-to-right: facing SOUTH toward viewer, facing WEST left profile, facing EAST right profile, facing NORTH away. Exactly one complete standing relaxed figure in each cell, feet together, arms at sides, not walking. Same scale and same foot baseline y=620 in all four cells, centered horizontally in each cell. Figure approximately 160 pixels wide and 350 pixels tall, generous margin. Background entirely uniform solid pale gray RGB 245,245,245, no checkerboard, no cast shadow, no floor, no environment, no text or grid. Do not use pale gray in the character outline. Four full-body figures only.",
+  "size": {
+    "width": 1536,
+    "height": 768
+  }
+}
