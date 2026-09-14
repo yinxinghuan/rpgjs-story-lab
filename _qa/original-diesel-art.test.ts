@@ -7,18 +7,47 @@ import {originalEquipmentSlots,originalEquipmentBodies,originalEquipmentAnimatio
 import {originalTrainRuntime} from '../server/original-train-runtime'
 import {originalBoundWorldPlan} from '../src/original-world-plan'
 import {assertOriginalAssetBindings} from '../src/original-asset-releases'
-import {originalWorldWalkable} from '../src/original-world-space'
+import {originalWorldWalkable,originalWorldWalkabilitySnapshot} from '../src/original-world-space'
 import {findGridPath} from '../src/grid-path'
 
-test('candidate resource matches its immutable bytes; default journeys retain previous equipment',()=>{
+test('new journeys bind reviewed diesel art; older snapshots retain previous equipment',()=>{
  const bytes=readFileSync('public/'+dieselResource.path.slice(2))
  assert.equal(bytes.length,dieselResource.bytes)
  assert.equal(createHash('sha256').update(bytes).digest('hex'),dieselResource.sha256)
  const head=originalTrainRuntime(()=>true).initial('zh',randomUUID())
+ if(head.assets?.version!==1)throw Error('fixture requires base bindings')
+ for(const {entityId} of Object.values(dieselReleases)){
+  assert.ok(head.assets.fixedEquipment?.[entityId]);delete head.assets.fixedEquipment![entityId]
+ }
+ const restored=originalTrainRuntime(()=>true).upgrade(head)
+ assert.deepEqual(restored.assets,head.assets)
  for(const e of originalBoundWorldPlan(head.assets).entities.filter(e=>Object.hasOwn(dieselFacts,e.id))){
   assert.ok(!originalEquipmentSlots(e.scene,head.assets).some(s=>s.entityId===e.id))
   assert.ok(!originalEquipmentBodies(e.scene,head.assets).some(s=>s.id===e.id))
  }
+})
+
+test('reserve collision preserves existing spawn-to-interaction paths in all five scenes',()=>{
+ const runtime=originalTrainRuntime(()=>true),head=runtime.initial('zh',randomUUID())
+ if(head.assets?.version!==1)throw Error('fixture requires base bindings')
+ const legacy=structuredClone(head)
+ if(legacy.assets?.version!==1)throw Error('fixture requires base bindings')
+ for(const {entityId} of Object.values(dieselReleases))delete legacy.assets.fixedEquipment![entityId]
+ head.assets.fixedEquipment={...head.assets.fixedEquipment,...Object.fromEntries(Object.entries(dieselReleases).map(([release,{entityId}])=>[entityId,release]))}
+ const world=originalBoundWorldPlan(head.assets)
+ for(const scene of world.scenes.filter(s=>world.entities.some(e=>e.scene===s.id&&Object.hasOwn(dieselFacts,e.id)))){
+  const before={...legacy,sceneId:scene.id},after={...head,sceneId:scene.id}
+  const oldWalkable=originalWorldWalkabilitySnapshot(before),newWalkable=originalWorldWalkabilitySnapshot(after)
+  assert.equal(newWalkable(scene.spawn),true,scene.id+' spawn')
+  for(const entity of world.entities.filter(e=>e.scene===scene.id)){
+   const oldPath=findGridPath(scene.spawn,entity.approach,oldWalkable)
+   if(!oldPath.length)continue // Existing inaccessible targets are not evidence about the new obstacle.
+   const path=findGridPath(scene.spawn,entity.approach,newWalkable)
+   assert.ok(path.length,scene.id+' -> '+entity.id)
+   assert.ok(path.every(newWalkable),entity.id+' collision-free path')
+  }
+ }
+ assert.deepEqual(runtime.upgrade(legacy).assets,legacy.assets,'old journey bindings are not upgraded implicitly')
 })
 
 for(const [release,{entityId}] of Object.entries(dieselReleases))test(`${entityId}: refuelling commits once, empty tank and collision survive restoration`,async()=>{

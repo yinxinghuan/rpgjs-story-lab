@@ -1,5 +1,5 @@
 {
-  "status": "river-renderer-reviewed-other-scenes-pending",
+  "status": "admitted-to-new-journey-source-release-pending",
   "method": "Viewed original generated sheets and combined transparent output",
   "observed": [
     "Full amber level versus empty dark glass is distinguishable; both retain physical glass rim",
@@ -9,7 +9,7 @@
   ],
   "sources": "preparation.json",
   "productionAdopted": false,
-  "next": "Review remaining four scenes and small-screen composition before enabling new-journey defaults. Run spatial regressions and release checks before deployment.",
+  "next": "Run full regression and dual deployment verification. Existing saves keep previous immutable equipment bindings.",
   "runtimeReview": {
     "method": "CUA in-app browser, actual RPG renderer and compiled Worker with QA-only candidate asset bindings; fresh temporary SQLite, external Worker fetch disabled",
     "url": "http://127.0.0.1:5418/",
@@ -34,5 +34,35 @@
       "No claim of frame-exact switching or continuous collision video",
       "Preview preceded the source correction replacing the old locker/tag narrative with tank/sight-glass wording"
     ]
+  },
+  "additionalReview": {
+    "method": "CUA screenshots and actions in actual game renderer, isolated compiled Worker replaying snapshots produced only by authored runtime actions",
+    "scenes390x844": [
+      "pine-reserve",
+      "tunnel-reserve",
+      "pass-reserve",
+      "bridge-reserve"
+    ],
+    "scene320x568": "bridge-reserve",
+    "observed": [
+      "Tank aligned to each scene service walkway, separate from rails and the shelter",
+      "Hero and tank remain individually readable; amber sight glass visible; no obvious pale matte",
+      "320x568 contextual action directly refuelled: fuel 72 to 84, tank became empty and remained in place"
+    ],
+    "limits": [
+      "390x844 frames extend below the 720px outer capture; object area reviewed, not full HUD capture",
+      "Desktop browser iframe sizes, not physical iPhone performance proof",
+      "No claim of every scene at both mobile sizes or continuous animation video"
+    ],
+    "routes": "route-review.json"
+  },
+  "regression": {
+    "fullTests": 742,
+    "passed": 742,
+    "failed": 0,
+    "routeActions": 82,
+    "routeJourneys": 2,
+    "scope": "Full Node suite plus authored route path sampling; not every branch or device",
+    "productionBuild": "TypeScript, spatial cartridge checks, cloud frontend, built scene-resource validation, Worker compilation and opaque-module startup passed"
   }
 }

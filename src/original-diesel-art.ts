@@ -1,7 +1,7 @@
 import type {SceneResource} from './scene-readiness'
 import type {StorySave} from './vendor/original-train/types'
 
-/** Candidate bytes: opt-in bindings only until actual map review passes. */
+/** Reviewed fixed bytes. Older journeys without a binding retain their prior art. */
 export const dieselResource:SceneResource={kind:'background',path:'./art/diesel-reserve-candidate-v1.png',sha256:'4a1bc15a8fdad211335bd89f2856554ac704e1b8122e218e6d133422aa787386',bytes:311036,width:640,height:640}
 export const dieselArt={graphic:'original-diesel-reserve-v1',foot:{x:160,y:550},scale:.065,body:{x:-8,y:-8,w:16,h:10}} as const
 export const dieselFacts={
