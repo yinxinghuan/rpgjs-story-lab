@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-14",
+  "source": {
+    "userProvidedArchive": "alteru-guest-shell.tar.gz",
+    "sha256": "274be01882fcebb4364f6d0ede2ca721915c8cb311934ce6c1577dc5e4bbf6e5",
+    "inspection": "Source files extracted to temporary directory; no package scripts executed or private configuration copied"
+  },
+  "verifiedContracts": [
+    {
+      "file": "src/plugins/api-bridge.ts:60-122",
+      "finding": "Guest login stores token/user and synchronizes window.Aigram.telegramId/isInAigram. Client identity is a live UI/transport value, not proof accepted by a separate Worker."
+    },
+    {
+      "file": "src/plugins/api-bridge.ts:223-299",
+      "finding": "Guest API requests attach Authorization Bearer to configured platform API or proxy."
+    },
+    {
+      "file": "src/plugins/api-bridge.ts:417-445",
+      "finding": "Platform callAPI uses host transport; native/Mini App host attaches authentication."
+    },
+    {
+      "file": "/Users/yin/code/games/shared/save/useGameSave.ts:7-11,62-67",
+      "finding": "get/data/list returns six most recent users saves, then filters mine in client. Not private credential storage and not guaranteed recovery for users outside latest six."
+    },
+    {
+      "file": "/Users/yin/code/games/alteru-rpg-service/client/platform-proxy.mjs:1-13",
+      "finding": "resolveVerifiedActor still requires existing backend login verification; browser-supplied user ID must not be trusted."
+    }
+  ],
+  "decision": "Do not upload original/creator bearer capabilities to shared platform save data. Preserve existing authority and saves. Use a verified backend actor adapter or a documented owner-private recovery endpoint when available.",
+  "remainingContract": "Server-side token verification returning authenticated user id, or authenticated private per-user storage with server-enforced isolation and complete own-record retrieval.",
+  "liveRequests": 0,
+  "credentialsReadOrCopied": false,
+  "productionChanges": false
+}
