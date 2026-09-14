@@ -165,5 +165,56 @@
     "visualEvidence": "_qa/native-reentry-20260914/platform-layout-yard-after-introduction.png",
     "heroAndAdaVisible": true,
     "rightEdgeBlankOffsetAbsent": true
+  },
+  "nativeYardToTunnel20260914": {
+    "environment": "Telegram AlterU, same original fault-state journey",
+    "start": {
+      "scene": "graystone-yard",
+      "fuel": 77,
+      "condition": 87,
+      "morale": 58
+    },
+    "actions": [
+      "walk toward yard pump",
+      "direct Mako click",
+      "close panel",
+      "context action Mako",
+      "close panel",
+      "walk to pump",
+      "yard-work-pact",
+      "yard-first-exit",
+      "tunnel-inspect"
+    ],
+    "contextButton": {
+      "labelChangedNearMako": true,
+      "stationaryClickOpenedMakoPanel": true,
+      "movingClickFirstAttempt": "no immediate panel observed; not counted as success"
+    },
+    "repairResult": {
+      "fuel": 89,
+      "condition": 81,
+      "morale": 60,
+      "conditionDeltaMatchesPreview": true
+    },
+    "end": {
+      "scene": "white-stone-tunnel",
+      "fuel": 85,
+      "condition": 81,
+      "morale": 60,
+      "departureFuelDeltaMatchesPreview": true,
+      "inspectionSaved": true
+    },
+    "visual": {
+      "heroVisibleAfterTransition": true,
+      "heroAdaAndVentVisibleAfterInspection": true,
+      "oldBlankOffsetAbsentInObservedFrames": true,
+      "notProofOfAllIntermittentFailuresResolved": true,
+      "evidence": [
+        "_qa/native-reentry-20260914/platform-layout-tunnel-after-yard.png",
+        "_qa/native-reentry-20260914/platform-layout-tunnel-after-inspection.png"
+      ]
+    },
+    "newModelOrMediaRequests": 0,
+    "next": "Continue passenger organization, ventilation and return-to-yard continuity in same journey"
   }
 }
