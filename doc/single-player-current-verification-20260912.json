@@ -217,5 +217,35 @@
     "newModelOrMediaRequests": 0,
     "next": "Continue passenger organization, ventilation and return-to-yard continuity in same journey"
   },
-  "guestShellSourceReview": "guest-shell-auth-review-20260914.json"
+  "guestShellSourceReview": "guest-shell-auth-review-20260914.json",
+  "nativeTunnelReturn20260914": {
+    "environment": "Telegram AlterU; same original fault-state journey",
+    "actions": [
+      "tunnel-captain-led",
+      "tunnel-ventilate",
+      "tunnel-depart"
+    ],
+    "start": {
+      "fuel": 85,
+      "condition": 81,
+      "morale": 60
+    },
+    "passengerMoraleAfter": 57,
+    "ventilationFuelAfter": 77,
+    "end": {
+      "scene": "graystone-yard",
+      "fuel": 73,
+      "condition": 81,
+      "morale": 57
+    },
+    "observed": {
+      "recognizedMakoReturnText": "灰石货场的油罐再次出现在车灯里，玛柯认出了列车，示意你到栅门旁核对下一段线路。",
+      "firstIntroductionNotRepeated": true,
+      "noSecondFuelReward": true,
+      "heroVisibleAfterReturn": true,
+      "noOldBlankOffsetInObservedFrame": true
+    },
+    "evidence": "_qa/native-reentry-20260914/platform-layout-yard-return.png",
+    "remaining": "Continue route brief, companion choice and mountain transition. Not blanket proof all intermittent renderer issues resolved."
+  }
 }
