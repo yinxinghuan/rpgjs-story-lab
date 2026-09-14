@@ -1,16 +1,17 @@
 import type {OriginalDialogueContext} from '../server/original-dialogue'
+export type OriginalTalkTopic={text:string;reply:string;actionId?:string}
 /** Authored conversation choices. Questions only: authority owns all consequences. */
-export function originalTalkTopics(c:Pick<OriginalDialogueContext,'locale'|'speaker'|'sceneId'|'objective'|'availableActions'|'recentTurns'>){
+export function originalTalkTopics(c:Pick<OriginalDialogueContext,'locale'|'speaker'|'sceneId'|'objective'|'availableActions'|'recentTurns'>):OriginalTalkTopic[]{
  const zh=c.locale==='zh',t=(a:string,b:string)=>zh?a:b
  if(c.speaker.id==='ada-mechanic'&&c.sceneId==='train-at-dead-station'&&c.availableActions.some(a=>a.id==='repair-starter'))return [
-  {text:t('启动机哪里坏了？','What is wrong with the starter?'),reply:t('继电器烧坏了。先把启动电路重新接通，列车才能动起来。','The relay is burnt out. We need to reconnect the starter circuit before the train can move.')},
+  {actionId:'repair-starter',text:t('启动机哪里坏了？','What is wrong with the starter?'),reply:t('继电器烧坏了。先把启动电路重新接通，列车才能动起来。','The relay is burnt out. We need to reconnect the starter circuit before the train can move.')},
   {text:t('修好以后往哪走？','Where do we go after the repair?'),reply:t('先让列车能启动，再核对出站道岔。走哪条线路，得由你来决定。','First get the train running, then check the departure points. You will have to choose our route.')},
   {text:t('你有把握吗？','Are you confident about this?'),reply:t('这列车的异响我听得出来。我们先检查启动机，一步一步来。','I know the sounds this train should not make. Let us check the starter and take this one step at a time.')},
  ]
  const has=(action:string)=>c.availableActions.some(a=>a.id===action)
- const contextual:Array<{text:string;reply:string}>=[]
+ const contextual:OriginalTalkTopic[]=[]
  const offer=(speakers:string[],action:string,question:[string,string],answer:[string,string])=>{
-  if(speakers.includes(c.speaker.id)&&has(action))contextual.push({text:t(...question),reply:t(...answer)})
+  if(speakers.includes(c.speaker.id)&&has(action))contextual.push({actionId:action,text:t(...question),reply:t(...answer)})
  }
  offer(['ada-mechanic','mara-raider'],'yard-work-pact',['修泵换油，要付出什么？','What will repairing the pump cost us?'],['要拆用列车的固定件，连接架会多些磨损。车况要付出六份，换来十二份燃料；这笔交换得你点头。','We would use fittings from the train and wear its coupling frame. It costs six Condition for twelve Fuel. You have to agree to that exchange.'])
  offer(['ren-medic','mara-raider'],'yard-medical-pact',['诊疗合作能帮上什么？','What could medical cooperation achieve?'],['货场有人受伤。把诊疗安排谈妥，再按约交接燃料；不必靠强开油泵解决。','There are injured people in the yard. We can agree on medical care and exchange fuel as arranged, without forcing the pump open.'])
@@ -37,4 +38,13 @@ export function originalTalkTopics(c:Pick<OriginalDialogueContext,'locale'|'spea
   ...(reassurance?[{text:t('我有点担心接下来的路。','I am worried about the road ahead.'),reply:t(...reassurance)}]:[]),
   ...(remembered?[{text:t('还记得我们刚才聊的事吗？','Do you remember what we talked about?'),reply:t('你刚才说：“','You said: “')+remembered!.input+'”'}]:[]),
  ].slice(0,4)
+}
+
+/** A topic links only to a currently projected action; following it never submits. */
+export function originalTalkDestination<T extends {id:string;actions:readonly {id:string;label:string}[]}>(topics:readonly OriginalTalkTopic[],lastInput:string|undefined,entities:readonly T[],currentTarget:string){
+ const actionId=topics.find(t=>t.text===lastInput)?.actionId
+ if(!actionId)return undefined
+ const entity=entities.find(e=>e.actions.some(a=>a.id===actionId))
+ if(!entity||entity.id===currentTarget)return undefined
+ return {entity,action:entity.actions.find(a=>a.id===actionId)!}
 }

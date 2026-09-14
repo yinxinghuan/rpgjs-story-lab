@@ -1,4 +1,5 @@
-import {originalTalkTopics} from '../src/original-talk-topics'
+import {originalGameEntities} from '../src/original-game-projection'
+import {originalTalkTopics,originalTalkDestination} from '../src/original-talk-topics'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID} from 'node:crypto'
@@ -195,5 +196,21 @@ test('memory topic recalls substantive dialogue instead of quoting its own quest
   const remembered=originalTalkTopics(c).find(t=>t.text.includes('记得'))!
   assert.ok(remembered.reply.includes('我担心大家。'))
   assert.ok(!remembered.reply.includes('还记得'))
+ }finally{f.close()}
+})
+
+test('a conversation hint navigates only to a still-available action, never grants its outcome',async()=>{
+ const f=fixture();try{
+  let h=f.service.create(owner,randomUUID(),'zh')
+  const topics=originalTalkTopics(originalDialogueContext(h,'ada-mechanic'))
+  const topic=topics.find(t=>t.actionId==='repair-starter')!
+  const before=structuredClone(h)
+  const destination=originalTalkDestination(topics,topic.text,originalGameEntities(h),'ada-dead')!
+  assert.ok(destination);assert.equal(destination.action.id,'repair-starter')
+  assert.equal(originalTalkDestination(topics,topic.text,originalGameEntities(h),destination.entity.id),undefined)
+  assert.equal(originalTalkDestination(topics,'unrelated question',originalGameEntities(h),'ada-dead'),undefined)
+  assert.deepEqual(h,before)
+  h=(await f.service.action(owner,h.id,action(h,'repair-starter'))).head
+  assert.equal(originalTalkDestination(topics,topic.text,originalGameEntities(h),'ada-dead'),undefined)
  }finally{f.close()}
 })
