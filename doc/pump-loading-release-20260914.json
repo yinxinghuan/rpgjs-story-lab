@@ -1,0 +1,38 @@
+{
+  "commit": "23568b7d0055274c008145184d068974486d9587",
+  "status": "main-verified-pages-running",
+  "changes": [
+    "Three-state yard pump for new journeys; legacy bindings unchanged",
+    "Chapter-aware transparent loading objects with stable per-wait selection",
+    "Cached fixed equipment definitions and renderer-equivalent search snapshots"
+  ],
+  "preflight": {
+    "tests": 743,
+    "passed": 743,
+    "spatialJourneys": 120,
+    "actions": 82,
+    "build": "npm run build passed, 9 scenes and 27 resources verified, Worker startup passed",
+    "audits": "Public secret and game API base passed",
+    "browser": "Actual compiled frontend and Worker on loopback with delayed scenery: object loading text observed, entered scene before scenery finished, background then appeared and controls available",
+    "visual": "Three pump routes and refresh; loading art component previews; no physical iPhone claim"
+  },
+  "manifest": "pump-loading-release-20260914-manifest.json",
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "status": "verified",
+    "filesMatched": 116,
+    "pageHealthZip": "passed",
+    "storage": "durable-object-sqlite",
+    "identityMode": "anonymous-capability-v1"
+  },
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "status": "in_progress",
+    "runId": 34825920023
+  },
+  "limits": [
+    "Not whole-game completion",
+    "Platform verified account identity still external dependency",
+    "Pages static frontend only, no second database"
+  ]
+}
