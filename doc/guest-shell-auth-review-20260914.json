@@ -25,10 +25,14 @@
     {
       "file": "/Users/yin/code/games/alteru-rpg-service/client/platform-proxy.mjs:1-13",
       "finding": "resolveVerifiedActor still requires existing backend login verification; browser-supplied user ID must not be trusted."
+    },
+    {
+      "file": "src/plugins/api-bridge.ts:1044-1070 (user supplied source)",
+      "finding": "enablePlatformAigramIdentity reads telegram_id from URL and assigns A.telegramId when absent; this compatibility mirror does not add a server-verifiable assertion. Platform host callAPI authentication is a separate transport."
     }
   ],
   "decision": "Do not upload original/creator bearer capabilities to shared platform save data. Preserve existing authority and saves. Use a verified backend actor adapter or a documented owner-private recovery endpoint when available.",
-  "remainingContract": "Server-side token verification returning authenticated user id, or authenticated private per-user storage with server-enforced isolation and complete own-record retrieval.",
+  "remainingContract": "Authenticated host-to-game-Worker identity transport or server-side platform token verification. A new platform save system is not requested.",
   "liveRequests": 0,
   "credentialsReadOrCopied": false,
   "productionChanges": false,
@@ -38,5 +42,10 @@
     "readmeDescription": "Browser CDN shell; loader, src, dev host simulator, tests, build/upload scripts",
     "privateEnvFiles": "Not opened or extracted",
     "conclusion": "apiProxy is a client forwarding option, not an included authenticated backend implementation. No signing keys or unverified browser ID used."
+  },
+  "colleagueClarification": {
+    "decision": "Keep game Worker as the sole authoritative save backend, as advised. Do not request a new shared save service. Use guest-shell live telegramId for frontend account identification.",
+    "remaining": "Backend authentication or a documented authenticated host-to-game-Worker identity transport for cross-device ownership; no implementation found in supplied browser shell or existing shared runtime.",
+    "scope": "Read-only source inspection; no real credential or player save requests."
   }
 }
