@@ -1447,3 +1447,12 @@ Renderer 暴露当前移动意图，CompanionMotion 在玩家前进方向受队�
 CUA 实际点击记录：屋顶路线已完成借钥匙、打开院门捷径、返回取信并确认回家；地下路线已完成先被旧箱阻止、去洗衣店借推车、清箱、下楼并进入工作棚。随后发现清箱标签滞留旧位置，修复后在 5452 构建页新建内存旅程复验：箱子与标签同时移到院墙，地下储物室可进入，背包仍保留推车。截图观察为约 365×676 的 in-app 浏览器 external-guest 状态，非真实 iPhone、非 AlterU 内完整验收，不能据此判定手机构图通过。
 
 本轮自动检查：路线、空间与零资源兼容共 19 项通过。地图文件一致性检查覆盖实际导出的 TMX。仍缺正式 Session 接入、断线/刷新恢复、实体角色及关系、照片比对输入、自由输入适配、新场景美术和正式结局提交；`oldStreetAdmission.ready` 继续为 false。人物位置按钮与白盒矩形仅属于这个隔离开发入口。
+
+
+## 2026-09-15：旧街接入既有 Session 事务内核
+
+`server/old-street-runtime.ts` 新增 `SessionRuntime<OldStreetHead>` 策略及薄 `OldStreetAuthority` 包装，复用 `SessionAuthority` 的事务、回执、journal、checkpoint 和 prepare/commit。内容策略只负责当前地图/目标/距离准入、Core 规则及 `prepareDoorTravel`；保存的 head 同时包含 StorySave、sceneId、position、mapVersion 和 version。默认展示准入拒绝创建；未接任何生产 HTTP 路由，没有另建公开后台。测试显式使用 synthetic admission，不能用于声明美术已准入。
+
+`_qa/old-street-session.test.ts` 六项通过：中英各自 15 次行动的磁盘 SQLite 关闭/重开与丢回执重放；旧 checkpoint 拒绝；跨 owner 读取拒绝；旧列车数据库不被重新解释；回执写入失败时房间/故事/journal 一起回滚；跨场景/目标/非法坐标拒绝；准备后的展示准入撤销与后续版本提交不会被旧候选覆盖。末尾保存的是 `departed` 事实，仍不是正式 Finale 生成/展示合同。真实模型输入暂不开放，free-input 明确拒绝，不能把 authored action ID 的执行称为自由输入接通。
+
+当前浏览器白盒仍使用组件内存。后续需在同一工程接 HTTP、持久身份与 pending 回执恢复，再把客户端直接 reducer 调用移到该权威边界；还需设计同一部署内旧列车与新内容的显式存储路由，禁止将现有列车表交给旧街策略。尚无浏览器刷新续玩或生产 Worker 证据。
