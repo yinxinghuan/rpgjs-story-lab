@@ -54,12 +54,52 @@
     "commit": "378b76517136b5919972ef60021f1ab6316a2b07",
     "main": {
       "status": "114-files-sha256-match",
-      "url": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/"
+      "url": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "pageApiSourceZip": "pass"
     },
     "pages": {
       "runId": 34801009848,
       "status": "in_progress"
     },
-    "nativeAlterU": "same-fault-state-recheck-pending"
+    "nativeAlterU": "old fault state preserved; native toolbar clicks unsupported and Command-R had no effect; manual reload requested"
+  },
+  "continuousRoute": {
+    "environment": "local frozen production frontend and Worker; synthetic journey; external model disabled",
+    "steps": [
+      {
+        "action": "repair pump trade",
+        "fuel": 75,
+        "condition": 81,
+        "morale": 60
+      },
+      {
+        "action": "quarry to tunnel",
+        "fuel": 71,
+        "condition": 81,
+        "morale": 60
+      },
+      {
+        "action": "inspect ventilation",
+        "fuel": 71,
+        "condition": 81,
+        "morale": 60
+      },
+      {
+        "action": "organize passenger transfer",
+        "fuel": 71,
+        "condition": 81,
+        "morale": 57
+      },
+      {
+        "action": "fuel ventilation",
+        "fuel": 63,
+        "condition": 81,
+        "morale": 57
+      }
+    ],
+    "heroVisibleAcrossTransitions": true,
+    "sceneArtCheckedAgainstReleasedTunnelSource": true,
+    "currentScene": "white-stone-tunnel",
+    "completePlaythrough": false
   }
 }
