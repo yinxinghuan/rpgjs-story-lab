@@ -1255,3 +1255,8 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 泵站候选接入（2026-09-14）
 
 `original-yard-pump-art.ts` 定义三帧固定图集与 `yard-agreement` 到图形的映射：诊疗或未达成协议保持停机，work 修复，forced 打开护栏且泵轴断开。`yard-pump-v1` 仅支持显式候选绑定，不进入 `currentFixedEquipment()`，旧档不会自动升级。实际 renderer 验证资源 SHA 和尺寸并使用相同世界布局/碰撞。三条真实作者路线共 36 次行动通过；320×568 修泵与刷新恢复已观察，另外两条路线与 390×844 待实际画面验收。详细证据见候选目录 runtime-review.json。
+
+
+### 柴油储罐版本双部署完成（2026-09-14）
+
+在前述发布待验之后，主站与 Pages 的 115 个实际文件现均与冻结提交 `7ff4d4d1351947820c2f7c53bee2fabfd3427248` 的字节数和 SHA-256 一致，Pages run `34818701686` 成功。柴油储罐已进入正式新旅程；泵站候选仍仅开发分支。证据见 `doc/diesel-release-20260914.json`。不代表平台账号跨设备恢复或完整游戏全部验收完成。

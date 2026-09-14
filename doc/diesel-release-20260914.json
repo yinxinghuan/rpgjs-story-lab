@@ -1,6 +1,6 @@
 {
   "commit": "7ff4d4d1351947820c2f7c53bee2fabfd3427248",
-  "status": "main-verified-pages-running",
+  "status": "main-and-pages-verified",
   "changes": [
     "New journeys bind reviewed diesel reserve art at five existing locations; legacy bindings remain unchanged",
     "Backup downloads verify digest, journey identity and current revision before creating the download",
@@ -25,8 +25,9 @@
   "pages": {
     "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
     "runId": 34818701686,
-    "status": "in_progress",
-    "filesMatched": null
+    "status": "success",
+    "filesMatched": 115,
+    "verification": "Downloaded all 115 frozen build files; byte counts and SHA-256 match main release 7ff4d4d"
   },
   "limits": [
     "Local and CI suites are not exhaustive branch or physical iPhone verification",

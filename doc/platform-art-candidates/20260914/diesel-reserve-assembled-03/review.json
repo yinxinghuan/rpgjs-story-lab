@@ -8,7 +8,7 @@
     "Source body boxes differ by three pixels in width and four in height; translation aligns reviewed tank base without scaling"
   ],
   "sources": "preparation.json",
-  "productionAdopted": false,
+  "productionAdopted": true,
   "next": "Run full regression and dual deployment verification. Existing saves keep previous immutable equipment bindings.",
   "runtimeReview": {
     "method": "CUA in-app browser, actual RPG renderer and compiled Worker with QA-only candidate asset bindings; fresh temporary SQLite, external Worker fetch disabled",
@@ -64,5 +64,6 @@
     "routeJourneys": 2,
     "scope": "Full Node suite plus authored route path sampling; not every branch or device",
     "productionBuild": "TypeScript, spatial cartridge checks, cloud frontend, built scene-resource validation, Worker compilation and opaque-module startup passed"
-  }
+  },
+  "deploymentEvidence": "../../../diesel-release-20260914.json"
 }
