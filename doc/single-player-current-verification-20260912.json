@@ -30,16 +30,16 @@
     "backLayerMapTrial": "leg-layer-map-review-20260913.json",
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
     "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
-    "latestNativeReentry": "native-ending-dialogue-review-20260913.json: previous reentry preserved ending/stats/companions; 2026-09-14 actual native post-ending short dialogue and close-to-map passed. New exit/reentry after dialogue not verified.",
+    "latestNativeReentry": "nativeCommonLineReentry20260914: platform Back removed game iframe; same game Play restored common-line,39/75/75 and companion/route epilogues; hero visible after closing ending.",
     "currentMainRelease": "map-focus-review-20260914.json#yardReturnRelease: e02438b main page/API/source ZIP pass; same-commit main/Pages each114 files match local production build.",
     "continuousQuarryPublicLogJourney": "map-focus-review-20260914.json#bridgeAndFinaleWalkthrough: frozen 378b765 localhost production frontend/Worker; UI journey through quarry loop, tunnel, pass, town, bridge, public-log ending and reload. Fuel25/condition75/morale75; Ada/Mako. Not native or iPhone proof.",
-    "mapFocusScrolling": "map-focus-review-20260914.json: hidden overflow browser-focus scrolling reproduced; clip prevents extra map scroll, journal remains scrollable. Local real renderer continued through final scene; native fault-state recheck pending."
+    "mapFocusScrolling": "map-focus-review-20260914.json: local focus-scroll regression and clip fix; current native original fault journey continued through all remaining transitions to common-line and reentry, hero visible in captured frames. Does not prove every intermittent renderer fault absent."
   },
   "remaining": [
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
-      "state": "route-and-reentry-verified-with-known-display-defects",
-      "currentBlocker": "2026-09-14 reopened original graystone fault journey through native Play; same77/87/58 restored, yard-meet and short cards passed, combined screenshot shows hero/Ada without old blank offset. Later movement/transitions remain to verify; no login/open-page blocker now."
+      "state": "current-native-route-and-same-device-reentry-verified",
+      "evidence": "nativeMountainArrival20260914 through nativeCommonLineReentry20260914: same original journey continued graystone/tunnel/pass/town/bridge to common-line ending and platform exit/reentry. Native online interpretation and whole art family remain separate scopes."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -124,7 +124,7 @@
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
   "contextLossRecovery": "context-loss-recovery-review-20260913.json",
   "pendingExternalActions": {
-    "nativePlaytest": "User reopened page; Play, same save restore, movement and yard-meet passed. Combined native AX/screenshot confirms visible hero/Ada and no old blank offset. Continue current journey; no user reopen request pending.",
+    "nativePlaytest": "No native entrance blocker. Same original fault-state journey completed remaining route to common-line and platform exit/reentry on 2026-09-14; evidence recorded below. Account recovery and real iPhone remain separate requirements.",
     "newUpperBodyPair": "2026-09-14 explicit authorization received; exactly one platform edit completed. Candidate11 rejected on identity/material/upper-body contract, not admitted; no further request authorized by this one-generation permission.",
     "identity": "User supplied guest-shell source; frontend login/host-auth transport understood. Existing shared save list exposes multiple users and cannot store capability secrets. Backend verified-actor or owner-private recovery API still needed; no request made to real players data."
   },
@@ -283,5 +283,171 @@
     "evidence": "_qa/native-reentry-20260914/platform-layout-mountain-arrival.png",
     "scopeLimit": "Native current frame and party panel verified; no blanket renderer or hardware-iPhone acceptance claim.",
     "next": "Mountain brake challenge, duties and town transition; preserve current journey."
+  },
+  "nativeMountainToTown20260914": {
+    "environment": "Telegram AlterU, same original fault-state journey; native UI only",
+    "confirmedActionsThisTurn": [
+      "pass-air-brake result recovered without repeating action",
+      "pass-debrief",
+      "pass-depart"
+    ],
+    "priorTurnActionsFromContinuationNotes": [
+      "pass-inspect",
+      "pass-player-watch",
+      "pass-mako-duty"
+    ],
+    "observed": {
+      "brakeResult": {
+        "fuel": 63,
+        "condition": 79,
+        "morale": 57
+      },
+      "installedHoseNarrative": true,
+      "hoseAbsentFromInventory": true,
+      "remainingInventory": [
+        "总调度钥匙 × 1",
+        "铁路电台 × 1",
+        "铅封柴油桶 × 2"
+      ],
+      "debriefResult": {
+        "fuel": 63,
+        "condition": 79,
+        "morale": 59
+      },
+      "partyAtTown": [
+        "阿达 · 同行",
+        "玛柯 · 同行"
+      ],
+      "makoRelationshipShowsAirBrakePlusOne": true
+    },
+    "end": {
+      "scene": "sleeping-town",
+      "visibleTitle": "沉睡小城",
+      "fuel": 57,
+      "condition": 79,
+      "morale": 59,
+      "saveIndicator": "进度已保存",
+      "heroVisible": true
+    },
+    "evidence": "_qa/native-reentry-20260914/platform-layout-town-arrival.png",
+    "scopeLimit": "Observed central rail/platform and hero; does not prove full scene art coverage, real iPhone behavior, or cross-device account recovery.",
+    "next": "Inspect town, resolve preparations, continue bridge and ending in this same journey."
+  },
+  "nativeTownToBridge20260914": {
+    "environment": "Telegram AlterU, same original fault-state journey; native UI only",
+    "actions": [
+      "town-inspect",
+      "town-grid-aid",
+      "town-public-rules",
+      "town-pack-kit",
+      "town-route-brief",
+      "town-depart"
+    ],
+    "start": {
+      "fuel": 57,
+      "condition": 79,
+      "morale": 59
+    },
+    "observed": {
+      "inspectionDisplayedAsTwoShortPages": true,
+      "aidResult": {
+        "fuel": 51,
+        "condition": 79,
+        "morale": 67
+      },
+      "publicRulesResult": {
+        "fuel": 51,
+        "condition": 79,
+        "morale": 75
+      },
+      "bridgeKitVisibleAfterTransfer": 1,
+      "ownedDieselCansRetained": 2,
+      "routeBriefDistinguishesApproachFromCrossing": true,
+      "noRestSelected": true
+    },
+    "end": {
+      "visibleTitle": "洪水桥 · 近岸检修台",
+      "fuel": 45,
+      "condition": 79,
+      "morale": 75,
+      "heroVisible": true,
+      "saveIndicator": "进度已保存"
+    },
+    "evidence": "_qa/native-reentry-20260914/platform-layout-flood-bridge-arrival.png",
+    "scopeLimit": "Actual observed central rails/platform only; full surrounding art, crossing and ending not yet verified in this native journey. Online interpretation remained off.",
+    "next": "Inspect bridge, consume owned kit in survey, arrange companions, cross and complete finale."
+  },
+  "nativeBridgeEnding20260914": {
+    "environment": "Telegram AlterU, same original fault-state journey; native UI only",
+    "actions": [
+      "bridge-inspect",
+      "bridge-kit-survey",
+      "bridge-arrange",
+      "bridge-rail-crossing",
+      "finale preparation",
+      "choose common-line",
+      "expand ending"
+    ],
+    "start": {
+      "fuel": 45,
+      "condition": 79,
+      "morale": 75
+    },
+    "observed": {
+      "kitAbsentAfterSurvey": true,
+      "surveyChoiceRemoved": true,
+      "remainingInventory": [
+        "总调度钥匙 × 1",
+        "铁路电台 × 1",
+        "铅封柴油桶 × 2"
+      ],
+      "crossingPreview": {
+        "fuel": -6,
+        "condition": -4
+      },
+      "crossingActual": {
+        "fuel": 39,
+        "condition": 75,
+        "morale": 75
+      },
+      "finaleUnlockedAfterCrossing": true,
+      "endingTitle": "共同线路",
+      "endingRecalls": [
+        "阿达与玛柯同行",
+        "货场合作油账",
+        "隧道排烟燃料消耗保留",
+        "小城供油恢复广播",
+        "未额外休息二十分钟",
+        "列车实际越过洪水桥"
+      ],
+      "endingCosts": [
+        "放弃个人最终决定权",
+        "为沿线救援长期预留车厢和燃料"
+      ],
+      "saveIndicator": "进度已保存"
+    },
+    "evidence": "_qa/native-reentry-20260914/platform-layout-common-line-ending.png",
+    "scopeLimit": "This native route reaches an ending. No claim of cross-device account recovery, new native session reload, all endings, live interpretation in this turn, or whole-goal completion.",
+    "next": "Verify same ending after native exit/reentry, then audit remaining whole-game requirements."
+  },
+  "nativeCommonLineReentry20260914": {
+    "environment": "Telegram AlterU, same device and original fault-state journey",
+    "method": "Platform Back; fresh non-diff AX confirmed game iframe absent and profile list present; Play same Carriage07 entry; fresh AX confirmed game returned. One stale-index click failed before fresh listing and was retried only afterward.",
+    "observed": {
+      "ending": "共同线路",
+      "fuel": 39,
+      "condition": 75,
+      "morale": 75,
+      "companionsInEnding": [
+        "阿达",
+        "玛柯"
+      ],
+      "townBroadcastAndNoRestRecallRetained": true,
+      "closeEndingShowsHero": true,
+      "platformPlayCountBefore": 14,
+      "platformPlayCountAfter": 15
+    },
+    "evidence": "_qa/native-reentry-20260914/platform-layout-common-line-restored.png",
+    "scopeLimit": "Same-device native reentry only; no token inspection, save injection, cross-device/account recovery claim or iPhone hardware proof."
   }
 }
