@@ -3,7 +3,7 @@ import {originalEquipmentBodies} from './original-equipment-art'
 import type {StorySave} from './vendor/original-train/types'
 import {originalSceneBackgroundVersion,type OriginalAssetBindings} from './original-asset-releases'
 import {originalEnvironmentWalkable} from './original-environment-layouts'
-type Presence={save:StorySave;sceneId:string;assets?:OriginalAssetBindings}
+type Presence={save:StorySave;sceneId:string;assets?:OriginalAssetBindings;companionPositions?:Record<string,{x:number;y:number}>}
 type Point={x:number;y:number}
 export function originalWorldWalkable(head:Presence,p:Point){
  return originalCharacterWalkable(head,p,q=>originalEnvironmentWalkable(originalSceneBackgroundVersion(head.assets,head.sceneId),head.sceneId,q))&&!originalEquipmentBodies(head.sceneId,head.assets).some(b=>p.x+9>b.x&&p.x<b.x+b.w&&p.y+15>b.y&&p.y<b.y+b.h)

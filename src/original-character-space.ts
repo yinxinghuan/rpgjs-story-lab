@@ -6,12 +6,13 @@ import {originalTrainChapterSpatialPlan,originalTrainPlanWalkable} from './origi
 
 const world=originalTrainChapterSpatialPlan()
 type Point={x:number;y:number}
-type Presence={save:StorySave;sceneId:string;assets?:OriginalAssetBindings}
+type Presence={save:StorySave;sceneId:string;assets?:OriginalAssetBindings;companionPositions?:Record<string,Point>}
 /** Character positions are foot centers; the player position is its hitbox top-left. */
 export function originalCharacterBodies(head:Presence){
  return world.characters.filter(c=>originalCharacterPresent(head.save,c.id)).flatMap(c=>{
   const base=world.entities.find(e=>e.scene===head.sceneId&&c.entities.includes(e.id)),e=base?originalEntityLayout(head.assets,base):undefined
-  return e?[{id:c.id,entityId:e.id,x:e.position.x-4.5,y:e.position.y-15,w:9,h:15}]:[]
+  const moving=head.companionPositions?.[c.id]
+  return e?[{id:c.id,entityId:e.id,x:moving?.x??e.position.x-4.5,y:moving?.y??e.position.y-15,w:9,h:15}]:[]
  })
 }
 export function originalCharacterWalkable(head:Presence,p:Point,ground=(q:Point)=>originalTrainPlanWalkable(head.sceneId,q)){
