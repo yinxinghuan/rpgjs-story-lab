@@ -1,0 +1,50 @@
+{
+  "commit": "846e2ad0fa491588205311c83e6e09213747c529",
+  "changes": [
+    "protagonist reference import",
+    "reference-matched identity review",
+    "private archive provenance and role-specific publication gates"
+  ],
+  "tests": {
+    "passed": 727,
+    "failed": 0,
+    "build": "cloud, 9 scenes / 27 hashes, Worker startup passed",
+    "secrets": "pass",
+    "apiBase": "pass",
+    "storage": {
+      "games": 145,
+      "problems": 0
+    }
+  },
+  "main": {
+    "deployed": true,
+    "uuid": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "filesMatched": 114,
+    "pageApiSourceZip": "pass",
+    "browser": "new import disclosure expanded on actual deployed creator; previous test equipment draft remained; no generation or save mutation"
+  },
+  "pages": {
+    "run": 34809278787,
+    "status": "completed",
+    "conclusion": "success",
+    "tests": 727,
+    "failures": 0,
+    "spatialJourneys": 120,
+    "spatialFailures": 0,
+    "spatialActions": 82
+  },
+  "limits": [
+    "No newly approved character art",
+    "No platform account or cross-device recovery claim",
+    "No main-story content changes",
+    "Full goal remains active"
+  ],
+  "dualDeploymentComplete": true,
+  "hashes": {
+    "main": 114,
+    "pages": 114,
+    "allMatchSameBuild": true,
+    "evidence": "/private/tmp/rpg-identity-ui-release-hashes.json",
+    "ciLog": "/private/tmp/rpg-identity-ui-ci.log"
+  }
+}

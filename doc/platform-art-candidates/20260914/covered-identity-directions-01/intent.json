@@ -1,0 +1,12 @@
+{
+  "purpose": "Validate complete covered/nonhuman identity in map sprite conversion",
+  "sourceSha256": "2d38633f9c2a487425c9573b89874acac403d6fb0d5c589a05dda78e48effdcd",
+  "scope": "one edit of dedicated synthetic reference, no player data",
+  "acceptance": [
+    "no invented anatomy",
+    "four correct facings",
+    "same cloth silhouette and one-sided accessories",
+    "stationary and gliding poses retain anchors"
+  ],
+  "productionAdoption": false
+}

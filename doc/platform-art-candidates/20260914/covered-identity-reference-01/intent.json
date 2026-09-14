@@ -1,0 +1,12 @@
+{
+  "purpose": "Dedicated covered nonhuman identity fixture for whole-game protagonist media integration; not production art",
+  "scope": "one text request, no player data, no real avatar, original game UUID",
+  "acceptance": [
+    "continuous cloth silhouette",
+    "two eye holes and no mouth",
+    "teal patch and single brass hem ring",
+    "no exposed invented body parts",
+    "overhead orthographic view"
+  ],
+  "next": "Inspect before using as a reference; no automatic adoption"
+}

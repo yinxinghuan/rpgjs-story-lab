@@ -500,7 +500,7 @@
     "nextIndependentImplementation": "Versioned protagonist identity and candidate lifecycle, reusing existing publication rather than creating another game or storage authority."
   },
   "protagonistIdentityDevelopment20260914": {
-    "status": "backend-private-archive-and-creator-review-implemented-not-deployed",
+    "status": "deployed-main-and-pages-846e2ad",
     "checks": {
       "fullSuite": 727,
       "passed": 727,
@@ -550,5 +550,21 @@
     "source": "User supplied colleague screenshot: guest-shell window telegramId is trusted",
     "decision": "Use live window.Aigram.telegramId as platform frontend account identifier; inspect transport to Worker. Preserve existing capability authorization while account binding is implemented; do not expose private journeys to arbitrary client-supplied IDs.",
     "requestToUser": "none; continue source investigation"
+  },
+  "protagonistCreatorRelease20260914": {
+    "commit": "846e2ad0fa491588205311c83e6e09213747c529",
+    "evidence": "protagonist-creator-release-20260914.json",
+    "mainAndPagesFilesMatched": 114,
+    "ciTestsPassed": 727,
+    "spatialJourneysPassed": 120,
+    "scope": "Creator and archive identity checks; not avatar-generation or account recovery completion"
+  },
+  "coveredIdentityProbe20260914": {
+    "requests": 2,
+    "reference": "platform-art-candidates/20260914/covered-identity-reference-01/review.json",
+    "directions": "platform-art-candidates/20260914/covered-identity-directions-01/review.json",
+    "result": "identity test reference created; four-direction sheet rejected for layout, facings and duplicated accessories",
+    "productionArtChanged": false,
+    "next": "Separate nonhuman locomotion review from humanoid leg alternation before another conversion; human identity fixture still required"
   }
 }

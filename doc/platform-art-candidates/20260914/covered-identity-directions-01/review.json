@@ -1,0 +1,20 @@
+{
+  "status": "rejected",
+  "referenceStatus": "dedicated synthetic QA only",
+  "preserved": [
+    "cloth-covered nonhuman silhouette",
+    "no invented human limbs or face",
+    "teal patch broadly retained"
+  ],
+  "failed": [
+    "not a regular 3-column 4-row twelve-frame layout; enlarged middle figure spans intended cells",
+    "bottom row faces camera instead of away",
+    "additional brass rings in outer frames",
+    "side rows contain inconsistent facings and projections",
+    "not sufficient B-angle consistency"
+  ],
+  "productionAdopted": false,
+  "postprocessed": false,
+  "next": "Do not retry unchanged prompt. Before a new nonhuman pipeline, distinguish gliding/swaying from humanoid alternating-leg review; use explicit directional frame requirements. Human avatar fixture remains unverified.",
+  "requestCount": 1
+}

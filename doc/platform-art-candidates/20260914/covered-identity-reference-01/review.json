@@ -1,0 +1,15 @@
+{
+  "status": "accepted-as-identity-test-reference-only",
+  "observed": [
+    "off-white continuous bell-shaped cloth",
+    "two eye holes, no mouth or exposed human anatomy",
+    "teal patch lower front-right, brass ring at right hem",
+    "opaque neutral gray background",
+    "material is smooth dimensional cloth, not established B pixel painting"
+  ],
+  "deviations": [
+    "patch is low front rather than requested upper front",
+    "not a B-style or overhead-angle acceptance"
+  ],
+  "next": "One edit request to test four-direction nonhuman identity preservation; actual pixels override requested but absent attributes"
+}

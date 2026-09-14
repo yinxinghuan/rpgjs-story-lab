@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "85ba2588-7023-422e-a345-9390a217d419",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789364062553107.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1280
+  },
+  "prompt": "SUBJECT A is exactly the reference: a continuous off-white draped bell-shaped cloth ghost, two black oval eye holes and no mouth, one muted teal square patch low on the front-right and one brass ring attached at the right hem. Preserve complete silhouette, cloth covering and these accessories. Do not invent face, skin, hair, hands, arms, legs, feet or a human body. Create one 3-column by 4-row game sprite sheet, twelve complete equally sized figures with margins and identical ground anchors. Strong overhead orthographic view with visible dome top and foreshortened front, no perspective convergence. Row 1 faces down toward camera, row 2 left, row 3 right, row 4 up away from camera with no eye holes visible. The middle column is still; outer columns show two subtle opposite cloth-sway poses for gliding, not human walking. Keep the ring and patch on the same physical part of the cloth in every direction; hidden front patch must not appear on the back. Crisp pixel-painted small-scale detail for the locked miniature railway RPG palette, retaining exact identity and proportions. Solid pure white background, no painted checkerboard, shadows, scene, grid, text or added objects."
+}
