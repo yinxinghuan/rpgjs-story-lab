@@ -251,3 +251,24 @@ test('online dialogue commits only paired speech; rejected output leaves no part
   assert.deepEqual(s.get('owner',h.id),h)
  }finally{raw.close()}
 })
+
+test('clock clue requires observed region and identification, including free input; replay grants it once',async()=>{
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('owner',randomUUID(),'zh')
+  const run=async(action:string)=>{h=(await s.action('owner',h.id,request(h,action))).head}
+  const go=async(room:string)=>run(oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId)
+  await go('shop');await run('oldstreet:move-box');await run('oldstreet:take-lens');await go('street');await go('photo');await go('roof');await go('shed');await run('oldstreet:take-clock');await go('roof');await go('photo');await go('street');await go('shop')
+  const valid={version:'clock-underside-1',region:'south-east',zoom:2.8,mark:'swallows'}
+  for(const proof of [undefined,{...valid,region:'center'},{...valid,mark:'leaf'},{...valid,zoom:1}]){
+   await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:inspect-clock'),clockInspection:proof}),/CLOCK_INSPECTION_REQUIRED/)
+   assert.equal(s.get('owner',h.id).version,h.version);assert.equal(s.get('owner',h.id).save.facts['clock-mark-known'],false)
+  }
+  await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:inspect-clock'),type:'free-input',text:'检查钟底',mode:'local'}),/CLOCK_INSPECTION_REQUIRED/)
+  const body={...request(h,'oldstreet:inspect-clock'),clockInspection:valid},result=await s.action('owner',h.id,body)
+  assert.equal(result.head.version,h.version+1);assert.equal(result.head.save.facts['clock-mark-known'],true)
+  assert.deepEqual(await s.action('owner',h.id,body),result)
+  const reopened=new OldStreetAuthority(storage(raw),admit)
+  assert.equal(reopened.get('owner',h.id).save.facts['clock-mark-known'],true)
+ }finally{raw.close()}
+})

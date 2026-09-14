@@ -1,3 +1,4 @@
+import {OldStreetClockView} from './old-street-clock-view'
 import type {RpgPlayer} from '@rpgjs/server'
 import {Direction} from '@rpgjs/common'
 import {oldStreetTalkTopics} from './old-street-conversation'
@@ -50,6 +51,7 @@ export default function OldStreetDev() {
   const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [journalOpen,setJournalOpen]=useState(false),journalButton=useRef<HTMLButtonElement>(null)
   const [mapOpen,setMapOpen]=useState(false),mapButton=useRef<HTMLButtonElement>(null)
+  const [clockOpen,setClockOpen]=useState(false),[clockMessage,setClockMessage]=useState('')
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
   const [typed, setTyped] = useState('')
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
@@ -130,20 +132,21 @@ export default function OldStreetDev() {
     }catch(e){setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
-  async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false) {
+  async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false,clockInspection?:unknown) {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
-      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{})})
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current = next
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
-      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      if(id==='oldstreet:inspect-clock'){if(result.accepted)setClockOpen(false);else setClockMessage(text(['再仔细看看刻记，也可以换一处观察。','Look more closely at the mark, or examine another area.']))}
       if(id==='oldstreet:match-photos'){if(result.accepted)setPhotoOpen(false);else setPhotoMessage(text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']))}
-      runtime.current!.pause(Boolean(nextHead.save.facts.departed)||(photoOpen&&!result.accepted))
+      runtime.current!.pause(Boolean(nextHead.save.facts.departed)||((photoOpen||clockOpen)&&!result.accepted))
     } catch (e) {setError(String(e)); runtime.current?.pause(true)}
     finally {busyRef.current = false; setBusy(false)}
   }
@@ -154,7 +157,7 @@ export default function OldStreetDev() {
     if (!entity || !runtime.current) return
     if (id === 'oldstreet:leave' && !confirmed) {setLeaving(true); return}
     busyRef.current = true; setBusy(true)
-    const started = runtime.current.walkTo(entity.approach, () => {if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
+    const started = runtime.current.walkTo(entity.approach, () => {if(id==='oldstreet:inspect-clock'){setClockOpen(true);setClockMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
     if (!started) {busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
   }
   function sendInput(dialogue=false,provided?:string){
@@ -212,6 +215,7 @@ export default function OldStreetDev() {
     </footer>
     {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     <details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>
+    {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error))}}/>}
     {journalOpen&&<OldStreetJournalView save={head.save} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(false)}}/>}

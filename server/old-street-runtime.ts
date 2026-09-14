@@ -1,3 +1,4 @@
+import {oldStreetClockObserved} from '../src/old-street-clock-puzzle'
 import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
 import {oldStreetAuthoredTalkReply,oldStreetTalkReply,oldStreetTalkBlocks} from '../src/old-street-conversation'
 import {oldStreetDialogueContext,type OldStreetDialogueGenerator} from './old-street-dialogue'
@@ -82,6 +83,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         body={...body,action}
       }
       if(!binding.admits(body.action,body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
+      if(body.action==='oldstreet:inspect-clock'&&!oldStreetClockObserved(body.clockInspection))throw new LabError('OLD_STREET_CLOCK_INSPECTION_REQUIRED',409)
       if(body.action==='oldstreet:match-photos'&&!oldStreetPhotoMatches(body.photoMatch))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
       check({...h,position:pos})
       const c=oldStreetCartridge(h.save.locale),resolution=resolveDomainAction(h.save,c,body.action)

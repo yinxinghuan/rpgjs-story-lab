@@ -1590,3 +1590,9 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 `old-street-journal.ts` 只读投射既有inventory/facts：物品短说明、取信主线目的与亲自确认的发现。未观察的刻记和未拼合照片不输出；物品归还不删除既有知识；记录册当前公开状态随recorded事实改变，撤下后不会保留过时“已入册”说法。不摘要模型历史，不新增存储。
 
 `old-street-journal-view.tsx` 复用纸色原生dialog，随身/发现分开，打开暂停、关闭继续并恢复入口焦点。中英两项真实领域动作序列测试覆盖观察、归还、JSON回读、同意、入册、撤回；已修复union条目count类型收窄，类型检查通过。实际CUA约365px开发视口验证：仅放大镜在背包，已拼/归还照片和清障结果在发现，未出现未发现钟底刻记；关闭仍在洗衣店，焦点正确。精确320/390手机尺寸、英文长列表及平台内验收仍待完成。仓库UI扫描仍报告历史构建包等既有项，本次新增journal组件没有命中；不宣称全仓UI已通过。
+
+### 钟底刻记观察（2026-09-15）
+
+`old-street-clock-view.tsx` 显示平台生成的实际钟底图，全貌点区域后放大2.8倍，辨认结果连同`clock-underside-1`版本、区域和倍率提交。`old-street-clock-puzzle.ts` 的合法区域来自图像审阅；`old-street-runtime.ts` 对按钮和自由输入解析出的inspect-clock统一检查clockInspection，再执行原领域规则。错误不改变事实/版本，成功沿用clock-mark-known和日志，不新增第二份存档。客户端将缺少观察结果视为可恢复拒绝，错误提示留在特写，正确结果回到地图。旧发现保留，已完成动作不重复奖励。该协议验证游戏输入，不声称具有防作弊或视线追踪能力。
+
+类型检查、开发前端构建、Worker构建、18项Session和5项Worker检查通过。具体图源和视觉限制见doc/oldstreet-clock-inspection/review.md。
