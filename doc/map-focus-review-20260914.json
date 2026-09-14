@@ -19,8 +19,8 @@
     "pass": true
   },
   "limits": [
-    "Synthetic fixture plus production browser walkthrough passed; actual Telegram fault-state recheck remains pending",
-    "Pages deployment and actual mirror file hashes pending"
+    "Actual Telegram old fault-state recheck awaits Mini App reload; browser production route verified",
+    "Full goal and complete route remain open"
   ],
   "productionBuildReview": {
     "commit": "378b765",
@@ -59,7 +59,8 @@
     },
     "pages": {
       "runId": 34801009848,
-      "status": "in_progress"
+      "status": "completed-success",
+      "filesSha256Matched": 114
     },
     "nativeAlterU": "old fault state preserved; native toolbar clicks unsupported and Command-R had no effect; manual reload requested"
   },
@@ -100,6 +101,16 @@
     "heroVisibleAcrossTransitions": true,
     "sceneArtCheckedAgainstReleasedTunnelSource": true,
     "currentScene": "white-stone-tunnel",
-    "completePlaythrough": false
+    "completePlaythrough": false,
+    "returnToYard": {
+      "fuel": 59,
+      "condition": 81,
+      "morale": 57,
+      "routeBriefPassed": true,
+      "makoInvited": true,
+      "mountainExitUnlocked": true,
+      "finding": "No deadlock: route actions reside in Mako panel. Arrival prose/objective incorrectly treated return as first visit.",
+      "followupFix": "949339a, not yet deployed; 32 tests passed"
+    }
   }
 }
