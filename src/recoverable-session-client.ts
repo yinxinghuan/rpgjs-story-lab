@@ -107,6 +107,8 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   this.put(p);return this.settle(p)
  })}
  async recover(){const session=this.read('session','');if(!session)return null;return this.lock(this.key('session:'+session),async()=>{
+  // Selection may finish while this recovery is queued behind its session lock.
+  this.assertSelected(session)
   let result:any={head:await this.get(session),kind:'recovered',text:null,accepted:false}
   for(const p of this.pending().filter(p=>p.id===session))result=await this.settle(p)
   return result

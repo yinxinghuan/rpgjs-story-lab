@@ -6,7 +6,7 @@ import {randomUUID} from 'node:crypto'
 import {OriginalSessionClient} from '../src/original-session-client'
 import {OriginalTrainAuthority,originalCartridge,type OriginalHead} from '../server/original-train-runtime'
 import {originalTrainSpatialPlan} from '../src/original-train-spatial-plan'
-import type {Transport} from '../src/recoverable-session-client'
+import type {Transport,SessionLock} from '../src/recoverable-session-client'
 import type {AuthorityStorage} from '../server/session-authority'
 class MemoryStorage implements Storage{private values=new Map<string,string>();get length(){return this.values.size}key(i:number){return [...this.values.keys()][i]??null}getItem(k:string){return this.values.get(k)??null}setItem(k:string,v:string){this.values.set(k,v)}removeItem(k:string){this.values.delete(k)}clear(){this.values.clear()}}
 function setup(){
@@ -121,6 +121,34 @@ test('selection cannot abandon an unconfirmed action or lost new-journey enrollm
  await assert.rejects(restart.enroll('zh',true),/LOST_NEW/)
  await assert.rejects(restart.selectSession(a.id),/PENDING_ACTION/)
  const restored=await restart.enroll('en');assert.equal(restored.save.locale,'zh');assert.equal(service.directory(owner).length,3);assert.equal(restored.version,0)
+ }finally{raw.close()}
+})
+
+test('recovery queued behind another tab journey selection cannot return the old story',async()=>{
+ const {raw,client,storage,transport,service,owner}=setup()
+ try{
+  const a=await client.enroll('zh'),b=await client.enroll('en',true)
+  await client.selectSession(a.id)
+  const queues=new Map<string,Promise<unknown>>()
+  const lock:SessionLock=(name,work)=>{
+   const next=(queues.get(name)??Promise.resolve()).then(work)
+   queues.set(name,next.catch(()=>{}));return next
+  }
+  let entered!:()=>void,release!:()=>void
+  const reached=new Promise<void>(r=>entered=r),gate=new Promise<void>(r=>release=r)
+  const switching=new OriginalSessionClient(storage,'original-',async(path,body)=>{
+   if(path==='/sessions/'+b.id){entered();await gate}
+   return transport(path,body)
+  },lock)
+  const reads:string[]=[],recovering=new OriginalSessionClient(storage,'original-',async(path,body)=>{reads.push(path);return transport(path,body)},lock)
+  const selection=switching.selectSession(b.id)
+  await reached
+  const recovery=assert.rejects(recovering.recover(),/SESSION_SELECTION_CHANGED/)
+  release();assert.equal((await selection).id,b.id);await recovery
+  assert.deepEqual(reads,[])
+  assert.equal((await recovering.recover()).head.id,b.id)
+  assert.equal(service.get(owner,a.id).version,0);assert.equal(service.get(owner,b.id).version,0)
+  assert.equal(recovering.pending().length,0)
  }finally{raw.close()}
 })
 
