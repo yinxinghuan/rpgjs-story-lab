@@ -1,3 +1,4 @@
+import {PROTAGONIST_IDENTITY_CHECKS} from './protagonist-identity'
 import {assertActorSheetReview,ACTOR_DIRECTIONS,ACTOR_ROW_CHECKS,type ActorSheetReview,type ActorReviewTarget} from './actor-sheet-review'
 import {assertSpriteManifest,type SpriteArchiveManifest} from './sprite-archive-contract'
 export const ACTOR_REVIEW_LIMIT=64
@@ -11,6 +12,7 @@ export async function actorReviewId(r:ActorSheetReview){
  const fields:any[]=[r.version,r.draftId,r.sourceSha256,r.candidateSha256,r.preparation,r.recordedAt,ACTOR_DIRECTIONS.map(d=>ACTOR_ROW_CHECKS.map(c=>r.answers[d][c]))]
  // Keep old sheet-only identities byte-for-byte stable across this addition.
  if(r.map)fields.push([r.map.version,r.map.layout,r.map.scale,r.map.bounds,r.map.checks,r.map.visualAccepted])
+ if(r.identity)fields.push(['protagonist-identity-1',r.identity.referenceSha256,PROTAGONIST_IDENTITY_CHECKS.map(k=>r.identity!.checks[k])])
  const text=JSON.stringify(fields)
  return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),v=>v.toString(16).padStart(2,'0')).join('')
 }

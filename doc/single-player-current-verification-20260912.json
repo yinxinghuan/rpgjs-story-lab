@@ -55,6 +55,11 @@
       "requirement": "Trusted platform identity and account recovery",
       "state": "external-contract-needed",
       "reason": "Existing capability saves remain intact; browser-supplied account identifiers cannot establish authenticated ownership."
+    },
+    {
+      "requirement": "Player avatar to consistent protagonist identity",
+      "state": "implementation-incomplete",
+      "reason": "Published hero slot exists, but current generation recipes have no avatar identity pipeline; diagnostic publication tests are insufficient. This is internal development work, separate from backend verified identity."
     }
   ],
   "latestTestScopes": {
@@ -449,5 +454,79 @@
     },
     "evidence": "_qa/native-reentry-20260914/platform-layout-common-line-restored.png",
     "scopeLimit": "Same-device native reentry only; no token inspection, save injection, cross-device/account recovery claim or iPhone hardware proof."
+  },
+  "wholeGoalImplementationAudit20260914": {
+    "scope": "Focused current-code audit after native ending/reentry; not an exhaustive completion claim",
+    "findings": [
+      {
+        "requirement": "Exploration route in existing create-rpg-game workflow",
+        "status": "routing-contract-present-generic-overlay-not-verified",
+        "evidence": [
+          "../.agents/skills/create-rpg-game/SKILL.md: spatial route",
+          "../.agents/skills/create-rpg-game/references/spatial-production.md: overlays limited to stateful/cinematic"
+        ],
+        "next": "Check independent consumer adapter evidence before any generic production-template claim."
+      },
+      {
+        "requirement": "Player avatar to consistent protagonist identity",
+        "status": "implementation-incomplete",
+        "evidence": [
+          "src/sprite-generation-recipe.ts: only ada-walk-v1 and two starter recipes, walking recipe unavailable",
+          "src/creator-assembly.ts: published hero selection exists",
+          "src/vendor/media/client.ts: avatar transport mode type exists, no player identity pipeline",
+          "doc/original-protagonist-publication-review-20260912.json: diagnostic actor and avatar limitation"
+        ],
+        "next": "Implement a separate versioned protagonist identity/candidate contract and recovery using synthetic local references first; preserve released B character until actual image admission. Do not send real account avatar or trigger new generation under the consumed one-request authorization."
+      },
+      {
+        "requirement": "Platform art versus baseline quality",
+        "status": "partial-production-evidence",
+        "evidence": [
+          "src/original-asset-releases.ts: eight platform scene backgrounds, fixed cast/equipment bindings",
+          "doc/platform-art-candidates/20260913/hero-upper-pair-11/review.json: rejected output"
+        ],
+        "next": "Keep admitted assets; full four-direction quality remains unproven. No automatic fallback presented as successful personalization."
+      },
+      {
+        "requirement": "Full native authored route and same-device recovery",
+        "status": "current-route-verified",
+        "evidence": [
+          "nativeBridgeEnding20260914",
+          "nativeCommonLineReentry20260914"
+        ],
+        "limit": "Not cross-device account recovery, all endings, or physical iPhone evidence."
+      }
+    ],
+    "nextIndependentImplementation": "Versioned protagonist identity and candidate lifecycle, reusing existing publication rather than creating another game or storage authority."
+  },
+  "protagonistIdentityDevelopment20260914": {
+    "status": "backend-and-private-archive-implemented-not-deployed",
+    "checks": {
+      "fullSuite": 727,
+      "passed": 727,
+      "failed": 0,
+      "targeted": 11,
+      "build": "cloud, TypeScript, 9-scene/27-resource hashes, Worker startup passed",
+      "secrets": "pass"
+    },
+    "implemented": [
+      "verified reference/source digest provenance",
+      "private archive roundtrip",
+      "NPC role rejection",
+      "identity observations bound into existing review ID",
+      "new identity observation invalidates map review",
+      "approved hero publication and lost-reply recovery"
+    ],
+    "remaining": [
+      "creator reference import and identity review UI",
+      "generation and genuine human/covered/nonhuman visual fixtures",
+      "runtime adoption and real renderer review"
+    ],
+    "providerRequests": 0
+  },
+  "platformIdentityClarification20260914": {
+    "source": "User supplied colleague screenshot: guest-shell window telegramId is trusted",
+    "decision": "Use live window.Aigram.telegramId as platform frontend account identifier; inspect transport to Worker. Preserve existing capability authorization while account binding is implemented; do not expose private journeys to arbitrary client-supplied IDs.",
+    "requestToUser": "none; continue source investigation"
   }
 }

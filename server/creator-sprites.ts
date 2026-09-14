@@ -1,3 +1,4 @@
+import {protagonistIdentityReviewed} from '../src/protagonist-identity'
 import type {AuthorityStorage} from './session-authority'
 import {LabError} from '../src/journey-runtime'
 import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from '../src/device-publication'
@@ -107,6 +108,7 @@ export class CreatorSpriteArchive{
   if(!value||Object.keys(value).join(',')!=='reviewId'||typeof value.reviewId!=='string'||!/^[a-f0-9]{64}$/.test(value.reviewId))throw new LabError('ACTOR_REVIEW_REQUIRED',409)
   const reviewId=value.reviewId as string,record=this.get(owner,id),d=record.manifest.draft,f=record.manifest.files.find(f=>f.role==='candidate')!
   if(record.state!=='ready'||d.spec.kind!=='actor')throw new LabError('ACTOR_NOT_READY',409)
+  if(d.protagonistIdentity)throw new LabError('PROTAGONIST_NPC_BINDING_FORBIDDEN',409)
   const existing=()=>{const old=this.db.all<{review_id:string}>('SELECT review_id FROM creator_actor_releases WHERE owner=? AND id=?',owner,id)[0];if(!old)return null;if(old.review_id!==reviewId)throw new LabError('ACTOR_RELEASE_CONFLICT',409);return this.actorPublication(owner,id)!}
   const old=existing();if(old)return old
   const latest=this.actorReviews(owner,id)[0]
@@ -133,6 +135,7 @@ export class CreatorSpriteArchive{
   const existing=()=>{const old=this.db.all<{review_id:string}>('SELECT review_id FROM creator_hero_releases WHERE owner=? AND id=?',owner,id)[0];if(!old)return null;if(old.review_id!==reviewId)throw new LabError('ACTOR_RELEASE_CONFLICT',409);return this.heroPublication(owner,id)!}
   const old=existing();if(old)return old
   const latest=this.actorReviews(owner,id)[0]
+  if(d.protagonistIdentity&&!protagonistIdentityReviewed(latest?.review.identity,d.protagonistIdentity))throw new LabError('PROTAGONIST_IDENTITY_REVIEW_REQUIRED',409)
   if(!latest||latest.id!==reviewId||!latest.review.map)throw new LabError('ACTOR_REVIEW_REQUIRED',409)
   try{assertActorSheetReview(latest.review,actorReviewTarget(record.manifest))}catch{throw new LabError('ACTOR_REVIEW_REQUIRED',409)}
   await this.file(owner,id,'candidate')

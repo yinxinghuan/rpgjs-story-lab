@@ -4,6 +4,7 @@ import {composeRepairFrames,replaceActorFrame} from './sprite-composition'
 import type {DeviceReview} from './device-publication'
 import type {SpriteGenerationSource} from './sprite-generation-recipe'
 import type {ActorSheetReview} from './actor-sheet-review'
+import {assertProtagonistIdentity,protagonistIdentity,type ProtagonistIdentity} from './protagonist-identity'
 export type SpritePng = {bytes: Uint8Array; sha256: string; width: number; height: number}
 export type SpriteCompositionInput={source:SpritePng;sourceName:string;columns:number;column:number;generation?:SpriteGenerationSource}
 export type SpriteDraft = {
@@ -14,6 +15,7 @@ export type SpriteDraft = {
   deviceReview?: DeviceReview;
   actorReview?: ActorSheetReview;
   generation?: SpriteGenerationSource;
+  protagonistIdentity?: ProtagonistIdentity;
   state: 'source'|'processing'|'candidate'|'failed'; error?: string;
   result?: {png: SpritePng; frames: PreparedSprite['frames']; metrics: PreparedSprite['metrics']; algorithm: PreparedSprite['algorithm']}
 }
@@ -40,14 +42,24 @@ export async function verifySpritePng(png: SpritePng) {
 export function newSpriteSource(source: SpritePng, sourceName: string,sourceKind:'actor'|'states'='actor'): SpriteDraft {
   return {version:'sprite-draft-1',id:crypto.randomUUID(),revision:0,createdAt:Date.now(),source,sourceName:sourceName.slice(0,100),sourceKind,state:'source'}
 }
+/** Start the existing preparation flow with verified reference provenance.
+ * This records a candidate, not visual acceptance or a new game identity. */
+export async function newProtagonistSource(source:SpritePng,reference:SpritePng):Promise<SpriteDraft>{
+  await verifySpritePng(source);await verifySpritePng(reference)
+  const draft=newSpriteSource(structuredClone(source),'protagonist-reference-candidate','actor')
+  draft.protagonistIdentity=protagonistIdentity(reference.sha256,source.sha256)
+  return draft
+}
 export async function newActorFrameSource(base:SpriteDraft,frame:SpritePng,frameName:string,row:number,column:number,io:{decode:(png:SpritePng)=>Promise<PixelRaster>;encode:(raster:PixelRaster)=>Promise<SpritePng>}):Promise<SpriteDraft>{
  if(base.sourceKind!=='actor'||base.deviceStateSet||base.composition)throw Error('SPRITE_COMPOSITION_INVALID')
+ if(base.protagonistIdentity)assertProtagonistIdentity(base.protagonistIdentity,base.source.sha256)
  await verifySpritePng(base.source);await verifySpritePng(frame);await verifySpriteComposition(base,io.decode)
  const raster=replaceActorFrame(await io.decode(base.source),await io.decode(frame),row,column)
  const source=await io.encode(raster);await verifySpritePng(source)
  if(source.width!==raster.width||source.height!==raster.height)throw Error('SPRITE_ENCODE')
  const next=newSpriteSource(source,'actor-frame-'+row+'-'+column,'actor')
  next.parentId=base.id
+ if(base.protagonistIdentity)next.protagonistIdentity=protagonistIdentity(base.protagonistIdentity.referenceSha256,source.sha256)
  next.actorPatch={version:1,row,column,base:{source:structuredClone(base.source),sourceName:base.sourceName},frame:{source:structuredClone(frame),sourceName:frameName.slice(0,100)}}
  await verifySpriteComposition(next,io.decode)
  return next

@@ -1,3 +1,4 @@
+import {assertProtagonistIdentity,assertProtagonistIdentityReview,type ProtagonistIdentityReview} from './protagonist-identity'
 import {verifySpritePng,type SpriteDraft,type SpriteDraftRepository,type SpritePng} from './sprite-draft'
 import {assertActorMapReview,type ActorMapReview} from './actor-map-review'
 import {inspectActorMapCandidate,type ActorPreview} from './sprite-map-candidate'
@@ -8,8 +9,8 @@ export const ACTOR_ROW_CHECKS=['facing','alternatingSteps','attachments'] as con
 export type ActorDirection=typeof ACTOR_DIRECTIONS[number]
 export type ActorVerdict='unchecked'|'pass'|'fail'
 export type ActorAnswers=Record<ActorDirection,Record<typeof ACTOR_ROW_CHECKS[number],ActorVerdict>>
-export type ActorSheetReview={version:1;draftId:string;sourceSha256:string;candidateSha256:string;preparation:string;recordedAt:number;answers:ActorAnswers;map?:ActorMapReview}
-export type ActorReviewTarget=Pick<SpriteDraft,'id'|'state'|'spec'|'deviceStateSet'|'composition'> & {source:Pick<SpritePng,'sha256'>;result?:Pick<NonNullable<SpriteDraft['result']>,'frames'|'algorithm'> & {png:Pick<SpritePng,'sha256'>}}
+export type ActorSheetReview={version:1;draftId:string;sourceSha256:string;candidateSha256:string;preparation:string;recordedAt:number;answers:ActorAnswers;map?:ActorMapReview;identity?:ProtagonistIdentityReview}
+export type ActorReviewTarget=Pick<SpriteDraft,'id'|'state'|'spec'|'deviceStateSet'|'composition'|'protagonistIdentity'> & {source:Pick<SpritePng,'sha256'>;result?:Pick<NonNullable<SpriteDraft['result']>,'frames'|'algorithm'> & {png:Pick<SpritePng,'sha256'>}}
 const invalid=()=>{throw Error('SPRITE_ACTOR_REVIEW_INVALID')}
 export function emptyActorAnswers():ActorAnswers{
  return Object.fromEntries(ACTOR_DIRECTIONS.map(d=>[d,Object.fromEntries(ACTOR_ROW_CHECKS.map(c=>[c,'unchecked']))])) as ActorAnswers
@@ -29,9 +30,11 @@ export function actorReviewStatus(answers:ActorAnswers){
  return values.includes('fail')?'rejected':values.every(v=>v==='pass')?'sheet-reviewed':'incomplete'
 }
 export function assertActorSheetReview(r:any,d:ActorReviewTarget):asserts r is ActorSheetReview{
- if(!r||Object.keys(r).sort().join(',')!==(r.map===undefined?'answers,candidateSha256,draftId,preparation,recordedAt,sourceSha256,version':'answers,candidateSha256,draftId,map,preparation,recordedAt,sourceSha256,version')||r.version!==1||!Number.isSafeInteger(r.recordedAt)||r.recordedAt<0)return invalid()
+ if(!r||Object.keys(r).filter(k=>k!=='identity').sort().join(',')!==(r.map===undefined?'answers,candidateSha256,draftId,preparation,recordedAt,sourceSha256,version':'answers,candidateSha256,draftId,map,preparation,recordedAt,sourceSha256,version')||r.version!==1||!Number.isSafeInteger(r.recordedAt)||r.recordedAt<0)return invalid()
  const expected=binding(d);for(const key of Object.keys(expected) as Array<keyof typeof expected>)if(r[key]!==expected[key])return invalid()
  assertAnswers(r.answers)
+ if(d.protagonistIdentity)assertProtagonistIdentity(d.protagonistIdentity,d.source.sha256)
+ if(r.identity!==undefined){if(!d.protagonistIdentity)return invalid();assertProtagonistIdentityReview(r.identity,d.protagonistIdentity)}
  if(r.map!==undefined){if(actorReviewStatus(r.answers)!=='sheet-reviewed')return invalid();assertActorMapReview(r.map,d)}
 }
 export async function saveActorMapReview(repo:SpriteDraftRepository,expected:SpriteDraft,map:ActorMapReview,candidate:ActorPreview,decode:(png:SpritePng)=>Promise<PixelRaster>){
@@ -53,5 +56,18 @@ export async function saveActorSheetReview(repo:SpriteDraftRepository,expected:S
  assertActorSheetReview(next.actorReview,next)
  // Like deviceReview, local review metadata does not change the immutable art
  // archive revision. It is deliberately not serialized by spriteManifest.
+ await repo.save(next,current);return next
+}
+
+/** A new identity observation invalidates the old map approval. */
+export async function saveProtagonistIdentityReview(repo:SpriteDraftRepository,expected:SpriteDraft,identity:ProtagonistIdentityReview){
+ const current=await repo.get()
+ if(!current||current.id!==expected.id||current.revision!==expected.revision||JSON.stringify(current.actorReview)!==JSON.stringify(expected.actorReview)||JSON.stringify(current.protagonistIdentity)!==JSON.stringify(expected.protagonistIdentity))throw Error('SPRITE_DRAFT_REPLACED')
+ assertActorSheetReview(current.actorReview,current)
+ if(!current.protagonistIdentity)throw Error('PROTAGONIST_IDENTITY_INVALID')
+ assertProtagonistIdentityReview(identity,current.protagonistIdentity)
+ const review={...structuredClone(current.actorReview),recordedAt:Date.now(),identity:structuredClone(identity)}
+ delete review.map
+ const next={...current,actorReview:review};assertActorSheetReview(review,next)
  await repo.save(next,current);return next
 }
