@@ -4,7 +4,7 @@ import {assertOriginalEquipmentAction} from '../src/original-equipment-state'
 import {originalBoundWorldPlan} from '../src/original-world-plan'
 import {originalEnvironmentWalkable} from '../src/original-environment-layouts'
 import {originalSceneBackgroundVersion} from '../src/original-asset-releases'
-import {originalWorldWalkable,originalWorldSafePosition} from '../src/original-world-space'
+import {originalWorldWalkable,originalWorldSafePosition,originalWorldWalkabilitySnapshot} from '../src/original-world-space'
 import {LabError,validateAction} from '../src/journey-runtime'
 import {executeBoundStoryTurn} from '../src/bound-story-turn'
 import {compileSpatialBinding} from '../src/spatial-binding'
@@ -30,8 +30,8 @@ import {originalConversationBlocks} from '../src/original-conversation'
 export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings;companionPositions?:CompanionPositions}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
 const world=originalTrainChapterSpatialPlan()
-export const compileOriginalSpatialBinding=(c:ReturnType<typeof originalCartridge>,assets?:OriginalAssetBindings,poses?:CompanionPositions,sceneId?:string)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},originalBoundWorldPlan(assets,poses,sceneId),(scene,p)=>originalEnvironmentWalkable(originalSceneBackgroundVersion(assets,scene),scene,p))
-const bindingForHead=(h:OriginalHead)=>compileOriginalSpatialBinding(originalCartridge(h.save.locale),h.assets,h.companionPositions,h.sceneId)
+export const compileOriginalSpatialBinding=(c:ReturnType<typeof originalCartridge>,assets?:OriginalAssetBindings,poses?:CompanionPositions,sceneId?:string,approachWalkable?:(p:{x:number;y:number})=>boolean)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},originalBoundWorldPlan(assets,poses,sceneId,approachWalkable),(scene,p)=>originalEnvironmentWalkable(originalSceneBackgroundVersion(assets,scene),scene,p))
+const bindingForHead=(h:OriginalHead)=>compileOriginalSpatialBinding(originalCartridge(h.save.locale),h.assets,h.companionPositions,h.sceneId,originalWorldWalkabilitySnapshot(h))
 /** Mandatory content admission. Callers must validate assets and story projection
  * before enabling a playable session; source-rule QA uses an explicit test gate. */
 export type OriginalPresentationGate=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>true
@@ -65,7 +65,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    if(body.mode==='live'&&!(body.type==='dialogue'?dialogue:interpreter))throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
    h=originalCompanionContext(h,body.companionPositions)
    const c=originalCartridge(h.save.locale),binding=bindingForHead(h),pos=position(h,body.position)
-   const entity=originalBoundWorldPlan(h.assets,h.companionPositions,h.sceneId).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
+   const entity=originalBoundWorldPlan(h.assets,h.companionPositions,h.sceneId,originalWorldWalkabilitySnapshot(h)).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
    if(!entity)throw new LabError('UNKNOWN_ENTITY')
    if(!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('TOO_FAR')
    const person=world.characters.find(p=>p.entities.includes(entity.id))

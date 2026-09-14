@@ -1,3 +1,4 @@
+import {originalWorldWalkabilitySnapshot} from './original-world-space'
 import {originalPlayerProse} from './original-player-prose'
 import {originalBoundWorldPlan} from './original-world-plan'
 import {originalEntityLabel} from './original-entity-labels'
@@ -33,7 +34,7 @@ export function originalActionDestinations(head:OriginalHead,target:string,input
 export function originalGameEntities(head:OriginalHead){
  const save=head.save,c=save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn,terminal=save.finale.status!=='idle'
  const choices=head.sceneId==='train-at-dawn-junction'&&!terminal?junctionChoices(save,c):save.choices
- return originalBoundWorldPlan(head.assets,head.companionPositions,head.sceneId).entities.filter(e=>e.scene===head.sceneId).flatMap(e=>{
+ return originalBoundWorldPlan(head.assets,head.companionPositions,head.sceneId,originalWorldWalkabilitySnapshot(head)).entities.filter(e=>e.scene===head.sceneId).flatMap(e=>{
   const actor=world.characters.find(p=>p.entities.includes(e.id))
   if(actor&&!originalCharacterPresent(save,actor.id))return []
   const actions=terminal?[]:e.actions.flatMap(id=>{

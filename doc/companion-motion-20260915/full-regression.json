@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-15",
+  "sourceCommit": "b3f683d",
+  "command": "npm test",
+  "runtime": "Node.js 22.22.2",
+  "log": "/private/tmp/rpg-follow-full-regression.log",
+  "results": { "tests": 799, "passed": 799, "failed": 0, "cancelled": 0, "skipped": 0 },
+  "durationMs": 91388.521667,
+  "scope": "Automated synthetic regression; local HTTP recovery tests were permitted to listen on loopback.",
+  "limits": [
+    "Does not validate walking art: companion motion remains an explicit trial using standing textures.",
+    "Does not establish mobile visual quality or player comprehension.",
+    "Does not establish production deployment or native AlterU acceptance.",
+    "Actual bridge work-post movement and narrow-carriage turning still require visual verification."
+  ]
+}
