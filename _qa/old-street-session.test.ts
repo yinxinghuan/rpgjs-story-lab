@@ -30,7 +30,7 @@ for(const locale of ['zh','en'] as const)test(`old street ${locale}: door, tools
    assert.throws(()=>s.checkpoint('synthetic-owner',h.id,{sceneId:previous.sceneId,expected_version:previous.version,position:previous.position}),/STALE_POSITION/)
    assert.throws(()=>s.get('different-owner',h.id),/SESSION_NOT_FOUND/)
   }
-  assert.equal(h.save.facts.departed,true);assert.equal(h.save.facts['crates-cleared'],true)
+  assert.equal(h.save.finale.status,'complete');assert.equal(h.save.sessionEnded,true);assert.equal(h.save.finale.ending?.snapshotId,h.save.finale.snapshot?.id);assert.equal(h.save.facts.departed,true);assert.equal(h.save.facts['crates-cleared'],true)
   assert.equal(h.save.inventory.find(i=>i.id==='trolley')?.count,1)
   assert.equal(s.events('synthetic-owner',h.id,0).length,steps.length)
   await assert.rejects(s.action('synthetic-owner',h.id,request(h,'oldstreet:leave')),/JOURNEY_COMPLETE/)

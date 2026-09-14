@@ -98,7 +98,7 @@ export default function OldStreetDev() {
       serverHead.current = nextHead
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
-      current.current = next; setHead(next); position.current = next.position; setSelected(null)
+      current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
       runtime.current!.pause(Boolean(nextHead.save.facts.departed))
     } catch (e) {setError(String(e)); runtime.current?.pause(true)}
@@ -151,7 +151,7 @@ export default function OldStreetDev() {
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(propNames[e.id] ?? [e.id, e.id]))
         return <button className={'os-target' + (door ? ' os-target--door' : '')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
-          disabled={!ready || busy || !!outcome || !!error} onClick={() => {setSelected(e.id); if (door) request(door.actionId)}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
+          disabled={!ready || busy || !!outcome || !!error} onClick={() => {setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
       })}
     </div>
     <section className="os-actions" aria-label={text(['当前行动', 'Current actions'])}>
@@ -167,7 +167,7 @@ export default function OldStreetDev() {
     {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     <details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p><button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
-    {outcome && <div className="os-modal" role="dialog"><section><h2>{text(['信已送到', 'Letter delivered'])}</h2><p>{notice}</p><p>{outcome.clockReturned ? text(['旧钟已归还。', 'The clock was returned.']) : ''}{outcome.photosReturned ? text(['照片已归还。', 'The photos were returned.']) : ''}</p></section></div>}
+    {outcome && <div className="os-modal" role="dialog" aria-label={text(['旅程结果','Journey result'])}><section><h2>{head.save.finale.ending?.title ?? text(['信已送到','Letter delivered'])}</h2><p>{head.save.finale.ending?.thesis}</p>{head.save.finale.ending?.preserved.map((line,i)=><p key={'p'+i}>{line}</p>)}{head.save.finale.ending?.unresolved.map((line,i)=><p key={'u'+i}>{line}</p>)}</section></div>}
   </main>
   function stick(e: React.PointerEvent<HTMLDivElement>) {
     if (!ready || busyRef.current || leaving || error || outcome) return

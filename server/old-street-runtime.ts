@@ -1,3 +1,4 @@
+import {completeOldStreetEnding} from '../src/old-street-ending'
 import {resolveOldStreetInput} from '../src/old-street-action-input'
 import {recordOldStreetInteraction} from '../src/old-street-characters'
 import {SessionAuthority, type AuthorityStorage, type SessionRuntime} from './session-authority'
@@ -28,7 +29,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime
   }
   return {
     initial:(locale,id)=>{const h:OldStreetHead={id,version:0,mapVersion:plan.mapVersion,sceneId:'street',position:{...plan.scenes.find(s=>s.id==='street')!.spawn},save:createInitialSave(oldStreetCartridge(locale))};check(h);return h},
-    upgrade:value=>{assertOldStreetHead(value);return structuredClone(value)},assertReadable:assertOldStreetHead,
+    upgrade:value=>{assertOldStreetHead(value);const next=structuredClone(value);if(next.save.facts.departed)completeOldStreetEnding(next.save,oldStreetCartridge(next.save.locale));return next},assertReadable:assertOldStreetHead,
     scene:h=>h.sceneId,position,validateAction,preserveConcurrent:()=>{},
     assertPrepared:(candidate,current,id)=>check(candidate,current,id),
     prepare:async(h,body)=>{
@@ -61,6 +62,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime
         text=recordOldStreetInteraction(save,body.target,body.action,resolution.successText,body.action_id).map(b=>b.text).join("\n")
         next={...h,version:h.version+1,save,position:pos}
       }
+      if(next.save.facts.departed)completeOldStreetEnding(next.save,c)
       check(next,h,body.action)
       return {head:next,kind:'action',accepted:true,actionId:body.action,source:'author',text}
     },
