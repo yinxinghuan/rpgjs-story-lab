@@ -1,5 +1,5 @@
 import type {Transport} from './recoverable-session-client'
-import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from './device-publication'
+import {sameDeviceGeometry,assertDeviceReview,assertPublishedDevice,type PublishedDevice} from './device-publication'
 import {verifySpritePng,type SpriteDraft} from './sprite-draft'
 import {assertActorSheetReview} from './actor-sheet-review'
 import {assertPublishedActor,type PublishedActor,assertPublishedHero,type PublishedHero} from './actor-publication'
@@ -8,6 +8,8 @@ import {assertSpriteArchiveRecord,restoreSpriteManifest,spriteManifest,spriteMan
 export class SpriteCloudArchive{
  constructor(private api:Transport){}
  async saveWithReview(draft:SpriteDraft,notify:(done:number,total:number)=>void=()=>{}){
+  const deviceReview=draft.deviceReview?structuredClone(draft.deviceReview):undefined
+  if(deviceReview){if(draft.deviceStateSet!=='repair'||!draft.result)throw Error('DEVICE_REVIEW_REQUIRED');assertDeviceReview(deviceReview,draft.result.png.sha256)}
   const localReview=draft.actorReview?structuredClone(draft.actorReview):undefined
   if(localReview)assertActorSheetReview(localReview,draft)
   const record=await this.save(draft,notify)
@@ -15,6 +17,11 @@ export class SpriteCloudArchive{
    const id=await actorReviewId(localReview),review=await this.api('/sprites/'+draft.id+'/actor-reviews',{id,review:localReview})
    await assertArchivedActorReview(review,draft);if(review.id!==id)throw Error('SPRITE_ACTOR_REVIEW_ARCHIVE_INVALID')
   }catch(e){throw Error(e instanceof Error&&e.message==='SPRITE_ACTOR_REVIEW_LIMIT'?'SPRITE_ACTOR_REVIEW_LIMIT':'SPRITE_ACTOR_REVIEW_SAVE_FAILED',{cause:e})}}
+  if(deviceReview)try{
+   const r=await this.api('/sprites/'+draft.id+'/device-review',{review:deviceReview})
+   assertDeviceReview(r?.review,draft.result!.png.sha256)
+   if(!sameDeviceGeometry(r.review.geometry,deviceReview.geometry))throw Error('DEVICE_REVIEW_CONFLICT')
+  }catch(e){throw Error('SPRITE_DEVICE_REVIEW_SAVE_FAILED',{cause:e})}
   return record
  }
  async reviews(record:SpriteArchiveRecord){
@@ -49,6 +56,7 @@ export class SpriteCloudArchive{
   if(r.state!=='ready'||spriteManifestSignature(r.manifest)!==spriteManifestSignature(record.manifest))throw Error('SPRITE_ARCHIVE_CONFLICT')
   const restored=await restoreSpriteManifest(r.manifest,async f=>{const bytes=await this.api('/sprites/'+r.manifest.id+'/file/'+f.role);if(!(bytes instanceof Uint8Array))throw Error('SPRITE_ARCHIVE_CORRUPT');return bytes})
   if(restored.spec?.kind==='actor'){const latest=(await this.reviews(r))[0];if(latest)restored.actorReview=structuredClone(latest.review)}
+  if(restored.deviceStateSet==='repair'){const r=await this.api('/sprites/'+restored.id+'/device-review');if(!r||Object.keys(r).join(',')!=='review')throw Error('DEVICE_REVIEW_REQUIRED');if(r.review!==null){assertDeviceReview(r.review,restored.result!.png.sha256);const g=r.review.geometry,s=restored.spec!;if(g.cellWidth!==s.cellWidth||g.cellHeight!==s.cellHeight||g.foot.x!==s.foot.x||g.foot.y!==s.foot.y)throw Error('DEVICE_REVIEW_REQUIRED');restored.deviceReview=structuredClone(r.review)}}
   return restored
  }
  async cancel(record:SpriteArchiveRecord){assertSpriteArchiveRecord(record);if(record.state!=='uploading')throw Error('SPRITE_ARCHIVE_ALREADY_READY');const r=await this.api('/sprites/'+record.manifest.id+'/cancel',{});if(r?.id!==record.manifest.id||r.cancelled!==true)throw Error('SPRITE_ARCHIVE_CONFLICT')}

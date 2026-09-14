@@ -1,7 +1,7 @@
 import {protagonistIdentityReviewed} from '../src/protagonist-identity'
 import type {AuthorityStorage} from './session-authority'
 import {LabError} from '../src/journey-runtime'
-import {assertDeviceReview,assertPublishedDevice,type PublishedDevice} from '../src/device-publication'
+import {sameDeviceGeometry,assertDeviceReview,assertPublishedDevice,type PublishedDevice,type DeviceReview} from '../src/device-publication'
 import {inspectSpritePng} from '../src/sprite-draft'
 import {assertActorSheetReview,type ActorSheetReview} from '../src/actor-sheet-review'
 import {assertPublishedActor,type PublishedActor,assertPublishedHero,type PublishedHero} from '../src/actor-publication'
@@ -14,6 +14,7 @@ export class CreatorSpriteArchive{
   db.run('CREATE TABLE IF NOT EXISTS creator_sprites(owner TEXT NOT NULL,id TEXT NOT NULL,manifest TEXT NOT NULL,state TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_parts(owner TEXT NOT NULL,id TEXT NOT NULL,role TEXT NOT NULL,part INTEGER NOT NULL,data BLOB NOT NULL,PRIMARY KEY(owner,id,role,part))')
   db.run('CREATE TABLE IF NOT EXISTS creator_sprite_releases(owner TEXT NOT NULL,id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
+  db.run('CREATE TABLE IF NOT EXISTS creator_device_reviews(owner TEXT NOT NULL,id TEXT NOT NULL,review TEXT NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_actor_reviews(owner TEXT NOT NULL,id TEXT NOT NULL,review_id TEXT NOT NULL,revision INTEGER NOT NULL,record TEXT NOT NULL,PRIMARY KEY(owner,id,review_id),UNIQUE(owner,id,revision))')
   db.run('CREATE TABLE IF NOT EXISTS creator_actor_releases(owner TEXT NOT NULL,id TEXT NOT NULL,review_id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
   db.run('CREATE TABLE IF NOT EXISTS creator_hero_releases(owner TEXT NOT NULL,id TEXT NOT NULL,review_id TEXT NOT NULL,release TEXT NOT NULL,PRIMARY KEY(owner,id))')
@@ -89,6 +90,23 @@ export class CreatorSpriteArchive{
    if(records.length>=ACTOR_REVIEW_LIMIT)throw new LabError('SPRITE_ACTOR_REVIEW_LIMIT',429)
    const record:ArchivedActorReview={version:1,id:identity,revision:records.length+1,createdAt:this.now(),review}
    this.db.run('INSERT INTO creator_actor_reviews VALUES(?,?,?,?,?)',owner,id,identity,record.revision,JSON.stringify(record));return record
+  })
+ }
+ deviceReview(owner:string,id:string):DeviceReview|null{
+  const record=this.get(owner,id),row=this.db.all<{review:string}>('SELECT review FROM creator_device_reviews WHERE owner=? AND id=?',owner,id)[0]
+  if(!row)return null
+  const review=JSON.parse(row.review);assertDeviceReview(review,record.manifest.files.find(f=>f.role==='candidate')!.sha256);return review
+ }
+ async saveDeviceReview(owner:string,id:string,value:any){
+  const record=this.get(owner,id),d=record.manifest.draft,f=record.manifest.files.find(f=>f.role==='candidate')!
+  if(record.state!=='ready'||d.deviceStateSet!=='repair'||d.spec.kind!=='states')throw new LabError('DEVICE_NOT_READY',409)
+  try{if(!value||Object.keys(value).join(',')!=='review')throw Error();assertDeviceReview(value.review,f.sha256);const g=value.review.geometry;if(g.cellWidth!==d.spec.cellWidth||g.cellHeight!==d.spec.cellHeight||g.foot.x!==d.spec.foot.x||g.foot.y!==d.spec.foot.y)throw Error()}catch{throw new LabError('DEVICE_REVIEW_REQUIRED',409)}
+  const review:DeviceReview=structuredClone(value.review)
+  await this.file(owner,id,'candidate')
+  return this.db.transaction(()=>{
+   const old=this.deviceReview(owner,id)
+   if(old){if(!sameDeviceGeometry(old.geometry,review.geometry))throw new LabError('DEVICE_REVIEW_CONFLICT',409);return old}
+   this.db.run('INSERT INTO creator_device_reviews VALUES(?,?,?)',owner,id,JSON.stringify(review));return review
   })
  }
  async publish(owner:string,id:string,value:any){

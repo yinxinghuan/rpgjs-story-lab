@@ -163,7 +163,7 @@ export class CarriageJourneyAuthority{
      this.sprites??=new CreatorSpriteArchive(this.db)
      if(path==='/sprites'&&request.method==='GET')return respond({sprites:this.sprites.list(owner)})
      if(path==='/sprites'&&request.method==='POST')return respond(this.sprites.begin(owner,await body(request)))
-     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|actor-reviews|actor-release|publish-actor|hero-release|publish-hero|file\/(source|candidate|input-0|input-1|input-2)))?$/)
+     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|device-review|actor-reviews|actor-release|publish-actor|hero-release|publish-hero|file\/(source|candidate|input-0|input-1|input-2)))?$/)
      if(!m)throw new LabError('NOT_FOUND',404)
      if(request.method==='GET'){
       if(!m[2])return respond(this.sprites.get(owner,m[1]))
@@ -171,6 +171,7 @@ export class CarriageJourneyAuthority{
       if(m[2]==='parts')return respond(this.sprites.progress(owner,m[1]))
       if(m[2]==='actor-release'){this.sprites.get(owner,m[1]);return respond({release:this.sprites.actorPublication(owner,m[1])})}
       if(m[2]==='hero-release'){this.sprites.get(owner,m[1]);return respond({release:this.sprites.heroPublication(owner,m[1])})}
+      if(m[2]==='device-review')return respond({review:this.sprites.deviceReview(owner,m[1])})
       if(m[2]==='actor-reviews')return respond({reviews:this.sprites.actorReviews(owner,m[1])})
       if(m[3])return new Response(new Uint8Array(await this.sprites.file(owner,m[1],m[3])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
      }
@@ -179,6 +180,7 @@ export class CarriageJourneyAuthority{
       if(m[2]==='publish-actor')return respond(await this.sprites.publishActor(owner,m[1],await body(request)))
       if(m[2]==='publish-hero')return respond(await this.sprites.publishHero(owner,m[1],await body(request)))
       if(m[2]==='publish')return respond(await this.sprites.publish(owner,m[1],await body(request)))
+      if(m[2]==='device-review')return respond({review:await this.sprites.saveDeviceReview(owner,m[1],await body(request))})
       if(m[2]==='actor-reviews')return respond(await this.sprites.saveActorReview(owner,m[1],await body(request)))
       if(m[2]==='finish')return respond(await this.sprites.finish(owner,m[1]))
       if(m[2]==='cancel')return respond(this.sprites.cancel(owner,m[1]))

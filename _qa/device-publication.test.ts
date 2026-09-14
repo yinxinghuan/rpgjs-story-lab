@@ -10,6 +10,7 @@ import {randomUUID} from 'node:crypto'
 import {PreflightStorage} from '../server/preflight-storage'
 import {createHandler,CarriageJourneyAuthority,handleApi} from '../worker/source'
 import {creatorCloudTransport} from '../src/creator-cloud'
+import {spriteManifest} from '../src/sprite-archive-contract'
 import {SpriteCloudArchive} from '../src/sprite-cloud'
 import {inspectSpritePng,newSpriteSource,type SpritePng,type SpriteDraft} from '../src/sprite-draft'
 import {prepareSpritePixels} from '../src/sprite-preparation'
@@ -91,5 +92,39 @@ for(const locale of ['zh','en'] as const)test('published device stays bound thro
   h=(await connection.client.sendEnding(h)).head;assert.equal(h.save.finale.status,'complete');f.restart();assert.deepEqual(await f.player(release.id).client.enroll(locale),h);assert.deepEqual(await f.player().client.enroll(locale),old)
   const pending=connection.client.read<any>('enrollment-request',null);await assert.rejects(f.player().api('/sessions',pending),/ENROLLMENT_ID_CONFLICT/)
   const missing=release.id.split('.')[0]+'.'+randomUUID();await assert.rejects(f.player(missing).client.enroll(locale),/DEVICE_NOT_PUBLISHED/)
+ }finally{await f.close()}
+})
+
+test('unpublished device checks can be added after immutable art upload and restored after a lost review receipt',async()=>{
+ const f=await fixture();try{
+  const d=await draft(),unreviewed=structuredClone(d);delete unreviewed.deviceReview
+  const first=await f.cloud.save(unreviewed)
+  assert.equal((await f.cloud.restore(first)).deviceReview,undefined)
+  f.lose('/device-review')
+  await assert.rejects(f.cloud.saveWithReview(d),/SPRITE_DEVICE_REVIEW_SAVE_FAILED/)
+  f.restart()
+  const restored=await f.cloud.restore(first)
+  assert.deepEqual(restored.deviceReview,d.deviceReview)
+  assert.deepEqual((await f.cloud.saveWithReview(d)).manifest,first.manifest,'checks never mutate the archived image manifest')
+  assert.equal((await f.cloud.list()).length,1)
+  assert.equal(await f.cloud.publication(d.id),null,'saving checks does not publish the candidate')
+  assert.equal((await fetch(f.base+'/api/creator/sprites/'+d.id+'/device-review')).status,401)
+  const other=new SpriteCloudArchive(creatorCloudTransport(new Memory(),lock,fetch,f.base))
+  await assert.rejects(other.restore(first),/NOT_FOUND/)
+  const release=await f.cloud.publish(restored)
+  assert.deepEqual(release.review,d.deviceReview)
+ }finally{await f.close()}
+})
+test('device review archive rejects incomplete, wrong-image and changed-foot reviews without replacing the saved check',async()=>{
+ const f=await fixture();try{
+  const d=await draft();await f.cloud.saveWithReview(d)
+  const wrongFoot=structuredClone(d.deviceReview!);wrongFoot.geometry.foot.x++
+  const g=wrongFoot.geometry;wrongFoot.geometry=deviceGeometry(g.cellWidth,g.cellHeight,g.foot,g.bounds)
+  for(const review of [{...d.deviceReview,checks:['broken']},{...d.deviceReview,sha256:'0'.repeat(64)},wrongFoot]){
+   await assert.rejects(f.api('/sprites/'+d.id+'/device-review',{review}),/DEVICE_REVIEW_REQUIRED/)
+  }
+  assert.deepEqual((await f.api('/sprites/'+d.id+'/device-review')).review,d.deviceReview)
+  const incomplete=await draft();await f.api('/sprites',spriteManifest(incomplete).manifest)
+  await assert.rejects(f.api('/sprites/'+incomplete.id+'/device-review',{review:incomplete.deviceReview}),/DEVICE_NOT_READY/)
  }finally{await f.close()}
 })
