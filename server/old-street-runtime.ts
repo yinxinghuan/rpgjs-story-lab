@@ -1,3 +1,4 @@
+import {recordOldStreetInteraction} from '../src/old-street-characters'
 import {SessionAuthority, type AuthorityStorage, type SessionRuntime} from './session-authority'
 import {LabError, validateAction} from '../src/journey-runtime'
 import {oldStreetCartridge} from '../src/old-street-cartridge'
@@ -41,16 +42,17 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime
       check({...h,position:pos})
       const c=oldStreetCartridge(h.save.locale),resolution=resolveDomainAction(h.save,c,body.action)
       if(!resolution || resolution.status!=='accepted')throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)
-      let next:OldStreetHead
+      let next:OldStreetHead, text=resolution.successText
       if(oldStreetDoors().some(d=>d.actionId===body.action)) {
         const result=prepareDoorTravel(h.save,c,binding,{scene:h.sceneId,target:body.target,position:pos,actionId:body.action})
         next={...h,version:h.version+1,save:result.save,sceneId:result.scene,position:result.position}
       } else {
         const save=structuredClone(h.save);applyDomainResolution(save,c,resolution)
+        text=recordOldStreetInteraction(save,body.target,body.action,resolution.successText,body.action_id).map(b=>b.text).join("\n")
         next={...h,version:h.version+1,save,position:pos}
       }
       check(next,h,body.action)
-      return {head:next,kind:'action',accepted:true,actionId:body.action,source:'author',text:resolution.successText}
+      return {head:next,kind:'action',accepted:true,actionId:body.action,source:'author',text}
     },
   }
 }

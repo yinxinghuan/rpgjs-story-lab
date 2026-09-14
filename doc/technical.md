@@ -1465,3 +1465,14 @@ CUA 实际点击记录：屋顶路线已完成借钥匙、打开院门捷径、�
 `server/old-street-dev-plugin.ts` 仅在 `oldstreet-dev` 模式启用，路径为当前 GAME_ID 下 `/api/oldstreet-dev`。限定 loopback host、同源请求及 JSON body，16 KB 请求上限。HttpOnly/SameSite 本机身份 cookie 不代表 AlterU 可信账号；不把该开发身份方案用于生产。数据库默认 `.data/oldstreet-dev/journeys.sqlite`（已被 gitignore 排除），可用 `OLDSTREET_DEV_DATA` 指定本机位置。它与旧列车库分离，未新增公开游戏/UUID/云数据库。生产 Worker 仍需内容路由及真实展示准入。
 
 实际 CUA 5453 开发页面：街口→院落→洗衣店借推车，刷新后仍在洗衣店、持有推车、可归还；继续过门返回院落成功；清箱后再次刷新，地下储物室入口仍开放、推车仍保留。这是浏览器经 HTTP 到 SQLite 的刷新续玩实证；不是跨设备登录、云端 Worker、完整故事或最终美术验收。旧街 Session 六项与现有客户端三十项回归通过，TypeScript 与 oldstreet-dev 构建通过。
+
+
+## 2026-09-15：人物首次介绍、连续记录与状态对白
+
+`src/old-street-characters.ts` 定义三位固定隐藏角色和实体绑定。Cartridge 初态不加入 roster，服务端在实际人物互动时将可见介绍、回应和稳定角色 ID 一起写入同一次 Session。`recordOldStreetInteraction` 仅处理 authored 成功动作，既有 Domain reducer 继续负责物品/事实；不靠名字预载、未来剧本或模型猜测加入角色。普通过门不介绍人物。角色保持 known，不自动加入同行。归还钥匙、旧钟、照片各生成唯一轴的关系事件，反复借还不刷分，不新增常驻指标。
+
+增加三个人物问候动作，空间规则从 43 增至 46。客户端目标标签在当前权威 roster 已介绍后采用姓名，刷新仍保留。人物仍只有开发位置标记，没有声称实体图集准入。所有成功物件动作及人物回应追加到 StorySave.blocks，唯一 block ID 使用 action receipt，重复请求由 Session 回执重放。
+
+CUA 同一已有旅程实测：在洗衣店向“店主位置”打招呼后可见阿岚介绍，按钮变为阿岚；刷新后名字保留，再次交谈不重复介绍。实测发现清箱后旧问候仍说台阶受阻，修复为读取 crates-cleared/trolley-borrowed/letter-taken/yard-unlatched/photos-returned 后续事实；复验显示“推车用完放回来就行。院里的台阶已经通了，谢谢你。”。先前已归档的旧对白作为历史不重写。
+
+路线/空间/Session 共 23 项检查通过，后续状态对白及 Session 共 10 项通过，TypeScript 通过。检查覆盖中英初态隐藏、到场未交谈仍隐藏、介绍一次、重读保持、重复归还不刷关系、清障后不说旧状态。没有真实模型调用、生产部署或完整人物视觉验收。

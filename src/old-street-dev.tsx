@@ -1,3 +1,4 @@
+import {oldStreetPerson} from './old-street-characters'
 import {oldStreetSession} from './old-street-session'
 import type {OldStreetHead} from './old-street-head'
 import {Assets} from 'pixi.js'
@@ -13,6 +14,7 @@ import './old-street-dev.css'
 
 const plan = oldStreetSpatialPlan()
 const actionNames: Record<string, [string, string]> = {
+  'greet-watchmaker':['打个招呼','Say hello'], 'greet-laundry':['打个招呼','Say hello'], 'greet-photographer':['打个招呼','Say hello'],
   'move-box': ['移开空盒', 'Move box'], 'take-lens': ['拿放大镜', 'Take lens'], 'borrow-trolley': ['借推车', 'Borrow trolley'],
   'clear-crates': ['移开旧箱', 'Move crates'], 'return-trolley': ['归还推车', 'Return trolley'], 'borrow-key': ['问候并借钥匙', 'Ask for key'],
   'return-key': ['归还钥匙', 'Return key'], 'lift-latch': ['抬起插销', 'Lift bolt'], 'unlock-letter': ['打开小格', 'Unlock compartment'],
@@ -149,7 +151,8 @@ export default function OldStreetDev() {
       <div id="rpg"/>
       {entities.map(e => {
         const door = oldStreetDoors().find(d => d.id === e.id)
-        const title = door ? text(oldStreetRooms[door.destination.room]) : text(propNames[e.id] ?? [e.id, e.id])
+        const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
+        const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(propNames[e.id] ?? [e.id, e.id]))
         return <button className={'os-target' + (door ? ' os-target--door' : '')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {setSelected(e.id); if (door) request(door.actionId)}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
       })}

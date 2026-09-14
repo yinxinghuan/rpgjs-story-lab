@@ -1,3 +1,4 @@
+import {oldStreetCharacterBindings} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
 import {oldStreetCartridge, oldStreetConnections, oldStreetTravelId, oldStreetActionId, type OldStreetRoom} from './old-street-cartridge'
 import {compileSpatialBinding, type SpatialBindingDefinition, type SpatialPoint} from './spatial-binding'
@@ -56,12 +57,12 @@ export const oldStreetProps = [
   prop('letter-compartment', 'shop', .7, .32, ['unlock-letter', 'take-letter']),
   prop('record-book', 'shop', .3, .65, ['record-clock', 'record-photo', 'withdraw-clock', 'withdraw-photo']),
   prop('trolley', 'laundry', .3, .3, ['borrow-trolley', 'return-trolley']),
-  prop('laundry-owner', 'laundry', .66, .65, ['return-clock', 'consent-clock']),
+  prop('laundry-owner', 'laundry', .66, .65, ['greet-laundry', 'return-clock', 'consent-clock']),
   prop('crates', 'yard', .3, .13, ['clear-crates']),
-  prop('watchmaker', 'shed', .65, .45, ['borrow-key', 'return-key', 'take-clock']),
+  prop('watchmaker', 'shed', .65, .45, ['greet-watchmaker', 'borrow-key', 'return-key', 'take-clock']),
   prop('photo-folder', 'cellar', .3, .4, ['take-photos']),
   prop('viewing-table', 'photo', .3, .3, ['match-photos']),
-  prop('photographer', 'photo', .7, .65, ['return-photos', 'consent-photo']),
+  prop('photographer', 'photo', .7, .65, ['greet-photographer', 'return-photos', 'consent-photo']),
   prop('street-exit', 'street', .5, .88, ['leave']),
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
@@ -92,7 +93,7 @@ export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),
       ...oldStreetProjectedProps(save).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
-    ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: [],
+    ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: oldStreetCharacterBindings,
   }
 }
 export function bindOldStreet(locale: Locale, save: Pick<StorySave, 'facts'>) {

@@ -84,3 +84,24 @@ test('a prepared doorway is re-admitted at commit and cannot overwrite a newer a
   assert.deepEqual(s.get('owner',h.id),newer.head)
  }finally{raw.close()}
 })
+for(const locale of ['zh','en'] as const)test(`character introduction is visible once and survives reloading (${locale})`,async()=>{
+ const raw=new DatabaseSync(':memory:'),db=storage(raw)
+ try{
+  let s=new OldStreetAuthority(db,admit),h=s.create('owner',randomUUID(),locale)
+  assert.equal(h.save.characters.length,0)
+  const run=async(id:string)=>{h=(await s.action('owner',h.id,request(h,id))).head}
+  for(const room of ['photo','roof','shed'])await run(oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId)
+  assert.equal(h.save.characters.length,0)
+  await run('oldstreet:greet-watchmaker')
+  assert.deepEqual(h.save.characters.map(c=>c.id),['zhou-watchmaker'])
+  const intro=h.save.blocks.filter(b=>b.id.endsWith(':introduction'))
+  assert.equal(intro.length,1);assert.ok(intro[0].text.includes(h.save.characters[0].name))
+  s=new OldStreetAuthority(db,admit);h=s.get('owner',h.id)
+  await run('oldstreet:greet-watchmaker')
+  assert.equal(h.save.blocks.filter(b=>b.id.endsWith(':introduction')).length,1)
+  for(let i=0;i<2;i++){await run('oldstreet:borrow-key');await run('oldstreet:return-key')}
+  assert.equal(h.save.relationships.filter(r=>r.characterId==='zhou-watchmaker').length,1)
+  assert.deepEqual(h.save.characters.map(c=>c.id),['zhou-watchmaker'])
+  assert.equal(h.save.partyMemberIds.length,0)
+ }finally{raw.close()}
+})
