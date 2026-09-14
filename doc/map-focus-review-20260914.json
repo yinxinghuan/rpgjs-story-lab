@@ -242,11 +242,20 @@
       "problems": 0
     },
     "buildSource": "fdbb875; only verification JSON changed through e02438b",
-    "mainDeployCommand": "completed; downloaded hash verification pending",
+    "mainDeployCommand": "completed",
     "pages": {
       "run": 34803181418,
-      "status": "in_progress"
+      "status": "in_progress",
+      "currentStep": "check:spatial-story; build and tests completed",
+      "lastVerified": "2026-09-14; original run queried successfully outside sandbox"
     },
-    "dualDeploymentComplete": false
+    "dualDeploymentComplete": false,
+    "mainVerification": {
+      "files": 114,
+      "sha256": "all match local build",
+      "pageApiSourceZip": "pass",
+      "identityMode": "anonymous-capability-v1",
+      "hashEvidence": "/private/tmp/rpg-yard-return-release-hashes.json"
+    }
   }
 }
