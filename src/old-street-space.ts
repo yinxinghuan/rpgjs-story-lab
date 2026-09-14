@@ -79,7 +79,8 @@ export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>) {
   })
 }
 export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>): Rect[] {
-  return oldStreetProjectedProps(save).filter(p => p.room === room && p.id !== 'street-exit').map(p => ({...p.body}))
+  return oldStreetProjectedProps(save).filter(p => p.room === room && p.id !== 'street-exit'
+    && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))
 }
 export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody) {
   const r = oldStreetFloors[room as OldStreetRoom]

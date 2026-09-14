@@ -1538,3 +1538,7 @@ CUA 5453：从结局点击重新探索，走完整清障取照片路线到照相
 
 ### 旧街地面纹理装配（2026-09-15）
 `src/old-street-floor.tsx` 从 `oldStreetFloors` / `oldStreetDoors` 绘制底层地板与门槛。店铺使用通过 Vite import 打包的 `src/assets/oldstreet/watch-shop-surface-v2.png` 干净内部纹理，缺图仍有木色底层；其他房间沿用共享坐标白盒。裁切仅发生于 SVG 显示，完整原图与来源 SHA 保留。此组件只接本机 oldstreet-dev 入口，不改变正式原作旅程或生产素材准入。
+
+### 物件状态与占地同步（2026-09-15）
+
+`old-street-prop-state.ts` 负责物件状态文字投射；`oldStreetObstacleBodies` 在 trolley-borrowed 时移除推车占地，保留停放点的交互绑定供归还使用。`OldStreetAuthority` 在非转场行动提交新状态时调用 oldStreetSafePosition，处理物件归还后新增碰撞。SQLite 测试覆盖站在空停放点归还、库存移除、碰撞恢复、合法邻近脚点、同请求重放与恢复；不改变原列车存档。

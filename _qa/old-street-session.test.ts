@@ -184,3 +184,27 @@ test('legacy footprint upgrades in place without resetting story or journey iden
   assert.deepEqual(s.get('owner',h.id),updated)
  }finally{raw.close()}
 })
+
+
+test('returning trolley while standing in its vacant bay restores collision safely and replays once',async()=>{
+ const {oldStreetProps,oldStreetWalkable}=await import('../src/old-street-space')
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('owner',randomUUID(),'zh')
+  for(const step of ['yard','laundry','oldstreet:borrow-trolley']){
+   const action=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===step)!.actionId
+   h=(await s.action('owner',h.id,request(h,action))).head
+  }
+  const bay=oldStreetProps.find(p=>p.id==='trolley')!.position
+  assert.equal(oldStreetWalkable('laundry',bay,h.save),true)
+  const body={...request(h,'oldstreet:return-trolley'),position:bay}
+  const result=await s.action('owner',h.id,body)
+  assert.equal(result.head.save.facts['trolley-borrowed'],false)
+  assert.equal(result.head.save.inventory.some((i:{id:string})=>i.id==='trolley'),false)
+  assert.equal(oldStreetWalkable('laundry',bay,result.head.save),false)
+  assert.equal(oldStreetWalkable('laundry',result.head.position,result.head.save),true)
+  assert.ok(Math.hypot(result.head.position.x-bay.x,result.head.position.y-bay.y)<=64)
+  assert.deepEqual(await s.action('owner',h.id,body),result)
+  assert.deepEqual(s.get('owner',h.id),result.head)
+ }finally{raw.close()}
+})

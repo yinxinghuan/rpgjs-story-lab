@@ -75,7 +75,8 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       } else {
         const save=structuredClone(h.save);applyDomainResolution(save,c,resolution)
         text=recordOldStreetInteraction(save,body.target,body.action,resolution.successText,body.action_id).map(b=>b.text).join("\n")
-        next={...h,version:h.version+1,save,position:pos}
+        // Returning a borrowed object can restore collision underneath the player.
+        next={...h,version:h.version+1,save,position:oldStreetSafePosition(h.sceneId,pos,save)}
       }
       if(next.save.facts.departed)completeOldStreetEnding(next.save,c)
       check(next,h,body.action)
