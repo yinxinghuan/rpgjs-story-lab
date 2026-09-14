@@ -559,6 +559,17 @@
     "spatialJourneysPassed": 120,
     "scope": "Creator and archive identity checks; not avatar-generation or account recovery completion"
   },
+  "recoveryRelease20260914": {
+    "commit": "c93230ca7c8b5ac225586111d948651e2aa9b74b",
+    "evidence": "recovery-release-20260914.json",
+    "status": "main-and-pages-verified",
+    "testsPassed": 732,
+    "sampledSpatialJourneysPassed": 120,
+    "mainFilesMatched": 114,
+    "pagesFilesMatched": 114,
+    "pagesWorkflow": 34812812054,
+    "scope": "Decode timeout, versioned glide provenance and queued recovery selection check. Same-device local creation/selection/reload verified; no new production art or account recovery."
+  },
   "humanIdentityProbe20260914": {
     "requests": 2,
     "reference": "platform-art-candidates/20260914/human-identity-reference-01/review.json",

@@ -1,6 +1,6 @@
 {
   "commit": "c93230ca7c8b5ac225586111d948651e2aa9b74b",
-  "status": "main-verified-pages-running",
+  "status": "main-and-pages-verified",
   "changes": [
     "Bound both sprite preview and pixel extraction decode waits; cancelled or late decodes cannot resume pixel processing",
     "Bind optional legless glide review semantics into versioned protagonist provenance; legacy biped reviews remain unchanged",
@@ -22,7 +22,9 @@
       "Short opening dialogue, actual map, hero, joystick and contextual controls visible",
       "Map starter click walks to the interaction and opens authored action",
       "Typed exact authored repair action succeeds",
-      "Reload retains fuel 68 / condition 87 / morale 58; repair removed, valley route offered, hero and Ada visible"
+      "Reload retains fuel 68 / condition 87 / morale 58; repair removed, valley route offered, hero and Ada visible",
+      "Journey directory shows progress 1; retain-and-restart creates progress 0 with condition 82",
+      "Both journeys remain in directory; selecting progress 1 restores condition 87 and valley route, without resetting either save"
     ],
     "limit": "One action/reload smoke, not a fresh full native or physical iPhone playthrough"
   },
@@ -37,11 +39,12 @@
   "pages": {
     "url": "https://yinxinghuan.github.io/rpgjs-story-lab/",
     "workflow": 34812812054,
-    "status": "in_progress",
-    "actualFilesVerified": false
+    "status": "success",
+    "actualFilesVerified": true,
+    "frozenFilesMatched": 114,
+    "scope": "Static frontend mirror; no second database or fixed main-site API connection"
   },
   "limits": [
-    "Not yet a completed dual deployment",
     "No new art admitted; human back-strip candidate rejected",
     "No account identity binding or cross-device recovery claim",
     "Whole single-player and workflow objective remains active"
