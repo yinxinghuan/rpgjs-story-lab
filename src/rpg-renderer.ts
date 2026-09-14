@@ -12,8 +12,8 @@ export type RendererPoint={x:number;y:number}
 type Position=RendererPoint
 type SceneId=string
 export type RendererMotion={scene:string;renderedScene:string|null;position:Position;renderedPosition:Position|null;direction:string;renderedDirection:string|null;animation:string;renderedAnimation:string|null;paused:boolean}
-export type RpgRendererRuntime={position:()=>Position;renderedPosition:()=>Position|null;motion?:()=>RendererMotion|null;diagnostics?:()=>unknown;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(v:boolean)=>void;restore:(p:Position,scene?:string)=>Promise<void>;scene:()=>string;renderedScene:()=>string|null;renderedEvents:()=>string[];destroy:()=>void}
-export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void;onFailure?:(code:'RENDERER_CONTEXT_LOST')=>void}
+export type RpgRendererRuntime={position:()=>Position;intent?:()=>Position;renderedPosition:()=>Position|null;motion?:()=>RendererMotion|null;diagnostics?:()=>unknown;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(v:boolean)=>void;restore:(p:Position,scene?:string)=>Promise<void>;scene:()=>string;renderedScene:()=>string|null;renderedEvents:()=>string[];destroy:()=>void}
+export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];canWaitForRoute?:(point:Position,scene:string)=>boolean;onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void;onFailure?:(code:'RENDERER_CONTEXT_LOST')=>void}
 // This RPG-JS beta owns page-global providers. A second instance needs a page
 // reload until complete provider/client disposal has been proven.
 let created=false
@@ -37,6 +37,7 @@ const transitions=new RendererTransition<SceneId,Position>(initialScene,{
 // handshake, not a visual quality or texture-readiness certification.
 function reportHandshake(){const s=transitions.status();host.dataset.rendererJoined=s.joined??'';host.dataset.rendererLoaded=s.loaded??'';host.dataset.rendererPending=s.pendingScene??'';host.dataset.rendererClient=client?'started':'waiting'}
 reportHandshake()
+let intent={x:0,y:0}
 let paused=true,stick={x:0,y:0},pos={...initialPosition},last=0,frame=0,strideDistance=0
 let route:Position[]=[],arrive:(()=>void)|undefined
 const keys=new Set<string>()
@@ -61,7 +62,7 @@ const resize=new ResizeObserver(syncViewport);resize.observe(frameBox)
 window.addEventListener('resize',syncViewport)
 const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;transitions.joinedScene(sceneForMap(map.id));reportHandshake()},async onConnected(p){
  player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;await p.changeMap(mapId(initialScene),pos)
- bindSpace({position:()=>({...pos}),renderedPosition:()=>{const s=client?.getCurrentPlayer();return s?{x:s.x(),y:s.y()}:null},
+ bindSpace({position:()=>({...pos}),intent:()=>paused||changing?{x:0,y:0}:{...intent},renderedPosition:()=>{const s=client?.getCurrentPlayer();return s?{x:s.x(),y:s.y()}:null},
   diagnostics:()=>{const s=client?.getCurrentPlayer();const canvas=host.querySelector('canvas');const rect=host.getBoundingClientRect();return {contextLost:context.failed(),scene:activeScene,loaded:loadedScene,pending:transitions.status().pendingScene,position:{...pos},projected:s?{x:s.x(),y:s.y()}:null,connected:s?.isConnected(),graphics:s?.graphics().length,sheets:s?.graphicsSignals().length,canvas:canvas?{width:canvas.width,height:canvas.height}:null,layout:[host.parentElement,host.parentElement?.parentElement,host.parentElement?.parentElement?.parentElement].filter((el):el is HTMLElement=>Boolean(el)).map(el=>{const r=el.getBoundingClientRect(),css=getComputedStyle(el);return {x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height),scrollLeft:el.scrollLeft,scrollTop:el.scrollTop,overflowX:css.overflowX,overflowY:css.overflowY,transform:css.transform}}),host:{x:Math.round(rect.x),y:Math.round(rect.y),width:Math.round(rect.width),height:Math.round(rect.height)},tree:inspectDisplayTree((client as unknown as {canvasApp?:{stage?:unknown}})?.canvasApp?.stage)}},
   motion:()=>{const s=client?.getCurrentPlayer();return player?{scene:activeScene,renderedScene:loadedScene,position:{...pos},renderedPosition:s?{x:s.x(),y:s.y()}:null,direction:String(player.direction()),renderedDirection:s?String(s.direction()):null,animation:String(player.animationName()),renderedAnimation:s?String(s.animationName()):null,paused:paused||changing||context.failed()}:null},
   move:(x,y)=>{stick={x,y};if(x||y)cancelRoute()},walkTo:(p,callback)=>{if(paused||changing||context.failed())return false;const path=findPath(pos,p,activeScene);if(!path.length)return false;route=path;arrive=callback;reportDestination(path[path.length-1]);return true},
@@ -76,13 +77,14 @@ function tick(time:number){
   let x=stick.x+(keys.has('arrowright')||keys.has('d')?1:0)-(keys.has('arrowleft')||keys.has('a')?1:0)
   let y=stick.y+(keys.has('arrowdown')||keys.has('s')?1:0)-(keys.has('arrowup')||keys.has('w')?1:0)
   const len=Math.hypot(x,y);if(len>1){x/=len;y/=len}
+  intent=x||y?{x,y}:route.length?{x:route[0].x-pos.x,y:route[0].y-pos.y}:{x:0,y:0}
   let distance=0,finished=false
   const canWalk=(p:Position)=>walkable(p,activeScene)
   if(!x&&!y&&route.length){
    const result=advanceRoute(pos,route,WALK_SPEED*dt,canWalk)
    pos=result.position;distance=result.distance;x=result.direction.x;y=result.direction.y
    route.splice(0,result.consumed);finished=result.arrived
-   if(result.blocked)cancelRoute()
+   if(result.blocked&&(!route[0]||!options.canWaitForRoute?.(route[0],activeScene)))cancelRoute()
   }else if(x||y){
    const result=moveWithCollision(pos,{x:x*WALK_SPEED*dt,y:y*WALK_SPEED*dt},canWalk)
    x=result.position.x-pos.x;y=result.position.y-pos.y;pos=result.position;distance=result.distance

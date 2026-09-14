@@ -58,3 +58,20 @@ test('explicit work post overrides following until duty is released',()=>{
  for(let i=0;i<30;i++)m.update(1/60,{x:259,y:100},options())
  assert.ok(m.snapshot()[0].position.x>120)
 })
+test('a companion steps aside for a player turning back and does not cross occupied ground',()=>{
+ const m=new CompanionMotion(34,20);m.reset({x:100,y:100},[{id:'ada',position:{x:130,y:100}}]);let states=m.snapshot()
+ for(let i=0;i<60;i++){states=m.update(1/60,{x:100,y:100},{...options(),leaderIntent:{x:1,y:0}});assert.ok(open(states[0].position));assert.ok(Math.hypot(states[0].position.x-100,states[0].position.y-100)>=20)}
+ assert.ok(Math.abs(states[0].position.y-100)>=26)
+})
+test('in a one-person corridor a companion retreats to the next opening before yielding sideways',()=>{
+ const corridor=(p:{x:number;y:number})=>p.x>=0&&p.x<=290&&(p.x>=174?p.y>=60&&p.y<=150:p.y>=96&&p.y<=104)
+ const m=new CompanionMotion(34,20);let hero={x:80,y:100};m.reset(hero,[{id:'ada',position:{x:112,y:100}}]);let actor=m.snapshot()[0],sawSideStep=false
+ for(let i=0;i<240;i++){
+  const next={x:Math.min(250,hero.x+1.2),y:100}
+  if(corridor(next)&&!(next.x+9>actor.position.x&&next.x<actor.position.x+9&&next.y+15>actor.position.y&&next.y<actor.position.y+15))hero=next
+  actor=m.update(1/60,hero,{...options(corridor),leaderIntent:hero.x<250?{x:1,y:0}:{x:0,y:0}})[0]
+  assert.ok(corridor(actor.position),'follower stays within corridor or opening')
+  if(actor.position.x>=174&&Math.abs(actor.position.y-100)>20)sawSideStep=true
+ }
+ assert.ok(sawSideStep);assert.ok(hero.x>210,'player gets past the follower at the opening: '+JSON.stringify({hero,actor}))
+})
