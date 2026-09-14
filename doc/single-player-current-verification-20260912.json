@@ -1,12 +1,12 @@
 {
   "date": "2026-09-12",
-  "liveCommit": "e02438b77b9543d5d8da5123517d925cd97bcaa3",
+  "liveCommit": "d399a3d8596414b149ab5e031828e05f7bdc7de7",
   "goalComplete": false,
   "verified": {
     "navigationAndKeyboard": "navigation-keyboard-browser-20260912.json",
     "mobile390": "calibrated-mobile-review-20260912.json",
     "liveIllustrationGenerationRetentionReload": "platform-art-candidates/20260912/live-retained-journal/review.json",
-    "sameCommitDualDeployment": "map-focus-review-20260914.json#yardReturnRelease: e02438b77b9543d5d8da5123517d925cd97bcaa3; main and Pages each114 actual files SHA256 match same local build. Pages34803181418 completed success.",
+    "sameCommitDualDeployment": "three-state-release-20260914.json: d399a3d, both main and Pages 116 actual files match frozen build; page/API/source ZIP passed; Pages34847236735 succeeded.",
     "syntheticCompleteStory": "original-production-release-20260912.json; not a substitute for authenticated platform playthrough.",
     "postDownloadUpdateSavePreservation": {
       "release": "original-media-diagnostics-20260912-1",
@@ -30,8 +30,8 @@
     "backLayerMapTrial": "leg-layer-map-review-20260913.json",
     "contextActionAndShortDialogue": "context-action-dialogue-review-20260913.json",
     "optionalPictureDecodeRecovery": "picture-wait-recovery-20260913.json: both production components timeout and retry from stalled real PNG decode; new native reentry not yet verified",
-    "latestNativeReentry": "nativeCommonLineReentry20260914: platform Back removed game iframe; same game Play restored common-line,39/75/75 and companion/route epilogues; hero visible after closing ending.",
-    "currentMainRelease": "map-focus-review-20260914.json#yardReturnRelease: e02438b main page/API/source ZIP pass; same-commit main/Pages each114 files match local production build.",
+    "latestNativeReentry": "nativePostMatteReleaseReentry20260914: actual platform exit/Play reentry restored common-line,39/75/75 and companions/consequences; illustrated loading observed. This preceded d399a3d.",
+    "currentMainRelease": "three-state-release-20260914.json: d399a3d, both main and Pages 116 actual files match frozen build; page/API/source ZIP passed; Pages34847236735 succeeded.",
     "continuousQuarryPublicLogJourney": "map-focus-review-20260914.json#bridgeAndFinaleWalkthrough: frozen 378b765 localhost production frontend/Worker; UI journey through quarry loop, tunnel, pass, town, bridge, public-log ending and reload. Fuel25/condition75/morale75; Ada/Mako. Not native or iPhone proof.",
     "mapFocusScrolling": "map-focus-review-20260914.json: local focus-scroll regression and clip fix; current native original fault journey continued through all remaining transitions to common-line and reentry, hero visible in captured frames. Does not prove every intermittent renderer fault absent."
   },
@@ -663,5 +663,10 @@
       "Desktop Telegram AlterU, not physical iPhone or cross-device account recovery.",
       "Observed fresh game entry and illustrated loading; native UI does not expose bundle commit, so exact native cached bundle identity is not established. Main and Pages byte verification is recorded separately."
     ]
+  },
+  "threeStateCreatorRelease20260914": {
+    "evidence": "three-state-release-20260914.json",
+    "productionPrivateRestore": "Actual creator UI saved and restored synthetic three-state candidate, all original selections and anchors; no publication or real-player save access.",
+    "goalComplete": false
   }
 }

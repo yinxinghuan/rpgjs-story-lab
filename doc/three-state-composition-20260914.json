@@ -1,6 +1,6 @@
 {
   "date": "2026-09-14",
-  "status": "development-verified-not-deployed",
+  "status": "main-and-pages-deployed-verified",
   "tests": {
     "full": 749,
     "targeted": 16,
@@ -47,8 +47,9 @@
   },
   "limits": [
     "Existing sample, no new platform generation or final visual-family approval.",
-    "Local browser and synthetic private archive/HTTP, not deployed creator or iPhone hardware.",
+    "Local renderer and synthetic archive/HTTP; production creator save/restore additionally verified in release evidence. Not iPhone hardware.",
     "Two-state starter publication unchanged; generic pump publication still separate."
   ],
-  "productionUnchanged": "a79e39485df89aac6baed4176a3e54bb547fe6ee"
+  "productionCommit": "d399a3d8596414b149ab5e031828e05f7bdc7de7",
+  "releaseEvidence": "three-state-release-20260914.json"
 }

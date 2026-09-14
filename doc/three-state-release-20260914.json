@@ -1,0 +1,48 @@
+{
+  "commit": "d399a3d8596414b149ab5e031828e05f7bdc7de7",
+  "status": "main-and-pages-verified",
+  "changes": [
+    "Retained source selection and composition for three-state cabinets",
+    "Private five-file archive and authenticated third-source HTTP route",
+    "Original two-state and actor contracts preserved"
+  ],
+  "checks": {
+    "tests": 749,
+    "passed": 749,
+    "targetedTests": 16,
+    "productionBuild": "passed; 9 scenes, 27 SHA-verified resources and opaque Worker startup",
+    "audits": "secrets, API base, UUID passed",
+    "browser": "Actual three-state composition/preparation/reload and renderer state changes, front/back and collision; 320x568/390x844"
+  },
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "status": "verified",
+    "filesMatched": 116,
+    "bytes": 74474797,
+    "pageHealthZip": "passed",
+    "storage": "durable-object-sqlite",
+    "identityMode": "anonymous-capability-v1",
+    "creatorUI": "Live three-state selector and three retained-source controls verified"
+  },
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "runId": 34847236735,
+    "status": "verified",
+    "filesMatched": 116,
+    "bytes": 74474797,
+    "workflow": "Succeeded including full tests, build and spatial-story check"
+  },
+  "manifest": "three-state-release-20260914-manifest.json",
+  "limits": [
+    "Not whole-game completion",
+    "Not new character art quality or trusted cross-device account recovery",
+    "Pages static frontend only; existing main backend and database retained"
+  ],
+  "productionCreator": {
+    "draft": "a598c2b7-ee34-4901-afd0-7b57c3f96fe7",
+    "source": "Existing platform-props-edit-01 sample, columns 1/2/3",
+    "saved": "Production page reported originals, settings and candidate saved online.",
+    "restored": "After switching current source, restored same candidate and all three retained original selections; original anchors 160,440;160,438;160,438 recovered.",
+    "scope": "Synthetic creator fixture, existing private creation identity. No new generation, publication, player journey changes or cross-device identity proof."
+  }
+}
