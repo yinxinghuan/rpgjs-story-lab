@@ -12,3 +12,9 @@
 .cl-gait-preview figure{margin:12px auto;max-width:200px;padding:4px;background:#15212b}.cl-gait-preview figure>div{width:100%;background-repeat:no-repeat;image-rendering:pixelated}.cl-gait-preview figcaption{font-size:14px;text-align:center;color:#f0e6d0}.cl-gait-preview__controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cl-gait-preview__controls button{margin:0;touch-action:manipulation}.cl-gait-preview__controls button:last-child{grid-column:1/-1}.cl-gait-preview button:active{filter:brightness(1.15)}
 
 .cl-actor-review__legs{display:grid;gap:4px;margin:12px 0 16px;padding:4px}.cl-actor-review__legs figure{margin:0;min-width:0}.cl-actor-review__legs figure>div{width:100%;image-rendering:pixelated}.cl-actor-review__legs figcaption{font-size:14px;text-align:center;background:#142836;color:#f0e6d0;overflow-wrap:anywhere}
+
+.cl-protagonist-import__images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cl-protagonist-import__images>div{min-width:0}
+.cl-protagonist-import__images input{font-size:16px;max-width:100%}
+.cl-protagonist-import__images img{height:240px;object-fit:contain}
+@media(max-width:380px){.cl-protagonist-import__images{grid-template-columns:minmax(0,1fr)}}
