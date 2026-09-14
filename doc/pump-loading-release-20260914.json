@@ -1,6 +1,6 @@
 {
   "commit": "23568b7d0055274c008145184d068974486d9587",
-  "status": "main-verified-pages-running",
+  "status": "main-and-pages-verified",
   "changes": [
     "Three-state yard pump for new journeys; legacy bindings unchanged",
     "Chapter-aware transparent loading objects with stable per-wait selection",
@@ -27,8 +27,10 @@
   },
   "pages": {
     "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
-    "status": "in_progress",
-    "runId": 34825920023
+    "status": "verified",
+    "runId": 34825920023,
+    "runConclusion": "success",
+    "filesMatched": 116
   },
   "limits": [
     "Not whole-game completion",

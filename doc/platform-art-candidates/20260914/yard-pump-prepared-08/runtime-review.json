@@ -1,6 +1,6 @@
 {
-  "status": "new-journey-admitted-pending-release",
-  "productionAdopted": false,
+  "status": "production-adopted-new-journeys",
+  "productionAdopted": true,
   "runtimeBinding": "yard-pump-v1; new journeys bind it, old snapshots unchanged",
   "sourceSha256": "4b477baffa31247f6c1ba946d5060e3ac60e9821020772922ff4197130c18f6e",
   "geometry": {
@@ -54,9 +54,7 @@
     "observed": "Low pump approximately twice character width and shorter than standing hero; both support feet stay in place; no white rectangular matte; pump remains after action marker disappears",
     "guestShell": "Remote shell retained, banner closed through its own UI before main review; reappears on reload"
   },
-  "remaining": [
-    "Formal release with same-commit dual deployment"
-  ],
+  "remaining": [],
   "additionalBrowser": [
     {
       "route": "forced",
@@ -102,6 +100,6 @@
     "viteCloudBuild": "passed in dist-pump-release",
     "fullSuite": "743 passed, 0 failed after loopback permission",
     "spatialJourneys": "120 completed, 82 actions, zero failures",
-    "release": "not published"
+    "release": "Main and Pages: 23568b7d0055274c008145184d068974486d9587, 116 frozen files matched on each; Pages remains a static mirror"
   }
 }
