@@ -1329,3 +1329,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `original-companion-context.ts`校验当前位置快照，仅允许当前已同行且物理在场的四个已定义角色，拒绝设备、未来角色、无效坐标和障碍内站位；复制输入，不改原存档。`originalCharacterBodies`可读取同一快照，`originalBoundWorldPlan`只在指定当前场景把命中盒左上角转为人物脚点，其他场景与非角色物件保持原位。22项运动/位置/投影检查及TypeScript通过。尚未修改HTTP运行合同、接入主游戏renderer或持久化移动队形，不能据此声称移动后交谈已实际可用。接入时必须同步保存/恢复队形、动态approach点以及固定站位碰撞的替换；不得仅放宽距离校验。
 
 素材核对：旧试验public/art/overhead/attendant.png与mechanic.png为1086×1448图集，蓝绿衣女乘务员与灰发男工人具备可见多方向姿态，可作为乘客候选重新评审，不能替换已确定身份的阿达/玛柯；步态和alpha仍需复验。没有新增到当前试玩场景。
+
+
+### 2026-09-15：环境乘客
+`src/original-passengers.ts` 提供小城安全检查后的确定性站位、资源校验信息、碰撞脚点和本地短话题。`original-game.tsx` 将真实 NPC 图集注册到 RPG-JS，接入走近、面对、附近列表、E 快捷键与上下文按钮；`original-world-space.ts` 将乘客纳入服务端/客户端同源碰撞。运行合同提升为 original-session-19，防止旧客户端在新增乘客的脚点内行走却收到服务端拒绝。此对白不调用模型，不写叙事回合，不修改队伍或资源；不宣称拥有对话记忆。素材首载增加约 1.4 MB，目前与角色资源一起预加载。

@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-15",
+  "scope": "existing original single-player game, sleeping town only",
+  "qaUrl": "http://127.0.0.1:5439/?story=original",
+  "syntheticJourney": true,
+  "checks": [
+    "Both NPC images visibly rendered in the RPG-JS map",
+    "Nearby navigation walked to both passengers and opened dialogue",
+    "Two blue passenger topics returned short morale/rest-dependent replies",
+    "Closing dialogue restored movement and contextual action",
+    "Bottom-right Talk gray passenger reopened dialogue",
+    "Resource HUD remained fuel 57 / condition 89 / morale 75"
+  ],
+  "automated": {
+    "passenger_and_world_projection": 21,
+    "passenger_companion_and_collision_snapshot": 10,
+    "typescript": "passed",
+    "build": "cloud-preflight passed"
+  },
+  "limitations": [
+    "No actual companion-follow renderer integration yet",
+    "Crowd walk cycles remain disabled pending art review",
+    "No dedicated small-screen or native iPhone validation for this change",
+    "Not deployed; user port 5440 remains frozen"
+  ],
+  "protocol": "source bumped to original-session-19 for shared passenger collision; final QA build refresh follows"
+}
