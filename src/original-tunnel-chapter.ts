@@ -85,10 +85,10 @@ export function executeTunnelTurn(save:StorySave,c:StoryCartridge,id:TunnelActio
  }
  if(id==='tunnel-depart'){
   text=s(save.facts['tunnel-cargo-policy']==='retained'?'通风机送出的气流护住前路，阿达让列车低速穿过白石隧道，乘客与物资都跟了上来。':'前车厢的乘客隔着关闭的内门等待，阿达让列车低速穿过烟段；被卸下的行李和备用物资留在洞口。',save.facts['tunnel-cargo-policy']==='retained'?'The fan keeps air moving while Ada takes the train slowly through White Stone Tunnel. Passengers and supplies emerge together.':'Passengers wait behind the closed internal doors as Ada takes the train slowly through the smoke. Unloaded luggage and reserves remain at the entrance.')
-  text+=' '+s('灰石货场的油罐出现在车灯里，临时栅门后有人举起手电，要求先说明来意。','Graystone’s fuel tanks appear in the headlamp. Someone behind a temporary gate raises a flashlight and asks you to state your purpose.')
+  text+=' '+(save.facts['yard-met']?s('灰石货场的油罐再次出现在车灯里，玛柯认出了列车，示意你到栅门旁核对下一段线路。','Graystone’s fuel tanks return to the headlamp. Mako recognizes the train and signals you to review the next route beside the gate.'):s('灰石货场的油罐出现在车灯里，临时栅门后有人举起手电，要求先说明来意。','Graystone’s fuel tanks appear in the headlamp. Someone behind a temporary gate raises a flashlight and asks you to state your purpose.'))
   stat('fuel',-4);fact('chapter-tunnel-complete',true)
   commands.push({type:'map_update',location:c.initialMap.find(n=>n.id==='graystone-yard')!.label},{type:'encounter',phase:'resolution',kind:s('白石隧道烟雾','Smoke in White Stone Tunnel'),outcome:save.facts['tunnel-cargo-policy']==='abandoned'?'costly-success':'success'})
-  objective=s('与货场守卫说明来意，争取后续线路的补给','Explain your purpose to the yard guards and secure supplies for the next line')
+  objective=save.facts['yard-agreement']?s('与玛柯核对上山线路，再决定他是否同行','Review the mountain route with Mako, then decide whether he joins'):save.facts['yard-met']?s('与玛柯商定燃料交换，准备后续线路','Agree on a fuel exchange with Mako for the next line'):s('与货场守卫说明来意，争取后续线路的补给','Explain your purpose to the yard guards and secure supplies for the next line')
  }
  if(objective)commands.push({type:'state',value:objective})
  const next=applyParsedScene(structuredClone(save),{blocks:[{id:`tunnel-${save.scene+1}-${id}`,kind:'event',text}],commands,raw:text},c,tunnelLabel(id,c.locale))

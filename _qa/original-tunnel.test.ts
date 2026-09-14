@@ -74,3 +74,18 @@ test('v3 chapter save adds v4 bindings without modifying existing river history 
  const {raw,db,s}=setup();const h=await arrive(s);const old={...h,mapVersion:'original-train-authoring-3'};db.run('UPDATE journeys SET data=? WHERE id=?',JSON.stringify(old),h.id)
  const current=s.get(owner,h.id);assert.equal(current.mapVersion,originalChapterMapVersion);assert.deepEqual(current.save,old.save);assert.deepEqual(current.position,old.position);assert.equal(s.directory(owner)[0].cursor,7);raw.close()
 })
+
+for(const locale of ['zh','en'] as const)test(`quarry return ${locale} recognizes Mako and points to route briefing without repeating trade`,async()=>{
+ const {raw,db,s}=setup();let h=s.create(owner,randomUUID(),locale)
+ for(const action of ['repair-starter','commit-quarry-route','yard-meet','yard-work-pact','yard-first-exit','tunnel-inspect','tunnel-captain-led','tunnel-ventilate'])h=(await s.action(owner,h.id,body(h,action))).head
+ const before=structuredClone(h.save),r=await s.action(owner,h.id,body(h,'tunnel-depart'));h=r.head
+ const fresh=h.save.blocks.slice(before.blocks.length).map(b=>b.text).join(' ')
+ assert.match(fresh,locale==='zh'?/玛柯认出了列车/:/Mako recognizes the train/)
+ assert.doesNotMatch(fresh,locale==='zh'?/要求先说明来意/:/asks you to state your purpose/)
+ assert.match(h.save.objective,locale==='zh'?/与玛柯核对上山线路，再决定他是否同行/:/Review the mountain route with Mako, then decide whether he joins/)
+ assert.equal(h.save.facts['yard-agreement'],'work');assert.equal(h.save.stats.fuel,before.stats.fuel-4)
+ assert.deepEqual(h.save.relationships,before.relationships)
+ assert.deepEqual(new OriginalTrainAuthority(db,()=>true).get(owner,h.id),h)
+ h=(await s.action(owner,h.id,body(h,'yard-route-brief'))).head
+ assert.equal(h.save.facts['yard-route-briefed'],true);raw.close()
+})
