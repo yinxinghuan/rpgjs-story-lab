@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-14",
+  "commit": "69390dcb8fab4db1062ae36e314a698b39c5f601",
+  "status": "main-and-pages-files-verified",
+  "mainFiles": 116,
+  "pagesFiles": 116,
+  "bytes": 74476221,
+  "pagesWorkflow": 34850797141,
+  "checks": [
+    "751 regression tests passed before release",
+    "TypeScript and production build passed",
+    "9 scenes and 27 resource SHA checks passed",
+    "Worker startup and creator health passed",
+    "Public secret/API base/UUID checks passed",
+    "Main page, API health and source ZIP passed",
+    "116 actual files on each host match the same frozen build"
+  ],
+  "retry": "First main file verification terminated on a network timeout; read-only retry succeeded. No second deployment.",
+  "scope": "Private device-review persistence. Later clean interaction playtest remains local and is not included in this release.",
+  "productionIdentity": "anonymous-capability-v1"
+}

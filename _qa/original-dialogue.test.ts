@@ -169,3 +169,31 @@ for(const locale of ['zh','en'] as const)test(`authored ${locale} dialogue choic
   assert.ok(next.every(t=>t.text!==topics[0].text));assert.ok(next.length>=2)
  }finally{f.close()}
 })
+
+for(const locale of ['zh','en'] as const)for(const scenario of [
+ {speaker:'mara-raider',steps:['repair-starter','commit-quarry-route','yard-meet'],settle:'yard-work-pact'},
+ {speaker:'ren-medic',steps:['repair-starter','commit-valley-route','river-survey','river-rescue-manual'],settle:'river-treat'},
+ {speaker:'lin-scout',steps:['repair-starter','commit-forest-route','pine-inspect','pine-reverse','pine-meet'],settle:'pine-survey-route'},
+])test(`${locale} ${scenario.speaker} offers contextual questions without committing the offered task`,async()=>{
+ const f=fixture();try{
+  let h=f.service.create(owner,randomUUID(),locale)
+  for(const id of scenario.steps)h=(await f.service.action(owner,h.id,action(h,id))).head
+  const before=structuredClone(h.save),topic=originalTalkTopics(originalDialogueContext(h,scenario.speaker))[0]
+  assert.notEqual(topic.text,locale==='zh'?'我们眼下该怎么做？':'What should we do next?')
+  h=(await f.service.action(owner,h.id,say(h,topic.text,scenario.speaker))).head
+  assert.equal(h.save.blocks.at(-1)!.text,topic.reply)
+  assert.deepEqual({...h.save,blocks:before.blocks},before)
+  h=(await f.service.action(owner,h.id,action(h,scenario.settle))).head
+  assert.ok(originalTalkTopics(originalDialogueContext(h,scenario.speaker)).every(t=>t.text!==topic.text))
+ }finally{f.close()}
+})
+test('memory topic recalls substantive dialogue instead of quoting its own question',()=>{
+ const f=fixture();try{
+  const c=originalDialogueContext(f.service.create(owner,randomUUID(),'zh'),'ada-mechanic')
+  c.availableActions=[]
+  c.recentTurns=[{id:'1',input:'我担心大家。',reply:'我听见了。'},{id:'2',input:'还记得我们刚才聊的事吗？',reply:'你刚才说：“我担心大家。”'}]
+  const remembered=originalTalkTopics(c).find(t=>t.text.includes('记得'))!
+  assert.ok(remembered.reply.includes('我担心大家。'))
+  assert.ok(!remembered.reply.includes('还记得'))
+ }finally{f.close()}
+})
