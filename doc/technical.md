@@ -1608,3 +1608,7 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 ### 旧街行动拒绝的站位连续性（2026-09-15）
 
 `old-street-dev.tsx` 到达互动点后暂停移动，并在与周期 checkpoint 相同的 Web Lock 中写入当前位置，再调用原有可恢复 Session 行动。拒绝后恢复到实际到达点；位置写入不改变剧情版本。`STALE_POSITION` 交由随后行动的版本冲突恢复获取最新 head，其他保存失败暂停并保留错误，不能伪装成功。事务测试覆盖拒绝不改剧情和旧 checkpoint 无法覆盖新场景。
+
+### 照片特写对话框（2026-09-15）
+
+`old-street-photo-view.tsx` 使用 `HTMLDialogElement.showModal()` 和卸载时 close，cancel 事件统一到受 busy 保护的 dismiss。继续由父组件暂停/恢复 RPG renderer，证明输入仍经 Story Session 验证，不在组件内修改库存或发现。
