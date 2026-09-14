@@ -9,6 +9,23 @@ const settings:SpritePreparationSpec={columns:1,rows:1,cellWidth:24,cellHeight:2
 const io={decode:async()=>{const rgba=new Uint8ClampedArray(24*24*4).fill(255);for(let y=5;y<18;y++)for(let x=7;x<17;x++)rgba.set([20,50,70,255],(y*24+x)*4);return {width:24,height:24,rgba}},encode:async()=>png(),process:async(...args:Parameters<typeof prepareSpritePixels>)=>prepareSpritePixels(...args)}
 async function setup(){const factory=new IDBFactory(),name=spriteDatabaseName('https://game.aiwaves.tech/11111111-2222-4333-8444-555555555555/'),repo=new BrowserSpriteDrafts(name,factory),source=newSpriteSource(await png(),'synthetic');await repo.save(source,undefined);return {repo,source,factory,name}}
 
+test('enclosed matte choices survive reopening and rejected object points preserve the accepted candidate',async()=>{
+ const {repo,source,factory,name}=await setup()
+ const seededIo={...io,decode:async()=>{const raster=await io.decode();raster.rgba.set([255,255,255,255],(10*24+10)*4);return raster}}
+ const spec={...settings,kind:'states' as const,sourceAnchors:[{x:12,y:17}],matteSeeds:[{x:10,y:10}]}
+ let encodedAlpha:number|undefined
+ const accepted=await runSpriteDraft(repo,source,spec,{...seededIo,encode:async raster=>{encodedAlpha=raster.rgba[(13*24+10)*4+3];return png()}})
+ assert.equal(accepted.state,'candidate');assert.equal(encodedAlpha,0)
+ await repo.close()
+ const reopened=new BrowserSpriteDrafts(name,factory),restored=await reopened.get()
+ assert.deepEqual(restored?.spec?.matteSeeds,spec.matteSeeds)
+ const rejected=await runSpriteDraft(reopened,restored!,{...spec,matteSeeds:[{x:8,y:10}]},seededIo)
+ assert.equal(rejected.state,'failed');assert.equal(rejected.error,'SPRITE_PREPARATION_MATTE_SEEDS')
+ assert.deepEqual(await reopened.get(accepted.id),accepted)
+ assert.deepEqual(await reopened.get(source.id),source)
+ await reopened.close()
+})
+
 test('sprite source, recipe and result survive reopening, while each attempt retains history',async()=>{
  const {repo,source,factory,name}=await setup();const candidate=await runSpriteDraft(repo,source,settings,io)
  assert.equal(candidate.state,'candidate');assert.equal(candidate.parentId,source.id);assert.deepEqual(await repo.get(source.id),source)
