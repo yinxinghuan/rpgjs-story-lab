@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><title>Map focus regression</title>
+<link rel="stylesheet" href="../src/original-game.css">
+<style>body{margin:0;background:#ddd}.og-game{width:380px!important;height:600px!important;margin:0}.og-map{width:650px!important;--camera-x:-142px;--camera-y:-200px;background:repeating-linear-gradient(90deg,#324851 0 48px,#637377 48px 50px)}#report{position:fixed;left:400px;top:0;white-space:pre-wrap}#hero{position:absolute;left:330px;top:450px;background:gold;color:black}#target{left:610px;top:700px}.og-scroll{height:80px;width:300px;background:white;color:black}</style>
+<section class="og-game"><section class="og-world"><div class="og-map"><span id="hero">HERO</span><button id="target" class="og-marker">Target</button></div></section></section>
+<aside id="report"><button id="run">Run focus and scroll check</button><pre id="result"></pre><div class="og-scroll" id="journal"><p>Journal start</p><p style="margin-top:250px">Journal end</p></div></aside>
+<script type="module">
+const world=document.querySelector('.og-world'),game=document.querySelector('.og-game'),map=document.querySelector('.og-map');
+const read=()=>({world:[world.scrollLeft,world.scrollTop],game:[game.scrollLeft,game.scrollTop],map:[map.getBoundingClientRect().x,map.getBoundingClientRect().y]});
+run.onclick=()=>{world.scrollTo(0,0);game.scrollTo(0,0);const before=read();target.focus();const focused=read();world.scrollTo(210,100);game.scrollTo(20,20);journal.scrollTop=150;const after=read();result.textContent=JSON.stringify({overflow:getComputedStyle(world).overflow,before,focused,after,journalScroll:journal.scrollTop,pass:JSON.stringify(before)===JSON.stringify(focused)&&JSON.stringify(before)===JSON.stringify(after)&&journal.scrollTop===150},null,2)};
+</script>

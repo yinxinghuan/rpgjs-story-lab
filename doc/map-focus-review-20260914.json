@@ -1,0 +1,8 @@
+{
+  "status":"local-mechanism-fixed-native-recheck-pending",
+  "fixture":"_qa/map-focus.html",
+  "nativeEvidence":"_qa/native-quarry-20260914/diagnostics.txt",
+  "before":{"overflow":"hidden","worldFocusScrollX":128,"mapXBefore":-142,"mapXAfterFocus":-270,"pass":false},
+  "after":{"overflow":"clip","worldFocusScrollX":0,"mapXBefore":-142,"mapXAfterFocus":-142,"programmaticScrollIgnored":true,"journalScrollY":150,"pass":true},
+  "limits":["Synthetic geometry fixture uses production CSS, not a complete RPG renderer test","Actual Telegram Graystone Yard recovery still pending","Not deployed"]
+}

@@ -1182,3 +1182,6 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 结局后的交谈（2026-09-13）
 
 `original-train-runtime.ts` 对已完成结局只开放 `dialogue`：沿用当前人物在场、空间接近、素材准入和对白审查，追加成对交谈记录。结局快照、资源、关系与剧情事实不变；`action` / `free-input` 仍冻结，结局准备或生成期间也不放行。回执重放不能重复追加。平台发现与验证范围见 `native-ending-dialogue-review-20260913.json`；主站已发布 f34c4eb，原有合成 API 旅程的结局后对白与精确重载通过；主站与 Pages 的同提交 114 个实际文件均已逐一核对通过；2026-09-14 已在 Telegram AlterU 的原有结局旅程验证预设对白卡片、无尾巴底部布局和关闭回图；此次对白之后的退出重进仍受原生返回按钮工具错误影响。
+
+### 2026-09-14 地图焦点滚动修复（待正式复验）
+原作 `.og-world` 与 `.og-game` 使用 `overflow:clip`，地图位移仅由相机 transform 控制；`overflow:hidden` 会允许离屏热点获得焦点时额外滚动地图。日志 `.og-scroll` 继续使用 overflow:auto。浏览器回归页 `_qa/map-focus.html` 直接加载正式 CSS，比较焦点前后与程序滚动后的地图矩形及滚动量，并单独检查日志滚动。该最小复现证明焦点偏移机制，尚不等于已完成 Telegram 灰石货场同场景复验。
