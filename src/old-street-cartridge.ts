@@ -62,7 +62,7 @@ export function oldStreetRules(locale: Locale): DomainActionRule[] {
   action('move-box', [once('drawer-open')], [flag('drawer-open', true)], '移开空盒后，抽屉拉开了。收据旁放着一把放大镜。', 'With the empty box moved aside, the drawer opens. A magnifying glass lies beside a receipt.')
   action('take-lens', [need('drawer-open', true, '抽屉还没打开。', 'The drawer is closed.'), once('lens-taken')], [flag('lens-taken', true), item('lens', '放大镜', 'Magnifying glass')], '你取出放大镜，原处空了。', 'You take the magnifying glass, leaving its place empty.')
   const available = (id: string) => need(id, false, '物品已经借出。', 'The item is already on loan.')
-  action('borrow-trolley', [available('trolley-borrowed')], [flag('trolley-borrowed', true), item('trolley', '推车', 'Trolley')], '你从“用完放回”的牌子旁取下推车。', 'You take the trolley beside the sign asking borrowers to return it.')
+  action('borrow-trolley', [available('trolley-borrowed')], [flag('trolley-borrowed', true), item('trolley', '推车', 'Trolley')], '你借走推车，停放处空了出来。', 'You borrow the trolley, leaving its parking bay empty.')
   action('return-trolley', [has('trolley')], [remove('trolley'), flag('trolley-borrowed', false)], '推车放回了原位。', 'The trolley is back in its place.')
   action('clear-crates', [has('trolley'), once('crates-cleared')], [flag('crates-cleared', true)], '你把旧箱运到墙边空地，向下的台阶露出来了。', 'You wheel the crates into the clear space by the wall, revealing the steps down.')
   action('borrow-key', [available('key-borrowed')], [flag('key-borrowed', true), item('letter-key', '小格钥匙', 'Drawer key')], '“钥匙在这，用完带回来。”他把钥匙递给你。', '“Take the key; bring it back when you’re done.” He hands it to you.')

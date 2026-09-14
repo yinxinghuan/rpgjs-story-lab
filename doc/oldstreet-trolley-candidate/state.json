@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "requestSha256": "7c57db0f01a860e34d3622f6caee36866eb0d4a451138eea85ba902c54c9c70e",
+  "requestId": "e98fb1f9-c3c3-4fac-8792-05f3bd9ac2c5",
+  "status": "downloaded",
+  "startedAt": "2026-09-14T21:51:59.481Z",
+  "attempts": 1,
+  "task": {
+    "task_id": "mt_4fbaf60a13fc074e906587fb40a3f06a",
+    "request_id": "e98fb1f9-c3c3-4fac-8792-05f3bd9ac2c5",
+    "status": "succeeded",
+    "type": "image",
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789422721331388.png",
+      "width": 512,
+      "height": 640,
+      "format": "png"
+    },
+    "timing_ms": 691
+  },
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "9e585ee818ff67a19f64d876b6a4b97961d1b3b7415def8d82e6e65bf2e515e3",
+    "bytes": 241588,
+    "width": 512,
+    "height": 640,
+    "pngColorType": 2
+  },
+  "elapsedMs": 5607,
+  "cost": "not provided by public API",
+  "admission": "not-reviewed"
+}

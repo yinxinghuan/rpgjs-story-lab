@@ -1,0 +1,13 @@
+{
+  "requestId": "3d1a3749-528a-48d5-a551-5d33e209b219",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789422721331388.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 640
+  },
+  "prompt": "Correct this exact green metal handle wooden flatbed trolley sprite for an AXIS-ALIGNED TOP-DOWN 2D game. Change camera and orientation: the deck LEFT and RIGHT edges must be VERTICAL in the image, the deck FRONT and BACK edges must be HORIZONTAL. Deck projects as an upright rectangle, NOT a diagonal quadrilateral or trapezoid. View from steep overhead, approximately55degrees, parallel projection. Keep same weathered wood planks, four dark wheels, single green U handle at TOP/north end. Handle horizontal crossbar centered at top, two upright sides; no diagonal isometric rotation anywhere. The deck top dominates, front face very shallow. This is a small waist-height cart, not a tall machine. Center the entire object with generous margins. Remove ALL cast ground shadow, keep uniformly paleRGB245 background, no gray patches, no floor. No extra objects or labels. Produce ONE complete cart only."
+}

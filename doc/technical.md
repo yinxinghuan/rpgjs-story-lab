@@ -1574,3 +1574,7 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 ### 洗衣店地面与几何参考（2026-09-15）
 
 `export-old-street-art-guide.ts [room]` 从真实floor/door导出对应PNG/SVG几何参考；不传参数仍生成原修表铺路径，未知room直接拒绝。`old-street-floor.tsx` 把修表铺/洗衣店表面作为独立配置，按审阅后的源图区域显示到对应floor矩形；墙边与门口全部从空间布局生成，没有导入生成图的门宽、机器或通行边界。其余房间仍为白盒地面。类型检查、oldstreet-dev构建及真实浏览器洗衣店→院子往返检查完成，正式视觉准入和平台发布仍未完成。
+
+### 推车实体状态图（2026-09-15）
+
+`old-street-prop-art.ts` 从StorySave事实投射推车stand/hidden两种明确opacity状态；`old-street-dev.tsx` 在laundry安装固定事件并在每次head更新后同步，不动态删除图形节点。碰撞、接近点继续读取空间布局。执行与重开先设置新权威视图再调用renderer.restore，地图事件重建时不会读取旧借出事实。素材处理脚本及限制见 `doc/oldstreet-trolley-candidate/review.md`。尚未实现推车随行/推动动画，当前借出物件进入背包。

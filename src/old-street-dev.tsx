@@ -10,6 +10,8 @@ import {Assets} from 'pixi.js'
 import React, {useEffect, useRef, useState} from 'react'
 import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
 import {actorSheet,standingActorSheet} from './actor-sheet'
+import {oldStreetTrolleyPose,oldStreetTrolleySheet} from './old-street-prop-art'
+import trolleyUrl from '../doc/oldstreet-trolley-candidate/cutout.png'
 import lanStandingUrl from '../doc/oldstreet-lan-candidate/standing.png'
 import {actorArt} from './art-catalog'
 import {oldStreetCartridge, oldStreetRooms, oldStreetOutcome, type OldStreetRoom} from './old-street-cartridge'
@@ -40,6 +42,8 @@ export default function OldStreetDev() {
   const runtime = useRef<RpgRendererRuntime>()
   const engine = useRef<any>()
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
+  const trolleyEvent=useRef<RpgPlayer>()
+  useEffect(()=>{if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
@@ -55,6 +59,7 @@ export default function OldStreetDev() {
     let heroBlob: string | undefined
     let watchmakerBlob: string | undefined
     let lanBlob: string | undefined
+    let trolleyBlob: string | undefined
     void (async () => {try {
       let restored = await connection.client.enroll(locale)
       const recovered = await connection.client.recover()
@@ -76,11 +81,13 @@ export default function OldStreetDev() {
       watchmakerBlob=URL.createObjectURL(await npcResponse.blob());await Assets.load({src:watchmakerBlob,parser:'loadTextures'})
       const lanResponse=await fetch(lanStandingUrl);if(!lanResponse.ok)throw Error('LAN_LOAD_FAILED')
       lanBlob=URL.createObjectURL(await lanResponse.blob());await Assets.load({src:lanBlob,parser:'loadTextures'})
+      const trolleyResponse=await fetch(trolleyUrl);if(!trolleyResponse.ok)throw Error('TROLLEY_LOAD_FAILED')
+      trolleyBlob=URL.createObjectURL(await trolleyResponse.blob());await Assets.load({src:trolleyBlob,parser:'loadTextures'})
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
         initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
-        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28})], mapEvents: room => {npcEvents.current={};return oldStreetProjectedProps(current.current.save).filter(p=>p.room===room&&['watchmaker','laundry-owner'].includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(p.id==='watchmaker'?'oldstreet-watchmaker':'oldstreet-lan');this.animationName.set('stand');this.direction.set(Direction.Down);npcEvents.current[p.id]=this;this.syncChanges()}}}))},
+        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),oldStreetTrolleySheet(trolleyBlob)], mapEvents: room => {npcEvents.current={};trolleyEvent.current=undefined;return oldStreetProjectedProps(current.current.save).filter(p=>p.room===room&&['watchmaker','laundry-owner','trolley'].includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(p.id==='watchmaker'?'oldstreet-watchmaker':p.id==='trolley'?'oldstreet-trolley':'oldstreet-lan');this.animationName.set(p.id==='trolley'?oldStreetTrolleyPose(current.current.save):'stand');this.direction.set(Direction.Down);if(p.id==='trolley')trolleyEvent.current=this;else npcEvents.current[p.id]=this;this.syncChanges()}}}))},
         walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
@@ -90,7 +97,7 @@ export default function OldStreetDev() {
         onFailure: code => {if (mounted) setError(code)},
       })
     } catch (e) {if (mounted) setError(String(e))}})()
-    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob)}
+    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
   }, [])
   useEffect(() => {
     const timer = setInterval(() => {
@@ -111,8 +118,9 @@ export default function OldStreetDev() {
     try{
       const h=await connection.client.enroll(locale,true)
       serverHead.current=h
-      await runtime.current!.restore(h.position,h.sceneId)
       const next={save:h.save,scene:h.sceneId,position:h.position}
+      current.current=next
+      await runtime.current!.restore(h.position,h.sceneId)
       current.current=next;setHead(next);position.current=h.position;setFeet(h.position);setSelected(null);setError('');setNotice(cartridge.opening.blocks[0].text)
       runtime.current!.pause(false)
     }catch(e){setError(String(e))}finally{busyRef.current=false;setBusy(false)}
@@ -125,8 +133,9 @@ export default function OldStreetDev() {
       const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{})})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
-      await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
+      current.current = next
+      await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
       if(id==='oldstreet:match-photos'){if(result.accepted)setPhotoOpen(false);else setPhotoMessage(text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']))}
@@ -173,7 +182,8 @@ export default function OldStreetDev() {
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
         <OldStreetFloor room={head.scene as OldStreetRoom}/>
-        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&['watchmaker','laundry-owner'].includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
+        {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
+        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&['watchmaker','laundry-owner','trolley'].includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
@@ -181,7 +191,7 @@ export default function OldStreetDev() {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
-        return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner'].includes(e.id)?' os-target--actor':'')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
+        return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner','trolley'].includes(e.id)?' os-target--actor':'')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
       })}
     </div>
