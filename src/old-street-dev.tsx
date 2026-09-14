@@ -9,7 +9,8 @@ import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
 import {actorSheet} from './actor-sheet'
 import {actorArt} from './art-catalog'
 import {oldStreetCartridge, oldStreetRooms, oldStreetOutcome, type OldStreetRoom} from './old-street-cartridge'
-import {oldStreetBody, oldStreetHeroScale, oldStreetStride, bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetFloors, oldStreetObstacleBodies, oldStreetPath, oldStreetWalkable} from './old-street-space'
+import {oldStreetBody, oldStreetHeroScale, oldStreetStride, bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetObstacleBodies, oldStreetPath, oldStreetWalkable} from './old-street-space'
+import {OldStreetFloor} from './old-street-floor'
 import {createInitialSave} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
@@ -145,7 +146,6 @@ export default function OldStreetDev() {
     const door = oldStreetDoors().find(d => d.actionId === id)
     return door ? text(oldStreetRooms[door.destination.room]) : text(actionNames[id.replace('oldstreet:', '')] ?? [id, id])
   }
-  const floor = oldStreetFloors[head.scene as OldStreetRoom]
   const outcome = oldStreetOutcome(head.save)
   return <main className="os-dev">
     <header><small>{text(['开发白盒 · 本机服务存档', 'Development blockout · Local server save'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1></header>
@@ -156,7 +156,7 @@ export default function OldStreetDev() {
       setSelected(null)
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>
+        <OldStreetFloor room={head.scene as OldStreetRoom}/>
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>

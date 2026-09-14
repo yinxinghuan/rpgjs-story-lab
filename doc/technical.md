@@ -1535,3 +1535,6 @@ CUA 5453：从结局点击重新探索，走完整清障取照片路线到照相
 旧街 mapVersion 升为 oldstreet-blockout-2。旧版本先按 9×15 验证，再使用新占地保留可用原点，必要时在附近 64 单位内寻安全点；仅无近点时使用当前房间出生点。原 story/库存/人物/关系/旅程 ID 与故事 version 保持，不解释旧列车存档。迁移重复读取稳定。
 
 空间/Session 19 项与 Session/步态/图集 29 项检查通过；迁移包含旧版靠墙落点在原房间就近调整且整个 StorySave 不变。CUA 5453 旧旅程恢复后，许青与推车仍在，角色可继续行走；实际显示角色放大。当前约 365px 宽 external-guest 白盒仍有标签遮挡，非最终平台视觉或 iPhone 步态验收。
+
+### 旧街地面纹理装配（2026-09-15）
+`src/old-street-floor.tsx` 从 `oldStreetFloors` / `oldStreetDoors` 绘制底层地板与门槛。店铺使用通过 Vite import 打包的 `src/assets/oldstreet/watch-shop-surface-v2.png` 干净内部纹理，缺图仍有木色底层；其他房间沿用共享坐标白盒。裁切仅发生于 SVG 显示，完整原图与来源 SHA 保留。此组件只接本机 oldstreet-dev 入口，不改变正式原作旅程或生产素材准入。

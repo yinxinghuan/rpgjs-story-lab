@@ -1,0 +1,21 @@
+{
+  "task_id": "mt_4faf05542694c2ac20ea9bad5bfd2035",
+  "request_id": "b5e879ff-4476-4719-8e4e-c5068e19994d",
+  "type": "image",
+  "status": "succeeded",
+  "created_at": 1789418283241,
+  "updated_at": 1789418388838,
+  "media": {
+    "type": "image",
+    "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789418388558966.png",
+    "width": 1024,
+    "height": 1536,
+    "format": "png"
+  },
+  "timing_ms": 104699,
+  "local_path": "src/assets/oldstreet/watch-shop-surface-v2.png",
+  "sha256": "a848859a8d7bb76091229e86090cf934cab6be9e82b3dd806cf1f3dd61731e96",
+  "admitted_as_complete_background": false,
+  "usage": "Development shop floor surface only; SVG viewBox 240 280 540 1000 clips generated wall and green guide markers. Walls and thresholds rendered from oldStreetFloors/oldStreetDoors. No collision data inferred from image.",
+  "review": "Full image remains unsuitable as a finished background: green reference markers persist at both doorways. Interior wood floor is orthogonal and usable for a surface trial. Formal art admission remains false."
+}

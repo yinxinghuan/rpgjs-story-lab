@@ -1,0 +1,13 @@
+{
+  "request_id": "b5e879ff-4476-4719-8e4e-c5068e19994d",
+  "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "reference_urls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/1bfe1e7240994bb137cd7cadc88ad082098f7684/public/assets/oldstreet/watch-shop-layout-guide.png"
+  ],
+  "prompt": "Use this image as an EXACT orthographic game-map layout, not as inspiration. Preserve ALL region edges and coordinates pixel-for-pixel. The large beige rectangle is EMPTY WALKABLE FLOOR: replace it with worn warm wood floorboards, all boards straight and parallel in a strictly top-down projection. The thin brown perimeter is TOP SURFACE OF CUTAWAY WALLS, not tall vertical walls. The two small green rectangles are open door thresholds: replace green with matching wood floor, keep their exact locations and widths, unobstructed. The dark outer region remains dark desaturated exterior ground. Only texture and surface detail may change; do not move, widen, rotate or reshape any region. Render a tiny old watch repair shop with subtle painterly pixel-art surface texture, muted warm brown, cream and gray, soft even daylight. Absolutely no perspective, no converging lines, no trapezoids, no tall front-facing wall, no isometric view. No people, no furniture, no drawers, no loose objects, no clock faces, no text, no interface. The floor must remain an empty rectangular walkable region. Dynamic objects will be rendered separately. Preserve original canvas ratio and frame.",
+  "size": {
+    "width": 1024,
+    "height": 1536
+  }
+}
