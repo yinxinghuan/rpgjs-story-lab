@@ -28,15 +28,16 @@ export function oldStreetTalkTopics(save:StorySave,entity:string){
  return [route,personal]
 }
 const memory=/(?:记得|回忆|我刚才说)|\b(?:remember|recall)\b/i
-export function oldStreetTalkReply(save:StorySave,entity:string,input:string){
+export function oldStreetAuthoredTalkReply(save:StorySave,entity:string,input:string):string|null{
  const p=oldStreetPerson(entity),zh=save.locale==='zh'
  if(!p||!save.characters.some(c=>c.id===p.id))throw Error('OLD_STREET_DIALOGUE_INTRODUCTION_REQUIRED')
  const topic=oldStreetTalkTopics(save,entity).find(t=>t.text===input.trim());if(topic)return topic.reply
  if(memory.test(input)){const prior=oldStreetConversation(save,p.id).filter(t=>!memory.test(t.input)).at(-1)
   return prior?(zh?`你刚才对我说：“${prior.input}”`:`Earlier you told me: “${prior.input}”`):(zh?'我们还没有聊过别的事。':'We have not talked about anything else yet.')}
  if(/担心|害怕|紧张|\b(?:worried|afraid|nervous)\b/i.test(input))return zh?'我听见你的担心了。这里不催你，慢慢来。':'I hear your concern. There is no need to rush here.'
- return zh?'这件事我不清楚。你可以问问我这里的路，或者手边的东西。':'I do not know about that. You can ask me about the way around here or the things nearby.'
+ return null
 }
+export function oldStreetTalkReply(save:StorySave,entity:string,input:string){return oldStreetAuthoredTalkReply(save,entity,input)??(save.locale==='zh'?'这件事我不清楚。你可以问问我这里的路，或者手边的东西。':'I do not know about that. You can ask me about the way around here or the things nearby.')}
 export function oldStreetTalkBlocks(save:StorySave,entity:string,id:string,input:string,reply:string):StoryBlock[]{
  const p=oldStreetPerson(entity)!,person=save.characters.find(c=>c.id===p.id)!
  const data={oldStreetSpeakerId:p.id,oldStreetConversationId:id}

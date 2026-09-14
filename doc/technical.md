@@ -1558,3 +1558,7 @@ CarriageJourneyAuthority 接受独立 oldStreetInterpreter 注入，传入 OldSt
 ### 人物短交谈与分别记忆（2026-09-15）
 
 src/old-street-conversation.ts 从权威 facts 生成短话题，按 oldStreetSpeakerId/oldStreetConversationId 配对保存玩家输入与回复，只读取该人物最近四轮完整记录。OldStreetAuthority 新增 dialogue 请求类型，先校验当前场景、距离、人物身份与可见介绍，随后只追加 blocks 并增加旅程版本，沿用 SessionAuthority 的事务和幂等回执。回忆只引用历史玩家原话，不把玩家声称发生的事变成权威事实。前端话题按钮及输入通过同一 execute/send 入口走近后提交。
+
+### 旧街在线短对白（2026-09-15）
+
+server/old-street-dialogue.ts 构建当前人物的最小已知上下文，createOldStreetDialogueGenerator 用同一截止时间执行生成与语义复核。只接受 text/knowledgeIds，最多300字符，不返回动作命令；未准入外貌显式标记为未知。OldStreetAuthority 先检查场景/距离/介绍/美术，再选作者回答或在线生成，最终只追加成对 blocks。超时、拒绝及未开启均为可恢复终止错误。Worker 和两种本机适配器支持独立对白注入，本机请求与行动理解共享原有进程额度；额度未开启不联网。scripts/test-oldstreet-live-dialogue.ts 需显式开关，最多四次真实请求，普通测试不调用。

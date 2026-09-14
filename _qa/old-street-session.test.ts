@@ -231,3 +231,23 @@ test('short conversations require introductions, preserve facts, isolate memory 
   await assert.rejects(s.action('owner',h.id,{...talk('你好'),target:'drawer'}),/TARGET_REQUIRED/)
  }finally{raw.close()}
 })
+
+
+test('online dialogue commits only paired speech; rejected output leaves no partial turn',async()=>{
+ const raw=new DatabaseSync(':memory:');let calls=0,reply='信在修表铺的小格里。'
+ const s=new OldStreetAuthority(storage(raw),admit,undefined,async(_input,context)=>{calls++;assert.equal(context.speaker.id,'zhou-watchmaker');return reply})
+ try{
+  let h=s.create('owner',randomUUID(),'zh')
+  for(const room of ['photo','roof','shed'])h=(await s.action('owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId))).head
+  h=(await s.action('owner',h.id,request(h,'oldstreet:greet-watchmaker'))).head
+  const before=structuredClone(h.save),body={...request(h,'oldstreet:greet-watchmaker'),type:'dialogue',mode:'live',text:'我要去哪里找家里的信？'}
+  const result=await s.action('owner',h.id,body);h=result.head
+  assert.equal(result.source,'model');assert.equal(calls,1)
+  const {blocks,...afterState}=h.save,{blocks:_,...beforeState}=before
+  assert.deepEqual(afterState,beforeState);assert.equal(blocks.length,before.blocks.length+2)
+  assert.deepEqual(await s.action('owner',h.id,body),result);assert.equal(calls,1)
+  reply='x'.repeat(301)
+  await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:greet-watchmaker'),type:'dialogue',mode:'live',text:'请再解释一下。'}),/REJECTED/)
+  assert.deepEqual(s.get('owner',h.id),h)
+ }finally{raw.close()}
+})

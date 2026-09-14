@@ -1,5 +1,6 @@
 import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
-import {oldStreetTalkReply,oldStreetTalkBlocks} from '../src/old-street-conversation'
+import {oldStreetAuthoredTalkReply,oldStreetTalkReply,oldStreetTalkBlocks} from '../src/old-street-conversation'
+import {oldStreetDialogueContext,type OldStreetDialogueGenerator} from './old-street-dialogue'
 import {oldStreetPerson} from '../src/old-street-characters'
 import type {OriginalActionInterpreter} from './original-action-interpreter'
 import {originalActionIntentIssues} from '../src/original-action-intent'
@@ -23,7 +24,7 @@ const unavailable:OldStreetGate = () => {throw new LabError('OLD_STREET_PRESENTA
 const plan = oldStreetSpatialPlan()
 /** Installs story semantics in the existing transaction authority, not a second save engine.
  * No production route is enabled until real presentation admission is supplied. */
-export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter):SessionRuntime<OldStreetHead> {
+export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator):SessionRuntime<OldStreetHead> {
   const check=(h:OldStreetHead,previous?:OldStreetHead,id?:string)=>{
     assertOldStreetHead(h)
     if(admit(structuredClone(h),previous?structuredClone(previous):undefined,id)!==true)throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)
@@ -52,10 +53,15 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(!person||person.room!==h.sceneId||!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('OLD_STREET_DIALOGUE_TARGET_REQUIRED',409)
         if(!h.save.characters.some(c=>c.id===person.id))throw new LabError('OLD_STREET_DIALOGUE_INTRODUCTION_REQUIRED',409)
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
-        const text=body.text.trim(),reply=oldStreetTalkReply(h.save,body.target,text)
+        check({...h,position:pos})
+        const text=body.text.trim(),authored=oldStreetAuthoredTalkReply(h.save,body.target,text),useModel=body.mode==='live'&&authored===null
+        if(useModel&&!dialogue)throw new LabError('OLD_STREET_DIALOGUE_NOT_READY',409)
+        if(useModel&&!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+        const reply=authored??(useModel?await dialogue!(text,oldStreetDialogueContext(h,body.target)):oldStreetTalkReply(h.save,body.target,text))
+        if(typeof reply!=='string'||!reply.trim()||reply.length>(useModel?300:650))throw new LabError('OLD_STREET_DIALOGUE_REJECTED',409)
         const save=structuredClone(h.save);save.blocks.push(...oldStreetTalkBlocks(save,body.target,body.action_id,text,reply))
         const next={...h,version:h.version+1,position:pos,save};check(next,h)
-        return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:'author',text:reply}
+        return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:useModel?'model':'author',text:reply}
       }
       if(body.type==='free-input'){
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
@@ -97,5 +103,5 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
   }
 }
 export class OldStreetAuthority extends SessionAuthority<OldStreetHead> {
-  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter){super(db,oldStreetRuntime(admit,interpreter))}
+  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator){super(db,oldStreetRuntime(admit,interpreter,dialogue))}
 }

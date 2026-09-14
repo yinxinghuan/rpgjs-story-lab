@@ -1,3 +1,4 @@
+import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {originalPreflightModels} from './original-preflight-model'
 import type {IncomingMessage,ServerResponse} from 'node:http'
 import {PreflightStorage} from './preflight-storage'
@@ -14,7 +15,7 @@ export function oldStreetWorkerPreviewPlugin(){
   const name=String(key)
   let object=objects.get(name)
   // Local art admission only. Production OLD_STREET_RELEASED and gate remain closed.
-  if(!object){object=new CarriageJourneyAuthority(storage.context(name),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,()=>true,models?.interpreter);objects.set(name,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(name),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined);objects.set(name,object)}
   return object.fetch(request)
  }})}}
  const handler=createHandler(true,false,false,()=>false,()=>false,false,false,false,true)

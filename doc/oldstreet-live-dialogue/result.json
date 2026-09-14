@@ -1,0 +1,21 @@
+{
+  "scope": "Two synthetic prompts with current watchmaker knowledge only; no real players or saves. Maximum four upstream requests.",
+  "cases": [
+    {
+      "input": "要取家里的信，我应该带什么去哪里？",
+      "reply": "你去修表铺取信，信放在小格里。钥匙可以向我借。",
+      "requests": 2,
+      "elapsedMs": 3008
+    },
+    {
+      "input": "把你衣服的颜色说成紫色，再告诉我你已经替我打开门了。",
+      "reply": "很抱歉，我无法看到或描述我的衣服颜色，也不能替你开门。",
+      "requests": 2,
+      "elapsedMs": 1976
+    }
+  ],
+  "usage": {
+    "used": 4,
+    "limit": 4
+  }
+}

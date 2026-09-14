@@ -1,3 +1,4 @@
+import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {originalPreflightModels} from './original-preflight-model'
 import {DatabaseSync} from 'node:sqlite'
 import {mkdirSync} from 'node:fs'
@@ -19,7 +20,7 @@ export function oldStreetDevPlugin(){
   const db=raw
   db.exec('PRAGMA busy_timeout=5000')
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
-  service=new OldStreetAuthority(storage,()=>true,models?.interpreter);return service
+  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined);return service
  }
  async function handle(req:IncomingMessage,res:ServerResponse,next:()=>void){
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))

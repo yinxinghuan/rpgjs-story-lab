@@ -14,5 +14,5 @@ export function originalPreflightModels(raw:string|undefined,request:ModelReques
   used++
   return request(system,user,options)
  }
- return {interpreter:createOriginalActionInterpreter(bounded),dialogue:createOriginalDialogueGenerator(bounded),available:()=>used+2<=limit,usage:()=>({used,limit})}
+ return {request:bounded,interpreter:createOriginalActionInterpreter(bounded),dialogue:createOriginalDialogueGenerator(bounded),available:()=>used+2<=limit,usage:()=>({used,limit})}
 }
