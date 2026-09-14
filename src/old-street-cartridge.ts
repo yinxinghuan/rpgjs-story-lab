@@ -89,7 +89,7 @@ export function oldStreetRules(locale: Locale): DomainActionRule[] {
     rules.push({id, intent: id, match: [id], requirements: [
       need('departed', false, '旅程已经结束。', 'The journey has ended.'),
       {type: 'map', nodeId: from, reason: t('先走到对应的出入口。', 'Approach the matching entrance.')},
-      ...(edge.gate ? [need(edge.gate, true, edge.gate === 'crates-cleared' ? '旧箱挡住了台阶。' : '插销在工作棚那一侧。', edge.gate === 'crates-cleared' ? 'Crates block the steps.' : 'The bolt is on the workshop side.')] : []),
+      ...(edge.gate ? [need(edge.gate, true, edge.gate === 'crates-cleared' ? '旧箱挡住了台阶。' : from==='shed' ? '门还插着，抬起插销就能打开。' : '插销在工作棚那一侧。', edge.gate === 'crates-cleared' ? 'Crates block the steps.' : from==='shed' ? 'The gate is bolted. Lift the bolt to open it.' : 'The bolt is on the workshop side.')] : []),
     ], effects: [{type: 'map', nodeId: to}], successText: '', successChoices: ['', '', '']})
   }
   return rules
