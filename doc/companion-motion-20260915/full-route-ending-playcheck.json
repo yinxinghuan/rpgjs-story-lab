@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-15",
+  "testedSource": "ffbd9eb",
+  "url": "http://127.0.0.1:5439/?story=original&companion_motion=1",
+  "environment": "local cloud-preflight with synthetic QA database; actual CUA UI inputs",
+  "scope": "continued existing synthetic full-route journey from sleeping town to completed ending; earlier route evidence recorded separately",
+  "actions": [
+    "town-pack-kit",
+    "town-depart",
+    "bridge-inspect",
+    "bridge-kit-survey",
+    "bridge-arrange",
+    "bridge-rail-crossing",
+    "junction-review",
+    "settle-basic",
+    "ending generation",
+    "page reload"
+  ],
+  "observed": {
+    "town": "57 fuel / 89 condition / 75 morale, bridge kit +1",
+    "nearBank": "51 / 89 / 75, kit consumed once; scene background visibly changed to flooded railway",
+    "junction": "43 / 81 / 75 after displayed fuel -8 and condition -8",
+    "ending": "在枢纽安顿; Ada and Mako present; visited-region consequences displayed",
+    "reload": "completed ending automatically reopened, same title, cast, costs, region consequences and final resource values"
+  },
+  "openIssues": [
+    "Standing NPC art still slides in follow trial; not production-admitted walking art",
+    "Final choices have long repeated cost text",
+    "Some authored bridge/ending sentences explain state safeguards rather than tell the story",
+    "Bridge-arrange says companions hold duties, but duty policy currently covers mountain pass only; extend bridge work-post behavior",
+    "Native AlterU and physical iPhone full-route verification not covered",
+    "No new model/media generation proven by this local ending test"
+  ],
+  "releaseStatus": "not deployed; user 5440 build remains unchanged"
+}
