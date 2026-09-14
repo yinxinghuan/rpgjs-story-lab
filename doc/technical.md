@@ -1245,3 +1245,8 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 `original-equipment-art.ts` 将作者定义的设备实体表在模块初始化时构造一次；只保存静态定义，不缓存旅程绑定、场景状态或最终碰撞结果。每次储罐查询仍读取传入的绑定和 `originalEntityLayout`，旧档无绑定时返回空列表。此前每次碰撞查询会重复建立整张章节配置，现已移除这部分分配。
 
 本机 `scripts/benchmark-original-collision.ts` 每轮 3000 次、共 6 轮，忽略首轮后的中位耗时从约 95.46ms 降到 47.33ms；两次共 18000 查询的可走计数均为 16260。该数字只是同机合成 CPU 查询对比，不代表物理 iPhone 帧率。16 项设备/碰撞/恢复测试通过。此优化晚于正式 `7ff4d4d`，未包含在正在验证的双部署中。
+
+
+### 空间路线检查快照（2026-09-14，开发分支）
+
+`check-original-branches.ts` 为每次行动的同步寻路重新建立 `originalWorldWalkabilitySnapshot`，与 renderer 的搜索方式一致；路线每个像素仍独立经过 `originalWorldWalkable` 验证，不复用过期快照。120 条确定性抽样旅程全部完成，覆盖 82 种行动；地图行动与对应文字输入的状态逐项相等。详细计数见 `doc/spatial-route-snapshot-20260914.json`。这不是穷举、持久化或手机实机验收，也不改变正在运行的 7ff4d4d 发布任务。

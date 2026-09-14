@@ -6,7 +6,7 @@ import {originalGameEntities} from '../src/original-game-projection'
 import {originalEndingCartridge} from '../src/original-ending-capabilities'
 import {buildEndingSnapshot} from '../src/vendor/original-train/engine/endingDirector'
 import assert from 'node:assert/strict'
-import {originalWorldWalkable,originalWorldSafePosition} from '../src/original-world-space'
+import {originalWorldWalkable,originalWorldSafePosition,originalWorldWalkabilitySnapshot} from '../src/original-world-space'
 import {findGridPath} from '../src/grid-path'
 import {originalReleasedPresentation} from '../server/original-presentation'
 
@@ -30,7 +30,9 @@ for(let seed=1;seed<=sampleCount;seed++){
   try{
    if(spatial){
     const start=originalWorldSafePosition(head,head.position),canWalk=(p:{x:number;y:number})=>originalWorldWalkable(head,p)
-    const route=findGridPath(start,e.approach,canWalk)
+    // Match the renderer's synchronous search, rebuilding after every action.
+    // Keep the independent live predicate for every traversed pixel below.
+    const route=findGridPath(start,e.approach,originalWorldWalkabilitySnapshot(head))
     assert.ok(route.length,`OFFERED_ACTION_UNREACHABLE: ${head.sceneId}/${e.id}/${a.id}`)
     const points=[start,...route,e.approach]
     for(let i=1;i<points.length;i++){const from=points[i-1],to=points[i],steps=Math.max(1,Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)));for(let n=0;n<=steps;n++){assert.ok(canWalk({x:from.x+(to.x-from.x)*n/steps,y:from.y+(to.y-from.y)*n/steps}),`ROUTE_CROSSES_BODY: ${head.sceneId}/${e.id}/${a.id}`);walkedPixels++}}
