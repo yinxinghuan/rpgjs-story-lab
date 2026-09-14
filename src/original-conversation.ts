@@ -25,3 +25,14 @@ export function originalConversationBlocks(save:StorySave,speakerId:string,id:st
  return [{id:`conversation-${id}-player`,kind:'dialogue',speaker:save.locale==='zh'?'你':'You',text:input,data:{...data,originalRole:'player'}},
   {id:`conversation-${id}-reply`,kind:'dialogue',speaker:person.name,text:reply,data:{...data,originalRole:'reply'}}]
 }
+
+/** A recorded reply is not a fresh statement after a later story action.
+ * Keep the pair in history, but do not present it as the current conversation. */
+export function originalCurrentConversation(save:StorySave,speakerId:string):OriginalConversationTurn|undefined{
+ const last=originalConversation(save,speakerId,1)[0]
+ if(!last)return undefined
+ let index=-1
+ for(let i=save.blocks.length-1;i>=0;i--){const b=save.blocks[i];if(b.kind==='dialogue'&&b.data?.originalConversationId===last.id&&b.data?.originalRole==='reply'){index=i;break}}
+ if(index<0||save.blocks.slice(index+1).some(b=>b.kind!=='dialogue'))return undefined
+ return last
+}

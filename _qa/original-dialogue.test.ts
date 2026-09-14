@@ -9,7 +9,7 @@ import {join} from 'node:path'
 import {PreflightStorage} from '../server/preflight-storage'
 import {OriginalTrainAuthority,type OriginalHead,type OriginalPresentationGate} from '../server/original-train-runtime'
 import {createOriginalDialogueGenerator,originalDialogueContext,type OriginalDialogueGenerator} from '../server/original-dialogue'
-import {originalConversation} from '../src/original-conversation'
+import {originalConversation,originalCurrentConversation} from '../src/original-conversation'
 import {originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
 import {LabError} from '../src/journey-runtime'
 const world=originalTrainChapterSpatialPlan(),owner='synthetic-dialogue-owner'
@@ -212,5 +212,20 @@ test('a conversation hint navigates only to a still-available action, never gran
   assert.deepEqual(h,before)
   h=(await f.service.action(owner,h.id,action(h,'repair-starter'))).head
   assert.equal(originalTalkDestination(topics,topic.text,originalGameEntities(h),'ada-dead'),undefined)
+ }finally{f.close()}
+})
+
+test('a repaired fault remains in history but is not shown as fresh dialogue',async()=>{
+ const f=fixture();try{
+  let h=f.service.create(owner,randomUUID(),'zh')
+  h=(await f.service.action(owner,h.id,say(h,'启动机哪里坏了？'))).head
+  assert.ok(originalCurrentConversation(h.save,'ada-mechanic')?.reply.includes('继电器烧坏了'))
+  h=(await f.service.action(owner,h.id,action(h,'repair-starter'))).head
+  assert.equal(originalCurrentConversation(h.save,'ada-mechanic'),undefined)
+  assert.equal(originalConversation(h.save,'ada-mechanic').length,1)
+  h=(await f.service.action(owner,h.id,say(h,'我们眼下该怎么做？'))).head
+  assert.ok(originalCurrentConversation(h.save,'ada-mechanic')?.reply.includes('列车已经点火'))
+  assert.equal(originalConversation(h.save,'ada-mechanic').length,2)
+  assert.ok(originalCurrentConversation(f.reopen().get(owner,h.id).save,'ada-mechanic'))
  }finally{f.close()}
 })

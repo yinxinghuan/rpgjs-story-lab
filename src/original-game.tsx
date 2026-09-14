@@ -1,5 +1,5 @@
 import {originalTalkTopics,originalTalkDestination} from './original-talk-topics'
-import {originalConversation} from './original-conversation'
+import {originalConversation,originalCurrentConversation} from './original-conversation'
 import {yardPumpResource,originalYardPumpSheet} from './original-yard-pump-art'
 import {dieselResource,dieselFacts,originalDieselSheet} from './original-diesel-art'
 import {storyBeats,type StoryBeat} from './story-beats'
@@ -195,7 +195,7 @@ export default function OriginalGame(){
  function ground(e:React.MouseEvent){if(busyRef.current||!ready||panel||error)return;const r=frame.current!.getBoundingClientRect();setNotice('');runtime.current?.walkTo({x:(e.clientX-r.left)*384/r.width-4.5,y:(e.clientY-r.top)*576/r.height-15})}
  const latest=save?originalReadingBlocks(save).at(-1):undefined
  const nearby=nearestInteraction(entities,position,world.interactionDistance),beat=beats[beatIndex]
- const conversation=entity?.person&&save?originalConversation(save,entity.person.id).at(-1):undefined
+ const conversation=entity?.person&&save?originalCurrentConversation(save,entity.person.id):undefined
  const talkTopics=entity?.person&&head?originalTalkTopics({locale,speaker:entity.person,sceneId:head.sceneId,objective:originalGameObjective(head),availableActions:entities.flatMap(e=>e.actions.map(a=>({...a,target:e.id}))),recentTurns:originalConversation(head.save,entity.person.id)}):[]
  const talkDestination=entity?originalTalkDestination(talkTopics,conversation?.input,entities,entity.id):undefined
  return <main className="og-game" data-scene={scene??''} data-player-x={position.x.toFixed(2)} data-player-y={position.y.toFixed(2)} data-ready={ready} data-scenery={backgroundState} data-version={head?.version??-1} data-background-version={head?originalBackgroundVersion(head.assets):undefined} data-device-version={originalStarterRelease(head?.assets)?.id??'baseline'} data-actor-version={originalActorRelease(head?.assets)?.id??'baseline'}>
