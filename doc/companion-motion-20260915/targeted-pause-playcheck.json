@@ -5,6 +5,14 @@
   "observedBefore": "Click Ada at dawn junction: Mako blocks leader; all companions pause; walking-closer never completes.",
   "observedAfterFirstFix": "Mako visibly steps to the right. Target Ada remains in place. Walking-closer still does not finish because route excludes target body too.",
   "secondFix": "Path search now retains frozen target as a body while allowing other party members to yield.",
-  "remaining": "Second fix needs a new build and same-state renderer verification. Current 5439 build contains first fix only.",
-  "tests": "9 motion tests passed; first fix TypeScript and build passed."
+  "remaining": "Narrow carriage turning, mobile movement and directional walking art remain unverified. Endgame topic labels still use pre-ending wording.",
+  "tests": "9 motion tests passed; first fix TypeScript and build passed.",
+  "verifiedBuildCommit": "4543c03",
+  "secondFixVerification": [
+    "Rebuilt /private/tmp/rpg-target-route-dist and restarted dedicated 5439 against the same synthetic database.",
+    "Reload preserved completed ending, Ada, Mako and stats 43/81/75.",
+    "Closed ending panel and clicked Ada; approach completed and Ada conversation panel opened.",
+    "Selected current-goal topic; response correctly reported the journey had concluded, with no error overlay.",
+    "Closed Ada panel and clicked Mako; movement resumed and Mako conversation panel opened."
+  ]
 }
