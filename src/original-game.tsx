@@ -169,6 +169,12 @@ export default function OriginalGame(){
   if(!ready||busy||panel||error||head?.sceneId!==fanArt.scene||originalFanState(head.save)!=='running'||!originalEquipmentHasArt('tunnel-fan',head.assets))return
   let raf=0,last=performance.now();const tick=(now:number)=>{const dt=now-last;last=now;if(!document.hidden&&dt>=0&&dt<=250){fanElapsed.current+=dt;projectEquipment()}raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf)
  },[ready,busy,panel,error,head?.sceneId,head?.save.facts['tunnel-cargo-policy']])
+ useEffect(()=>{
+  const saved=locale==='zh'?'进度已保存':'Progress saved'
+  if(notice!==saved||busy)return
+  const timer=setTimeout(()=>setNotice(current=>current===saved?'':current),3000)
+  return()=>clearTimeout(timer)
+ },[notice,busy,head?.version,locale])
  useEffect(()=>{const checkpoint=()=>{const h=headRef.current;if(h&&runtime.current&&!busyRef.current&&!errorRef.current&&runtime.current.renderedScene()===h.sceneId)void connection.api('/sessions/'+h.id+'/position',{position:pos.current,sceneId:h.sceneId,expected_version:h.version}).catch(e=>{if(mounted.current&&e instanceof Error&&e.message==='RUNTIME_VERSION_MISMATCH')setError(e.message)})};const timer=setInterval(checkpoint,2000);const hide=()=>{if(document.hidden){runtime.current?.move(0,0);checkpoint()}};document.addEventListener('visibilitychange',hide);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',hide)}},[])
  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!busyRef.current)setPanel(null)};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[])
  useEffect(()=>{

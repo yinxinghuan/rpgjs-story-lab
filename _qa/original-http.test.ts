@@ -1,3 +1,4 @@
+import {originalGameEntities} from '../src/original-game-projection'
 import {inspectOriginalDirectory} from '../src/original-session-client'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import test from 'node:test'
@@ -34,15 +35,16 @@ async function harness(admit:OriginalPresentationGate=originalReleasedPresentati
  const reopen=()=>{objects.clear();storage.close()}
  return {base,env,forwarded,requests:()=>requests,lose:(suffix:string)=>{lost=suffix},reopen,close:async()=>{await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));reopen();rmSync(dir,{recursive:true,force:true})}}
 }
-for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','forest'] as const)test(`original HTTP ${locale}/${route}: full journey, lost responses, disk reopen and complete ending`,async()=>{
+for(const locale of ['zh','en'] as const)for(const route of ['quarry','valley','forest'] as const)for(const inputMode of ['buttons','mixed'] as const)test(`original HTTP ${locale}/${route}/${inputMode}: full journey, lost responses, disk reopen and complete ending`,async()=>{
  const h=await harness(),store=memory();let connection=originalSessionHttp(store,lock,fetch,h.base),head:OriginalHead
  try{
   h.lose('/sessions');await assert.rejects(connection.client.enroll(locale));h.reopen();connection=originalSessionHttp(store,lock,fetch,h.base);head=await connection.client.enroll(locale)
   const id=head.id,assetBindings=structuredClone(head.assets)
   const steps=['repair-starter',`commit-${route}-route`,...(route==='valley'?['river-survey','river-rescue-manual','river-treat','river-depart']:route==='forest'?['pine-inspect','pine-reverse','pine-meet','pine-survey-route','pine-invite','pine-depart']:['yard-meet','yard-work-pact','yard-first-exit']),'tunnel-inspect',route==='valley'?'tunnel-doctor-led':'tunnel-captain-led','tunnel-ventilate','tunnel-depart',...(route==='quarry'?[]:['yard-meet',route==='valley'?'yard-medical-pact':'yard-work-pact']),'yard-route-brief','yard-invite','yard-depart','pass-inspect',route==='forest'?'pass-lin-watch':'pass-player-watch','pass-mako-duty','pass-gravel-siding','pass-debrief','pass-depart','town-inspect','town-grid-aid','town-public-rules','town-refuel','town-repair','town-rest','town-route-brief','town-pack-kit','town-depart','bridge-inspect','bridge-kit-survey','bridge-arrange','bridge-rail-crossing','junction-review','junction-settle-basic']
   for(const [i,action] of steps.entries()){
+   assert.ok(originalGameEntities(head).some(entity=>entity.actions.some(choice=>choice.id===action)),`Missing selectable action ${locale}/${route}/${action}`)
    if(i===0){h.lose('/actions');await assert.rejects(connection.client.send(head,intent(head,action)));assert.equal(connection.client.hasPending(),true);h.reopen();connection=originalSessionHttp(store,lock,fetch,h.base);head=(await connection.client.recover()).head}
-   else head=(await connection.client.send(head,intent(head,action,i%2===1))).head
+   else head=(await connection.client.send(head,intent(head,action,inputMode==='mixed'&&i%2===1))).head
    assert.equal(head.id,id);assert.equal(head.version,i+1);assert.deepEqual(head.assets,assetBindings)
   }
   assert.equal(head.save.finale.status,'ready');const before=structuredClone(head)
