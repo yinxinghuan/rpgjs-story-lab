@@ -7,19 +7,11 @@ import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {resolveDomainAction, applyDomainResolution} from '../src/vendor/original-train/engine/domainRules'
 import type {StorySave} from '../src/vendor/original-train/types'
 
-export type OldStreetHead = {id:string; version:number; mapVersion:string; sceneId:string; position:{x:number;y:number}; save:StorySave}
+import {assertOldStreetHead,type OldStreetHead} from '../src/old-street-head'
+export {assertOldStreetHead,type OldStreetHead} from '../src/old-street-head'
 export type OldStreetGate = (head:OldStreetHead, previous?:OldStreetHead, actionId?:string)=>true
 const unavailable:OldStreetGate = () => {throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)}
 const plan = oldStreetSpatialPlan()
-export function assertOldStreetHead(value:unknown): asserts value is OldStreetHead {
-  const h=value as OldStreetHead, s=h?.save
-  if (!h || !s || s.cartridgeId!=='old-street-letter' || s.version!==8 || !['zh','en'].includes(s.locale)
-    || !Number.isSafeInteger(h.version) || h.version<0 || typeof h.id!=='string' || !/^[a-zA-Z0-9-]{16,80}$/.test(h.id)
-    || h.mapVersion!==plan.mapVersion || !s.facts || !Array.isArray(s.map) || !Array.isArray(s.inventory)
-    || !Array.isArray(s.blocks) || !Array.isArray(s.characters) || !Array.isArray(s.relationships)
-    || !h.position || !oldStreetWalkable(h.sceneId,h.position,s)) throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)
-  try {bindOldStreet(s.locale,s).locate(s,h.sceneId)} catch {throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)}
-}
 /** Installs story semantics in the existing transaction authority, not a second save engine.
  * No production route is enabled until real presentation admission is supplied. */
 export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime<OldStreetHead> {

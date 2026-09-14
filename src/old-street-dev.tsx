@@ -1,3 +1,5 @@
+import {oldStreetSession} from './old-street-session'
+import type {OldStreetHead} from './old-street-head'
 import {Assets} from 'pixi.js'
 import React, {useEffect, useRef, useState} from 'react'
 import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
@@ -6,8 +8,7 @@ import {actorArt} from './art-catalog'
 import {oldStreetCartridge, oldStreetRooms, oldStreetOutcome, type OldStreetRoom} from './old-street-cartridge'
 import {bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetFloors, oldStreetObstacleBodies, oldStreetPath, oldStreetWalkable} from './old-street-space'
 import {createInitialSave} from './vendor/original-train/engine/reducer'
-import {resolveDomainAction, applyDomainResolution} from './vendor/original-train/engine/domainRules'
-import {prepareDoorTravel} from './spatial-door-travel'
+import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 
 const plan = oldStreetSpatialPlan()
@@ -33,6 +34,8 @@ export default function OldStreetDev() {
   const text = (pair: readonly [string, string]) => pair[locale === 'zh' ? 0 : 1]
   const [cartridge] = useState(() => oldStreetCartridge(locale))
   const [head, setHead] = useState(() => ({save: createInitialSave(cartridge), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}))
+  const [connection] = useState(() => oldStreetSession(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
+  const serverHead = useRef<OldStreetHead>()
   const current = useRef(head); current.current = head
   const position = useRef(head.position)
   const runtime = useRef<RpgRendererRuntime>()
@@ -49,6 +52,14 @@ export default function OldStreetDev() {
     let mounted = true
     let heroBlob: string | undefined
     void (async () => {try {
+      let restored = await connection.client.enroll(locale)
+      const recovered = await connection.client.recover()
+      if (recovered) restored = recovered.head
+      if (!mounted) return
+      serverHead.current = restored
+      const restoredView = {save:restored.save,scene:restored.sceneId,position:restored.position}
+      current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
+      setNotice(text(['已恢复旅程。', 'Journey restored.']))
       const preview = new Image()
       const response = await fetch(new URL(hero.path, document.baseURI))
       if (!response.ok) throw Error('HERO_LOAD_FAILED')
@@ -59,39 +70,45 @@ export default function OldStreetDev() {
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
-        initialScene: head.scene, initialPosition: head.position, heroGraphic: 'hero',
+        initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero',
         spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, hero.scale, hero.centers)], mapEvents: () => [],
         walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
         onPosition: p => {position.current = p; if (mounted) setFeet(p)}, onDestination: p => {if (mounted) setDestination(p)},
         onEngine: e => {engine.current = e},
-        onReady: r => {runtime.current = r; r.pause(false); if (mounted) setReady(true)},
+        onReady: r => {runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)},
         onFailure: code => {if (mounted) setError(code)},
       })
     } catch (e) {if (mounted) setError(String(e))}})()
     return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob)}
   }, [])
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const h = serverHead.current
+      if (!h || !ready || busyRef.current || error || connection.client.hasPending()) return
+      const p = {...position.current}
+      void navigator.locks.request('oldstreet-checkpoint', async () => {
+        if (busyRef.current || serverHead.current !== h) return
+        try {await connection.api('/sessions/'+h.id+'/position',{sceneId:h.sceneId,expected_version:h.version,position:p})}
+        catch (e) {if ((e as Error).message !== 'STALE_POSITION') {setError(String(e)); runtime.current?.pause(true)}}
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [ready,error])
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
   async function execute(id: string, target: string) {
     try {
-      const h = current.current, binding = bindOldStreet(locale, h.save)
-      binding.locate(h.save, h.scene)
-      if (!binding.admits(id, target, h.scene, position.current)) throw Error(text(['请先走近目标。', 'Move closer first.']))
-      const resolution = ruleFor(id)
-      if (!resolution || resolution.status !== 'accepted') {setNotice(resolution?.reasons.join(' ') ?? 'Unknown action'); return}
-      const door = oldStreetDoors().find(d => d.actionId === id)
-      if (door) {
-        const next = prepareDoorTravel(h.save, cartridge, binding, {actionId: id, target, scene: h.scene, position: position.current})
-        await runtime.current!.restore(next.position, next.scene)
-        current.current = next; setHead(next); setSelected(null); setNotice('')
-      } else {
-        const save = structuredClone(h.save)
-        applyDomainResolution(save, cartridge, resolution)
-        const next = {...h, save, position: {...position.current}}
-        current.current = next; setHead(next); setNotice(resolution.successText)
-        if (save.facts.departed) {runtime.current!.pause(true); setSelected(null)}
-      }
+      const h = serverHead.current!
+      runtime.current!.pause(true)
+      const result = await connection.client.send(h,{type:'action',action:id,target,position:{...position.current}})
+      const nextHead = result.head as OldStreetHead
+      serverHead.current = nextHead
+      await runtime.current!.restore(nextHead.position,nextHead.sceneId)
+      const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
+      current.current = next; setHead(next); position.current = next.position; setSelected(null)
+      setNotice(result.text ?? result.rejectionCode ?? '')
+      runtime.current!.pause(Boolean(nextHead.save.facts.departed))
     } catch (e) {setError(String(e)); runtime.current?.pause(true)}
     finally {busyRef.current = false; setBusy(false)}
   }
@@ -117,7 +134,7 @@ export default function OldStreetDev() {
   const floor = oldStreetFloors[head.scene as OldStreetRoom]
   const outcome = oldStreetOutcome(head.save)
   return <main className="os-dev">
-    <header><small>{text(['开发白盒 · 未接云存档，刷新重开', 'Development blockout · No cloud save; reload restarts'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1></header>
+    <header><small>{text(['开发白盒 · 本机服务存档', 'Development blockout · Local server save'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1></header>
     <div className="os-stage" ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving) return
       const r = e.currentTarget.getBoundingClientRect()
@@ -146,6 +163,7 @@ export default function OldStreetDev() {
       <div className="os-stick" role="group" aria-label={text(['移动摇杆', 'Movement joystick'])} onPointerDown={e => {e.currentTarget.setPointerCapture(e.pointerId); stick(e)}} onPointerMove={e => {if (e.currentTarget.hasPointerCapture(e.pointerId)) stick(e)}} onPointerUp={() => runtime.current?.move(0, 0)} onPointerCancel={() => runtime.current?.move(0, 0)} onLostPointerCapture={() => runtime.current?.move(0, 0)}><span/></div>
       <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={() => {if (nearest) {setSelected(nearest.id); const id = nearest.actions.find(a => ruleFor(a)?.status === 'accepted'); if (id) request(id)}}}>{busy ? text(['正在走近…', 'Approaching…']) : nearest?.actions.find(a => ruleFor(a)?.status === 'accepted') ? label(nearest.actions.find(a => ruleFor(a)?.status === 'accepted')!) : text(['走近物件', 'Move closer'])}</button>
     </footer>
+    {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     <details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p><button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
     {outcome && <div className="os-modal" role="dialog"><section><h2>{text(['信已送到', 'Letter delivered'])}</h2><p>{notice}</p><p>{outcome.clockReturned ? text(['旧钟已归还。', 'The clock was returned.']) : ''}{outcome.photosReturned ? text(['照片已归还。', 'The photos were returned.']) : ''}</p></section></div>}

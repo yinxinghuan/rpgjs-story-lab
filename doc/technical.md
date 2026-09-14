@@ -1456,3 +1456,12 @@ CUA 实际点击记录：屋顶路线已完成借钥匙、打开院门捷径、�
 `_qa/old-street-session.test.ts` 六项通过：中英各自 15 次行动的磁盘 SQLite 关闭/重开与丢回执重放；旧 checkpoint 拒绝；跨 owner 读取拒绝；旧列车数据库不被重新解释；回执写入失败时房间/故事/journal 一起回滚；跨场景/目标/非法坐标拒绝；准备后的展示准入撤销与后续版本提交不会被旧候选覆盖。末尾保存的是 `departed` 事实，仍不是正式 Finale 生成/展示合同。真实模型输入暂不开放，free-input 明确拒绝，不能把 authored action ID 的执行称为自由输入接通。
 
 当前浏览器白盒仍使用组件内存。后续需在同一工程接 HTTP、持久身份与 pending 回执恢复，再把客户端直接 reducer 调用移到该权威边界；还需设计同一部署内旧列车与新内容的显式存储路由，禁止将现有列车表交给旧街策略。尚无浏览器刷新续玩或生产 Worker 证据。
+
+
+## 2026-09-15：浏览器接入本机持久 Session
+
+本节更新上一阶段“组件内存”的限制。`src/old-street-session.ts` 使用既有 `RecoverableSessionClient`，借用 UUID 隔离的 `alteruLocalStorage` 仅保存旅程指针和 pending 请求；动作结果、背包、地图事实及位置来自服务器。`src/old-street-head.ts` 提供共用 head 校验。页面启动依次 enrollment/recover，再按服务端房间和落点启动 RPG-JS。UI 不再直接执行 reducer；动作确认后等待 renderer.restore 完成再开放输入。每秒保存可走位置，旧版本 checkpoint 由服务端拒绝；网络失败暂停并提供重新连接入口，pending 不清除。
+
+`server/old-street-dev-plugin.ts` 仅在 `oldstreet-dev` 模式启用，路径为当前 GAME_ID 下 `/api/oldstreet-dev`。限定 loopback host、同源请求及 JSON body，16 KB 请求上限。HttpOnly/SameSite 本机身份 cookie 不代表 AlterU 可信账号；不把该开发身份方案用于生产。数据库默认 `.data/oldstreet-dev/journeys.sqlite`（已被 gitignore 排除），可用 `OLDSTREET_DEV_DATA` 指定本机位置。它与旧列车库分离，未新增公开游戏/UUID/云数据库。生产 Worker 仍需内容路由及真实展示准入。
+
+实际 CUA 5453 开发页面：街口→院落→洗衣店借推车，刷新后仍在洗衣店、持有推车、可归还；继续过门返回院落成功；清箱后再次刷新，地下储物室入口仍开放、推车仍保留。这是浏览器经 HTTP 到 SQLite 的刷新续玩实证；不是跨设备登录、云端 Worker、完整故事或最终美术验收。旧街 Session 六项与现有客户端三十项回归通过，TypeScript 与 oldstreet-dev 构建通过。
