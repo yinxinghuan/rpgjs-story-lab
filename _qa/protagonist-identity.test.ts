@@ -2,8 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {newProtagonistSource} from '../src/sprite-draft'
 import {actorReviewId} from '../src/actor-review-archive'
-import {saveProtagonistIdentityReview} from '../src/actor-sheet-review'
-import {protagonistIdentity} from '../src/protagonist-identity'
+import {assertActorSheetReview,saveActorSheetReview,emptyActorAnswers,saveProtagonistIdentityReview} from '../src/actor-sheet-review'
+import {assertProtagonistIdentity,protagonistMotion,protagonistIdentity} from '../src/protagonist-identity'
 import {spriteManifest,restoreSpriteManifest,assertSpriteManifest} from '../src/sprite-archive-contract'
 import {diagnosticActorDraft,actorPublicationFixture} from './actor-publication-fixture'
 
@@ -65,4 +65,25 @@ test('changing identity observations clears the previous map acceptance and reje
  const next=await saveProtagonistIdentityReview(repo,current,observation)
  assert.equal(next.actorReview!.map,undefined)
  await assert.rejects(saveProtagonistIdentityReview(repo,current,{...observation,referenceSha256:'b'.repeat(64)}),/PROTAGONIST_IDENTITY_REVIEW_INVALID/)
+})
+
+test('gliding provenance survives restore and cannot reuse a humanoid review',async()=>{
+ let current=await diagnosticActorDraft()
+ const originalReview=structuredClone(current.actorReview)
+ current.protagonistIdentity=protagonistIdentity('a'.repeat(64),current.source.sha256,'glide')
+ assert.equal(current.protagonistIdentity.version,2)
+ assert.equal(protagonistMotion(current.protagonistIdentity),'glide')
+ assert.throws(()=>assertActorSheetReview(originalReview,current),/SPRITE_ACTOR_REVIEW_INVALID/)
+ const {manifest,payload}=spriteManifest(current)
+ const restored=await restoreSpriteManifest(manifest,async f=>payload.get(f.role)!.bytes)
+ assert.equal(protagonistMotion(restored.protagonistIdentity),'glide')
+ assert.throws(()=>assertProtagonistIdentity({...current.protagonistIdentity,motion:'walk'},current.source.sha256),/PROTAGONIST_IDENTITY_INVALID/)
+ assert.throws(()=>assertProtagonistIdentity({...current.protagonistIdentity,version:1},current.source.sha256),/PROTAGONIST_IDENTITY_INVALID/)
+ const repo={get:async()=>structuredClone(current),list:async()=>[structuredClone(current)],save:async(next:typeof current)=>{current=structuredClone(next)}}
+ const reviewed=await saveActorSheetReview(repo,current,emptyActorAnswers())
+ assertActorSheetReview(reviewed.actorReview,reviewed)
+ assert.equal(reviewed.actorReview!.map,undefined)
+ const changed=structuredClone(reviewed);changed.protagonistIdentity=protagonistIdentity('a'.repeat(64),changed.source.sha256)
+ assert.throws(()=>assertActorSheetReview(reviewed.actorReview,changed),/SPRITE_ACTOR_REVIEW_INVALID/)
+ assert.equal(protagonistMotion(undefined),'walk')
 })

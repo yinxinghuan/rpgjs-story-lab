@@ -1,4 +1,4 @@
-import {assertProtagonistIdentity,assertProtagonistIdentityReview,type ProtagonistIdentityReview} from './protagonist-identity'
+import {protagonistMotion,assertProtagonistIdentity,assertProtagonistIdentityReview,type ProtagonistIdentityReview} from './protagonist-identity'
 import {verifySpritePng,type SpriteDraft,type SpriteDraftRepository,type SpritePng} from './sprite-draft'
 import {assertActorMapReview,type ActorMapReview} from './actor-map-review'
 import {inspectActorMapCandidate,type ActorPreview} from './sprite-map-candidate'
@@ -22,7 +22,7 @@ function assertAnswers(a:any):asserts a is ActorAnswers{
 function binding(d:ActorReviewTarget){
  if(d.state!=='candidate'||!d.result||!d.spec||d.spec.kind!=='actor'||d.spec.columns!==3||d.spec.rows!==4||d.result.frames.length!==12||d.deviceStateSet||d.composition)return invalid()
  const canonical=(v:any):any=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v
- return {draftId:d.id,sourceSha256:d.source.sha256,candidateSha256:d.result.png.sha256,preparation:JSON.stringify(canonical({spec:d.spec,frames:d.result.frames,algorithm:d.result.algorithm}))}
+ return {draftId:d.id,sourceSha256:d.source.sha256,candidateSha256:d.result.png.sha256,preparation:JSON.stringify(canonical({...(protagonistMotion(d.protagonistIdentity)==='glide'?{motion:'glide'}:{}),spec:d.spec,frames:d.result.frames,algorithm:d.result.algorithm}))}
 }
 /** These are a creator's observations, never automatic visual certification. */
 export function actorReviewStatus(answers:ActorAnswers){

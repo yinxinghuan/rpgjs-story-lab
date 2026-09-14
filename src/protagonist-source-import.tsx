@@ -2,9 +2,10 @@ import React,{useEffect,useRef,useState} from 'react'
 import {inspectSpritePng,type SpritePng} from './sprite-draft'
 import {spritePreviewUrl} from './sprite-browser-io'
 
-export default function ProtagonistSourceImport({disabled,locale,onImport}:{disabled:boolean;locale:'zh'|'en';onImport:(source:SpritePng,reference:SpritePng)=>Promise<boolean>}) {
+export default function ProtagonistSourceImport({disabled,locale,onImport}:{disabled:boolean;locale:'zh'|'en';onImport:(source:SpritePng,reference:SpritePng,motion:'walk'|'glide')=>Promise<boolean>}) {
  const t=(zh:string,en:string)=>locale==='zh'?zh:en
  const [files,setFiles]=useState<Array<{png:SpritePng;url:string}|undefined>>([undefined,undefined])
+ const [motion,setMotion]=useState<'walk'|'glide'>('walk')
  const [loading,setLoading]=useState(false),[message,setMessage]=useState<'invalid'|'saved'|'failed'|''>('')
  const live=useRef(true),urls=useRef<string[]>([]),sequence=useRef(0)
  useEffect(()=>{live.current=true;return()=>{live.current=false;sequence.current++;urls.current.forEach(URL.revokeObjectURL)}},[])
@@ -23,12 +24,14 @@ export default function ProtagonistSourceImport({disabled,locale,onImport}:{disa
  async function save(){
   if(!files[0]||!files[1]||disabled||loading)return
   setLoading(true);setMessage('')
-  try{const saved=await onImport(files[1].png,files[0].png);if(live.current)setMessage(saved?'saved':'failed')}
+  try{const saved=await onImport(files[1].png,files[0].png,motion);if(live.current)setMessage(saved?'saved':'failed')}
   catch{if(live.current)setMessage('failed')}
   finally{if(live.current)setLoading(false)}
  }
  return <details><summary>{t('导入主角与身份参考','Import protagonist and identity reference')}</summary>
  <p>{t('选择参考图与对应的四方向图集。这里只保存待检查原图，不发起生成，也不自动通过身份检查。','Select a reference and its four-direction sheet. This saves an unreviewed source; it neither generates art nor approves identity.')}</p>
+ <label htmlFor="protagonist-motion">{t('角色移动方式','Character locomotion')}</label><select id="protagonist-motion" value={motion} disabled={disabled||loading} onChange={e=>{setMotion(e.target.value as typeof motion);setMessage('')}}><option value="walk">{t('双足行走 · 检查左右腿交替','Biped walk · alternating legs')}</option><option value="glide">{t('无足滑行 · 检查摆动与稳定落点','Legless glide · sway and stable anchor')}</option></select>
+ <p>{t('按参考角色选择；滑行不会免除方向、配件、循环和地图检查。','Choose from the reference character; gliding still requires direction, attachment, cycle and map checks.')}</p>
  <div className="cl-protagonist-import__images">{files.map((entry,index)=><div key={index}>
  <label htmlFor={`protagonist-source-${index}`}>{index===0?t('参考 PNG','Reference PNG'):t('图集 PNG · 3列4行','Sheet PNG · 3 columns, 4 rows')}</label>
  <input id={`protagonist-source-${index}`} type="file" accept="image/png" disabled={disabled||loading} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void choose(index,file)}}/>

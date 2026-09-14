@@ -4,7 +4,7 @@ import {composeRepairFrames,replaceActorFrame} from './sprite-composition'
 import type {DeviceReview} from './device-publication'
 import type {SpriteGenerationSource} from './sprite-generation-recipe'
 import type {ActorSheetReview} from './actor-sheet-review'
-import {assertProtagonistIdentity,protagonistIdentity,type ProtagonistIdentity} from './protagonist-identity'
+import {assertProtagonistIdentity,protagonistIdentity,protagonistMotion,type ProtagonistIdentity} from './protagonist-identity'
 export type SpritePng = {bytes: Uint8Array; sha256: string; width: number; height: number}
 export type SpriteCompositionInput={source:SpritePng;sourceName:string;columns:number;column:number;generation?:SpriteGenerationSource}
 export type SpriteDraft = {
@@ -44,10 +44,10 @@ export function newSpriteSource(source: SpritePng, sourceName: string,sourceKind
 }
 /** Start the existing preparation flow with verified reference provenance.
  * This records a candidate, not visual acceptance or a new game identity. */
-export async function newProtagonistSource(source:SpritePng,reference:SpritePng):Promise<SpriteDraft>{
+export async function newProtagonistSource(source:SpritePng,reference:SpritePng,motion:'walk'|'glide'='walk'):Promise<SpriteDraft>{
   await verifySpritePng(source);await verifySpritePng(reference)
   const draft=newSpriteSource(structuredClone(source),'protagonist-reference-candidate','actor')
-  draft.protagonistIdentity=protagonistIdentity(reference.sha256,source.sha256)
+  draft.protagonistIdentity=protagonistIdentity(reference.sha256,source.sha256,motion)
   return draft
 }
 export async function newActorFrameSource(base:SpriteDraft,frame:SpritePng,frameName:string,row:number,column:number,io:{decode:(png:SpritePng)=>Promise<PixelRaster>;encode:(raster:PixelRaster)=>Promise<SpritePng>}):Promise<SpriteDraft>{
@@ -59,7 +59,7 @@ export async function newActorFrameSource(base:SpriteDraft,frame:SpritePng,frame
  if(source.width!==raster.width||source.height!==raster.height)throw Error('SPRITE_ENCODE')
  const next=newSpriteSource(source,'actor-frame-'+row+'-'+column,'actor')
  next.parentId=base.id
- if(base.protagonistIdentity)next.protagonistIdentity=protagonistIdentity(base.protagonistIdentity.referenceSha256,source.sha256)
+ if(base.protagonistIdentity)next.protagonistIdentity=protagonistIdentity(base.protagonistIdentity.referenceSha256,source.sha256,protagonistMotion(base.protagonistIdentity))
  next.actorPatch={version:1,row,column,base:{source:structuredClone(base.source),sourceName:base.sourceName},frame:{source:structuredClone(frame),sourceName:frameName.slice(0,100)}}
  await verifySpriteComposition(next,io.decode)
  return next
