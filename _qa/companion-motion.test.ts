@@ -75,3 +75,15 @@ test('in a one-person corridor a companion retreats to the next opening before y
  }
  assert.ok(sawSideStep);assert.ok(hero.x>210,'player gets past the follower at the opening: '+JSON.stringify({hero,actor}))
 })
+
+test('approaching one companion holds only that person while another can yield',()=>{
+ const leader={x:150,y:180},target={x:150,y:120},blocker={x:150,y:155},motion=new CompanionMotion(34,20)
+ motion.reset(leader,[{id:'ada',position:target},{id:'mako',position:blocker}])
+ let state=motion.snapshot()
+ for(let frame=0;frame<60;frame++)state=motion.update(1/60,leader,{...options(),talkingTo:'ada',leaderIntent:{x:0,y:-1}})
+ assert.deepEqual(state[0].position,target);assert.equal(state[0].pose,'stand');assert.equal(state[0].direction,'down')
+ assert.ok(Math.abs(state[1].position.x-blocker.x)>20,'the untargeted companion must leave the approach corridor')
+ const before=state.map(s=>s.position)
+ const paused=motion.update(1/60,leader,{...options(),paused:true,talkingTo:'ada',leaderIntent:{x:0,y:-1}})
+ assert.deepEqual(paused.map(s=>s.position),before)
+})

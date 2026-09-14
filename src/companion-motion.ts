@@ -32,7 +32,7 @@ export class CompanionMotion {
   if(distance(previous,leader)>=2){this.trail.push({...leader});if(this.trail.length>1024)this.trail.shift()}
   const stopped=options.paused||!Number.isFinite(dt)||dt<=0||dt>.25
   for(const [index,w] of this.walkers.entries()){
-   if(stopped){w.pose='stand';if(options.talkingTo===w.id&&distance(w.position,leader)>1)w.direction=face(w.position,leader);continue}
+   if(stopped||options.talkingTo===w.id){w.pose='stand';if(options.talkingTo===w.id&&distance(w.position,leader)>1)w.direction=face(w.position,leader);continue}
    const intent=options.leaderIntent??{x:0,y:0},length=Math.hypot(intent.x,intent.y),u=length?{x:intent.x/length,y:intent.y/length}:{x:0,y:0}
    const dx=w.position.x-leader.x,dy=w.position.y-leader.y,along=dx*u.x+dy*u.y,across=Math.abs(dx*u.y-dy*u.x)
    if(w.yieldTo){w.yieldIdle=length>.01?0:(w.yieldIdle??0)+dt;if(along< -8||(w.yieldIdle??0)>.6||(length>.01&&distance(w.position,w.yieldTo)<3&&across<this.separation+6&&along>0&&along<56)){w.yieldTo=undefined;w.route=[];w.repath=0}}

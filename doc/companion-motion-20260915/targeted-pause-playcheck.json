@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-15",
+  "url": "http://127.0.0.1:5439/?story=original&companion_motion=1",
+  "syntheticJourney": true,
+  "observedBefore": "Click Ada at dawn junction: Mako blocks leader; all companions pause; walking-closer never completes.",
+  "observedAfterFirstFix": "Mako visibly steps to the right. Target Ada remains in place. Walking-closer still does not finish because route excludes target body too.",
+  "secondFix": "Path search now retains frozen target as a body while allowing other party members to yield.",
+  "remaining": "Second fix needs a new build and same-state renderer verification. Current 5439 build contains first fix only.",
+  "tests": "9 motion tests passed; first fix TypeScript and build passed."
+}
