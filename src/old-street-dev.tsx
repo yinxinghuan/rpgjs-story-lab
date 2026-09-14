@@ -1,3 +1,4 @@
+import {oldStreetTurn} from './old-street-turn'
 import {oldStreetRequiredInspection} from './old-street-inspection'
 import {OldStreetClockView} from './old-street-clock-view'
 import type {RpgPlayer} from '@rpgjs/server'
@@ -50,7 +51,9 @@ export default function OldStreetDev() {
   const trolleyEvent=useRef<RpgPlayer>()
   useEffect(()=>{if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
-  const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
+  const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
+  const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
+  const setNotice=(value:string)=>{updateNotice(value);setTurn([])}
   const [journalOpen,setJournalOpen]=useState(false),journalButton=useRef<HTMLButtonElement>(null)
   const [mapOpen,setMapOpen]=useState(false),mapButton=useRef<HTMLButtonElement>(null)
   const [clockOpen,setClockOpen]=useState(false),[clockMessage,setClockMessage]=useState('')
@@ -160,6 +163,7 @@ export default function OldStreetDev() {
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
       const blockedReason=attemptedAction?[...new Set(resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons??[])].join(' '):undefined
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      setTurn(oldStreetTurn(h,nextHead,result.accepted===true))
       const requiredInspection=oldStreetRequiredInspection(next.save,next.scene,target,result.rejectionCode)
       if(requiredInspection==='clock'){setClockOpen(true);setClockMessage('');if(input!==undefined)setNotice(text(['拿近看看钟底。','Bring the clock closer to inspect its underside.']))}
       if(requiredInspection==='photo'){setPhotoOpen(true);setPhotoMessage('');if(input!==undefined)setNotice(text(['把照片放到放大台上比对。','Place the photographs on the viewing table.']))}
@@ -218,11 +222,11 @@ export default function OldStreetDev() {
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
         return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner','photographer','trolley'].includes(e.id)?' os-target--actor':'')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
-          disabled={!ready || busy || !!outcome || !!error} onClick={() => {setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
+          disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
       })}
     </div>
     <section className="os-actions" aria-label={text(['当前行动', 'Current actions'])}>
-      <p role="status">{error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>
+      {turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
       {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
       {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
