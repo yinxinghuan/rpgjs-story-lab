@@ -1,4 +1,5 @@
 import type {Locale} from './vendor/original-train/types'
+import {originalActionIntentIssues} from './original-action-intent'
 export const oldStreetActionNames: Record<string, [string, string]> = {
   'greet-watchmaker':['打个招呼','Say hello'], 'greet-laundry':['打个招呼','Say hello'], 'greet-photographer':['打个招呼','Say hello'],
   'move-box': ['移开空盒', 'Move box'], 'take-lens': ['拿放大镜', 'Take lens'], 'borrow-trolley': ['借推车', 'Borrow trolley'],
@@ -26,6 +27,8 @@ const aliases:Record<string,readonly string[]>={
  * intents and raw internal IDs do not become actions by substring matching. */
 export function resolveOldStreetInput(text:string,locale:Locale,allowed:readonly string[]):string|undefined{
  if(!text.trim()||text.length>500)return undefined
+ const labels=allowed.map(id=>oldStreetActionNames[id.replace('oldstreet:','')]?.[locale==='zh'?0:1]).filter((s):s is string=>!!s)
+ if(originalActionIntentIssues(text,labels).length)return undefined
  const wanted=normalize(text)
  const matches=allowed.filter(id=>{
   const key=id.replace('oldstreet:',''),pair=oldStreetActionNames[key]

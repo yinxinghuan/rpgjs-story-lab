@@ -1550,3 +1550,7 @@ CUA 5453：从结局点击重新探索，走完整清障取照片路线到照相
 ### 浏览器装配 Worker 通信（2026-09-15）
 
 在同一个 oldstreet-dev 页面使用 `?debug=1&session=worker` 选择 oldStreetSessionHttp；无该参数仍恢复原本 cookie 开发旅程，不迁移或清除旧档。`old-street-worker-preview.ts` 仅在 oldstreet-dev 的 Vite 开发/预览服务器安装，将带游戏 UUID 前缀的 HTTP 请求按正式宿主合同剥去前缀，然后交给实际 createHandler/CarriageJourneyAuthority；底层使用 .data/oldstreet-worker-preview 的本地 SQLite。接口仅允许回环 host、同源请求、JSON 与有界 body，凭证及运行版本检查由正式 Worker 执行。测试用美术 gate 只在此本机适配器注入；正式 OLD_STREET_RELEASED 仍关闭。
+
+### 旧街解释器注入与调用边界（2026-09-15）
+
+CarriageJourneyAuthority 接受独立 oldStreetInterpreter 注入，传入 OldStreetAuthority；正式 release 为 false 时不默认创建旧街在线解释器。本机 Worker 预检复用 originalPreflightModels 的显式 2–12 请求额度，所有预检对象共享本进程预算。src/old-street-action-input.ts 在规范化及别名匹配前运行 originalActionIntentIssues。scripts/test-oldstreet-live-actions.ts 新建内存旅程，真实模型调用上限 6，逐例保存不含玩家身份的结果与用量；不作为日常单测执行。

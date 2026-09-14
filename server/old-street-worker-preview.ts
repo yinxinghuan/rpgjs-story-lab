@@ -1,3 +1,4 @@
+import {originalPreflightModels} from './original-preflight-model'
 import type {IncomingMessage,ServerResponse} from 'node:http'
 import {PreflightStorage} from './preflight-storage'
 import {CarriageJourneyAuthority,createHandler} from '../worker/source'
@@ -6,13 +7,14 @@ import {OLD_STREET_API_PATH} from '../src/old-street-runtime-contract'
 
 /** Only installed by oldstreet-dev. Executes the real Worker boundary on local SQLite. */
 export function oldStreetWorkerPreviewPlugin(){
+ const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0))
  const storage=new PreflightStorage('.data/oldstreet-worker-preview')
  const objects=new Map<string,CarriageJourneyAuthority>()
  const env={CARRIAGE_JOURNEYS:{idFromName:(name:string)=>name,get:(key:unknown)=>({fetch:(request:Request)=>{
   const name=String(key)
   let object=objects.get(name)
   // Local art admission only. Production OLD_STREET_RELEASED and gate remain closed.
-  if(!object){object=new CarriageJourneyAuthority(storage.context(name),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,()=>true);objects.set(name,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(name),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,()=>true,models?.interpreter);objects.set(name,object)}
   return object.fetch(request)
  }})}}
  const handler=createHandler(true,false,false,()=>false,()=>false,false,false,false,true)

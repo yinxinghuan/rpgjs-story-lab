@@ -91,7 +91,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate?:OldStreetGate){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate?:OldStreetGate,private oldStreetInterpreter?:OriginalActionInterpreter){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
@@ -218,7 +218,7 @@ export class CarriageJourneyAuthority{
    }catch(e){return respond({error:e instanceof LabError?e.code:'ART_SOURCE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
   }
   if(url.pathname.startsWith(OLD_STREET_API_PATH+'/')){
-   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate)
+   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate,this.oldStreetInterpreter??(OLD_STREET_RELEASED?createOriginalActionInterpreter(chatModel):undefined))
    return handleOldStreetSession(request,owner,this.oldstreet,body)
   }
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){

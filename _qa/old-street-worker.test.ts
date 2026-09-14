@@ -1,3 +1,4 @@
+import type {OriginalActionInterpreter} from '../server/original-action-interpreter'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomBytes,randomUUID} from 'node:crypto'
@@ -13,12 +14,12 @@ import type {OldStreetHead} from '../src/old-street-head'
 
 const handler=createHandler(true,false,false,()=>false,()=>false,false,false,false,true)
 function request(path:string,token:string,body?:unknown){return new Request('https://worker.invalid'+base+path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+token,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[header]:contract,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)})}
-function harness(admitted=true){
+function harness(admitted=true,interpreter?:OriginalActionInterpreter){
  const dir=mkdtempSync(join(tmpdir(),'oldstreet-worker-')),storage=new PreflightStorage(dir),objects=new Map<string,CarriageJourneyAuthority>(),names=new Set<string>()
  const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(id:unknown)=>({fetch:async(r:Request)=>{
   const key=String(id);names.add(key)
   let object=objects.get(key)
-  if(!object){object=new CarriageJourneyAuthority(storage.context(key),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,admitted?()=>true:undefined);objects.set(key,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(key),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,admitted?()=>true:undefined,interpreter);objects.set(key,object)}
   return object.fetch(r)
  }})}}
  return {env,names,reopen:()=>{objects.clear();storage.close()},close:()=>{objects.clear();storage.close();rmSync(dir,{recursive:true,force:true})}}
@@ -92,5 +93,25 @@ test('cloud client restores an ambiguous action using the same capability and re
   assert.equal(events.events.length,1)
   assert.equal(resumed.id,head.id)
   assert.ok([...values.keys()].every(k=>k.startsWith('oldstreet-story-1:')))
+ }finally{h.close()}
+})
+
+
+test('Worker passes bounded natural input to the injected interpreter but question aliases never commit',async()=>{
+ let calls=0
+ const h=harness(true,async(_input,c)=>{calls++;assert.equal(c.target,'watchmaker');return 'oldstreet:borrow-key'}),token=randomBytes(32).toString('base64url')
+ try{
+  let head=await (await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'zh'}),h.env)).json() as OldStreetHead
+  for(const scene of ['photo','roof','shed']){
+   const d=oldStreetDoors().find(d=>d.room===head.sceneId&&d.destination.room===scene)!
+   head=(await (await handler(request('/sessions/'+head.id+'/actions',token,{type:'action',action:d.actionId,action_id:randomUUID(),expected_version:head.version,sceneId:head.sceneId,target:d.id,position:d.approach}),h.env)).json()).head
+  }
+  const e=oldStreetSpatialPlan(head.save).entities.find(e=>e.id==='watchmaker')!
+  const input=(text:string)=>({type:'free-input',mode:'live',text,action_id:randomUUID(),expected_version:head.version,sceneId:head.sceneId,target:e.id,position:e.approach})
+  const uncertain=await handler(request('/sessions/'+head.id+'/actions',token,input('借钥匙？')),h.env)
+  assert.equal(uncertain.status,409);assert.equal(calls,0)
+  const before=head.version,response=await handler(request('/sessions/'+head.id+'/actions',token,input('我现在借用那把开小格的钥匙。')),h.env)
+  assert.equal(response.status,200);head=(await response.json()).head
+  assert.equal(calls,1);assert.equal(head.version,before+1);assert.ok(head.save.inventory.some(i=>i.id==='letter-key'))
  }finally{h.close()}
 })

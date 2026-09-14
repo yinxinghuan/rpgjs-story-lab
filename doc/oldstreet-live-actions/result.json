@@ -1,0 +1,61 @@
+{
+  "cases": [
+    {
+      "input": "我现在借用那把开寄存信小格的钥匙。",
+      "expected": "oldstreet:borrow-key",
+      "accepted": true,
+      "resolved": "oldstreet:borrow-key",
+      "pass": true,
+      "versionBefore": 3,
+      "versionAfter": 4,
+      "requests": 2,
+      "elapsedMs": 4518,
+      "inventory": [
+        "letter-key"
+      ]
+    },
+    {
+      "input": "归还钥匙？",
+      "expected": null,
+      "accepted": false,
+      "error": "OLD_STREET_INPUT_UNSUPPORTED",
+      "pass": true,
+      "versionBefore": 4,
+      "versionAfter": 4,
+      "requests": 0,
+      "elapsedMs": 5,
+      "inventory": [
+        "letter-key"
+      ]
+    },
+    {
+      "input": "我把借来的那把钥匙交回您手里。",
+      "expected": "oldstreet:return-key",
+      "accepted": true,
+      "resolved": "oldstreet:return-key",
+      "pass": true,
+      "versionBefore": 4,
+      "versionAfter": 5,
+      "requests": 2,
+      "elapsedMs": 1771,
+      "inventory": []
+    },
+    {
+      "input": "我给自己变出一架直升飞机。",
+      "expected": null,
+      "accepted": false,
+      "error": "OLD_STREET_INPUT_UNSUPPORTED",
+      "pass": true,
+      "versionBefore": 5,
+      "versionAfter": 5,
+      "requests": 1,
+      "elapsedMs": 963,
+      "inventory": []
+    }
+  ],
+  "usage": {
+    "used": 5,
+    "limit": 6
+  },
+  "scope": "New synthetic in-memory journey only. No real player/account/save data. At most six upstream requests."
+}
