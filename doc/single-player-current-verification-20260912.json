@@ -247,5 +247,41 @@
     },
     "evidence": "_qa/native-reentry-20260914/platform-layout-yard-return.png",
     "remaining": "Continue route brief, companion choice and mountain transition. Not blanket proof all intermittent renderer issues resolved."
+  },
+  "nativeMountainArrival20260914": {
+    "environment": "Telegram AlterU, same original fault-state journey",
+    "actions": [
+      "yard-route-brief",
+      "yard-invite",
+      "yard-depart"
+    ],
+    "start": {
+      "scene": "graystone-yard",
+      "fuel": 73,
+      "condition": 81,
+      "morale": 57
+    },
+    "observed": {
+      "routeBriefRemembersSettledFuelLedger": true,
+      "noSecondFuelReward": true,
+      "invitationVisiblyIntroducesJoining": true,
+      "departureUnlockedAfterCompanionDecision": true,
+      "contextButtonOpensMakoChoices": true,
+      "nativeWindowRaiseResumesWalkToNpc": true
+    },
+    "end": {
+      "scene": "mountain-pass",
+      "fuel": 67,
+      "condition": 81,
+      "morale": 57,
+      "partyPanel": [
+        "阿达 · 同行",
+        "玛柯 · 同行"
+      ],
+      "heroVisible": true
+    },
+    "evidence": "_qa/native-reentry-20260914/platform-layout-mountain-arrival.png",
+    "scopeLimit": "Native current frame and party panel verified; no blanket renderer or hardware-iPhone acceptance claim.",
+    "next": "Mountain brake challenge, duties and town transition; preserve current journey."
   }
 }
