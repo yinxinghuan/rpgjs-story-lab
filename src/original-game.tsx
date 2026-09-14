@@ -1,4 +1,5 @@
 import {storyBeats,type StoryBeat} from './story-beats'
+import {inspectOriginalBackupDownload} from './original-backup-download'
 import {abortableArtLoad} from './abortable-art-load'
 import JourneyLoading from './journey-loading'
 import {nearestInteraction,isInteractionShortcut} from './nearby-interaction'
@@ -128,7 +129,7 @@ export default function OriginalGame(){
  }
  async function prepareBackup(){
   const h=headRef.current;if(!h||busyRef.current)return;setWorking(true);setJourneyError('');setBackup(null)
-  try{if(connection.client.hasPending())throw Error('PENDING_ACTION');const value=await connection.api('/sessions/'+h.id+'/backup'),p=value?.payload,j=p?.tables?.journeys?.[0];if(p?.format!=='original-train-backup-v1'||p.journeyId!==h.id||j?.id!==h.id||typeof value.sha256!=='string')throw Error('INVALID_ORIGINAL_BACKUP');const version=JSON.parse(j.data).version,url=URL.createObjectURL(new Blob([JSON.stringify(value)],{type:'application/json'}));if(!mounted.current){URL.revokeObjectURL(url);return}setBackup({url,name:'last-train-'+h.id+'-v'+version+'.json',version})}
+  try{if(connection.client.hasPending())throw Error('PENDING_ACTION');const value=await connection.api('/sessions/'+h.id+'/backup'),{version,text}=await inspectOriginalBackupDownload(value,h.id,h.version),url=URL.createObjectURL(new Blob([text],{type:'application/json'}));if(!mounted.current){URL.revokeObjectURL(url);return}setBackup({url,name:'last-train-'+h.id+'-v'+version+'.json',version})}
   catch(e){if(e instanceof Error&&e.message==='RUNTIME_VERSION_MISMATCH')setError(e.message);else setJourneyError(e instanceof Error&&e.message==='PENDING_ACTION'?t('请先恢复待确认操作，再下载备份。','Recover the pending action before preparing a backup.'):e instanceof Error&&e.message==='BACKUP_TOO_LARGE'?t('旅程超过单份备份大小限制。服务器进度仍然保留。','This journey exceeds the backup size limit. Server progress is retained.'):t('备份暂未准备好，请重试。服务器进度未改动。','The backup is not ready. Retry; server progress is unchanged.'))}finally{setWorking(false)}
  }
  async function showJourneys(){setPanel('journeys');setWorking(true);setJourneyError('');try{setJourneys(inspectOriginalDirectory(await connection.api('/sessions')))}catch(e){if(e instanceof Error&&e.message==='RUNTIME_VERSION_MISMATCH')setError(e.message);else setJourneyError(t('旅程列表暂时无法加载，请重试。','Journey list could not load. Please retry.'))}finally{setWorking(false)}}

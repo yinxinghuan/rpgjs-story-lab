@@ -2,9 +2,10 @@ import {GAME_ID} from '../src/game-id'
 import {LabError} from '../src/journey-runtime'
 import {assertOriginalHead} from './original-train-runtime'
 import type {AuthorityStorage} from './session-authority'
+import {MAX_ORIGINAL_BACKUP_BYTES,originalBackupDigest} from '../src/original-backup-integrity'
+export {MAX_ORIGINAL_BACKUP_BYTES} from '../src/original-backup-integrity'
 // Operator recovery format. A checksum is integrity, never authorization to
 // import browser-provided state into the running game.
-export const MAX_ORIGINAL_BACKUP_BYTES=16*1024*1024
 const columns={
  journeys:['id','owner','enrollment','enrollment_digest','data','cursor','updated'],
  journal:['session','cursor','action','kind','event'],
@@ -22,9 +23,8 @@ type Row=Record<string,string|number>
 export type OriginalBackupPayload={format:'original-train-backup-v1';gameId:string;createdAt:string;owner:string;journeyId:string;tables:Record<OriginalBackupTable,Row[]>}
 export type OriginalBackup={payload:OriginalBackupPayload;sha256:string}
 const tables=Object.keys(columns) as OriginalBackupTable[]
-const canonical=(v:any):any=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v
 const invalid=()=>{throw new LabError('INVALID_ORIGINAL_BACKUP')}
-export async function originalBackupChecksum(payload:OriginalBackupPayload){const bytes=new TextEncoder().encode(JSON.stringify(canonical(payload)));if(bytes.length>MAX_ORIGINAL_BACKUP_BYTES)throw new LabError('BACKUP_TOO_LARGE',413);return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('')}
+export async function originalBackupChecksum(payload:OriginalBackupPayload){try{return await originalBackupDigest(payload)}catch(error){if(error instanceof Error&&error.message==='BACKUP_TOO_LARGE')throw new LabError('BACKUP_TOO_LARGE',413);throw error}}
 const exists=(db:AuthorityStorage,table:string)=>db.all('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=?',table).length>0
 export async function exportOriginalJourney(db:AuthorityStorage,owner:string,id:string):Promise<OriginalBackup>{
  const payload=db.transaction(()=>{

@@ -10,12 +10,30 @@ import {originalGameEntities} from '../src/original-game-projection'
 import {environmentStoryRoute} from './environment-story-route'
 import {buildEndingSnapshot} from '../src/vendor/original-train/engine/endingDirector'
 import {originalEndingCartridge} from '../src/original-ending-capabilities'
+import {inspectOriginalBackupDownload} from '../src/original-backup-download'
 const owner='a'.repeat(64)
 function setup(){const raw=new DatabaseSync(':memory:');let fail=false
  const db:AuthorityStorage={all:(q,...b)=>raw.prepare(q).all(...b) as any,run:(q,...b)=>{if(fail&&q.startsWith('INSERT INTO receipts'))throw Error('DISK_FAILURE');raw.prepare(q).run(...b)},transaction:work=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  const service=new OriginalTrainAuthority(db,()=>true),images=new OriginalIllustrations(db,(o,id)=>service.get(o,id));return {raw,db,service,images,fail:()=>{fail=true}}
 }
 function action(h:any,id:string){const e=originalGameEntities(h).find(e=>e.actions.some(a=>a.id===id))!;assert.ok(e,id);return {action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:e.approach,target:e.id,type:'action',action:id}}
+test('player backup download verifies actual authority export, rejects corruption and stale or foreign envelopes',async()=>{
+ const s=setup()
+ try{
+  let h=s.service.create(owner,randomUUID(),'zh')
+  const old=await s.service.backup(owner,h.id)
+  h=(await s.service.action(owner,h.id,action(h,'repair-starter'))).head
+  const exported=await s.service.backup(owner,h.id),download=await inspectOriginalBackupDownload(exported,h.id,h.version)
+  assert.equal(download.version,h.version);assert.equal(download.text,JSON.stringify(exported))
+  const damaged=structuredClone(exported);damaged.payload.tables.journeys[0].data+=' '
+  await assert.rejects(inspectOriginalBackupDownload(damaged,h.id,h.version),/INVALID_ORIGINAL_BACKUP/)
+  await assert.rejects(inspectOriginalBackupDownload(old,h.id,h.version),/INVALID_ORIGINAL_BACKUP/)
+  await assert.rejects(inspectOriginalBackupDownload(exported,randomUUID(),h.version),/INVALID_ORIGINAL_BACKUP/)
+  const foreign=structuredClone(exported);foreign.payload.gameId=randomUUID();foreign.sha256=await originalBackupChecksum(foreign.payload)
+  await assert.rejects(inspectOriginalBackupDownload(foreign,h.id,h.version),/INVALID_ORIGINAL_BACKUP/)
+  assert.deepEqual(s.service.get(owner,h.id),h)
+ }finally{s.raw.close()}
+})
 for(const locale of ['zh','en']as const)test('original backup restores complete '+locale+' journey, ending receipt and immutable art',async()=>{
  const s=setup(),t=setup();try{const enrollment=randomUUID();let h=s.service.create(owner,enrollment,locale),last:any
  for(const id of environmentStoryRoute){const body=action(h,id);last={body,result:await s.service.action(owner,h.id,body)};h=last.result.head}
