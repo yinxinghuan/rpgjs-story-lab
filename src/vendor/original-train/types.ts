@@ -355,7 +355,7 @@ export interface StoryCartridge {
   // cartridges retain their exact definitions and saved values.
   statDefinitions: StatDefinition[]
   drawerLabels: Record<DrawerId, string>
-  opening: { location: string; time: string; objective: string; imagePrompt: string; blocks: StoryBlock[]; choices: Choice[] }
+  opening: { location: string; time: string; objective: string; imagePrompt: string; imageMode?: 'generated' | 'none'; blocks: StoryBlock[]; choices: Choice[] }
   characters: CharacterDefinition[]
   initialPartyMemberIds?: string[]
   initialMap: MapNode[]

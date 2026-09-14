@@ -1415,3 +1415,12 @@ Renderer 暴露当前移动意图，CompanionMotion 在玩家前进方向受队�
 
 ### 空指标故事类型适配（2026-09-15）
 本项目 `src/vendor/original-train/types.ts` 将 `statDefinitions` 从恰好三项放宽为 `StatDefinition[]`。现有初始化、规则更新与危险计算使用遍历/查找，可接受空列表；未修改原作三条定义或已有存档。`_qa/spatial-core-resources.test.ts` 4 项覆盖中英空指标初始化、物件/事实规则执行、未定义数值不被创建，以及原列车 68/82/58 初值保持。与出入口测试合计 14 项通过。这是本地 vendor 适配，不声称其他项目或冻结模板已同步；正式空间入口、电影式开场图片和新故事 renderer 仍待接入。
+
+
+## 2026-09-15：旧街故事规则草稿
+
+`src/old-street-cartridge.ts` 为本工程新增双语独立内容定义，使用 `old-street-letter` cartridge ID，不继承列车故事、人物、数值、音乐或图片。主题 token 只是未接界面的草稿值，不是已验收的电影式 UI。定义 8 地点与 10 对出入口，23 个物件/人物/结束动作以及 20 个定向过门规则，仍由已有 Domain resolver/reducer 执行。物品借出状态、唯一取物与结果读取来自 StorySave。`oldStreetOutcome` 是事实投射，不是正式结局提交；`oldStreetAdmission.ready=false` 列出尚未接通环节。
+
+`opening.imageMode` 为可选 `generated | none`，只控制初始化自动开场图块；未配置保持原作行为，none 不创建该图块，因此 enterStory 不会为它排队。不改变已有档，也不宣称后续图片调度已全面关闭。
+
+`_qa/old-street-routes.test.ts` 9 项通过：中英各自两条取信路径、完整可选帮助/撤回记录、错误地点和重复借还恢复，以及旧列车开场图仍排队。加 `_qa/spatial-core-resources.test.ts` 合计 13 项通过，TypeScript 检查通过。脚本只调用实际 Core 和当前草稿，JSON 恢复仅证明序列化后规则可继续；不包含 renderer 距离、真实数据库、模型、手机或平台验证。未改生产路由/UUID/存档，未部署。

@@ -17,9 +17,9 @@ export function createInitialSave(cartridge: StoryCartridge, remoteChatId?: stri
     location: cartridge.opening.location, time: cartridge.opening.time, objective: cartridge.opening.objective,
     decisionContext: cartridge.opening.objective,
     stats: Object.fromEntries(cartridge.statDefinitions.map((stat) => [stat.id, stat.initial])),
-    blocks: [...cartridge.opening.blocks, createImageBlock('image-0', cartridge.opening.location, cartridge.opening.imagePrompt, 'idle', '', {
+    blocks: [...cartridge.opening.blocks, ...(cartridge.opening.imageMode === 'none' ? [] : [createImageBlock('image-0', cartridge.opening.location, cartridge.opening.imagePrompt, 'idle', '', {
       source: 'opening', reason: 'opening-crisis', promptVersion: String(SCENE_IMAGE_PROMPT_VERSION), playerVisible: 'true',
-    })],
+    })])],
     choices: cartridge.opening.choices, map: cartridge.initialMap.map((node) => ({ ...node, visited: node.visited ?? Boolean(node.current), facts: node.facts ? [...node.facts] : undefined })),
     inventory: cartridge.initialInventory.map((item) => ({ ...item, metrics: item.metrics?.map((metric) => ({ ...metric })), imageStatus: item.imageUrl ? 'ready' : 'idle' })),
     characters: cartridge.characters.filter((character) => !character.hiddenUntilIntroduced).map((character) => {
