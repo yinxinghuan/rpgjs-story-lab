@@ -640,7 +640,7 @@
   },
   "nativePostMatteReleaseObservation20260914": {
     "observed": "Known synthetic journey visible at dawn junction, fuel39/condition75/morale75, hero and joystick/context controls visible.",
-    "interaction": "Not verified: clicking ending returned noWindowsAvailable; Raise succeeded without restoring click capability. No state-changing action succeeded.",
-    "limits": "Visible prior journey does not establish fresh bundle or exit/reentry after current deployment."
+    "interaction": "Game controls recovered. Opened known synthetic journey ending: common-line, Ada/Mako, dead station/yard/tunnel/pass/town/junction consequences visible. Closed panel successfully. Top platform back and menu return AXError.notImplemented; normal back shortcut has no effect. Awaiting manual platform back only.",
+    "limits": "This is the already-open game. Fresh exit/reentry and newly loaded bundle remain unverified; no story action or save reset performed."
   }
 }
