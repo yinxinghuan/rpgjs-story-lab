@@ -1,0 +1,62 @@
+{
+  "status": "partial-map-review",
+  "productionAdopted": false,
+  "runtimeBinding": "yard-pump-v1; opt-in only, defaults unchanged",
+  "sourceSha256": "4b477baffa31247f6c1ba946d5060e3ac60e9821020772922ff4197130c18f6e",
+  "geometry": {
+    "scale": 0.085,
+    "foot": [
+      256,
+      500
+    ],
+    "body": [
+      -19,
+      -12,
+      38,
+      16
+    ]
+  },
+  "automated": {
+    "script": "scripts/check-yard-pump-journeys.ts",
+    "journeys": 3,
+    "walks": 36,
+    "facts": [
+      "medical -> stopped",
+      "work -> repaired",
+      "forced -> forced"
+    ],
+    "oldBindingsUnchanged": true,
+    "existingApproachesPreserved": true
+  },
+  "browser": {
+    "url": "http://127.0.0.1:5431/qa-phone.html",
+    "viewport": [
+      320,
+      568
+    ],
+    "scope": "Desktop browser iframe, not physical iPhone",
+    "actions": [
+      "Walk to pump via actual marker",
+      "Use context action and repair with Ada",
+      "Close dialogue and inspect repaired sprite",
+      "Reload and inspect restored sprite and values"
+    ],
+    "before": {
+      "fuel": 38,
+      "condition": 87,
+      "morale": 66
+    },
+    "afterAndReload": {
+      "fuel": 50,
+      "condition": 81,
+      "morale": 68
+    },
+    "observed": "Low pump approximately twice character width and shorter than standing hero; both support feet stay in place; no white rectangular matte; pump remains after action marker disappears",
+    "guestShell": "Remote shell retained, banner closed through its own UI before main review; reappears on reload"
+  },
+  "remaining": [
+    "Medical and forced routes in actual renderer",
+    "390x844 review",
+    "Default new-journey admission and release after completed reviews"
+  ]
+}

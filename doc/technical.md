@@ -1250,3 +1250,8 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 ### 空间路线检查快照（2026-09-14，开发分支）
 
 `check-original-branches.ts` 为每次行动的同步寻路重新建立 `originalWorldWalkabilitySnapshot`，与 renderer 的搜索方式一致；路线每个像素仍独立经过 `originalWorldWalkable` 验证，不复用过期快照。120 条确定性抽样旅程全部完成，覆盖 82 种行动；地图行动与对应文字输入的状态逐项相等。详细计数见 `doc/spatial-route-snapshot-20260914.json`。这不是穷举、持久化或手机实机验收，也不改变正在运行的 7ff4d4d 发布任务。
+
+
+### 泵站候选接入（2026-09-14）
+
+`original-yard-pump-art.ts` 定义三帧固定图集与 `yard-agreement` 到图形的映射：诊疗或未达成协议保持停机，work 修复，forced 打开护栏且泵轴断开。`yard-pump-v1` 仅支持显式候选绑定，不进入 `currentFixedEquipment()`，旧档不会自动升级。实际 renderer 验证资源 SHA 和尺寸并使用相同世界布局/碰撞。三条真实作者路线共 36 次行动通过；320×568 修泵与刷新恢复已观察，另外两条路线与 390×844 待实际画面验收。详细证据见候选目录 runtime-review.json。
