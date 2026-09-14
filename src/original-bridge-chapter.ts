@@ -1,3 +1,4 @@
+import {originalPlayerProse} from './original-player-prose'
 import type {Locale,ParsedCommand,StoryCartridge,StorySave} from './vendor/original-train/types'
 import {applyParsedScene} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
@@ -98,6 +99,7 @@ export function executeBridgeTurn(save:StorySave,c:StoryCartridge,id:BridgeActio
   objective=s('在枢纽决定列车与队伍的最终归属','At the junction, decide the future of the train and crew')
  }
  if(objective)commands.push({type:'state',value:objective})
+ text=originalPlayerProse(text)
  const next=applyParsedScene(structuredClone(save),{blocks:[{id:`bridge-${save.scene+1}-${id}`,kind:'event',text}],commands,raw:text},c,bridgeLabel(id,c.locale));next.choices=bridgeChoices(next,c)
  return {save:next,source:'author' as const,acceptedActionId:id}
 }

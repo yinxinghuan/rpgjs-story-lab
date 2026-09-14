@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-15",
+  "url": "http://127.0.0.1:5439/?story=original&companion_motion=1",
+  "syntheticJourney": true,
+  "verified": "Reloaded completed settle-basic save; near-bank/ending copy adapter shows revised North Cape, tunnel and junction epilogues; original ending title, costs and cast retained",
+  "notVerified": [
+    "Ending-choice card visual layout at phone dimensions",
+    "Bridge duty movement in actual bridge scene"
+  ],
+  "buildNote": "QA build includes Chinese copy and choice layout; subsequent one-line English crossing-copy mapping needs next build"
+}

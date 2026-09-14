@@ -1,3 +1,4 @@
+import {originalPlayerProse} from './original-player-prose'
 import type {StoryCartridge,StorySave,StoryEndingAnchor,StoryEndingSnapshot,StoryEndingCandidate} from './vendor/original-train/types'
 import {availableEndingCapabilities} from './vendor/original-train/engine/endingDirector'
 import {originalEndingCartridge} from './original-ending-capabilities'
@@ -48,7 +49,7 @@ export function authoredOriginalEnding(snapshot:StoryEndingSnapshot,c:StoryCartr
   if(id==='sleeping-town')return (f['town-aid-policy']==='broadcast'?s('列车供出的燃料恢复了应急广播。','Fuel contributed by the train restored the emergency broadcast.'):s('列车保留燃料，小城广播没有由这支队伍恢复。','The train retained fuel; this crew did not restore the town broadcast.'))+' '+(f['town-rested']?s('停留恢复精神，也让过桥时的水位更高。','Rest restored morale and meant a higher water level at the bridge.'):s('队伍没有选择额外停留二十分钟。','The crew did not choose the extra twenty-minute stop.'))
   return f['bridge-train-fate']==='anchored'?s('队伍步行抵达，列车永久留在缺口。','The people arrived on foot; the train remains permanently in the gap.'):s('列车实际越过洪水桥后进入枢纽，抵达与过桥是两个不同的事实。','The train entered the junction after actually crossing the flood bridge; approach and crossing remain distinct facts.')
  }
- return {anchorFamily:spec.id,title:spec.title,thesis:spec.thesis,capabilitiesUsed:[...spec.capabilityIds],irreversibleCosts:originalEndingCosts(spec,c),preserved:[...spec.preserved],lost:[...spec.lost],unresolved:[...spec.unresolved],finaleScenes:scenes,characterEpilogues,regionalEpilogues:snapshot.map.filter(m=>m.visited).map(m=>({regionId:m.id,text:regionText(m.id)})),finalImagePrompt:spec.finalImagePrompt}
+ return {anchorFamily:spec.id,title:spec.title,thesis:spec.thesis,capabilitiesUsed:[...spec.capabilityIds],irreversibleCosts:originalEndingCosts(spec,c),preserved:[...spec.preserved],lost:[...spec.lost],unresolved:[...spec.unresolved],finaleScenes:scenes,characterEpilogues,regionalEpilogues:snapshot.map.filter(m=>m.visited).map(m=>({regionId:m.id,text:originalPlayerProse(regionText(m.id))})),finalImagePrompt:spec.finalImagePrompt}
 }
 export function validateSelectedOriginalEnding(candidate:StoryEndingCandidate,snapshot:StoryEndingSnapshot,c:StoryCartridge){
  const spec=selectedOriginalEnding(snapshot,c);if(!spec)return

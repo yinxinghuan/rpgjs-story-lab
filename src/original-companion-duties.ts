@@ -5,8 +5,9 @@ import {originalCharacterPresent} from './original-character-presence'
  * from a chapter the train already left. Returned points are hitbox top-left. */
 export function originalCompanionDutyTargets(h:OriginalHead){
  const targets:Record<string,{x:number;y:number}>={},f=h.save.facts
- if(h.sceneId!=='train-at-mountain-pass'||f['pass-debriefed'])return targets
- const ids=[...(f['pass-lookout']==='lin-scout'?['lin-scout']:[]),...(f['pass-duty']?['ada-mechanic']:[]),...(f['pass-duty']==='mara-raider'?['mara-raider']:[])]
+ const onBridge=h.sceneId==='train-at-flood-bridge'&&Boolean(f['bridge-passengers-arranged'])&&!f['chapter-bridge-complete']
+ if(!onBridge&&(h.sceneId!=='train-at-mountain-pass'||f['pass-debriefed']))return targets
+ const ids=onBridge?h.save.partyMemberIds:[...(f['pass-lookout']==='lin-scout'?['lin-scout']:[]),...(f['pass-duty']?['ada-mechanic']:[]),...(f['pass-duty']==='mara-raider'?['mara-raider']:[])]
  const world=originalBoundWorldPlan(h.assets)
  for(const id of ids){
   if(!h.save.partyMemberIds.includes(id)||!originalCharacterPresent(h.save,id))continue

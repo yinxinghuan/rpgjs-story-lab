@@ -1,3 +1,4 @@
+import {originalPlayerProse} from './original-player-prose'
 import {originalBoundWorldPlan} from './original-world-plan'
 import {originalEntityLabel} from './original-entity-labels'
 import {originalEquipmentHasArt} from './original-equipment-art'
@@ -54,7 +55,7 @@ export function originalGameEntities(head:OriginalHead){
  * Suppress only identical same-turn prose; keep changes and later repetition. */
 export function originalReadingBlocks(save:OriginalHead['save']){
  const seen=new Set<string>()
- return originalPlaceBlocks(save.blocks,save.locale).filter(block=>{
+ return originalPlaceBlocks(save.blocks,save.locale).map(block=>/^bridge-\d+-bridge-/.test(block.id)?{...block,text:originalPlayerProse(block.text)}:block).filter(block=>{
   if(block.id.startsWith('action-')){seen.clear();return true}
   if(block.kind==='image')return false
   // Reducer fact receipts remain in the authoritative history, not player prose.
