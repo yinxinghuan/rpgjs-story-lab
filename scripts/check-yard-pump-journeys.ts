@@ -15,7 +15,8 @@ const png=readFileSync('public/'+yardPumpResource.path.slice(2));assert.equal(pn
 let walks=0
 for(const pact of ['medical','work','forced'] as const){
  let h=runtime.initial('zh',randomUUID());assert.equal(h.assets?.version,1);if(h.assets?.version!==1)throw Error('FIXTURE')
- const legacy=structuredClone(h);assert.ok(!originalEquipmentSlots('train-at-graystone-yard',legacy.assets).some(s=>s.entityId==='yard-pump'))
+ assert.equal(h.assets.fixedEquipment?.['yard-pump'],'yard-pump-v1')
+ const legacy=structuredClone(h);if(legacy.assets?.version!==1)throw Error('FIXTURE');delete legacy.assets.fixedEquipment!['yard-pump'];assert.ok(!originalEquipmentSlots('train-at-graystone-yard',legacy.assets).some(s=>s.entityId==='yard-pump'))
  assert.deepEqual(runtime.upgrade(legacy).assets,legacy.assets)
  h.assets.fixedEquipment={...h.assets.fixedEquipment,'yard-pump':'yard-pump-v1'}
  const steps=['repair-starter','commit-valley-route','river-survey','river-rescue-powered','river-treat','river-depart','tunnel-inspect','tunnel-doctor-led','tunnel-ventilate','tunnel-depart','yard-meet']

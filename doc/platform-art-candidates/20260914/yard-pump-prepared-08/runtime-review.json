@@ -1,7 +1,7 @@
 {
-  "status": "partial-map-review",
+  "status": "new-journey-admitted-pending-release",
   "productionAdopted": false,
-  "runtimeBinding": "yard-pump-v1; opt-in only, defaults unchanged",
+  "runtimeBinding": "yard-pump-v1; new journeys bind it, old snapshots unchanged",
   "sourceSha256": "4b477baffa31247f6c1ba946d5060e3ac60e9821020772922ff4197130c18f6e",
   "geometry": {
     "scale": 0.085,
@@ -55,8 +55,54 @@
     "guestShell": "Remote shell retained, banner closed through its own UI before main review; reappears on reload"
   },
   "remaining": [
-    "Medical and forced routes in actual renderer",
-    "390x844 review",
-    "Default new-journey admission and release after completed reviews"
-  ]
+    "Full suite and route checks after default admission",
+    "Formal release with same-commit dual deployment"
+  ],
+  "additionalBrowser": [
+    {
+      "route": "forced",
+      "viewport": [
+        390,
+        844
+      ],
+      "before": [
+        38,
+        87,
+        66
+      ],
+      "afterAndReload": [
+        58,
+        75,
+        58
+      ],
+      "observed": "Guard chain absent, coupling disconnected; feet and machine stay in place. Walk, forced action, reload observed.",
+      "limit": "Outer host screenshot height 720 crops part of the 844 iframe; object and controls reviewed, not full HUD or physical iPhone proof"
+    },
+    {
+      "route": "medical",
+      "viewport": [
+        320,
+        568
+      ],
+      "before": [
+        38,
+        87,
+        66
+      ],
+      "afterAndReload": [
+        54,
+        87,
+        72
+      ],
+      "observed": "Mako offers medical cooperation when Ren present. Pump remains stopped with chain intact after action and reload."
+    }
+  ],
+  "verificationAfterDefault": {
+    "typeScript": "passed",
+    "spatialBindings": "legacy and current enrollment passed",
+    "viteCloudBuild": "passed in dist-pump-release",
+    "fullSuite": "Initial run: 36 local-port EPERM failures only; rerun with loopback permission still running",
+    "spatialJourneys": "120-sample run in progress",
+    "release": "not published"
+  }
 }
