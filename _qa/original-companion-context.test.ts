@@ -37,3 +37,8 @@ test('malformed positions and occupied ground are rejected rather than corrected
  const h=fixture()
  for(const value of [null,[],{'ada-mechanic':{x:Infinity,y:430}},{'ada-mechanic':{x:220,y:430,scene:'elsewhere'}},{'ada-mechanic':{x:-100,y:-100}}])assert.throws(()=>originalCompanionContext(h,value),/INVALID_COMPANION_POSITION/)
 })
+test('conversation approach moves to a free side when another follower occupies the usual spot',()=>{
+ const h=fixture(),poses={'ada-mechanic':{x:220,y:430},'mara-raider':{x:220,y:450}},world=originalBoundWorldPlan(h.assets,poses,h.sceneId),actor=world.characters.find(c=>c.id==='ada-mechanic')!,e=world.entities.find(e=>e.scene===h.sceneId&&actor.entities.includes(e.id))!,other=poses['mara-raider']
+ assert.notDeepEqual(e.approach,{x:220,y:458})
+ assert.equal(e.approach.x+9>other.x&&e.approach.x<other.x+9&&e.approach.y+15>other.y&&e.approach.y<other.y+15,false)
+})

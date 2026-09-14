@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-15",
+  "url": "http://127.0.0.1:5439/?story=original&companion_motion=1",
+  "syntheticJourney": true,
+  "observed": {
+    "before": {
+      "ada": "left 76.1719%, top 72.6844%",
+      "mako": "left 76.1719%, top 76.1857%"
+    },
+    "after_crossing_to_blue_passenger": {
+      "ada": "left 44.5029%, top 79.6875%",
+      "mako": "left 49.8323%, top 80.3819%"
+    },
+    "render": "Actual RPG-JS images moved from right platform to behind hero at tracks, matching moving markers",
+    "dialogue": "Approached moved Ada, submitted authored worry topic, received reply and saved progress",
+    "stats": "57/89/75 unchanged"
+  },
+  "limitations": [
+    "Standing artwork still slides; gait art not admitted, so follow remains explicit trial only",
+    "Working-at-equipment policy not implemented",
+    "Narrow-corridor yielding not validated",
+    "Dynamic approach avoidance fix added after pictured build; automated regression passed, runtime rebuild pending"
+  ]
+}

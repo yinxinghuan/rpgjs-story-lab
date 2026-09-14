@@ -1337,3 +1337,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 
 ### 2026-09-15：同行位置权威接入
 OriginalHead 新增可选 companionPositions（角色 id → 碰撞左上角）。位置 checkpoint 的可选 spatialContext 钩子在同一事务中验证并保存主角和同行位置；其他游戏 runtime 不使用该钩子，行为不变。行动/对白也验证同一快照，动态 spatial binding 与 UI 投影读取它。仅已登场且当前在队的实体允许移动；场景切换清空队形，离队移除对应位置。旧存档没有该字段时保持原站位。已验证 SQLite 恢复、账号隔离、过期请求拒绝、移动后对白、幂等重放、真实发布准入检查及原路线/HTTP 恢复回归。此轮仍未接 renderer 的逐帧跟随，也未上线。下一步需要把运动快照接到位置 checkpoint 与行动 body，处理设备工作驻留、队形与碰撞一致性，并补齐正式角色走动帧。
+
+
+### 跟随 renderer 试运行
+`?companion_motion=1` 在当前主游戏启用 CompanionMotion，保持默认产品入口关闭直到行走素材验收。移动快照同步 RPG-JS 实体、DOM 人物热点、寻路碰撞、位置 checkpoint 和行动请求；交谈/菜单暂停队形。已在合成小城旅程真实跨站台移动并成功向移动后的阿达提交对白，保存成功。当前使用站立图，仅证明位置链路，不能作为行走动画验收；工作驻留和狭窄通道避让仍未完成。
