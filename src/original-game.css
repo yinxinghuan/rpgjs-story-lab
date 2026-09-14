@@ -21,3 +21,5 @@
 .og-scrim--conversation{background:#050c161c}.og-sheet.og-sheet--conversation{width:min(520px,calc(100% - 24px));max-height:65dvh;margin:0 0 max(12px,env(safe-area-inset-bottom));border:1px solid #bca16c66;border-radius:14px;background:#172a34}.og-conversation-line{padding:8px 0 4px}.og-conversation-line p{margin-bottom:16px}.og-talk-choices .og-choice{text-align:left;border-color:#bca16c44;background:#233b46;border-radius:8px;padding:10px 12px}.og-own-words{border-top:1px solid #bca16c33;margin-top:4px}.og-own-words summary{color:#d5c9ad}.og-marker:not(.og-person):not(.og-equipment) span{max-width:140px;white-space:normal;line-height:1.4;text-align:center}
 
 .og-marker:not(.og-person):not(.og-equipment):not([data-near="true"]) span{display:none}.og-game .og-marker:not(.og-person):not(.og-equipment){background:#17232d80;border-color:#bca16c55;border-radius:50%;width:44px;height:44px}.og-game .og-marker[data-near="true"]{border-color:#e5c37d}
+
+.og-outcome-receipts{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--og-muted,#b5b3a9);font-size:13px;margin:10px 0}.og-outcome-receipts:empty{display:none}
