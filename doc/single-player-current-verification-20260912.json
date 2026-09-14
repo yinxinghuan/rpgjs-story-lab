@@ -500,7 +500,7 @@
     "nextIndependentImplementation": "Versioned protagonist identity and candidate lifecycle, reusing existing publication rather than creating another game or storage authority."
   },
   "protagonistIdentityDevelopment20260914": {
-    "status": "backend-and-private-archive-implemented-not-deployed",
+    "status": "backend-private-archive-and-creator-review-implemented-not-deployed",
     "checks": {
       "fullSuite": 727,
       "passed": 727,
@@ -515,14 +515,36 @@
       "NPC role rejection",
       "identity observations bound into existing review ID",
       "new identity observation invalidates map review",
-      "approved hero publication and lost-reply recovery"
+      "approved hero publication and lost-reply recovery",
+      "local reference and source import with decoded PNG verification",
+      "reference-matched identity review UI and local reload recovery",
+      "frontend protagonist versus NPC publication prerequisites"
     ],
     "remaining": [
-      "creator reference import and identity review UI",
       "generation and genuine human/covered/nonhuman visual fixtures",
       "runtime adoption and real renderer review"
     ],
-    "providerRequests": 0
+    "providerRequests": 0,
+    "creatorUiEvidence": {
+      "codeCommits": [
+        "c0bd0a2",
+        "cf3151d"
+      ],
+      "environment": "existing creator page, localhost:5415, disposable test art draft",
+      "observed": [
+        "import then reload retains source draft",
+        "wrong PNG reference rejected; correct reference enables observations",
+        "test fail observation persists after reload; reference image absent and editing disabled until reselected",
+        "unreviewed protagonist and NPC publication buttons disabled"
+      ],
+      "checks": "Post-UI full suite 727/727 passed; TypeScript, cloud build, 9 scenes / 27 resource hashes, Worker startup and secrets audit passed",
+      "limit": "No real avatar generation or visual identity approval; no production deployment",
+      "logs": [
+        "/private/tmp/rpg-identity-ui-full-tests.log",
+        "/private/tmp/rpg-identity-ui-build.log",
+        "/private/tmp/rpg-identity-ui-secrets.log"
+      ]
+    }
   },
   "platformIdentityClarification20260914": {
     "source": "User supplied colleague screenshot: guest-shell window telegramId is trusted",
