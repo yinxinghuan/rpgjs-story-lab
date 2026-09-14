@@ -1,3 +1,4 @@
+import {originalEntityLabel} from './original-entity-labels'
 import {originalEquipmentHasArt} from './original-equipment-art'
 import {assertOriginalEquipmentAction} from './original-equipment-state'
 import {originalEntityLayout} from './original-world-plan'
@@ -41,8 +42,9 @@ export function originalGameEntities(head:OriginalHead){
    try{assertPassSourceAction(save,id);assertPineSourceAction(save,id)}catch{return []}
    return [{id,label:rule.match[0]}]
   })
-  const label=e.id==='brakes'&&originalEquipmentHasArt('brakes',head.assets)?(save.locale==='zh'?'制动检修点':'Brake service point'):undefined
-  if(!actions.length&&!actor&&!label)return []
+  const retainedEquipment=e.id==='brakes'&&originalEquipmentHasArt('brakes',head.assets)
+  if(!actions.length&&!actor&&!retainedEquipment)return []
+  const label=originalEntityLabel(e.id,save.locale)
   const person=actor?save.characters.find(p=>p.id===actor.id):undefined
   return [{...e,actions,label,person:person?{...person,detail:originalCharacterDetail(save,person)}:undefined}]
  })

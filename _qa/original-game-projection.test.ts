@@ -1,8 +1,9 @@
+import {originalEntityLabel} from '../src/original-entity-labels'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {originalGameEntities,originalReadingBlocks,originalGameObjective,originalActionDestinations} from '../src/original-game-projection'
 import {originalTrainRuntime} from '../server/original-train-runtime'
-import {originalTrainRoom} from '../src/original-train-spatial-plan'
+import {originalTrainRoom,originalTrainChapterSpatialPlan} from '../src/original-train-spatial-plan'
 import {randomUUID} from 'node:crypto'
 import {originalPlaceLabel} from '../src/original-place-presentation'
 const runtime=()=>originalTrainRuntime(()=>true)
@@ -83,4 +84,24 @@ for(const locale of ['zh','en'] as const)test(`route preparation ${locale} isola
   loaded.push(scene);if(scene!==originalTrainRoom('river-valley'))throw Error('UNRELATED_SCENE_FAILED')
  }
  assert.deepEqual(loaded,[originalTrainRoom('river-valley')])
+})
+
+test('every authored non-character interaction has bilingual object naming',()=>{
+ const world=originalTrainChapterSpatialPlan()
+ for(const entity of world.entities.filter(e=>!world.characters.some(c=>c.entities.includes(e.id)))){
+  assert.ok(originalEntityLabel(entity.id,'zh'),entity.id+' zh')
+  assert.ok(originalEntityLabel(entity.id,'en'),entity.id+' en')
+ }
+ assert.equal(originalEntityLabel('unreleased-device','zh'),undefined)
+})
+for(const locale of ['zh','en'] as const)test(`object names do not reveal unavailable objects or prescribe the first route in ${locale}`,async()=>{
+ const r=runtime(),h=r.initial(locale,randomUUID())
+ const before=originalGameEntities(h)
+ assert.ok(!before.some(e=>e.id==='departure-control'))
+ const result=await r.prepare(h,{action_id:randomUUID(),expected_version:0,sceneId:h.sceneId,position:{x:110,y:185},target:'starter',type:'action',action:'repair-starter'},()=>true)
+ const after=originalGameEntities(result.head),route=after.find(e=>e.id==='departure-control')!
+ assert.equal(route.label,locale==='zh'?'道岔控制台':'Route controls')
+ assert.equal(route.actions.length,3)
+ assert.ok(!after.some(e=>e.id==='starter'))
+ assert.deepEqual(after.filter(e=>e.person).map(e=>e.person!.id),['ada-mechanic'])
 })
