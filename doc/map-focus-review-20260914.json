@@ -112,5 +112,39 @@
       "finding": "No deadlock: route actions reside in Mako panel. Arrival prose/objective incorrectly treated return as first visit.",
       "followupFix": "949339a, not yet deployed; 32 tests passed"
     }
+  },
+  "mountainPassWalkthrough": {
+    "environment": "same frozen 378b765 production frontend and Worker, localhost synthetic journey",
+    "start": {
+      "fuel": 53,
+      "condition": 81,
+      "morale": 57
+    },
+    "actions": [
+      "pass-inspect",
+      "pass-player-watch",
+      "pass-mako-duty",
+      "pass-air-brake",
+      "pass-debrief",
+      "pass-depart"
+    ],
+    "observed": {
+      "lookoutRequiredBeforeMakoDuty": true,
+      "makoPresentOnMapAndActionPanel": true,
+      "airBrakeFuelDelta": -4,
+      "airBrakeConditionDelta": -2,
+      "spareHoseAbsentInInventoryAfterUse": true,
+      "debriefMoraleDelta": 2,
+      "departureFuelDelta": -6,
+      "heroVisibleAfterTownTransition": true
+    },
+    "end": {
+      "scene": "sleeping-town",
+      "fuel": 43,
+      "condition": 79,
+      "morale": 59
+    },
+    "evidence": "_qa/map-focus-20260914/platform-layout-town-after-pass-390.png",
+    "remaining": "town and finale; native old fault state still awaits reload"
   }
 }
