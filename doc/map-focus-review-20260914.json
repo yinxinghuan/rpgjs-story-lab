@@ -182,5 +182,49 @@
     "log": "/private/tmp/rpg-yard-return-build.log",
     "liveReleaseUnchanged": "378b765",
     "notDeployed": true
+  },
+  "bridgeAndFinaleWalkthrough": {
+    "environment": "same frozen 378b765 production frontend and Worker; localhost synthetic journey, not native AlterU or real iPhone",
+    "actions": [
+      "bridge-inspect",
+      "bridge-kit-survey",
+      "bridge-arrange",
+      "bridge-rail-crossing",
+      "junction final choice: 公开行车簿",
+      "展开结局"
+    ],
+    "bridgeKitConsumed": true,
+    "crossing": {
+      "fuelBefore": 31,
+      "fuelAfter": 25,
+      "conditionBefore": 79,
+      "conditionAfter": 75,
+      "morale": 75,
+      "scene": "dawn-junction",
+      "heroVisible": true
+    },
+    "ending": {
+      "title": "公开行车簿",
+      "companions": [
+        "阿达",
+        "玛柯"
+      ],
+      "retainsActualStationConsequences": true,
+      "costsVisible": true
+    },
+    "recovery": {
+      "reopenedOriginalOriginAfterTemporaryTabClosed": true,
+      "pendingFinalChoiceRecoveredBeforeCompletion": true,
+      "reloadAfterCompletionRestoresSameEnding": true,
+      "closeEndingReturnsToMap": true,
+      "statsAfterReload": {
+        "fuel": 25,
+        "condition": 75,
+        "morale": 75
+      },
+      "heroVisibleAfterReload": true
+    },
+    "evidence": "_qa/map-focus-20260914/platform-layout-public-log-ending-reload.png",
+    "remaining": "native AlterU latest-release reload and verification; new yard-return guidance release; broader media and platform identity gaps remain"
   }
 }
