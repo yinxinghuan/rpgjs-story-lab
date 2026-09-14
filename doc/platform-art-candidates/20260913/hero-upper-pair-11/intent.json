@@ -1,16 +1,17 @@
 {
   "scope": "One proposed platform edit; upper-body counter-swing pair for existing hero leg-layer trial",
-  "status": "awaiting-new-explicit-authorization",
+  "status": "generated-and-reviewed-rejected",
   "newGenerationLimit": 1,
-  "submitted": false,
+  "submitted": true,
   "productionReplacement": false,
   "preserveSources": true,
-  "approvalReview": "Rejected as an additional generation beyond previous bounded edit; no request sent.",
+  "approvalReview": "Previous rejection resolved by explicit user authorization for this one additional generation.",
   "acceptance": [
     "Same left-hip satchel in both frames",
     "Opposite arm counter-swing visibly distinguishable",
     "Matching head and hip registration and reference camera",
     "No legs/shadow/checkerboard",
     "Actual renderer and four-direction family still required before admission"
-  ]
+  ],
+  "authorization": "2026-09-14 user: 游戏页打开了,允许追加一次人物上身摆臂素材生成"
 }

@@ -39,7 +39,7 @@
     {
       "requirement": "Authenticated AlterU full original-game playthrough and re-entry",
       "state": "route-and-reentry-verified-with-known-display-defects",
-      "currentBlocker": "Latest map-focus correction and yard-return guidance are on main e02438b. Original native graystone fault-state reload remains pending; local full quarry route/reload passed but does not close native stability gap."
+      "currentBlocker": "2026-09-14 reopened original graystone fault journey through native Play; same77/87/58 restored, yard-meet and short cards passed, combined screenshot shows hero/Ada without old blank offset. Later movement/transitions remain to verify; no login/open-page blocker now."
     },
     {
       "requirement": "Small-screen 320x568 calibrated visual verification",
@@ -49,7 +49,7 @@
     {
       "requirement": "Platform character production with consistent four-direction gait",
       "state": "back-layer-map-trial-verified-full-family-unverified",
-      "latest": "Shared-pixel neutral and opposite contact poses observed in actual renderer. Fixed upper body remains stiff. Proposed upper-body pair 11 is authored but NOT submitted; automatic approval rejected new generation as exceeding the prior one-edit scope. Awaiting explicit reply, not retrying."
+      "latest": "Candidate11 generated once with explicit authorization on 2026-09-14; full-body output, crossed straps and smooth material violate locked reference. Rejected, original preserved. Platform four-direction family remains unverified."
     },
     {
       "requirement": "Trusted platform identity and account recovery",
@@ -124,8 +124,8 @@
   "nativeEndingEvidence": "alteru-original-playthrough-20260912.json#nativeBridgeAndEnding20260913",
   "contextLossRecovery": "context-loss-recovery-review-20260913.json",
   "pendingExternalActions": {
-    "nativePlaytest": "Current native game window is closed. Open button is unsupported by automation; new concrete request to reopen AlterU/game page is pending. Existing site authorization persists.",
-    "newUpperBodyPair": "Reply to the pending request for one additional platform edit; no request sent and no generation currently running.",
+    "nativePlaytest": "User reopened page; Play, same save restore, movement and yard-meet passed. Combined native AX/screenshot confirms visible hero/Ada and no old blank offset. Continue current journey; no user reopen request pending.",
+    "newUpperBodyPair": "2026-09-14 explicit authorization received; exactly one platform edit completed. Candidate11 rejected on identity/material/upper-body contract, not admitted; no further request authorized by this one-generation permission.",
     "identity": "Trusted platform identity adapter contract still absent; current anonymous capability saves preserved."
   },
   "lastUpdated": "2026-09-14",
@@ -135,5 +135,35 @@
     "result": "AXError.notImplemented; screenshot unchanged",
     "request": "User asked to manually open AlterU and the existing game page; do not create or clear journey",
     "authenticatedGameStateRead": false
+  },
+  "nativeReentryAfterUserOpen20260914": {
+    "environment": "Telegram AlterU native Mini App",
+    "entry": "Existing CARRIAGE 07 Play button",
+    "restoredScene": "graystone-yard",
+    "restoredStats": {
+      "fuel": 77,
+      "condition": 87,
+      "morale": 58
+    },
+    "actions": [
+      "Nearby",
+      "walk to yard introduction",
+      "yard-meet",
+      "three short dialogue pages",
+      "continue exploring"
+    ],
+    "introducedCharacter": "玛柯",
+    "newActionsVisible": [
+      "使用总调度钥匙",
+      "与阿达修泵换取燃料（车况−6）"
+    ],
+    "saveStatusVisible": true,
+    "onlineActionToggle": "off",
+    "visualAcceptance": "current yard frame verified; ongoing movement/transitions still required",
+    "visualLimitation": "Separate native screenshots initially showed stale profile content; combined AX/screenshot later returned current game. No visual result inferred from stale frames.",
+    "newJourneyCreated": false,
+    "visualEvidence": "_qa/native-reentry-20260914/platform-layout-yard-after-introduction.png",
+    "heroAndAdaVisible": true,
+    "rightEdgeBlankOffsetAbsent": true
   }
 }

@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-14",
+  "requestId": "cbf90ccf-6bab-4661-b19d-97e87379a6a7",
+  "generationCount": 1,
+  "originalPreserved": true,
+  "admission": "rejected",
+  "inspection": "Viewed original 640x384 PNG",
+  "observations": [
+    "Generated full-body legs and boots despite upper-body-only contract",
+    "Both legs repeat the same contact pose; these generated legs are not admitted",
+    "Reference diagonal strap redesigned as crossed double straps",
+    "Material changed from established pixel sprite to smooth outlined cartoon",
+    "Hands differ between cells, but registration and identity contract are not sufficient for integration"
+  ],
+  "productionReplacement": false,
+  "postprocessingPerformed": false,
+  "reasonNotToPostprocess": "Removing white background or cropping legs cannot restore the reference strap design and pixel-art identity",
+  "next": "Preserve current admitted hero; no additional generation under this one-request authorization"
+}
