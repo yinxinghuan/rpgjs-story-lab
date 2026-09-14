@@ -1,7 +1,7 @@
 import {OldStreetPhotoView} from './old-street-photo-view'
 import {oldStreetActionNames as actionNames} from './old-street-action-input'
 import {oldStreetPerson} from './old-street-characters'
-import {oldStreetSession} from './old-street-session'
+import {oldStreetSession,oldStreetSessionHttp} from './old-street-session'
 import type {OldStreetHead} from './old-street-head'
 import {Assets} from 'pixi.js'
 import React, {useEffect, useRef, useState} from 'react'
@@ -28,7 +28,8 @@ export default function OldStreetDev() {
   const text = (pair: readonly [string, string]) => pair[locale === 'zh' ? 0 : 1]
   const [cartridge] = useState(() => oldStreetCartridge(locale))
   const [head, setHead] = useState(() => ({save: createInitialSave(cartridge), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}))
-  const [connection] = useState(() => oldStreetSession(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
+  const workerPreview = new URLSearchParams(location.search).get('session') === 'worker'
+  const [connection] = useState(() => (workerPreview?oldStreetSessionHttp:oldStreetSession)(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
   const serverHead = useRef<OldStreetHead>()
   const current = useRef(head); current.current = head
   const position = useRef(head.position)
@@ -149,7 +150,7 @@ export default function OldStreetDev() {
   }
   const outcome = oldStreetOutcome(head.save)
   return <main className="os-dev">
-    <header><small>{text(['开发白盒 · 本机服务存档', 'Development blockout · Local server save'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1></header>
+    <header><small>{text(workerPreview?['开发白盒 · Worker 本机预检','Development blockout · Local Worker preflight']:['开发白盒 · 本机服务存档', 'Development blockout · Local server save'])}</small><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}</h1></header>
     <div className="os-stage" ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving) return
       const r = e.currentTarget.getBoundingClientRect()

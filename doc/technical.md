@@ -1546,3 +1546,7 @@ CUA 5453：从结局点击重新探索，走完整清障取照片路线到照相
 ### 旧街正式服务合同接入（2026-09-15）
 
 新增 `/api/oldstreet` Worker 路由、`old-street-http.ts` 与 `old-street-runtime-contract.ts`。前端 `oldStreetSessionHttp` 复用 cloudTransport 的私有凭证、健康握手与 RecoverableSessionClient；默认 API 来自 getGameApiBase，存储使用调用方提供的 UUID scope，内部 key 为 oldstreet-story-1:。Worker 只从 Bearer 凭证散列得到 owner，转发时覆盖客户端身份头；新故事路由到现有 Durable Object namespace 的 oldstreet-v1:<owner>，旧 original-v8 对象保持不变。目录、读档、行动、位置检查点与事件均经同一个 SessionAuthority。OLD_STREET_RELEASED=false，且默认 OldStreetGate 仍拒绝未准入画面；测试注入 gate 不能作为发布依据。本机 cookie 开发连接保留，未静默迁移它的存档到云端。账号绑定及清除浏览器身份后的恢复不是这套私有凭证合同自动提供的功能。
+
+### 浏览器装配 Worker 通信（2026-09-15）
+
+在同一个 oldstreet-dev 页面使用 `?debug=1&session=worker` 选择 oldStreetSessionHttp；无该参数仍恢复原本 cookie 开发旅程，不迁移或清除旧档。`old-street-worker-preview.ts` 仅在 oldstreet-dev 的 Vite 开发/预览服务器安装，将带游戏 UUID 前缀的 HTTP 请求按正式宿主合同剥去前缀，然后交给实际 createHandler/CarriageJourneyAuthority；底层使用 .data/oldstreet-worker-preview 的本地 SQLite。接口仅允许回环 host、同源请求、JSON 与有界 body，凭证及运行版本检查由正式 Worker 执行。测试用美术 gate 只在此本机适配器注入；正式 OLD_STREET_RELEASED 仍关闭。
