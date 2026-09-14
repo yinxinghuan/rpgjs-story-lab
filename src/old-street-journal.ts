@@ -10,6 +10,17 @@ export function oldStreetJournal(save:StorySave){
   photos:t('照片夹上印着照相馆的标记。','The folder bears the photo studio’s stamp.'),
  }
  const notes:Array<{id:string;title:string;text:string}>=[]
+ const encounters:Record<string,{character:string;text:string}>={
+  'kept-promise':{character:'zhou-watchmaker',text:t('你已把借来的钥匙交还给他。','You returned the key he lent you.')},
+  'returned-family-clock':{character:'lan-laundry',text:t('你帮她送回了母亲留下的旧钟。','You brought back the clock that belonged to her mother.')},
+  'returned-photographs':{character:'xu-photographer',text:t('你帮她找回并交还了旧照片。','You found and returned her old photographs.')},
+ }
+ // Only the persisted introduced roster is visible; future cast definitions
+ // and global facts alone cannot make a person appear here.
+ const people=save.characters.filter(c=>['known','companion','departed'].includes(c.status)).map(c=>{
+  const events=[...new Set(save.relationships.filter(r=>r.characterId===c.id&&r.delta>0&&encounters[r.axis]?.character===c.id).map(r=>encounters[r.axis].text))]
+  return {id:c.id,title:c.name,text:[c.role,...events].filter(Boolean).join(' · ')}
+ })
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
  note('clock-mark-known',['钟底的刻记','Mark beneath the clock'],['放大镜下能看见一对燕子。','Two swallows are engraved beneath the clock.'])
  note('clock-returned',['旧钟的来历','The clock’s history'],['洗衣店主说，这是母亲留下的钟。','The laundry owner said the clock belonged to her mother.'])
@@ -20,5 +31,5 @@ export function oldStreetJournal(save:StorySave){
  for(const subject of ['clock','photo'])if(f[`${subject}-consent`]===true){
   notes.push({id:`${subject}-record`,title:subject==='clock'?t('旧钟记录','Clock record'):t('旧照记录','Photograph record'),text:f[`${subject}-recorded`]===true?t('获准留下的这一条已放进修表铺记录册。','The approved entry is in the watch shop’s record book.'):t('主人已同意留下这一条，目前未放在记录册中。','The owner approved this entry; it is not currently in the record book.')})
  }
- return {purpose:f.departed===true?t('信已经交给家人。','The letter has been delivered.'):f['letter-taken']===true?t('信已收好，可以从街口回家；也可以继续逛逛。','You have the letter. Go home from the street, or keep exploring.'):t('到修表铺取家人寄存的信。','Collect your family’s letter from the watch shop.'),items:save.inventory.filter(i=>i.count>0).map(i=>({id:i.id,title:i.label,count:i.count,text:details[i.id]??i.detail??''})),notes}
+ return {purpose:f.departed===true?t('信已经交给家人。','The letter has been delivered.'):f['letter-taken']===true?t('信已收好，可以从街口回家；也可以继续逛逛。','You have the letter. Go home from the street, or keep exploring.'):t('到修表铺取家人寄存的信。','Collect your family’s letter from the watch shop.'),items:save.inventory.filter(i=>i.count>0).map(i=>({id:i.id,title:i.label,count:i.count,text:details[i.id]??i.detail??''})),notes,people}
 }

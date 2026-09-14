@@ -26,3 +26,23 @@ for(const locale of ['zh','en'] as const)test(`discoveries survive returning ite
  assert.equal(journal.notes.some(n=>n.id==='photos-matched'),false)
  assert.equal(JSON.stringify(s),before)
 })
+
+for(const locale of ['zh','en'] as const)test(`people show only introduced identities and their own persisted encounters (${locale})`,async()=>{
+ const {recordOldStreetInteraction}=await import('../src/old-street-characters')
+ const c=oldStreetCartridge(locale),s=createInitialSave(c)
+ s.facts['photos-returned']=true
+ assert.deepEqual(oldStreetJournal(s).people,[])
+ recordOldStreetInteraction(s,'photographer','oldstreet:greet-photographer','hello','intro')
+ let people=oldStreetJournal(s).people
+ assert.equal(people.length,1);assert.equal(people[0].id,'xu-photographer')
+ assert.equal(people[0].text.includes(locale==='zh'?'交还':'returned'),false)
+ recordOldStreetInteraction(s,'photographer','oldstreet:return-photos','thank you','return')
+ const before=JSON.stringify(s)
+ people=oldStreetJournal(JSON.parse(before)).people
+ assert.equal(people.length,1)
+ assert.match(people[0].text,locale==='zh'?/找回并交还/:/found and returned/)
+ assert.equal(JSON.stringify(s),before)
+ s.relationships.push({id:'wrong-owner',characterId:'xu-photographer',actor:'Xu',axis:'kept-promise',delta:1,source:'test'})
+ assert.equal(oldStreetJournal(s).people[0].text.includes(locale==='zh'?'钥匙':'key'),false)
+ assert.equal(oldStreetJournal(s).people.some(p=>p.id==='lan-laundry'),false)
+})

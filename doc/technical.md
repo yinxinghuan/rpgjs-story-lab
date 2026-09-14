@@ -1616,3 +1616,9 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 ### 摄影师实体候选（2026-09-15）
 
 old-street-dev 加载 xu standing 图集并创建摄影师 RPG event，共享 NPC 靠近转向、深度排序和销毁资源流程；old-street-space 将其接近点统一到+44。prepare-oldstreet-xu.mjs 输出来源锁定的去底、分帧及镜像记录。叙事介绍仍由原有 Session 提交，修改介绍只影响未来首次登场。
+
+### 人物交往投射（2026-09-15）
+
+oldStreetJournal 新增 people，读取 save.characters 已介绍状态和 save.relationships。当前三条 authored encounter 文案同时校验 characterId 与 axis，防止跨人物误归因；不从全局 fact 推断人物已见，不修改存档。OldStreetJournalView 增加人物页，旧数据结构和原作保持兼容。中英回归覆盖未登场、首次介绍、关系事件、JSON回读和跨人物错误事件。
+
+实际 Worker 测试旅程刷新后，人物页显示老周（修表师）、许青（摄影师，已找回并交还旧照片），未认识的阿岚不出现。约365px external-guest 截图三个页签、姓名和短句无溢出；不代替精确320/390或平台内验收。4项 journal 中英测试、类型与开发构建通过。
