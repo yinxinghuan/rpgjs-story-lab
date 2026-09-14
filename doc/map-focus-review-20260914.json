@@ -226,5 +226,27 @@
     },
     "evidence": "_qa/map-focus-20260914/platform-layout-public-log-ending-reload.png",
     "remaining": "native AlterU latest-release reload and verification; new yard-return guidance release; broader media and platform identity gaps remain"
+  },
+  "yardReturnRelease": {
+    "commit": "e02438b77b9543d5d8da5123517d925cd97bcaa3",
+    "tests": {
+      "pass": 723,
+      "fail": 0,
+      "log": "/private/tmp/rpg-yard-return-full-tests-unrestricted.log",
+      "sandboxInitialFailure": "35 local HTTP tests could not listen on 127.0.0.1; identical suite passed with authorization outside sandbox"
+    },
+    "secretAudit": "pass",
+    "apiBaseAudit": "pass",
+    "storageAudit": {
+      "games": 145,
+      "problems": 0
+    },
+    "buildSource": "fdbb875; only verification JSON changed through e02438b",
+    "mainDeployCommand": "completed; downloaded hash verification pending",
+    "pages": {
+      "run": 34803181418,
+      "status": "in_progress"
+    },
+    "dualDeploymentComplete": false
   }
 }
