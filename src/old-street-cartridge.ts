@@ -43,7 +43,8 @@ export function oldStreetRules(locale: Locale): DomainActionRule[] {
   const t = (zh: string, en: string) => locale === 'zh' ? zh : en
   const flag = (id: string, value: boolean): DomainEffect => ({type: 'fact', id, value})
   const need = (id: string, equals: boolean, zh: string, en: string): DomainRequirement => ({type: 'fact', id, equals, reason: t(zh, en)})
-  const has = (id: string): DomainRequirement => ({type: 'item', id, minCount: 1, reason: t('先拿到对应物品。', 'You need the matching item.')})
+  const requiredItems:Record<string,readonly [string,string]>={lens:['放大镜','the magnifying glass'],trolley:['推车','the trolley'],'letter-key':['小格钥匙','the compartment key'],letter:['密封信','the sealed letter'],clock:['旧钟','the old clock'],photos:['照片夹','the photo folder']}
+  const has = (id: string): DomainRequirement => ({type: 'item', id, minCount: 1, reason: t(`需要随身带着${requiredItems[id]?.[0]??'对应物品'}。`, `You need to be carrying ${requiredItems[id]?.[1]??'the matching item'}.`)})
   const item = (id: string, zh: string, en: string): DomainEffect => ({type: 'inventory', action: 'add', itemId: id, count: 1, item: {id, label: t(zh, en), count: 1, rarity: 'common'}})
   const remove = (id: string): DomainEffect => ({type: 'inventory', action: 'remove', itemId: id, count: 1})
   const once = (id: string) => need(id, false, '这里已经处理过了。', 'This has already been handled.')

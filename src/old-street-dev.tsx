@@ -137,7 +137,16 @@ export default function OldStreetDev() {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
-      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
+      const arrivedPosition={...position.current}
+      // Flush arrival after any older periodic checkpoint. A refused action
+      // restores this location without committing a story turn.
+      await navigator.locks.request('oldstreet-checkpoint',async()=>{
+        try{await connection.api('/sessions/'+h.id+'/position',{sceneId:h.sceneId,expected_version:h.version,position:arrivedPosition})}
+        catch(e){if(!(e instanceof Error)||e.message!=='STALE_POSITION')throw e}
+      })
+      // A stale checkpoint falls through to the session conflict/recovery path;
+      // never overwrite a newer scene with this tab's arrival position.
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:arrivedPosition,...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
@@ -145,7 +154,7 @@ export default function OldStreetDev() {
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
-      const blockedReason=attemptedAction?resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons.join(' '):undefined
+      const blockedReason=attemptedAction?[...new Set(resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons??[])].join(' '):undefined
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
       const requiredInspection=oldStreetRequiredInspection(next.save,next.scene,target,result.rejectionCode)
       if(requiredInspection==='clock'){setClockOpen(true);setClockMessage('');if(input!==undefined)setNotice(text(['拿近看看钟底。','Bring the clock closer to inspect its underside.']))}

@@ -275,3 +275,24 @@ test('clock clue requires observed region and identification, including free inp
   assert.equal(reopened.get('owner',h.id).save.facts['clock-mark-known'],true)
  }finally{raw.close()}
 })
+
+test('arrival checkpoint survives refused inspection without a story turn and cannot overwrite a newer scene',async()=>{
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('arrival-owner',randomUUID(),'zh')
+  const enter=oldStreetDoors().find(d=>d.room==='street'&&d.destination.room==='shop')!
+  h=(await s.action('arrival-owner',h.id,request(h,enter.actionId))).head
+  const body=request(h,'oldstreet:inspect-clock'),before=structuredClone(h.save)
+  assert.notDeepEqual(body.position,h.position)
+  s.checkpoint('arrival-owner',h.id,{sceneId:h.sceneId,expected_version:h.version,position:body.position})
+  await assert.rejects(s.action('arrival-owner',h.id,body),/OLD_STREET_ACTION_UNAVAILABLE/)
+  const restored=s.get('arrival-owner',h.id)
+  assert.deepEqual(restored.position,body.position)
+  assert.equal(restored.version,h.version)
+  assert.deepEqual(restored.save,before)
+  const leave=oldStreetDoors().find(d=>d.room==='shop'&&d.destination.room==='street')!
+  const newer=(await s.action('arrival-owner',h.id,request(restored,leave.actionId))).head
+  assert.throws(()=>s.checkpoint('arrival-owner',h.id,{sceneId:h.sceneId,expected_version:h.version,position:body.position}),/STALE_POSITION/)
+  assert.deepEqual(s.get('arrival-owner',h.id),newer)
+ }finally{raw.close()}
+})
