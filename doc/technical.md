@@ -1333,3 +1333,7 @@ newActorFrameSource把原图集与单帧组成新的source草稿，记录parentI
 
 ### 2026-09-15：环境乘客
 `src/original-passengers.ts` 提供小城安全检查后的确定性站位、资源校验信息、碰撞脚点和本地短话题。`original-game.tsx` 将真实 NPC 图集注册到 RPG-JS，接入走近、面对、附近列表、E 快捷键与上下文按钮；`original-world-space.ts` 将乘客纳入服务端/客户端同源碰撞。运行合同提升为 original-session-19，防止旧客户端在新增乘客的脚点内行走却收到服务端拒绝。此对白不调用模型，不写叙事回合，不修改队伍或资源；不宣称拥有对话记忆。素材首载增加约 1.4 MB，目前与角色资源一起预加载。
+
+
+### 2026-09-15：同行位置权威接入
+OriginalHead 新增可选 companionPositions（角色 id → 碰撞左上角）。位置 checkpoint 的可选 spatialContext 钩子在同一事务中验证并保存主角和同行位置；其他游戏 runtime 不使用该钩子，行为不变。行动/对白也验证同一快照，动态 spatial binding 与 UI 投影读取它。仅已登场且当前在队的实体允许移动；场景切换清空队形，离队移除对应位置。旧存档没有该字段时保持原站位。已验证 SQLite 恢复、账号隔离、过期请求拒绝、移动后对白、幂等重放、真实发布准入检查及原路线/HTTP 恢复回归。此轮仍未接 renderer 的逐帧跟随，也未上线。下一步需要把运动快照接到位置 checkpoint 与行动 body，处理设备工作驻留、队形与碰撞一致性，并补齐正式角色走动帧。

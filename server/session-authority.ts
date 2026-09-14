@@ -16,6 +16,7 @@ export interface SessionRuntime<H extends SessionHead>{
  assertReadable(value:unknown):void
  scene(head:H):string
  position(head:H,value:unknown):H['position']
+ spatialContext?(head:H,body:any):H
  validateAction(body:unknown):void
  prepare(head:H,body:any,reserveNarration:()=>boolean):Promise<SessionResult<H>>
  preserveConcurrent(candidate:H,current:H):void
@@ -60,8 +61,9 @@ export class SessionAuthority<H extends SessionHead>{
  checkpoint(owner:string,id:string,body:any){return this.db.transaction(()=>{
   const row=this.row(owner,id),head=this.runtime.upgrade(JSON.parse(row.data))
   if(body?.sceneId!==this.runtime.scene(head)||body.expected_version!==head.version)throw new LabError('STALE_POSITION',409)
-  const position=this.runtime.position(head,body.position)
-  head.position=position;this.write(owner,head,row.cursor);return {position}
+  const context=this.runtime.spatialContext?.(head,body)??head
+  const position=this.runtime.position(context,body.position)
+  context.position=position;this.write(owner,context,row.cursor);return {position}
  })}
  private replay(owner:string,action:string,hash:string){const r=this.db.all<{digest:string;response:string}>('SELECT digest,response FROM receipts WHERE owner=? AND action=?',owner,action)[0];if(!r)return null;if(r.digest!==hash)throw new LabError('ACTION_ID_CONFLICT',409);return JSON.parse(r.response)}
  async action(owner:string,id:string,body:any){return this.dispatch(owner,id,body,'action')}

@@ -1,3 +1,4 @@
+import {originalCompanionContext,retainOriginalCompanions,type CompanionPositions} from '../src/original-companion-context'
 import {exportOriginalJourney} from './original-backup'
 import {assertOriginalEquipmentAction} from '../src/original-equipment-state'
 import {originalBoundWorldPlan} from '../src/original-world-plan'
@@ -26,11 +27,11 @@ import {originalGameEntities,originalGameObjective} from '../src/original-game-p
 import type {OriginalActionInterpreter} from './original-action-interpreter'
 import {originalDialogueContext,originalLocalDialogue,originalRecollectionReply,originalVisualUncertaintyReply,type OriginalDialogueGenerator} from './original-dialogue'
 import {originalConversationBlocks} from '../src/original-conversation'
-export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings}
+export type OriginalHead={id:string;version:number;save:StorySave;sceneId:string;position:{x:number;y:number};mapVersion:string;assets?:OriginalAssetBindings;companionPositions?:CompanionPositions}
 export const originalCartridge=(locale:Locale)=>locale==='en'?lastTrainToDawnEn:lastTrainToDawn
 const world=originalTrainChapterSpatialPlan()
-export const compileOriginalSpatialBinding=(c:ReturnType<typeof originalCartridge>,assets?:OriginalAssetBindings)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},originalBoundWorldPlan(assets),(scene,p)=>originalEnvironmentWalkable(originalSceneBackgroundVersion(assets,scene),scene,p))
-const bindingForHead=(h:OriginalHead)=>compileOriginalSpatialBinding(originalCartridge(h.save.locale),h.assets)
+export const compileOriginalSpatialBinding=(c:ReturnType<typeof originalCartridge>,assets?:OriginalAssetBindings,poses?:CompanionPositions,sceneId?:string)=>compileSpatialBinding({...c,domainRules:{...c.domainRules,rules:[...c.domainRules!.rules,...originalChapterBindingRules]}},originalBoundWorldPlan(assets,poses,sceneId),(scene,p)=>originalEnvironmentWalkable(originalSceneBackgroundVersion(assets,scene),scene,p))
+const bindingForHead=(h:OriginalHead)=>compileOriginalSpatialBinding(originalCartridge(h.save.locale),h.assets,h.companionPositions,h.sceneId)
 /** Mandatory content admission. Callers must validate assets and story projection
  * before enabling a playable session; source-rule QA uses an explicit test gate. */
 export type OriginalPresentationGate=(head:OriginalHead,previous?:OriginalHead,actionId?:string|null)=>true
@@ -40,6 +41,7 @@ export function assertOriginalHead(value:unknown):asserts value is OriginalHead{
  const h=value as OriginalHead,s=h?.save
  if(!h||!s||s.version!==8||s.cartridgeId!=='last-train-to-dawn'||!['zh','en'].includes(s.locale)||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!Number.isSafeInteger(h.version)||h.version<0||typeof h.id!=='string'||!/^[a-zA-Z0-9-]{16,80}$/.test(h.id)||!h.position||!s.finale||!['idle','ready','generating','complete','failed'].includes(s.finale.status)||!Array.isArray(s.blocks)||!Array.isArray(s.inventory)||!Array.isArray(s.characters)||!Array.isArray(s.relationships)||!Array.isArray(s.partyMemberIds)||!s.facts||!s.danger)throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
  try{assertOriginalAssetBindings(h.assets)}catch{throw new LabError('ORIGINAL_ASSET_VERSION_UNSUPPORTED',409)}
+ originalCompanionContext(h,h.companionPositions)
  const binding=bindingForHead(h)
  try{binding.locate(s,h.sceneId)}catch{throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)}
  if((!binding.validPosition(h.sceneId,h.position)&&!originalTrainPlanWalkable(h.sceneId,h.position))||originalCartridge(s.locale).statDefinitions.some(d=>!Number.isFinite(s.stats?.[d.id])||s.stats[d.id]<d.min||s.stats[d.id]>d.max))throw new LabError('ORIGINAL_SAVE_UNSUPPORTED',409)
@@ -50,7 +52,7 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
  const position=(h:OriginalHead,value:unknown)=>{const p=value as OriginalHead['position'];if(!p||!bindingForHead(h).validPosition(h.sceneId,p)||!originalWorldWalkable(h,p))throw new LabError('INVALID_POSITION');return {x:p.x,y:p.y}}
  return {
   initial:(locale,id,options)=>{const h:OriginalHead={id,version:0,save:clone(createInitialSave(originalCartridge(locale))),sceneId:originalTrainRoom('dead-station'),position:{x:192,y:430},mapVersion:world.mapVersion,assets:originalEnrollmentAssets(options)};assertOriginalHead(h);check(h);return h},
-  upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion,position:originalWorldSafePosition(value,value.position)}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,validateAction,
+  upgrade:value=>{assertOriginalHead(value);return {...clone(value),mapVersion:world.mapVersion,position:originalWorldSafePosition(value,value.position)}},assertReadable:assertOriginalHead,scene:h=>h.sceneId,position,spatialContext:(h,body)=>originalCompanionContext(h,body.companionPositions),validateAction,
   preserveConcurrent:()=>{},assertPrepared:(candidate,current,actionId)=>check(candidate,current,actionId),ending:originalEndingPolicy(originalCartridge,admit,endingGenerator),
   prepare:async(h,body,reserveNarration)=>{
    assertOriginalHead(h);validateAction(body)
@@ -61,8 +63,9 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
    if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
    if(body.mode==='live'&&!(body.type==='dialogue'?dialogue:interpreter))throw new LabError('ORIGINAL_NARRATION_NOT_READY',409)
+   h=originalCompanionContext(h,body.companionPositions)
    const c=originalCartridge(h.save.locale),binding=bindingForHead(h),pos=position(h,body.position)
-   const entity=originalBoundWorldPlan(h.assets).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
+   const entity=originalBoundWorldPlan(h.assets,h.companionPositions,h.sceneId).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
    if(!entity)throw new LabError('UNKNOWN_ENTITY')
    if(!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('TOO_FAR')
    const person=world.characters.find(p=>p.entities.includes(entity.id))
@@ -111,9 +114,9 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
     check({...h,position:pos})
     const bound=await executeBoundStoryTurn({save:h.save,binding,sceneId:h.sceneId,target:entity.id,position:pos,
      execute:async(save,admitAction)=>{admitAction(chapter);return executeOriginalChapter(save,c,chapter)},
-     assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const next:OriginalHead={...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos};assertOriginalHead(next);check(next,h,id)},
+     assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const next=retainOriginalCompanions({...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos},h);assertOriginalHead(next);check(next,h,id)},
     })
-    return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:true,actionId:chapter,source:'author',...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}
+    return {head:retainOriginalCompanions({...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},h),kind:'action',accepted:true,actionId:chapter,source:'author',...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}
    }
    const resolution=resolveDomainAction(h.save,c,input)
    // Only existing author actions are currently connected. No invented command
@@ -125,9 +128,9 @@ export function originalTrainRuntime(admit:OriginalPresentationGate=originalPres
    check({...h,position:pos})
    const bound=await executeBoundStoryTurn({save:h.save,binding,sceneId:h.sceneId,target:entity.id,position:pos,
     execute:async(save,admitAction)=>{admitAction(resolution.ruleId);const result=await executeOriginalSpatialTurn({save,cartridge:c,action:input,generator});return {...result,save:projectOriginalChapterChoices(result.save),acceptedActionId:resolution.status==='accepted'?resolution.ruleId:null}},
-    assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const candidate:OriginalHead={...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos};assertOriginalHead(candidate);check(candidate,h,id)},
+    assertPresentation:(before,after,id)=>{const transition=binding.assertTransition(before,after,id,h.sceneId);const candidate=retainOriginalCompanions({...h,save:after,version:h.version+1,sceneId:transition?.scene??h.sceneId,position:transition?.position??pos},h);assertOriginalHead(candidate);check(candidate,h,id)},
    })
-   return {head:{...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},kind:'action',accepted:resolution.status==='accepted',actionId:resolution.ruleId,source:bound.result.source,...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}
+   return {head:retainOriginalCompanions({...h,save:bound.result.save,sceneId:bound.sceneId,position:bound.position,version:h.version+1},h),kind:'action',accepted:resolution.status==='accepted',actionId:resolution.ruleId,source:bound.result.source,...(interpretedAction?{interpretation:{input:body.text.trim(),actionId:interpretedAction}}:{})}
   },
  }
 }

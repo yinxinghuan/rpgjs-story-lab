@@ -1,6 +1,6 @@
 import {originalTrainChapterSpatialPlan} from './original-train-spatial-plan'
 import {originalSceneBackgroundVersion,type OriginalAssetBindings} from './original-asset-releases'
-import {originalEnvironmentLayouts} from './original-environment-layouts'
+import {originalEnvironmentWalkable,originalEnvironmentLayouts} from './original-environment-layouts'
 import type {SpatialBindingDefinition} from './spatial-binding'
 type Entity=SpatialBindingDefinition['entities'][number]
 /** Image-specific placement, retaining stable identity, actions and story rules. */
@@ -12,7 +12,10 @@ export function originalBoundWorldPlan(assets?:OriginalAssetBindings,companionPo
  const world=originalTrainChapterSpatialPlan()
  world.entities=world.entities.map(e=>{
   const placed=originalEntityLayout(assets,e),person=world.characters.find(c=>c.entities.includes(e.id)),p=person&&e.scene===sceneId?companionPositions?.[person.id]:undefined
-  return p?{...placed,position:{x:p.x+4.5,y:p.y+15},approach:{x:p.x,y:p.y+28}}:placed
+  if(!p)return placed
+  const background=originalSceneBackgroundVersion(assets,e.scene)
+  const approach=[{x:p.x,y:p.y+28},{x:p.x,y:p.y-16},{x:p.x+20,y:p.y},{x:p.x-16,y:p.y}].find(q=>originalEnvironmentWalkable(background,e.scene,q))
+  return {...placed,position:{x:p.x+4.5,y:p.y+15},approach:approach??{x:p.x,y:p.y+28}}
  })
  return world
 }

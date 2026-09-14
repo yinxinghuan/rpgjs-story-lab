@@ -7,7 +7,7 @@ const physicalIds=new Set(originalTrainChapterSpatialPlan().characters.filter(c=
 export type CompanionPositions=Record<string,{x:number;y:number}>
 export type OriginalCompanionHead=OriginalHead&{companionPositions?:CompanionPositions}
 /** Single-player spatial snapshot, not membership, story state or multiplayer proof.
- * Legacy requests retain fixed actor placement. Never persist this transient view. */
+ * Missing snapshots retain the current formation; legacy saves keep fixed placement. */
 export function originalCompanionContext(head:OriginalHead,value:unknown):OriginalCompanionHead{
  if(value===undefined)return head
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length>4)throw new LabError('INVALID_COMPANION_POSITIONS')
@@ -24,4 +24,12 @@ export function originalCompanionContext(head:OriginalHead,value:unknown):Origin
   if(!originalWorldWalkable(withoutSelf,p))throw new LabError('INVALID_COMPANION_POSITION')
  }
  return context
+}
+
+/** Scene changes reset the formation; departures remove only former members. */
+export function retainOriginalCompanions(next:OriginalHead,previous:OriginalHead):OriginalHead{
+ const result={...next}
+ if(next.sceneId!==previous.sceneId){delete result.companionPositions;return result}
+ if(result.companionPositions)result.companionPositions=Object.fromEntries(Object.entries(result.companionPositions).filter(([id])=>next.save.partyMemberIds.includes(id)&&originalCharacterPresent(next.save,id)))
+ return result
 }

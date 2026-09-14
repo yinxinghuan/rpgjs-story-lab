@@ -1,7 +1,7 @@
+import {originalBoundWorldPlan} from './original-world-plan'
 import {originalEntityLabel} from './original-entity-labels'
 import {originalEquipmentHasArt} from './original-equipment-art'
 import {assertOriginalEquipmentAction} from './original-equipment-state'
-import {originalEntityLayout} from './original-world-plan'
 import type {OriginalHead} from '../server/original-train-runtime'
 import {lastTrainToDawn,lastTrainToDawnEn} from './vendor/original-train/cartridges/lastTrainToDawn'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
@@ -32,7 +32,7 @@ export function originalActionDestinations(head:OriginalHead,target:string,input
 export function originalGameEntities(head:OriginalHead){
  const save=head.save,c=save.locale==='en'?lastTrainToDawnEn:lastTrainToDawn,terminal=save.finale.status!=='idle'
  const choices=head.sceneId==='train-at-dawn-junction'&&!terminal?junctionChoices(save,c):save.choices
- return world.entities.filter(e=>e.scene===head.sceneId).map(e=>originalEntityLayout(head.assets,e)).flatMap(e=>{
+ return originalBoundWorldPlan(head.assets,head.companionPositions,head.sceneId).entities.filter(e=>e.scene===head.sceneId).flatMap(e=>{
   const actor=world.characters.find(p=>p.entities.includes(e.id))
   if(actor&&!originalCharacterPresent(save,actor.id))return []
   const actions=terminal?[]:e.actions.flatMap(id=>{

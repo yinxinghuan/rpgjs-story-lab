@@ -1,3 +1,4 @@
+import {originalCompanionContext} from './original-companion-context'
 import {originalEnvironmentWalkable} from './original-environment-layouts'
 import {originalSceneBackgroundVersion} from './original-asset-releases'
 import {assertOriginalActionPlan,type OriginalActionPlan} from './original-action-plan'
@@ -15,6 +16,7 @@ export function assertOriginalClientHead(value:unknown):asserts value is Origina
  const h=value as OriginalHead,s=h?.save,room=world.scenes.find(r=>r.id===h?.sceneId)
  assertOriginalAssetBindings(h?.assets)
  if(!h||!s||s.version!==8||s.cartridgeId!==world.cartridgeId||!originalCompatibleMapVersions.some(v=>v===h.mapVersion)||!room||!h.position||!originalEnvironmentWalkable(originalSceneBackgroundVersion(h.assets,h.sceneId),h.sceneId,h.position)||!Array.isArray(s.map)||s.map.filter(n=>n.current).length!==1||s.map.find(n=>n.current)?.id!==room.storyLocationId)throw Error('ORIGINAL_SAVE_UNSUPPORTED')
+ originalCompanionContext(h,h.companionPositions)
 }
 /** Instantiate with an original-world namespace and authenticated transport.
  * HTTP transport is supplied separately; no browser reducer or local writer. */
