@@ -1578,3 +1578,9 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 ### 推车实体状态图（2026-09-15）
 
 `old-street-prop-art.ts` 从StorySave事实投射推车stand/hidden两种明确opacity状态；`old-street-dev.tsx` 在laundry安装固定事件并在每次head更新后同步，不动态删除图形节点。碰撞、接近点继续读取空间布局。执行与重开先设置新权威视图再调用renderer.restore，地图事件重建时不会读取旧借出事实。素材处理脚本及限制见 `doc/oldstreet-trolley-candidate/review.md`。尚未实现推车随行/推动动画，当前借出物件进入背包。
+
+### 已发现街区地图（2026-09-15）
+
+`old-street-map.ts` 从既有StorySave.map的visited/current筛出地点，连接复用oldStreetConnections；两端均已到访才可显示。BFS只穿越已知且gate为true的通道，读取不写存档。`old-street-map-view.tsx` 为原生modal dialog，查看地点只改变面板选择；主角暂停，关闭恢复原地操作与入口焦点。数据无需新增字段或迁移。地图是拓扑连接示意，不宣称符合实际距离或方向。
+
+两个针对性测试验证未来区域不泄露、路线不穿过未探索区域、门闩/旧箱影响路线以及JSON回读与不改存档。实际CUA已验证现有旅程不显示未到访屋顶，洗衣店到工作棚路线经院子和地下室，门闩保持关闭；关闭后仍在洗衣店，焦点回到街区按钮。类型检查与开发构建通过。约365px开发视口截图可读，320×568/390×844精确尺寸与英文长标签尚待实机复验。全仓UI扫描仍含历史构建包等既有告警；本次新地图组件未出现在报告中，不将这视为全仓UI通过。
