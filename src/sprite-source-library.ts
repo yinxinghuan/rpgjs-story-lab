@@ -5,7 +5,7 @@ export type SavedSpriteSource={key:string;draftId:string;revision:number;slot:nu
 function inputs(draft:SpriteDraft):Array<{slot:number|null;input:SpriteCompositionInput}>{
  if(draft.sourceKind!=='states')return []
  if(draft.composition){
-  if(draft.composition.version!==1||draft.deviceStateSet!=='repair'||!Array.isArray(draft.composition.inputs)||draft.composition.inputs.length!==2)return []
+  if(draft.composition.version!==1||(draft.deviceStateSet!==undefined&&draft.deviceStateSet!=='repair')||!Array.isArray(draft.composition.inputs)||draft.composition.inputs.length!==(draft.deviceStateSet==='repair'?2:3))return []
   return draft.composition.inputs.map((input,slot)=>({slot,input}))
  }
  return [{slot:null,input:{source:draft.source,sourceName:draft.sourceName,columns:draft.spec?.columns??1,column:0,...(draft.generation?{generation:draft.generation}:{})}}]

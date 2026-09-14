@@ -14,7 +14,7 @@ import {SpriteCloudArchive} from '../src/sprite-cloud'
 import {spriteManifest,assertSpriteManifest,restoreSpriteManifest,spritePartText,SPRITE_ARCHIVE_PART,spriteArchiveBodyLimit} from '../src/sprite-archive-contract'
 import {inspectSpritePng,newSpriteSource,verifySpriteComposition,type SpriteDraft,type SpritePng} from '../src/sprite-draft'
 import {prepareSpritePixels,type PixelRaster} from '../src/sprite-preparation'
-import {composeRepairFrames} from '../src/sprite-composition'
+import {composeRepairFrames,composeStateFrames} from '../src/sprite-composition'
 import {inspectDeviceMapCandidate} from '../src/device-map-candidate'
 const require=createRequire(import.meta.url),{PNG}=require(join(dirname(require.resolve('playwright-core/package.json')),'lib/utilsBundle.js'))
 const encode=async(r:PixelRaster)=>inspectSpritePng(PNG.sync.write({width:r.width,height:r.height,data:Buffer.from(r.rgba)}))
@@ -25,6 +25,23 @@ const spec={kind:'states' as const,columns:2,rows:1,cellWidth:320,cellHeight:640
 const prepared=prepareSpritePixels(raster,spec)
 const base:SpriteDraft={...newSpriteSource(await encode(raster),'两张平台原图组合','states'),deviceStateSet:'repair',composition:{version:1,inputs},spec,state:'candidate',result:{algorithm:'neutral-matte-unmix-1',png:await encode(prepared.raster),frames:prepared.frames,metrics:prepared.metrics}}
 const draft=()=>({...structuredClone(base),id:randomUUID()})
+async function cabinetDraft(){
+ const selections=[inputs[0],inputs[1],{...inputs[0],column:2}],r=composeStateFrames(await Promise.all(selections.map(async i=>({raster:await decode(i.source),columns:i.columns,column:i.column}))))
+ const s={...spec,columns:3,sourceAnchors:[...spec.sourceAnchors,{x:173,y:463}]},p=prepareSpritePixels(r,s)
+ return {...newSpriteSource(await encode(r),'three-state archive fixture','states'),composition:{version:1 as const,inputs:selections},spec:s,state:'candidate' as const,result:{algorithm:'neutral-matte-unmix-1' as const,png:await encode(p.raster),frames:p.frames,metrics:p.metrics}}
+}
+test('three-state private archive retains all three PNG inputs across restart and refuses mismatched provenance',async()=>{
+ const f=fixture();try{
+  const d=await cabinetDraft(),m=upload(f.archive,d)
+  assert.equal(m.files.length,5);await f.archive.finish('alice',d.id);f.restart()
+  const restored=await restoreSpriteManifest(m,file=>f.archive.file('alice',d.id,file.role))
+  assert.deepEqual(restored,d);await verifySpriteComposition(restored,decode)
+  await assert.rejects(f.archive.file('bob',d.id,'input-2'),/NOT_FOUND/)
+  for(const change of [(v:any)=>v.draft.deviceStateSet='repair',(v:any)=>v.draft.composition.inputs.pop(),(v:any)=>v.files.pop(),(v:any)=>v.draft.composition.inputs[2].source='input-1']){
+   const v=structuredClone(m);change(v);assert.throws(()=>assertSpriteManifest(v),/INVALID/)
+  }
+ }finally{f.close()}
+})
 test('twelve-frame actor archive fits the same bounded manifest without declaring its directions approved',async()=>{
  const source=await inspectSpritePng(new Uint8Array(readFileSync(new URL('../doc/platform-art-candidates/20260911/actor-edit-03/candidate.png',import.meta.url))))
  const spec={kind:'actor' as const,columns:3,rows:4,cellWidth:320,cellHeight:320,foot:{x:160,y:300},backgroundMode:'pale-neutral' as const,neutralMin:200,chromaMax:20}
@@ -107,6 +124,8 @@ test('actual HTTP resumes a lost chunk response after authority restart and reje
   await assert.rejects(make().save(d));assert.equal(partZero,1);objects.clear();pool.close()
   const ready=await make().save(d);assert.equal(partZero,1);assert.equal(ready.state,'ready');assert.deepEqual(await make().restore(ready),d)
   assert.deepEqual(await make(new Memory()).list(),[]);assert.equal((await make().list()).length,1)
+  const three=await cabinetDraft(),threeReady=await make().save(three);assert.deepEqual(await make().restore(threeReady),three)
+  assert.equal((await fetch(base+'/api/creator/sprites/'+three.id+'/file/input-2')).status,401)
   assert.equal((await fetch(base+'/api/creator/sprites/'+d.id+'/file/candidate')).status,401)
   assert.equal((await fetch(base+'/api/creator/sprites')).status,401)
   assert.equal((await createHandler(true)(new Request(base+'/api/creator/sprites'),env)).status,404)

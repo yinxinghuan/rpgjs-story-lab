@@ -163,7 +163,7 @@ export class CarriageJourneyAuthority{
      this.sprites??=new CreatorSpriteArchive(this.db)
      if(path==='/sprites'&&request.method==='GET')return respond({sprites:this.sprites.list(owner)})
      if(path==='/sprites'&&request.method==='POST')return respond(this.sprites.begin(owner,await body(request)))
-     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|actor-reviews|actor-release|publish-actor|hero-release|publish-hero|file\/(source|candidate|input-0|input-1)))?$/)
+     const m=path.match(/^\/sprites\/([a-f0-9-]{36})(?:\/(parts|finish|cancel|release|publish|actor-reviews|actor-release|publish-actor|hero-release|publish-hero|file\/(source|candidate|input-0|input-1|input-2)))?$/)
      if(!m)throw new LabError('NOT_FOUND',404)
      if(request.method==='GET'){
       if(!m[2])return respond(this.sprites.get(owner,m[1]))

@@ -1,6 +1,6 @@
 import {artDraftDatabaseName} from './art-draft'
 import type {PixelRaster, PreparedSprite, SpritePreparationSpec} from './sprite-preparation'
-import {composeRepairFrames,replaceActorFrame} from './sprite-composition'
+import {composeStateFrames,replaceActorFrame} from './sprite-composition'
 import type {DeviceReview} from './device-publication'
 import type {SpriteGenerationSource} from './sprite-generation-recipe'
 import type {ActorSheetReview} from './actor-sheet-review'
@@ -77,10 +77,10 @@ export async function verifySpriteComposition(draft:SpriteDraft,decode:(png:Spri
  }
  if(!draft.composition)return
  const c=draft.composition
- if(c.version!==1||!Array.isArray(c.inputs)||c.inputs.length!==2||draft.sourceKind!=='states'||draft.deviceStateSet!=='repair')throw Error('SPRITE_COMPOSITION_INVALID')
+ if(c.version!==1||!Array.isArray(c.inputs)||c.inputs.length!==(draft.deviceStateSet==='repair'?2:3)||draft.sourceKind!=='states'||(draft.deviceStateSet!==undefined&&draft.deviceStateSet!=='repair'))throw Error('SPRITE_COMPOSITION_INVALID')
  const frames=[]
  for(const i of c.inputs){await verifySpritePng(i.source);const raster=await decode(i.source);if(raster.width!==i.source.width||raster.height!==i.source.height)throw Error('SPRITE_DECODE');frames.push({raster,columns:i.columns,column:i.column})}
- const expected=composeRepairFrames(frames),actual=decoded??await decode(draft.source)
+ const expected=composeStateFrames(frames),actual=decoded??await decode(draft.source)
  if(expected.width!==actual.width||expected.height!==actual.height||expected.rgba.length!==actual.rgba.length||!expected.rgba.every((v,i)=>v===actual.rgba[i]))throw Error('SPRITE_COMPOSITION_MISMATCH')
 }
 export class BrowserSpriteDrafts implements SpriteDraftRepository {

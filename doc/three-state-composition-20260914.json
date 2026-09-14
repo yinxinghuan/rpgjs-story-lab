@@ -1,0 +1,54 @@
+{
+  "date": "2026-09-14",
+  "status": "development-verified-not-deployed",
+  "tests": {
+    "full": 749,
+    "targeted": 16,
+    "typeScript": "passed",
+    "cloudFrontend": "passed",
+    "sceneResources": 27
+  },
+  "browser": {
+    "origin": "http://127.0.0.1:5436",
+    "draft": "12b4b5b1-7562-4e6d-89f5-a531c138cf2d",
+    "source": "platform-props-edit-01; retained columns 1,2,3 of 3",
+    "restoration": "Three-state source, candidate and anchors restored after reload. All three retained source selections exposed.",
+    "states": "Closed, open stocked and open empty selected in actual engine. Stocked item visible, absent in empty. Body blocks movement.",
+    "sourceAnchors": [
+      [
+        160,
+        440
+      ],
+      [
+        160,
+        438
+      ],
+      [
+        160,
+        438
+      ]
+    ],
+    "targetFoot": [
+      160,
+      544
+    ],
+    "smallViewport": {
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320
+    },
+    "initialFailure": "Test anchors at y540 fell below source cabinet; admission rejected. Corrected from source image without bypassing checks.",
+    "largeViewport": {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390
+    },
+    "occlusion": "Walk-behind reached 104,200 and rendered coordinates matched; cabinet foreground occluded hero."
+  },
+  "limits": [
+    "Existing sample, no new platform generation or final visual-family approval.",
+    "Local browser and synthetic private archive/HTTP, not deployed creator or iPhone hardware.",
+    "Two-state starter publication unchanged; generic pump publication still separate."
+  ],
+  "productionUnchanged": "a79e39485df89aac6baed4176a3e54bb547fe6ee"
+}

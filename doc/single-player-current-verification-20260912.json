@@ -610,8 +610,7 @@
       "secrets": "passed"
     },
     "remaining": [
-      "Continue platform art family and verified identity requirements",
-      "Fresh native interaction after a79e394 not yet verified"
+      "Continue platform art family and verified identity requirements"
     ],
     "productionCommit": "a79e39485df89aac6baed4176a3e54bb547fe6ee",
     "limits": [
@@ -642,5 +641,27 @@
     "observed": "Known synthetic journey visible at dawn junction, fuel39/condition75/morale75, hero and joystick/context controls visible.",
     "interaction": "Game controls recovered. Opened known synthetic journey ending: common-line, Ada/Mako, dead station/yard/tunnel/pass/town/junction consequences visible. Closed panel successfully. Top platform back and menu return AXError.notImplemented; normal back shortcut has no effect. Awaiting manual platform back only.",
     "limits": "This is the already-open game. Fresh exit/reentry and newly loaded bundle remain unverified; no story action or save reset performed."
+  },
+  "nativePostMatteReleaseReentry20260914": {
+    "status": "same-device-native-reentry-verified",
+    "entry": "User returned to AlterU game list; agent clicked Play for CARRIAGE 07: A LIGHT LEFT ON.",
+    "loading": "Observed transparent fuel-can illustration with loading text before restored game became visible.",
+    "restored": {
+      "scene": "黎明枢纽",
+      "ending": "共同线路",
+      "fuel": 39,
+      "condition": 75,
+      "morale": 75,
+      "characters": [
+        "阿达",
+        "玛柯"
+      ]
+    },
+    "interaction": "Restored ending panel showed costs and six location consequences. Closed panel successfully; map, hero, joystick and context control visible.",
+    "limits": [
+      "Existing synthetic journey only; no reset or new story action.",
+      "Desktop Telegram AlterU, not physical iPhone or cross-device account recovery.",
+      "Observed fresh game entry and illustrated loading; native UI does not expose bundle commit, so exact native cached bundle identity is not established. Main and Pages byte verification is recorded separately."
+    ]
   }
 }

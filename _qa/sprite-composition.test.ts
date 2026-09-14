@@ -104,3 +104,25 @@ test('source reuse rejects stale selections and corrupt originals; equal pixels 
  assert.equal(savedSpriteSources([invalid]).length,1,'invalid columns are not offered')
  await repo.close()
 })
+
+test('three cabinet sources retain state order across processing, reopen, reuse and real sheet mapping',async()=>{
+ const original=raster(3),source=await encode(original),inputs=[2,0,1].map(column=>({source,sourceName:'state-'+column,columns:3,column}))
+ const composed=composeStateFrames(inputs.map(i=>({raster:original,columns:i.columns,column:i.column})))
+ const draft:SpriteDraft={...newSpriteSource(await encode(composed),'cabinet-composite','states'),composition:{version:1,inputs}}
+ const factory=new IDBFactory(),repo=new BrowserSpriteDrafts('cabinet-composition',factory)
+ const spec={kind:'states' as const,columns:3,rows:1,cellWidth:20,cellHeight:28,foot:{x:10,y:24},backgroundMode:'pale-neutral' as const,neutralMin:200,chromaMax:20,sourceAnchors:Array.from({length:3},()=>({x:10,y:24}))}
+ await repo.save(draft,undefined)
+ const result=await runSpriteDraft(repo,draft,spec,{encode,decode,process:async(r,s)=>prepareSpritePixels(r,s)})
+ assert.equal(result.state,'candidate');await repo.close()
+ const reopened=new BrowserSpriteDrafts('cabinet-composition',factory),restored=(await reopened.get())!
+ await verifySpriteComposition(restored,decode)
+ assert.deepEqual(restored.composition,draft.composition)
+ const selections=savedSpriteSources(await reopened.list());assert.equal(selections.length,3)
+ assert.deepEqual(await Promise.all(selections.map(c=>resolveSavedSpriteSource(reopened,c))),inputs)
+ const checked=await inspectDeviceMapCandidate(restored,restored.id,decode)
+ assert.equal(checked.states.length,3);assert.equal(deviceCandidateSheet(checked,'cabinet.png').framesWidth,3)
+ const swapped=structuredClone(restored);swapped.composition!.inputs.reverse()
+ await assert.rejects(verifySpriteComposition(swapped,decode),/COMPOSITION_MISMATCH/)
+ await assert.rejects(verifySpriteComposition({...restored,deviceStateSet:'repair'},decode),/COMPOSITION_INVALID/)
+ await reopened.close()
+})
