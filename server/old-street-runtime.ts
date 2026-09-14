@@ -8,7 +8,7 @@ import {recordOldStreetInteraction} from '../src/old-street-characters'
 import {SessionAuthority, type AuthorityStorage, type SessionRuntime} from './session-authority'
 import {LabError, validateAction} from '../src/journey-runtime'
 import {oldStreetCartridge} from '../src/old-street-cartridge'
-import {bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetWalkable} from '../src/old-street-space'
+import {bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetWalkable,oldStreetSafePosition} from '../src/old-street-space'
 import {prepareDoorTravel} from '../src/spatial-door-travel'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {resolveDomainAction, applyDomainResolution} from '../src/vendor/original-train/engine/domainRules'
@@ -33,7 +33,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
   }
   return {
     initial:(locale,id)=>{const h:OldStreetHead={id,version:0,mapVersion:plan.mapVersion,sceneId:'street',position:{...plan.scenes.find(s=>s.id==='street')!.spawn},save:createInitialSave(oldStreetCartridge(locale))};check(h);return h},
-    upgrade:value=>{assertOldStreetHead(value);const next=structuredClone(value);if(next.save.facts.departed)completeOldStreetEnding(next.save,oldStreetCartridge(next.save.locale));return next},assertReadable:assertOldStreetHead,
+    upgrade:value=>{assertOldStreetHead(value);const next=structuredClone(value);next.mapVersion=plan.mapVersion;next.position=oldStreetSafePosition(next.sceneId,next.position,next.save);if(next.save.facts.departed)completeOldStreetEnding(next.save,oldStreetCartridge(next.save.locale));return next},assertReadable:assertOldStreetHead,
     scene:h=>h.sceneId,position,validateAction,preserveConcurrent:()=>{},
     assertPrepared:(candidate,current,id)=>check(candidate,current,id),
     prepare:async(h,body,reserveNarration)=>{

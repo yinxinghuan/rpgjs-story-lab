@@ -173,3 +173,14 @@ test('photo matching requires a correct piece and orientation before its rule ca
   await run('oldstreet:return-photos');assert.equal(h.save.facts['photos-returned'],true)
  }finally{raw.close()}
 })
+test('legacy footprint upgrades in place without resetting story or journey identity',()=>{
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  const h=s.create('owner',randomUUID(),'zh');h.mapVersion='oldstreet-blockout-1';h.position={x:318,y:300}
+  raw.prepare('UPDATE journeys SET data=? WHERE id=?').run(JSON.stringify(h),h.id)
+  const updated=s.get('owner',h.id)
+  assert.equal(updated.id,h.id);assert.equal(updated.version,h.version);assert.deepEqual(updated.save,h.save)
+  assert.equal(updated.mapVersion,'oldstreet-blockout-2');assert.ok(updated.position.x<318)
+  assert.deepEqual(s.get('owner',h.id),updated)
+ }finally{raw.close()}
+})

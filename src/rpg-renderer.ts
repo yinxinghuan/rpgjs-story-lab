@@ -1,3 +1,4 @@
+import {createDistancePoseSelector} from './vendor/space-motion/distance-motion'
 import {watchRendererContextLoss} from './renderer-context-loss'
 import {inspectDisplayTree} from './render-diagnostics'
 import {RendererTransition} from './renderer-transition'
@@ -7,17 +8,20 @@ import {startGame,provideClientGlobalConfig,provideClientModules,provideRpg,type
 import {createServer,provideServerModules,type RpgPlayer} from '@rpgjs/server'
 import {provideTiledMap as tiledClient} from '@rpgjs/tiledmap/client'
 import {provideTiledMap as tiledServer} from '@rpgjs/tiledmap/server'
-import {WALK_SPEED,STRIDE_DISTANCE,walkingPose,moveWithCollision,advanceRoute} from './walking-motion'
+import {WALK_SPEED,STRIDE_DISTANCE,moveWithCollision,advanceRoute} from './walking-motion'
 export type RendererPoint={x:number;y:number}
 type Position=RendererPoint
 type SceneId=string
 export type RendererMotion={scene:string;renderedScene:string|null;position:Position;renderedPosition:Position|null;direction:string;renderedDirection:string|null;animation:string;renderedAnimation:string|null;paused:boolean}
 export type RpgRendererRuntime={position:()=>Position;intent?:()=>Position;renderedPosition:()=>Position|null;motion?:()=>RendererMotion|null;diagnostics?:()=>unknown;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(v:boolean)=>void;restore:(p:Position,scene?:string)=>Promise<void>;scene:()=>string;renderedScene:()=>string|null;renderedEvents:()=>string[];destroy:()=>void}
-export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];canWaitForRoute?:(point:Position,scene:string)=>boolean;onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void;onFailure?:(code:'RENDERER_CONTEXT_LOST')=>void}
+export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;heroBody?:{w:number;h:number};strideLength?:number;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];canWaitForRoute?:(point:Position,scene:string)=>boolean;onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void;onFailure?:(code:'RENDERER_CONTEXT_LOST')=>void}
 // This RPG-JS beta owns page-global providers. A second instance needs a page
 // reload until complete provider/client disposal has been proven.
 let created=false
 export function createRpgRenderer(options:RpgRendererOptions){
+ const body=options.heroBody??{w:9,h:15},strideLength=options.strideLength??STRIDE_DISTANCE
+ if(![body.w,body.h,strideLength].every(n=>Number.isFinite(n)&&n>0))throw Error('INVALID_RENDERER_SCALE')
+ const walkingPose=createDistancePoseSelector(strideLength,['stride-0','stride-1','stride-2','stride-1'])
  if(created)throw Error('RPG_RENDERER_ALREADY_CREATED')
  if(options.host.id!=='rpg'||!options.sceneIds.includes(options.initialScene)||!options.walkable(options.initialPosition,options.initialScene))throw Error('INVALID_RENDERER_BOOTSTRAP')
  created=true
@@ -60,8 +64,8 @@ function renderResolution(){return Math.min(5.2,Math.max(1,Math.ceil(frameBox.cl
 function syncViewport(){const scale=frameBox.clientWidth/options.width;host.style.transform=`scale(${scale})`;frameBox.style.setProperty('--world-scale',String(scale));const renderer=client?.renderer,resolution=renderResolution();if(renderer&&Math.abs(renderer.resolution-resolution)>.001)renderer.resize(options.width,options.height,resolution)}
 const resize=new ResizeObserver(syncViewport);resize.observe(frameBox)
 window.addEventListener('resize',syncViewport)
-const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;transitions.joinedScene(sceneForMap(map.id));reportHandshake()},async onConnected(p){
- player=p;p.setGraphic(options.heroGraphic);p.setHitbox(9,15);p.animationFixed=true;await p.changeMap(mapId(initialScene),pos)
+const server=createServer({providers:[tiledServer(),provideServerModules([{player:{onJoinMap(p,map){player=p;p.setGraphic(options.heroGraphic);p.setHitbox(body.w,body.h);p.animationFixed=true;transitions.joinedScene(sceneForMap(map.id));reportHandshake()},async onConnected(p){
+ player=p;p.setGraphic(options.heroGraphic);p.setHitbox(body.w,body.h);p.animationFixed=true;await p.changeMap(mapId(initialScene),pos)
  bindSpace({position:()=>({...pos}),intent:()=>paused||changing?{x:0,y:0}:{...intent},renderedPosition:()=>{const s=client?.getCurrentPlayer();return s?{x:s.x(),y:s.y()}:null},
   diagnostics:()=>{const s=client?.getCurrentPlayer();const canvas=host.querySelector('canvas');const rect=host.getBoundingClientRect();return {contextLost:context.failed(),scene:activeScene,loaded:loadedScene,pending:transitions.status().pendingScene,position:{...pos},projected:s?{x:s.x(),y:s.y()}:null,connected:s?.isConnected(),graphics:s?.graphics().length,sheets:s?.graphicsSignals().length,canvas:canvas?{width:canvas.width,height:canvas.height}:null,layout:[host.parentElement,host.parentElement?.parentElement,host.parentElement?.parentElement?.parentElement].filter((el):el is HTMLElement=>Boolean(el)).map(el=>{const r=el.getBoundingClientRect(),css=getComputedStyle(el);return {x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height),scrollLeft:el.scrollLeft,scrollTop:el.scrollTop,overflowX:css.overflowX,overflowY:css.overflowY,transform:css.transform}}),host:{x:Math.round(rect.x),y:Math.round(rect.y),width:Math.round(rect.width),height:Math.round(rect.height)},tree:inspectDisplayTree((client as unknown as {canvasApp?:{stage?:unknown}})?.canvasApp?.stage)}},
   motion:()=>{const s=client?.getCurrentPlayer();return player?{scene:activeScene,renderedScene:loadedScene,position:{...pos},renderedPosition:s?{x:s.x(),y:s.y()}:null,direction:String(player.direction()),renderedDirection:s?String(s.direction()):null,animation:String(player.animationName()),renderedAnimation:s?String(s.animationName()):null,paused:paused||changing||context.failed()}:null},
@@ -90,7 +94,7 @@ function tick(time:number){
    x=result.position.x-pos.x;y=result.position.y-pos.y;pos=result.position;distance=result.distance
   }
   if(distance>1e-7){
-   strideDistance=(strideDistance+distance)%STRIDE_DISTANCE
+   strideDistance=(strideDistance+distance)%strideLength
    const pose=walkingPose(strideDistance)
    if(player.animationName()!==pose)player.animationName.set(pose)
    player.direction.set(Math.abs(x)>Math.abs(y)?(x>0?Direction.Right:Direction.Left):(y>0?Direction.Down:Direction.Up))

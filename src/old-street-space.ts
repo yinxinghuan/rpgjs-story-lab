@@ -7,7 +7,9 @@ import {findGridPath} from './grid-path'
 type Rect = {x: number; y: number; w: number; h: number}
 type Side = 'N' | 'S' | 'E' | 'W'
 type Endpoint = {side: Side; fraction: number}
-export const oldStreetBody = {w: 9, h: 15}
+export const oldStreetBody = {w: 16, h: 26}
+export const oldStreetHeroScale = .24
+export const oldStreetStride = 55 * oldStreetHeroScale / .14
 /** Logical blockout coordinates, not approved art or final room proportions. */
 export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
   street: {x: 56, y: 32, w: 272, h: 512}, shop: {x: 80, y: 80, w: 224, h: 416},
@@ -41,6 +43,8 @@ export function oldStreetDoors() {
     const placements = doorPlacement[edge.id]
     if (!placements) throw Error('OLD_STREET_DOOR_UNPLACED:' + edge.id)
     const a = endpoint(edge.a, placements[0]), b = endpoint(edge.b, placements[1])
+    // Stand on the landing above the crates; a larger footprint must not overlap them.
+    if(edge.id==='cellar-steps')a.approach.y=a.position.y+16
     return [[a, b], [b, a]].map(([from, to]) => ({
       id: `door:${edge.id}:${from.room}`, actionId: oldStreetTravelId(edge.id, from.room),
       kind: edge.kind, gate: edge.gate, ...from, destination: to,
@@ -77,18 +81,28 @@ export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>) {
 export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>): Rect[] {
   return oldStreetProjectedProps(save).filter(p => p.room === room && p.id !== 'street-exit').map(p => ({...p.body}))
 }
-export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>) {
+export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody) {
   const r = oldStreetFloors[room as OldStreetRoom]
   if (!r || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return false
-  const feet = {...p, ...oldStreetBody}
+  const feet = {...p, ...body}
   return p.x >= r.x && p.y >= r.y && p.x + feet.w <= r.x + r.w && p.y + feet.h <= r.y + r.h
     && !oldStreetObstacleBodies(room as OldStreetRoom, save).some(body => intersects(feet, body))
+}
+export function oldStreetSafePosition(room:string,p:SpatialPoint,save:Pick<StorySave,'facts'>):SpatialPoint {
+  if(oldStreetWalkable(room,p,save))return {...p}
+  for(let radius=4;radius<=64;radius+=4)for(let x=-radius;x<=radius;x+=4)for(let y=-radius;y<=radius;y+=4){
+    if(Math.max(Math.abs(x),Math.abs(y))!==radius)continue
+    const candidate={x:p.x+x,y:p.y+y};if(oldStreetWalkable(room,candidate,save))return candidate
+  }
+  const spawn=oldStreetSpatialPlan(save).scenes.find(s=>s.id===room)?.spawn
+  if(!spawn||!oldStreetWalkable(room,spawn,save))throw Error('OLD_STREET_NO_SAFE_POSITION')
+  return {...spawn}
 }
 export const oldStreetPath = (room: string, start: SpatialPoint, end: SpatialPoint, save: Pick<StorySave, 'facts'>) => findGridPath(start, end, p => oldStreetWalkable(room, p, save))
 export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}}): SpatialBindingDefinition {
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
-  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-blockout-1', interactionDistance: 54,
+  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-blockout-2', interactionDistance: 54,
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn: pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),

@@ -7,8 +7,8 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
   const h=value as OldStreetHead, s=h?.save
   if (!h || !s || s.cartridgeId!=='old-street-letter' || s.version!==8 || !['zh','en'].includes(s.locale)
     || !Number.isSafeInteger(h.version) || h.version<0 || typeof h.id!=='string' || !/^[a-zA-Z0-9-]{16,80}$/.test(h.id)
-    || h.mapVersion!==plan.mapVersion || !s.facts || !Array.isArray(s.map) || !Array.isArray(s.inventory)
+    || ![plan.mapVersion,'oldstreet-blockout-1'].includes(h.mapVersion) || !s.facts || !Array.isArray(s.map) || !Array.isArray(s.inventory)
     || !Array.isArray(s.blocks) || !Array.isArray(s.characters) || !Array.isArray(s.relationships)
-    || !h.position || !oldStreetWalkable(h.sceneId,h.position,s)) throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)
+    || !h.position || !oldStreetWalkable(h.sceneId,h.position,s,h.mapVersion==='oldstreet-blockout-1'?{w:9,h:15}:undefined)) throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)
   try {bindOldStreet(s.locale,s).locate(s,h.sceneId)} catch {throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)}
 }

@@ -9,7 +9,7 @@ import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
 import {actorSheet} from './actor-sheet'
 import {actorArt} from './art-catalog'
 import {oldStreetCartridge, oldStreetRooms, oldStreetOutcome, type OldStreetRoom} from './old-street-cartridge'
-import {bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetFloors, oldStreetObstacleBodies, oldStreetPath, oldStreetWalkable} from './old-street-space'
+import {oldStreetBody, oldStreetHeroScale, oldStreetStride, bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetFloors, oldStreetObstacleBodies, oldStreetPath, oldStreetWalkable} from './old-street-space'
 import {createInitialSave} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
@@ -64,8 +64,8 @@ export default function OldStreetDev() {
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
-        initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero',
-        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, hero.scale, hero.centers)], mapEvents: () => [],
+        initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
+        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h})], mapEvents: () => [],
         walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
@@ -158,7 +158,7 @@ export default function OldStreetDev() {
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
         <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
-        {destination && <circle cx={destination.x + 4.5} cy={destination.y + 15} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
+        {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
       {entities.map(e => {
