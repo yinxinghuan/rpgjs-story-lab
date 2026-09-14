@@ -1,0 +1,10 @@
+{
+  "requestId": "9fa28c25-f82a-4d12-b218-4f4b57bcb7ec",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "Production game background for an intimate old neighborhood laundry shop, top-down ORTHOGRAPHIC pixel-painted 2D RPG. STRICT architectural floor plan, vertical walls stay parallel, no vanishing points, no isometric rotation, no converging lines. Canvas1024x1536. Exact rectangular WALKABLE FLOOR spans x235..789 and y299..1237. Floor is worn small warm ivory square ceramic tiles with subtle gray-green grout, perfectly regular equal sized grid everywhere, gentle age patina, no objects on this floor. Floor must remain COMPLETELY EMPTY for separate character and trolley sprites. One opening through RIGHT/EAST wall centered at y768, width along wall100px, threshold leads horizontally right out of room. No other doors. Wall thickness22px, muted faded sage green ceramic lower wall. OUTSIDE the walkable rectangle only: on left x90..220 a narrow bank of old laundry washing machines with round doors facing east, against the left wall; on top y120..270 a shelf of folded towels and small high frosted window, no text. Show tops of machines and shelves from above, short front faces, preserve orthographic view. Below room y1280..1400 a narrow exterior drain and pavement, dark neutral building cutaway space around all sides. Warm soft daytime atmosphere, restrained earthy palette, crisp pixel texture and dark fine outlines consistent with handcrafted overhead RPG. No people, laundry baskets, trolley, movable objects, numbers, lettering, UI, green markers or grid guides. No baked shadows on the floor from characters. This is a narrow human-scale shop, not a large hall."
+}

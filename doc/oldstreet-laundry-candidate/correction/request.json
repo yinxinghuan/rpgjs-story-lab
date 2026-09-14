@@ -1,0 +1,13 @@
+{
+  "requestId": "f8d4244d-abd1-4560-a3d2-9c0c9f73f649",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/2ed7e769a03fb7469a59ad23e2f284addff4ace7/public/assets/oldstreet/laundry-layout-guide.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1536
+  },
+  "prompt": "TEXTURE this exact architectural FLOOR PLAN without changing a single boundary or its camera. This is a 2D orthogonal overhead exploration RPG laundry shop. The input is a required geometry mask, not a mood reference. Keep the tan rectangle x235..789,y299..1237 EXACTLY rectangular, same parallel vertical sides, same horizontal top/bottom. Replace its flat color with worn warm ivory small square ceramic tiles, subtly cracked, equal-sized grout grid with NO perspective, no converging lines. Interior floor must remain completely empty. Replace brown rim with thin weathered sage green wall top, same footprint, maximum22px thick, no tall front faces. The pale GREEN block at RIGHT midpoint is the only doorway: replace it with a natural stone threshold opening and short pavement connection leading right, same center and dimensions, remove the green color. Dark exterior outside the room remains dark cutaway structure. Outside floor and walls ONLY: place a narrow row of old laundry machine tops on the LEFT, entirely x70..210; a shelf of folded cream towels at TOP entirely y190..260; small drain BELOW y1280. All viewed straight down with only very short front edges. No objects may cross into the tan floor rectangle. Detailed restrained pixel-painted material, crisp outlines, warm daylight. No people, trolley, baskets, text, labels, numbers or UI. Never rotate the plan, never redraw it as an eye-level room, never widen the foreground, never alter the door location. Preserve layout first."
+}

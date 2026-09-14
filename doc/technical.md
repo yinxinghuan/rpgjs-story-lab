@@ -1570,3 +1570,7 @@ old-street-dev 在启动前显式 Assets.load 灰发图集纹理，通过 actorS
 ### 旧街第二实体角色候选（2026-09-15）
 
 `old-street-dev.tsx` 在洗衣店装配平台生成的阿岚四向静态候选，工作棚仍用 B 视角修表师。`actor-sheet.ts` 的 `standingActorSheet` 接受4×1帧格、源脚点、缩放和碰撞脚点，只暴露stand；它与旧3×4步态图集独立。两位NPC的实际RPG事件和透明触控入口共用空间实体坐标，靠近时转向，不增加独立剧情状态。候选原图、失败记录与去底脚本位于 `doc/oldstreet-lan-candidate`、`scripts/prepare-oldstreet-lan.mjs`；正面站姿与部分原走动帧仍不合格，当前开发入口使用静态候选，正式发布准入保持关闭。
+
+### 洗衣店地面与几何参考（2026-09-15）
+
+`export-old-street-art-guide.ts [room]` 从真实floor/door导出对应PNG/SVG几何参考；不传参数仍生成原修表铺路径，未知room直接拒绝。`old-street-floor.tsx` 把修表铺/洗衣店表面作为独立配置，按审阅后的源图区域显示到对应floor矩形；墙边与门口全部从空间布局生成，没有导入生成图的门宽、机器或通行边界。其余房间仍为白盒地面。类型检查、oldstreet-dev构建及真实浏览器洗衣店→院子往返检查完成，正式视觉准入和平台发布仍未完成。
