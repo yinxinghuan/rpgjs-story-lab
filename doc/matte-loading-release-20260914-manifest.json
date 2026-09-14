@@ -1,0 +1,585 @@
+{
+  "commit": "a79e39485df89aac6baed4176a3e54bb547fe6ee",
+  "records": [
+    {
+      "path": "alteru-storage-scope.js",
+      "sha256": "7dc73a406c88605cab3b3a06d99380a638d7218d652f4b26b10c86bab2cd54bc",
+      "bytes": 2136
+    },
+    {
+      "path": "art/ada-standing-v1.png",
+      "sha256": "c9d268d14c4890014e101124fcb166efd813992e0a956b8417012729bbb12912",
+      "bytes": 36405
+    },
+    {
+      "path": "art/approved/dawn-junction-c0b4a545.png",
+      "sha256": "c0b4a5450ea5c14543ce0f8c0999acc89fb4f62a447c106d0595c978da4bd893",
+      "bytes": 2472753
+    },
+    {
+      "path": "art/approved/flood-bridge-e38ff237.png",
+      "sha256": "e38ff2375c437b80cd506b30ef315d0a298594a7436599805d9fc577750cd210",
+      "bytes": 2685518
+    },
+    {
+      "path": "art/approved/graystone-yard-78f22e9b.png",
+      "sha256": "78f22e9b4bf42265be03e5db8462ff732b7ed46706f5cea8cf297d0dd3aa2129",
+      "bytes": 3346737
+    },
+    {
+      "path": "art/approved/mountain-pass-e83947a9.png",
+      "sha256": "e83947a9cde02337868d5a406cfb372d4103c55b3e3097464987a6d1b550460f",
+      "bytes": 2851713
+    },
+    {
+      "path": "art/approved/north-cape-8fc11a96.png",
+      "sha256": "8fc11a96c0670c54c090723190ba6b9d8c39f1ebdd27e6649ecc0ba07da9d031",
+      "bytes": 2811504
+    },
+    {
+      "path": "art/approved/pine-line-90af55e7.png",
+      "sha256": "90af55e77b9fe807d4286d31ff7c7d8e33dec275c320c1731edab617770740c5",
+      "bytes": 2736873
+    },
+    {
+      "path": "art/approved/sleeping-town-f9922760.png",
+      "sha256": "f99227609f1cddfda202467c3ef79e8dbdac39b018b3de3c1861c6aec32a75b8",
+      "bytes": 2807539
+    },
+    {
+      "path": "art/approved/tunnel-b084000a.png",
+      "sha256": "b084000a30fbfb913c7e480cf5fa01cff3bf81370251fadfc927d4a1b750001c",
+      "bytes": 3068960
+    },
+    {
+      "path": "art/baggage-car.png",
+      "sha256": "0eccd3c874b26b2a85ae4caa0bf4198eae2a1b1d3a8d9585b48cb7e229b52a14",
+      "bytes": 2304167
+    },
+    {
+      "path": "art/bench.png",
+      "sha256": "bd2f3eab4e8f8ca471eb9490c73ac490bbd16fb827753a5e694d874a18e7bf76",
+      "bytes": 1181880
+    },
+    {
+      "path": "art/brake-parts-v1.png",
+      "sha256": "3cf1cc76e152f991babb357477adfa882be734ed97f713e75c4b4b0cb169edf3",
+      "bytes": 167950
+    },
+    {
+      "path": "art/carriage-floor.png",
+      "sha256": "281a634ce8287e92b633d752b642db03bed017ea3f03a8f598420b9d77cae85d",
+      "bytes": 1944908
+    },
+    {
+      "path": "art/carriage-narrow.png",
+      "sha256": "bbfb62ece095c2b27f0b0f3b178b810339733616402915166d84b751577c4fc8",
+      "bytes": 2190558
+    },
+    {
+      "path": "art/carriage-orthogonal.png",
+      "sha256": "37a4a0a6d1b6e33eae5a794f214973c291e47f9ce8e8e2e78a66707f03174359",
+      "bytes": 2251050
+    },
+    {
+      "path": "art/carriage-v2.png",
+      "sha256": "c604e8848df75abccd0df21b6182a823a6d0c88029ef8c27d5244f42317e3e07",
+      "bytes": 2168551
+    },
+    {
+      "path": "art/diesel-reserve-candidate-v1.png",
+      "sha256": "4a1bc15a8fdad211335bd89f2856554ac704e1b8122e218e6d133422aa787386",
+      "bytes": 311036
+    },
+    {
+      "path": "art/direction-study.png",
+      "sha256": "76acbcc069a4d1d9105f91154f7ba40714d637ea6e6537bd890ee7e7625eddb5",
+      "bytes": 1966712
+    },
+    {
+      "path": "art/driving-cab.png",
+      "sha256": "951d64d4fdb63519308b7bfc17b22101e6afe85e737d06c2aa2359157d64a12a",
+      "bytes": 2129062
+    },
+    {
+      "path": "art/fan-housing-v1.png",
+      "sha256": "b21bbe6f95f3fa982c980a975a1133c2fcf904c96cb3c5e15820dca3fb4f107b",
+      "bytes": 74600
+    },
+    {
+      "path": "art/fan-rotor-v1.png",
+      "sha256": "8e07f4c8a840678f11e9c44f253d7584c4a12563b67113299e42ace1e6867c3f",
+      "bytes": 36046
+    },
+    {
+      "path": "art/hero-study.png",
+      "sha256": "8e5cec34d81d4f92df52affd9768795b922adf1672a6834002f998f8d4acd356",
+      "bytes": 622067
+    },
+    {
+      "path": "art/lin-standing-v1.png",
+      "sha256": "cbd6ebd698ee794403b2669b71d65a9c654864f55aaeca005641155a889a92d9",
+      "bytes": 86794
+    },
+    {
+      "path": "art/mako-standing-v1.png",
+      "sha256": "28e8686d170119af59a7020801bee50f036ac6811fddbfb62721c70d0d7d0265",
+      "bytes": 121059
+    },
+    {
+      "path": "art/mechanic-v2.png",
+      "sha256": "136e6b22085c7e295d3457cda5dd2a77040d4dd9418302588de495643e04f024",
+      "bytes": 684433
+    },
+    {
+      "path": "art/original-north-cape.png",
+      "sha256": "e8e36bbadda8a8b73cc280431e256ad6583795738a9b62f9efc0a44474d32483",
+      "bytes": 2566605
+    },
+    {
+      "path": "art/original-river-valley.png",
+      "sha256": "22a37437b47703bb4b5e27557145e3f80f9898137b13d881f54079725aae71fd",
+      "bytes": 3016350
+    },
+    {
+      "path": "art/overhead/attendant.png",
+      "sha256": "4a8edd9a612af68eca5b6c845586088e24a2ae812fd544405ac89a76c4b38464",
+      "bytes": 699200
+    },
+    {
+      "path": "art/overhead/hero-gait-v2.png",
+      "sha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+      "bytes": 460181
+    },
+    {
+      "path": "art/overhead/hero.png",
+      "sha256": "7d07b1e22e9ccbae89ec6da2291fa3898b118f1896330430299d9955ee791793",
+      "bytes": 508692
+    },
+    {
+      "path": "art/overhead/mechanic.png",
+      "sha256": "528735d4e01625854f42a82afbe79468edd8502b6c7def1bdfe7f947d0ba0c9b",
+      "bytes": 705093
+    },
+    {
+      "path": "art/overhead/props.png",
+      "sha256": "9c8878fc26ace493e8b8a9b289056df28c692290a61d8fb1cf5013992fef4cd3",
+      "bytes": 1189225
+    },
+    {
+      "path": "art/platform-north-cape-candidate.png",
+      "sha256": "2f3f479192e9723ea46b17c35bc0114a925752f7c1235cf87811d9ac8ef8d34c",
+      "bytes": 2221448
+    },
+    {
+      "path": "art/props-v2.png",
+      "sha256": "3733f15ee823e4403cb9d235dbedd79ca54623e795481d7e1c9022a3243dc518",
+      "bytes": 1179076
+    },
+    {
+      "path": "art/references/starter-open-source-v1.png",
+      "sha256": "f2e96dc0315decae1b1f6d3e5c371da0fcde5fb62e727cae5c2a48547f24902a",
+      "bytes": 186884
+    },
+    {
+      "path": "art/ren-standing-v1.png",
+      "sha256": "48e9a626cec744373f209007605a69f9f62716c1788c0419d03fcf6cbea6cade",
+      "bytes": 106450
+    },
+    {
+      "path": "art/rescue-walkway.png",
+      "sha256": "f96e5ba15ed9e0c6603ea5bda66da31506b7e397ed97e4af9e9a10656809dd0c",
+      "bytes": 2378719
+    },
+    {
+      "path": "art/seat.png",
+      "sha256": "ca36da661b6e6322176743028d6f8feed7530c991539cab79b48a9a78daa0275",
+      "bytes": 809035
+    },
+    {
+      "path": "art/starter-states-v1.png",
+      "sha256": "320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe",
+      "bytes": 294319
+    },
+    {
+      "path": "art/train-at-dawn-junction-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-at-flood-bridge-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-at-graystone-yard-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-at-mountain-pass-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-at-pine-line-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-at-sleeping-town-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-at-tunnel-whitebox.png",
+      "sha256": "87f48daa9dba9acd729ddfc07b2e8d7ba996284b052ba84cc50d4f860e6f06d5",
+      "bytes": 6238
+    },
+    {
+      "path": "art/train-equipment.png",
+      "sha256": "78cde52e3cc2831599cec4fcf9cb3a1cda44db838e10fedaf0cdcf36c4b75d7a",
+      "bytes": 3059804
+    },
+    {
+      "path": "art/yard-pump-candidate-v1.png",
+      "sha256": "4b477baffa31247f6c1ba946d5060e3ac60e9821020772922ff4197130c18f6e",
+      "bytes": 471277
+    },
+    {
+      "path": "assets/actor-sheet-BQ_nqqbi.js",
+      "sha256": "554a84119094dea93a122a114760ecb4fe5217753d0fcfb54d381c95e25c0806",
+      "bytes": 1095624
+    },
+    {
+      "path": "assets/browser-journey-hLz7ZcDx.js",
+      "sha256": "1648a5c8038807afac29b4c1bcf57e4ff319448cb30e3364d735b76bb33f98f4",
+      "bytes": 3736
+    },
+    {
+      "path": "assets/candidate-B7nVlJ2y.png",
+      "sha256": "8fdd576bd4bc1982436e99a93c04ef1e545ec890d046a75cb5a99e05304dc16a",
+      "bytes": 214355
+    },
+    {
+      "path": "assets/candidate-C0AW3pNZ.png",
+      "sha256": "fdcbd8562b9c9d2b3669922553b2c25f1af213fbbd9e3a109daa30603e71fa0e",
+      "bytes": 595691
+    },
+    {
+      "path": "assets/candidate-CAUrsaIi.png",
+      "sha256": "dfcb31ee903944b733814a7d64d579847122247db11030317958e46debd9f9f4",
+      "bytes": 1131996
+    },
+    {
+      "path": "assets/candidate-CBF1DSoB.png",
+      "sha256": "43ba101c2bc5903ae6df9efef0067c1a753c44df2079285a74e7d3a3fb6144dd",
+      "bytes": 688319
+    },
+    {
+      "path": "assets/candidate-DMxtihrp.png",
+      "sha256": "8eb32bb26a859cf20c1647bddb0896c3f8821b53f5aff1e6a71641b1adcde8da",
+      "bytes": 470738
+    },
+    {
+      "path": "assets/candidate-DvlKojCf.png",
+      "sha256": "2a55ef71cf18431a9eff62336a265f11d4c4af2e93fc12c77ff0749b4bcd71b2",
+      "bytes": 161124
+    },
+    {
+      "path": "assets/canvasengine-CCC-_bmI.js",
+      "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3",
+      "bytes": 1504206
+    },
+    {
+      "path": "assets/creator-BTHba6TF.css",
+      "sha256": "5d32e93a51c9c8de2fc19c9cafc394aafed65abcb8ec0732502d547364c6fa50",
+      "bytes": 6247
+    },
+    {
+      "path": "assets/creator-tOJatfB8.js",
+      "sha256": "ce159fa4cb616f9d7e1dfb7b45421537a2a95e66564959bb42591edbb2ab2aa0",
+      "bytes": 152101
+    },
+    {
+      "path": "assets/device-map-candidate-BhZXXJOU.js",
+      "sha256": "8b997785b9a8d773cfbb1a254ef7a0d2e5a3aeaa8a47d7fae8f5ec489375c178",
+      "bytes": 152325
+    },
+    {
+      "path": "assets/index-3v2GvuAe.js",
+      "sha256": "8b799f007361ca1c7b8b65da7b4523562fa114fc4732db3bd024b184074a395d",
+      "bytes": 71579
+    },
+    {
+      "path": "assets/index-DyvSxunG.css",
+      "sha256": "c2964df35367d2bdcf6d6521a5470a327fb1f10626350383bec5d5f9bfd926bb",
+      "bytes": 1681
+    },
+    {
+      "path": "assets/original-game-D_adQIr_.js",
+      "sha256": "3f5d64c7b837c427bc94c9128829bc4117a7cec54fe9102717c0ccb3bc77ed90",
+      "bytes": 114488
+    },
+    {
+      "path": "assets/original-game-qdTr3Z7n.css",
+      "sha256": "1d65790d06153ff17cda612a4b1f49bcc66649b5c8b9919945ca3d72e84bd6d6",
+      "bytes": 8424
+    },
+    {
+      "path": "assets/pixi-DMXpPjpr.js",
+      "sha256": "b40374f74b87273ee81651c63bdcaf2bd60c5950180c599081d08088a52c624d",
+      "bytes": 276
+    },
+    {
+      "path": "assets/rolldown-runtime-QTnfLwEv.js",
+      "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75",
+      "bytes": 694
+    },
+    {
+      "path": "assets/space-DHglP89N.js",
+      "sha256": "7452b20e43da84e54d0c33e4f6cab3e975867a5bdb7353ffc5b7deeb316e9174",
+      "bytes": 1451
+    },
+    {
+      "path": "assets/sprite-config-DfrdpksX.js",
+      "sha256": "3038544fa876e97a98218c7c0e99fd237c44f5232214ccab32b8e2637e4fdde2",
+      "bytes": 295
+    },
+    {
+      "path": "assets/sprite-preparation.worker-BkJ6WkbP.js",
+      "sha256": "21e52d3e84d8447be2005aacc937309b819b156ec681594fe3740f13718d09e9",
+      "bytes": 4135
+    },
+    {
+      "path": "assets/style-DoX9UMFM.js",
+      "sha256": "adc0a662e2fbd20a8957f83b5c21ce76aa6d21ea9d402e09a659fcf16c44fccd",
+      "bytes": 359038
+    },
+    {
+      "path": "assets/style-NUDpuPK2.css",
+      "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d",
+      "bytes": 26711
+    },
+    {
+      "path": "creator.html",
+      "sha256": "d8f18195c025277eb426c0237099c3fc9adc7e3cecc3e2f72d843f1bc014b736",
+      "bytes": 1581
+    },
+    {
+      "path": "index.html",
+      "sha256": "ff53c8dc4d9bae749226fde857602e06c99275026d413d9e197e0e317cd70c45",
+      "bytes": 1692
+    },
+    {
+      "path": "licenses/@hono__vite-dev-server.txt",
+      "sha256": "75b774ad5191ce1d1d98733678ea94c52a5cbcd40222967f9ceede0d761fe52b",
+      "bytes": 1391
+    },
+    {
+      "path": "licenses/@pixi__colord.txt",
+      "sha256": "de6178d66e10279cebfa239d3319a66c63ffc9d0dccf43485ba0a92cde9cab8b",
+      "bytes": 1160
+    },
+    {
+      "path": "licenses/@rolldown__binding-darwin-arm64.txt",
+      "sha256": "23ecfff35a5a2e80d92142f75228912c3b1abc4b5a8337a821ff4397e2f9f734",
+      "bytes": 1302
+    },
+    {
+      "path": "licenses/@signe__reactive.txt",
+      "sha256": "903f16c4023ca1552b7b881b48ccc9908e9b0cba5186d8c94618815c62221fd7",
+      "bytes": 1069
+    },
+    {
+      "path": "licenses/cssfontparser.txt",
+      "sha256": "a667d036ebfb0b1d1f3b4ac51f9d358242f3611d3b2244b82720062f79ca0377",
+      "bytes": 1158
+    },
+    {
+      "path": "licenses/glob-to-regexp.txt",
+      "sha256": "6f4845a7ff5e173eeb981d175e4c3b18ad394fb8c5e1348a2dd379132be4b71a",
+      "bytes": 1301
+    },
+    {
+      "path": "licenses/stackback.txt",
+      "sha256": "447ded3f8e87eee66f15d0e704aa6fc6f366004fe2b517f6b6e51de633a5197d",
+      "bytes": 1352
+    },
+    {
+      "path": "licenses/yoga-layout.txt",
+      "sha256": "63ac9f843b855b58547b4a9e21c56c118bdcd077bd5274cfe04932d295678418",
+      "bytes": 1158
+    },
+    {
+      "path": "map/baggage.tmx",
+      "sha256": "33e144d31e3fba68c392174afa2ab17059d12ffcb8c3c930198e398c868f7fbe",
+      "bytes": 2183
+    },
+    {
+      "path": "map/cab.tmx",
+      "sha256": "a947eb8ea754188b50ca70f37622878867afbc771bea43d6ac0c1bfac0197fb9",
+      "bytes": 1618
+    },
+    {
+      "path": "map/carriage.png",
+      "sha256": "6e6a3318c6aad337c7dd7ea64c98b99c6e2d9cac6b0d67c7a5f1a1369f29c688",
+      "bytes": 8554
+    },
+    {
+      "path": "map/carriage.svg",
+      "sha256": "aea913aefaaea69f57d56e9a2a72a1edea93fd71ef0dc3a088ed8f9e0298656e",
+      "bytes": 5860
+    },
+    {
+      "path": "map/carriage.tmx",
+      "sha256": "16d50ca07a75e027a835d47e1229b6081ab7c9042446156633f08fc5525bcb4f",
+      "bytes": 3176
+    },
+    {
+      "path": "map/carriage.tsx",
+      "sha256": "8d6a72947368fc94bb414a1ef48dc46795d2416a7fe16afbcadc1cfc9359475b",
+      "bytes": 176
+    },
+    {
+      "path": "map/dawn-junction-c0b4a545.tmx",
+      "sha256": "acedd2b9c598ed7d179f94f98aefb5ab25970c56d08b3aa0b07942b666b535b7",
+      "bytes": 1895
+    },
+    {
+      "path": "map/flood-bridge-e38ff237.tmx",
+      "sha256": "2024c872c5834c28b5bee7d267a5a4a20aa9eefca4f34cb1731e7927da24f423",
+      "bytes": 1894
+    },
+    {
+      "path": "map/graystone-yard-78f22e9b.tmx",
+      "sha256": "9b40680fa3a59445354e3246771f85f139c3124e5780a1e16e5f93c05defdbdc",
+      "bytes": 1893
+    },
+    {
+      "path": "map/mountain-pass-e83947a9.tmx",
+      "sha256": "d59a8c59b36edc8a5703cc13c42055f4016212f729d8239bc0bf34d3840ec2db",
+      "bytes": 2174
+    },
+    {
+      "path": "map/pine-line-90af55e7.tmx",
+      "sha256": "ce021febc59e0076a35c63ea3be728a45f9870a0028ad095fee167c733f6a98d",
+      "bytes": 2741
+    },
+    {
+      "path": "map/sleeping-town-f9922760.tmx",
+      "sha256": "f96630477170d3aaf32ccf23c6714f5fe5197cb8a186f00718f40fb62a2e7d46",
+      "bytes": 1894
+    },
+    {
+      "path": "map/train-at-dawn-junction.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-dead-station.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-flood-bridge.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-graystone-yard.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-mountain-pass.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-pine-line.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-river-valley.tmx",
+      "sha256": "fbb1afc34c315197d1f178a02fdc1e9c6b42a6a005f28cb97281958228e8ab1c",
+      "bytes": 1338
+    },
+    {
+      "path": "map/train-at-sleeping-town.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/train-at-tunnel.tmx",
+      "sha256": "2822ded6081b9bade584032877fe1e017e03fab25f3f3fb617975762f233a8de",
+      "bytes": 1614
+    },
+    {
+      "path": "map/transparent.png",
+      "sha256": "d3507dba37cef67c75bbd95c4e85f3b655af3b78e267b1cb208f372f4144e8f4",
+      "bytes": 98
+    },
+    {
+      "path": "map/tunnel-b084000a.tmx",
+      "sha256": "c7fed701ad0cf363b7b2f60c8bf8fe9e2b5f6b5b120c285389cd5a4e8906a4b5",
+      "bytes": 1893
+    },
+    {
+      "path": "map/walkway.tmx",
+      "sha256": "972f075e82835c7bb7219c033d057c9f25699d0fc1aa4d7f7f540711bebe7895",
+      "bytes": 1475
+    },
+    {
+      "path": "perspective-lab/index.html",
+      "sha256": "08d470e97f1608e560307fa2edf4a9fa18482c01ee23250211a0af6110252c09",
+      "bytes": 16158
+    },
+    {
+      "path": "perspective-lab/scene-balanced.png",
+      "sha256": "4ef51b0aad47eeaee10e57b46840eef97ac82fb99ffb748edfd70a4605f4447c",
+      "bytes": 1955099
+    },
+    {
+      "path": "perspective-lab/scene-current.png",
+      "sha256": "1136d25ae11a9e5594538f6260aa2d87817a53888a7c19424788d1597dbf2357",
+      "bytes": 1431986
+    },
+    {
+      "path": "perspective-lab/scene-high.png",
+      "sha256": "13c329f4e133659f44bf70fbff33f6448773c344aed289fd75592d78bd732e1e",
+      "bytes": 1879152
+    },
+    {
+      "path": "poster.png",
+      "sha256": "1079a0bc353b35786a062df0b89f928c15f3799a6d5dc5ce147c0f02c2ef25fc",
+      "bytes": 1278857
+    },
+    {
+      "path": "spritesheets/hero.png",
+      "sha256": "56c7b1b2a4072c9ab8ae1b353a17b62479db50101e98e4864d62bf88a41e68a7",
+      "bytes": 2277
+    },
+    {
+      "path": "spritesheets/hero.svg",
+      "sha256": "81cb8069b8765ec76d421956d264004bc71f238084b40d8fe2d2b6d60ab4b2f5",
+      "bytes": 6939
+    },
+    {
+      "path": "spritesheets/mechanic.png",
+      "sha256": "5339acf98b3a35ec63974ec3081bea313a8ea6f104d629db7a1f6acd33632041",
+      "bytes": 2254
+    },
+    {
+      "path": "spritesheets/mechanic.svg",
+      "sha256": "78ea0239a906b941a85d90bf97c9ceb76015158206af63b4cd91ef99bad3786c",
+      "bytes": 6237
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168",
+      "bytes": 107869
+    }
+  ]
+}

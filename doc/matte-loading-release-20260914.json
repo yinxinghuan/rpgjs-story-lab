@@ -1,0 +1,37 @@
+{
+  "commit": "a79e39485df89aac6baed4176a3e54bb547fe6ee",
+  "status": "main-verified-pages-running",
+  "changes": [
+    "Creator matte source-coordinate selection and restoration",
+    "Private sprite archive preserves bounded matte seed recipes",
+    "Bounded cancellable scene response streams"
+  ],
+  "checks": {
+    "tests": 747,
+    "passed": 747,
+    "productionBuild": "passed; 9 scenes and 27 resources verified; Worker startup passed",
+    "audits": "secrets, API base and UUID passed",
+    "browser": "Restored candidate and seed; two device states, front/back walks, cabinet collision, saved map review; actual 320x568 CSS width without overflow"
+  },
+  "manifest": "matte-loading-release-20260914-manifest.json",
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "status": "verified",
+    "filesMatched": 116,
+    "bytes": 74474035,
+    "pageHealthZip": "passed",
+    "storage": "durable-object-sqlite",
+    "identityMode": "anonymous-capability-v1"
+  },
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "runId": 34843653602,
+    "status": "in_progress",
+    "lastVerifiedStep": "CI tests and build succeeded; spatial story verification running"
+  },
+  "limits": [
+    "Not whole-game completion",
+    "Not physical iPhone or fresh full native AlterU route proof",
+    "Pages static frontend only; existing main backend and database retained"
+  ]
+}

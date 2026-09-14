@@ -594,7 +594,7 @@
     "next": "Separate nonhuman locomotion review from humanoid leg alternation before another conversion; human identity fixture still required"
   },
   "creatorMatteAndLoading20260914": {
-    "status": "local-browser-and-build-verified-not-deployed",
+    "status": "main-deployed-pages-verification-pending",
     "implemented": [
       "Creator source-coordinate matte picking and persistence",
       "Matte seed recipe accepted by private archive with bounded validation",
@@ -610,10 +610,10 @@
       "secrets": "passed"
     },
     "remaining": [
-      "Release current code on both hosts and verify same commit bytes",
+      "Finish same-commit Pages deployment verification",
       "Continue platform art family and verified identity requirements"
     ],
-    "productionCommit": "23568b7d0055274c008145184d068974486d9587",
+    "productionCommit": "a79e39485df89aac6baed4176a3e54bb547fe6ee",
     "limits": [
       "Synthetic test identities only",
       "Does not establish production character gait quality or cross-device verified account recovery",
@@ -635,6 +635,7 @@
         "Local static compiled preview; private cloud tested separately with synthetic archive suite"
       ]
     },
-    "localPreviewIncident": "Development Vite server omitted build-generated map resources, returned wrong byte length. Switched same test origin to compiled preview, retained draft and map loaded. No production resource check bypass."
+    "localPreviewIncident": "Development Vite server omitted build-generated map resources, returned wrong byte length. Switched same test origin to compiled preview, retained draft and map loaded. No production resource check bypass.",
+    "releaseEvidence": "matte-loading-release-20260914.json"
   }
 }
