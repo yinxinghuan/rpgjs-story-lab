@@ -146,5 +146,41 @@
     },
     "evidence": "_qa/map-focus-20260914/platform-layout-town-after-pass-390.png",
     "remaining": "town and finale; native old fault state still awaits reload"
+  },
+  "townWalkthrough": {
+    "environment": "same frozen 378b765 production frontend and Worker, localhost synthetic journey",
+    "actions": [
+      "town-inspect",
+      "town-grid-aid",
+      "town-public-rules",
+      "town-route-brief",
+      "town-pack-kit",
+      "town-depart"
+    ],
+    "broadcast": {
+      "fuelBefore": 43,
+      "fuelAfter": 37,
+      "moraleBefore": 59,
+      "moraleAfter": 67,
+      "actionRemovedAfterUse": true
+    },
+    "publicRulesMoraleAfter": 75,
+    "kitGranted": true,
+    "bridgeDepartureFuelAfter": 31,
+    "arrival": {
+      "scene": "flood-bridge",
+      "condition": 79,
+      "morale": 75,
+      "heroVisible": true,
+      "endingNotTriggeredAtNearBank": true
+    },
+    "evidence": "_qa/map-focus-20260914/platform-layout-flood-bridge-arrival-390.png"
+  },
+  "pendingGuidanceBuild": {
+    "sourceCommit": "fdbb875",
+    "build": "pass",
+    "log": "/private/tmp/rpg-yard-return-build.log",
+    "liveReleaseUnchanged": "378b765",
+    "notDeployed": true
   }
 }
