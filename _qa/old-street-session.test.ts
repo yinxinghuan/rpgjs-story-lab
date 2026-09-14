@@ -105,3 +105,19 @@ for(const locale of ['zh','en'] as const)test(`character introduction is visible
   assert.equal(h.save.partyMemberIds.length,0)
  }finally{raw.close()}
 })
+for(const locale of ['zh','en'] as const)test(`typed input uses the same target rules and receipt (${locale})`,async()=>{
+ const raw=new DatabaseSync(':memory:')
+ try{
+  const s=new OldStreetAuthority(storage(raw),admit);let h=s.create('owner',randomUUID(),locale)
+  for(const room of ['yard','laundry'])h=(await s.action('owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId))).head
+  const b={...request(h,'oldstreet:borrow-trolley'),type:'free-input',action:undefined,text:locale==='zh'?'借用推车':'borrow the trolley'}
+  const result=await s.action('owner',h.id,b);assert.equal(result.actionId,'oldstreet:borrow-trolley');assert.deepEqual(await s.action('owner',h.id,b),result);h=result.head
+  assert.equal(h.save.inventory.find(i=>i.id==='trolley')?.count,1)
+  for(const text of ['不要还推车','能不能还推车？','还推车然后拿钥匙','oldstreet:return-trolley','do not return the trolley','return the trolley and take the key']){
+   await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:return-trolley'),type:'free-input',text}),/INPUT_UNSUPPORTED/)
+   assert.deepEqual(s.get('owner',h.id),h)
+  }
+  const other={...request(h,'oldstreet:greet-laundry'),type:'free-input',text:locale==='zh'?'还推车':'return the trolley'}
+  await assert.rejects(s.action('owner',h.id,other),/INPUT_UNSUPPORTED/)
+ }finally{raw.close()}
+})

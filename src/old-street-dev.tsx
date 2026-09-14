@@ -1,3 +1,4 @@
+import {oldStreetActionNames as actionNames} from './old-street-action-input'
 import {oldStreetPerson} from './old-street-characters'
 import {oldStreetSession} from './old-street-session'
 import type {OldStreetHead} from './old-street-head'
@@ -13,18 +14,6 @@ import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 
 const plan = oldStreetSpatialPlan()
-const actionNames: Record<string, [string, string]> = {
-  'greet-watchmaker':['打个招呼','Say hello'], 'greet-laundry':['打个招呼','Say hello'], 'greet-photographer':['打个招呼','Say hello'],
-  'move-box': ['移开空盒', 'Move box'], 'take-lens': ['拿放大镜', 'Take lens'], 'borrow-trolley': ['借推车', 'Borrow trolley'],
-  'clear-crates': ['移开旧箱', 'Move crates'], 'return-trolley': ['归还推车', 'Return trolley'], 'borrow-key': ['问候并借钥匙', 'Ask for key'],
-  'return-key': ['归还钥匙', 'Return key'], 'lift-latch': ['抬起插销', 'Lift bolt'], 'unlock-letter': ['打开小格', 'Unlock compartment'],
-  'take-letter': ['拿信', 'Take letter'], 'take-clock': ['帮忙送钟', 'Take clock'], 'inspect-clock': ['检查钟底', 'Inspect clock'],
-  'return-clock': ['交还旧钟', 'Return clock'], 'take-photos': ['拿照片夹', 'Take photo folder'], 'match-photos': ['比对照片', 'Compare photos'],
-  'return-photos': ['交还照片', 'Return photos'], 'consent-clock': ['询问是否留下钟的故事', 'Ask to record clock history'],
-  'consent-photo': ['询问可留下哪张照片', 'Ask which photo may be shared'], 'record-clock': ['收录旧钟', 'Record clock'],
-  'record-photo': ['收录照片', 'Record photo'], 'withdraw-clock': ['撤下旧钟记录', 'Withdraw clock entry'],
-  'withdraw-photo': ['撤下照片记录', 'Withdraw photo entry'], 'leave': ['带信回家', 'Take the letter home'],
-}
 const propNames: Record<string, [string, string]> = {
   drawer: ['抽屉', 'Drawer'], 'letter-compartment': ['小格', 'Compartment'], 'record-book': ['记录册', 'Record book'],
   trolley: ['推车', 'Trolley'], 'laundry-owner': ['店主位置', 'Shopkeeper position'], crates: ['旧箱', 'Crates'],
@@ -44,6 +33,7 @@ export default function OldStreetDev() {
   const engine = useRef<any>()
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
+  const [typed, setTyped] = useState('')
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   const [feet, setFeet] = useState(head.position), [destination, setDestination] = useState<{x: number; y: number} | null>(null)
   const stage = useRef<HTMLDivElement>(null)
@@ -99,17 +89,17 @@ export default function OldStreetDev() {
     return () => clearInterval(timer)
   }, [ready,error])
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
-  async function execute(id: string, target: string) {
+  async function execute(id: string, target: string, input?:string) {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
-      const result = await connection.client.send(h,{type:'action',action:id,target,position:{...position.current}})
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:'free-input',text:input}),target,position:{...position.current}})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current = next; setHead(next); position.current = next.position; setSelected(null)
-      setNotice(result.text ?? result.rejectionCode ?? '')
+      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
       runtime.current!.pause(Boolean(nextHead.save.facts.departed))
     } catch (e) {setError(String(e)); runtime.current?.pause(true)}
     finally {busyRef.current = false; setBusy(false)}
@@ -123,6 +113,13 @@ export default function OldStreetDev() {
     busyRef.current = true; setBusy(true)
     const started = runtime.current.walkTo(entity.approach, () => {void execute(id, entity.id)})
     if (!started) {busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
+  }
+  function sendInput(){
+    if(!chosen||!typed.trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
+    const input=typed.trim(),target=chosen.id
+    busyRef.current=true;setBusy(true)
+    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input)})){busyRef.current=false;setBusy(false)}
+    else setTyped('')
   }
   const entities = oldStreetSpatialPlan(head.save).entities.filter(e => e.scene === head.scene)
   const nearest = [...entities].filter(e => Math.hypot(e.position.x - feet.x, e.position.y - feet.y) < 54)
@@ -160,6 +157,7 @@ export default function OldStreetDev() {
     <section className="os-actions" aria-label={text(['当前行动', 'Current actions'])}>
       <p role="status">{error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
+      {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput()}}><input aria-label={text(['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(['发送','Send'])}</button></form>}
       <small>{text(['随身：', 'Carrying: '])}{head.save.inventory.map(i => i.label).join(' · ') || text(['无', 'Nothing'])}</small>
     </section>
     <footer>

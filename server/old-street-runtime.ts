@@ -1,3 +1,4 @@
+import {resolveOldStreetInput} from '../src/old-street-action-input'
 import {recordOldStreetInteraction} from '../src/old-street-characters'
 import {SessionAuthority, type AuthorityStorage, type SessionRuntime} from './session-authority'
 import {LabError, validateAction} from '../src/journey-runtime'
@@ -35,9 +36,18 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable):SessionRuntime
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(body.type!=='action'||typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
+      if(!['action','free-input'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&body.mode!=='local')throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='free-input'){
+        if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
+        const entity=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
+        if(!entity||!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
+        const action=resolveOldStreetInput(body.text,h.save.locale,entity.actions)
+        if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
+        body={...body,action}
+      }
       if(!binding.admits(body.action,body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
       check({...h,position:pos})
       const c=oldStreetCartridge(h.save.locale),resolution=resolveDomainAction(h.save,c,body.action)
