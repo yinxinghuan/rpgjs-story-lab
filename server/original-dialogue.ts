@@ -1,3 +1,4 @@
+import {originalTalkTopics} from '../src/original-talk-topics'
 import {originalVisualContext} from './original-visual-context'
 import type {ModelRequest} from './model'
 import type {OriginalHead} from './original-train-runtime'
@@ -45,6 +46,7 @@ export function originalRecollectionReply(input:string,c:OriginalDialogueContext
  return previous?(c.locale==='zh'?`你先前对我说过：“${previous.input}”。我不能确认除此以外的共同经历。`:`Earlier you told me: “${previous.input}”. I cannot confirm other shared experiences.`):(c.locale==='zh'?'我们还没有留下可回忆的交谈记录。':'We have no earlier conversation recorded together.')
 }
 export function originalLocalDialogue(input:string,c:OriginalDialogueContext){
+ const authored=originalTalkTopics(c).find(topic=>topic.text===input.trim());if(authored)return authored.reply
  const zh=c.locale==='zh',recollection=originalRecollectionReply(input,c)
  if(recollection!==null)return recollection
  const visualUncertainty=originalVisualUncertaintyReply(input,c);if(visualUncertainty!==null)return visualUncertainty

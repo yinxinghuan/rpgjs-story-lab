@@ -1,3 +1,4 @@
+import {originalTalkTopics} from '../src/original-talk-topics'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID} from 'node:crypto'
@@ -154,5 +155,17 @@ for(const locale of ['zh','en'] as const)test(`unestablished lamp attachment sta
   assert.deepEqual({...result.head.save,blocks:h.save.blocks},h.save)
   assert.match(result.head.save.blocks.at(-1)!.text,locale==='zh'?/无法判断/:/does not show/)
   assert.deepEqual(await f.reopen().action(owner,h.id,b),result);assert.equal(requests,0)
+ }finally{f.close()}
+})
+
+for(const locale of ['zh','en'] as const)test(`authored ${locale} dialogue choices remain questions and change after repair`,async()=>{
+ const f=fixture();try{
+  let h=f.service.create(owner,randomUUID(),locale)
+  const initial=structuredClone(h.save),topics=originalTalkTopics(originalDialogueContext(h,'ada-mechanic'))
+  assert.equal(topics.length,3)
+  for(const topic of topics){const result=await f.service.action(owner,h.id,say(h,topic.text));h=result.head;assert.equal(h.save.blocks.at(-1)!.text,topic.reply);assert.deepEqual({...h.save,blocks:initial.blocks},initial)}
+  h=(await f.service.action(owner,h.id,action(h,'repair-starter'))).head
+  const next=originalTalkTopics(originalDialogueContext(h,'ada-mechanic'))
+  assert.ok(next.every(t=>t.text!==topics[0].text));assert.ok(next.length>=2)
  }finally{f.close()}
 })
