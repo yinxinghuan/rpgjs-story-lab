@@ -19,9 +19,8 @@
     "pass": true
   },
   "limits": [
-    "Synthetic geometry fixture uses production CSS, not a complete RPG renderer test",
-    "Actual Telegram Graystone Yard recovery still pending",
-    "Not deployed"
+    "Synthetic fixture plus production browser walkthrough passed; actual Telegram fault-state recheck remains pending",
+    "Pages deployment and actual mirror file hashes pending"
   ],
   "productionBuildReview": {
     "commit": "378b765",
@@ -49,6 +48,18 @@
     "heroVisibleAfterActionAndReload": true,
     "evidenceDirectory": "_qa/map-focus-20260914",
     "nativeAlterURecheck": "pending",
-    "deployed": false
+    "deployed": true
+  },
+  "release": {
+    "commit": "378b76517136b5919972ef60021f1ab6316a2b07",
+    "main": {
+      "status": "114-files-sha256-match",
+      "url": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/"
+    },
+    "pages": {
+      "runId": 34801009848,
+      "status": "in_progress"
+    },
+    "nativeAlterU": "same-fault-state-recheck-pending"
   }
 }
