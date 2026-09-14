@@ -1,0 +1,81 @@
+{
+  "date": "2026-09-15",
+  "runtimeAdmitted": false,
+  "decision": "rejected-as-cycle",
+  "observations": [
+    "Original 320x320 output yields smaller step with less exposed sole than 512x640 generation.",
+    "Both returned images still advance the image-left boot; opposite-step prompt did not change the leading leg.",
+    "Head and upper body are also redrawn despite the preserve-exactly request."
+  ],
+  "nextAction": "Suspend repeated whole-body pose requests. Preserve current production art; validate a controlled animation preparation method before further bulk generation. Continue companion behavior and actual scene interaction testing independently.",
+  "items": [
+    {
+      "id": "ada-native-stride",
+      "file": "ada-native-stride.png",
+      "sha256": "a8b10acf57767c72ff15f7b31df2c2dabb8deff67c9179235662a0eadfdcaef4",
+      "request": {
+        "request_id": "6e300c1d-7a89-4f5d-aec7-77695d326f04",
+        "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+        "mode": "edit",
+        "reference_urls": [
+          "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/ada-standing-v1.png"
+        ],
+        "size": {
+          "width": 320,
+          "height": 320
+        },
+        "prompt": "Minimal pixel-art pose edit at the ORIGINAL 320x320 resolution. Keep the character head, hair, face, shoulders, navy coat, strap, brass lamp, colors, pixel texture and their exact positions unchanged from the reference. Preserve the existing high orthographic down-facing view. Modify only the legs below the coat hem into a SMALL natural walking step: image LEFT boot 8 pixels lower, image RIGHT boot 8 pixels higher than neutral. Both boots point down, soles mostly hidden, feet close to the body; no high knee lift, running, kicking or jumping. Keep original character size and ample blank canvas, do not enlarge or redesign. Uniform flat magenta background outside the character, no shadow or floor. Exactly one full-body sprite, no sheet, no text."
+      },
+      "response": {
+        "task_id": "mt_4ff6da236f9ac48f579eda7f630928ea",
+        "request_id": "6e300c1d-7a89-4f5d-aec7-77695d326f04",
+        "type": "image",
+        "status": "succeeded",
+        "created_at": 1789408699483,
+        "updated_at": 1789408702041,
+        "media": {
+          "type": "image",
+          "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408701845092.png",
+          "width": 320,
+          "height": 320,
+          "format": "png"
+        },
+        "timing_ms": 1869
+      }
+    },
+    {
+      "id": "ada-native-opposite",
+      "file": "ada-native-opposite.png",
+      "sha256": "35ac0b1f8fe899d1645c139e57f212587a2eba8a0ae8409a46a1eaf3335d0995",
+      "request": {
+        "request_id": "c64cee3a-722a-4b97-a8c2-ae9be3513cd3",
+        "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+        "mode": "edit",
+        "reference_urls": [
+          "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408701845092.png"
+        ],
+        "size": {
+          "width": 320,
+          "height": 320
+        },
+        "prompt": "Edit only the legs below the coat hem into the opposite SMALL walking step. The IMAGE RIGHT boot is now lower/forward, IMAGE LEFT boot higher/back. Keep soles hidden and knees low. Both hands stay beside hips. Keep head, hair, face, navy coat, strap, lamp and pouch EXACTLY unchanged in position, shape and color. Do NOT mirror the figure: the lamp and pouch stay on image RIGHT. Same elevated down-facing view, same 320x320 canvas, same character size and magenta background. One full body sprite only; no shadows or text."
+      },
+      "response": {
+        "task_id": "mt_a3252d7228ff2622f6601e11297c437f",
+        "request_id": "c64cee3a-722a-4b97-a8c2-ae9be3513cd3",
+        "type": "image",
+        "status": "succeeded",
+        "created_at": 1789408760976,
+        "updated_at": 1789408763405,
+        "media": {
+          "type": "image",
+          "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789408763210152.png",
+          "width": 320,
+          "height": 320,
+          "format": "png"
+        },
+        "timing_ms": 1862
+      }
+    }
+  ]
+}
