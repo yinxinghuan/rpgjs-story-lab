@@ -1628,3 +1628,9 @@ oldStreetJournal 新增 people，读取 save.characters 已介绍状态和 save.
 old-street-turn.ts 比对同旅程、同场景、恰好增加一版的 head，按 block id 提取新 narration/dialogue，且只在包含真实对白时启用气泡。拒绝、恢复较新版本或转场不展示错误的旧回合。原有 notice 继续承担普通操作/错误反馈，并清除旧 turn；完整正文仍在 StorySave，不从 result.text 切句或生成重复摘要。
 
 实际浏览器通过“这座楼梯通到哪里？”验证两条署名气泡（你/许青），无正文复制或旧回合混入。选择不同实体清除前一人物气泡。当前外部访客窄屏仍可纵向滚动，整页视口布局尚未作为正式手机体验通过。新增投射测试、类型检查与开发构建通过。
+
+### 视口分配（2026-09-15）
+
+old-street-dev 的 os-world 使用 ResizeObserver 测量实际剩余宽高，stage宽为min(width,height×2/3)、高为宽×1.5；沿用点击坐标转换和真实renderer host缩放。固定主容器限制页面外溢，os-actions自行滚动；os-turn移除第二层滚动，避免嵌套滚动。observer卸载时disconnect，世界布局/碰撞坐标不修改。
+
+浏览器复验发现点击低位话题会保留行动区旧滚动位置而遮住新回复；新 turn/notice/error 到达时将该区scrollTop归零，复拍后提问、回答和底部摇杆/行动按钮同时可见。测试中手动关闭外部guest banner检查构图，不修改生产shell；仍未宣称精确320/390与软键盘设备验收。
