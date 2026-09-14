@@ -594,7 +594,7 @@
     "next": "Separate nonhuman locomotion review from humanoid leg alternation before another conversion; human identity fixture still required"
   },
   "creatorMatteAndLoading20260914": {
-    "status": "main-deployed-pages-verification-pending",
+    "status": "main-and-pages-deployed-verified",
     "implemented": [
       "Creator source-coordinate matte picking and persistence",
       "Matte seed recipe accepted by private archive with bounded validation",
@@ -610,8 +610,8 @@
       "secrets": "passed"
     },
     "remaining": [
-      "Finish same-commit Pages deployment verification",
-      "Continue platform art family and verified identity requirements"
+      "Continue platform art family and verified identity requirements",
+      "Fresh native interaction after a79e394 not yet verified"
     ],
     "productionCommit": "a79e39485df89aac6baed4176a3e54bb547fe6ee",
     "limits": [
@@ -637,5 +637,10 @@
     },
     "localPreviewIncident": "Development Vite server omitted build-generated map resources, returned wrong byte length. Switched same test origin to compiled preview, retained draft and map loaded. No production resource check bypass.",
     "releaseEvidence": "matte-loading-release-20260914.json"
+  },
+  "nativePostMatteReleaseObservation20260914": {
+    "observed": "Known synthetic journey visible at dawn junction, fuel39/condition75/morale75, hero and joystick/context controls visible.",
+    "interaction": "Not verified: clicking ending returned noWindowsAvailable; Raise succeeded without restoring click capability. No state-changing action succeeded.",
+    "limits": "Visible prior journey does not establish fresh bundle or exit/reentry after current deployment."
   }
 }

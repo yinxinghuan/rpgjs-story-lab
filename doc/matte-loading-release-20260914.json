@@ -1,6 +1,6 @@
 {
   "commit": "a79e39485df89aac6baed4176a3e54bb547fe6ee",
-  "status": "main-verified-pages-running",
+  "status": "main-and-pages-verified",
   "changes": [
     "Creator matte source-coordinate selection and restoration",
     "Private sprite archive preserves bounded matte seed recipes",
@@ -26,8 +26,10 @@
   "pages": {
     "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
     "runId": 34843653602,
-    "status": "in_progress",
-    "lastVerifiedStep": "CI tests and build succeeded; spatial story verification running"
+    "status": "verified",
+    "lastVerifiedStep": "Workflow succeeded, including spatial story verification; all 116 actual files match frozen build",
+    "filesMatched": 116,
+    "bytes": 74474035
   },
   "limits": [
     "Not whole-game completion",
