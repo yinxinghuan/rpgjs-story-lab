@@ -44,6 +44,23 @@ function upload(archive:CreatorSpriteArchive,d:SpriteDraft,owner='alice'){
  for(const f of manifest.files){const bytes=payload.get(f.role)!.bytes;for(let offset=0,part=0;offset<bytes.length;offset+=SPRITE_ARCHIVE_PART,part++)archive.part(owner,d.id,{role:f.role,part,data:spritePartText(bytes.subarray(offset,offset+SPRITE_ARCHIVE_PART))})}
  return manifest
 }
+test('matte seed recipe survives private archive restoration and rejects malformed source coordinates',async()=>{
+ const f=fixture();try{
+  const d=draft();d.spec={...spec,matteSeeds:[{x:5,y:5}]}
+  const p=prepareSpritePixels(raster,d.spec)
+  d.result={algorithm:'neutral-matte-unmix-1',png:await encode(p.raster),frames:p.frames,metrics:p.metrics}
+  const manifest=upload(f.archive,d);await f.archive.finish('alice',d.id);f.restart()
+  const restored=await restoreSpriteManifest(manifest,file=>f.archive.file('alice',d.id,file.role))
+  assert.deepEqual(restored,d)
+  for(const seeds of [null,[{x:-1,y:0}],[{x:raster.width,y:0}],[{x:0,y:raster.height}],[{x:.5,y:0}],[{x:0,y:0,extra:true}],Array(65).fill({x:5,y:5})]){
+   const invalid=structuredClone(manifest);invalid.draft.spec.matteSeeds=seeds
+   assert.throws(()=>assertSpriteManifest(invalid),/SPRITE_ARCHIVE_INVALID/)
+  }
+  const alpha=structuredClone(manifest);alpha.draft.spec.backgroundMode='alpha'
+  assert.throws(()=>assertSpriteManifest(alpha),/SPRITE_ARCHIVE_INVALID/)
+  assert.deepEqual(f.archive.list('bob'),[])
+ }finally{f.close()}
+})
 test('real platform repair art retains all source PNGs, selections and foot alignment after archive restoration',async()=>{
  const f=fixture();try{const d=draft();d.composition!.inputs.forEach((i,n)=>i.generation={version:1,recipe:n===0?'starter-broken-v1':'starter-repaired-v1',requestId:crypto.randomUUID(),sessionId:'cb90357b-fe01-48ab-b14b-0620eb0d556e',taskId:'synthetic-composition-'+n});const m=upload(f.archive,d);assertSpriteManifest(m);assert.equal(m.files.length,4);assert.ok(Buffer.byteLength(JSON.stringify(m))<6000)
   await assert.rejects(f.archive.file('alice',d.id,'source'),/NOT_READY/)

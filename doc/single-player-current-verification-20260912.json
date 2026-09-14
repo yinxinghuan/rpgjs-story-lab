@@ -58,8 +58,8 @@
     },
     {
       "requirement": "Player avatar to consistent protagonist identity",
-      "state": "implementation-incomplete",
-      "reason": "Published hero slot exists, but current generation recipes have no avatar identity pipeline; diagnostic publication tests are insufficient. This is internal development work, separate from backend verified identity."
+      "state": "candidate-lifecycle-implemented-production-generation-unverified",
+      "reason": "Current source and protagonistIdentityDevelopment20260914 prove reference/source import, identity checks, archive and publication prerequisites. Generation from a genuine reference and approved full-family runtime art remain unverified; the older no-pipeline description is superseded."
     }
   ],
   "latestTestScopes": {
@@ -592,5 +592,32 @@
     "result": "identity test reference created; four-direction sheet rejected for layout, facings and duplicated accessories",
     "productionArtChanged": false,
     "next": "Separate nonhuman locomotion review from humanoid leg alternation before another conversion; human identity fixture still required"
+  },
+  "creatorMatteAndLoading20260914": {
+    "status": "development-verified-not-deployed",
+    "implemented": [
+      "Creator source-coordinate matte picking and persistence",
+      "Matte seed recipe accepted by private archive with bounded validation",
+      "Scene response streaming size limit and cancellation"
+    ],
+    "checks": {
+      "fullSuite": 747,
+      "passed": 747,
+      "failed": 0,
+      "typeScript": "passed",
+      "productionBuild": "passed; nine scenes and 27 resource hashes; Worker startup",
+      "privateArchive": "7 targeted passed, retained source/candidate/seed restoration and rejected invalid coordinates",
+      "secrets": "passed"
+    },
+    "remaining": [
+      "Creator actual refresh and mobile layout verification after desktop unlock",
+      "Real runtime review before deployment"
+    ],
+    "productionCommit": "23568b7d0055274c008145184d068974486d9587",
+    "limits": [
+      "Synthetic test identities only",
+      "Does not establish production character gait quality or cross-device verified account recovery",
+      "Not whole-game completion"
+    ]
   }
 }
