@@ -1,3 +1,6 @@
+import {OldStreetAuthority,type OldStreetGate} from '../server/old-street-runtime'
+import {handleOldStreetSession,oldStreetJson} from '../server/old-street-http'
+import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED} from '../src/old-street-runtime-contract'
 import {ORIGINAL_STORY_RELEASED} from '../src/original-release'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import {createOriginalActionInterpreter} from '../server/original-action-interpreter'
@@ -38,11 +41,14 @@ async function body(request:Request,limit=6000){
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
-export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false,originalProduction=false,illustrationsAvailable=ORIGINAL_ILLUSTRATION_RELEASED){return async(request:Request,env:Environment)=>{
+export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false,originalProduction=false,illustrationsAvailable=ORIGINAL_ILLUSTRATION_RELEASED,oldStreetEnabled=OLD_STREET_RELEASED){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
  const creator=path===CREATOR_API_PATH||path.startsWith(CREATOR_API_PATH+'/')
  const creatorJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
- const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=creator?creatorJson:original?originalJson:json
+ const oldstreet=path===OLD_STREET_API_PATH||path.startsWith(OLD_STREET_API_PATH+'/')
+ const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=oldstreet?oldStreetJson:creator?creatorJson:original?originalJson:json
+ if(oldstreet&&!oldStreetEnabled)return reply({error:'NOT_FOUND'},404)
+ if(oldstreet&&path===OLD_STREET_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:OLD_STREET_RELEASED,identityMode:'anonymous-capability-v1',runtimeContract:OLD_STREET_RUNTIME_CONTRACT})
  if(creator&&!creatorEnabled)return reply({error:'NOT_FOUND'},404)
  if(creator&&path===CREATOR_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,runtimeContract:CREATOR_RUNTIME_CONTRACT,identityMode:'anonymous-capability-v1'})
  const published=path.match(/^\/api\/creator\/(?:releases|device-releases|actor-releases|hero-releases|layer-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/(?:file|housing|rotor))?$/)
@@ -54,7 +60,7 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  if(original&&!originalEnabled)return reply({error:'NOT_FOUND'},404)
  if(original&&path===ORIGINAL_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:originalProduction,identityMode:'anonymous-capability-v1',runtimeContract:ORIGINAL_RUNTIME_CONTRACT,liveModelAvailable:originalActionAvailable(),liveDialogueAvailable:originalDialogueAvailable(),illustrationsAvailable})
  if((path==='/api/health'||path==='/api/lab/health')&&request.method==='GET')return reply({ok:true,storage:'durable-object-sqlite',identity_mode:writesEnabled?'anonymous-capability-v1':'not-enabled',runtime:'durable-object-sqlite',production:writesEnabled,identityMode:writesEnabled?'anonymous-capability-v1':'not-enabled',liveModelAvailable:ONLINE_NARRATION_AVAILABLE,narrationMode:'opt-in',release:RELEASE_ID,runtimeContract:RUNTIME_CONTRACT})
- if(!creator&&!original&&!path.startsWith('/api/lab/'))return reply({error:'NOT_FOUND'},404)
+ if(!oldstreet&&!creator&&!original&&!path.startsWith('/api/lab/'))return reply({error:'NOT_FOUND'},404)
  if(!imageEnabled&&/^\/api\/lab\/sessions\/[^/]+\/image(?:\/file)?$/.test(path))return reply({error:'NOT_FOUND'},404)
  if(!writesEnabled)return reply({error:'PRODUCTION_IDENTITY_NOT_ENABLED'},503)
  if(!env.CARRIAGE_JOURNEYS)return reply({error:'AUTHORITY_UNAVAILABLE'},503)
@@ -62,12 +68,12 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  if(!token)return reply({error:'AUTH_REQUIRED'},401)
  // Decode/re-encode uniqueness: a 32-byte base64url capability has a constrained tail.
  if(!/[AEIMQUYcgkosw048]$/.test(token))return reply({error:'AUTH_REQUIRED'},401)
- if(request.headers.get(RUNTIME_HEADER)!==RUNTIME_CONTRACT||original&&request.headers.get(ORIGINAL_RUNTIME_HEADER)!==ORIGINAL_RUNTIME_CONTRACT||creator&&request.headers.get(CREATOR_RUNTIME_HEADER)!==CREATOR_RUNTIME_CONTRACT)return reply({error:'RUNTIME_VERSION_MISMATCH'},409)
+ if(oldstreet&&request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT||request.headers.get(RUNTIME_HEADER)!==RUNTIME_CONTRACT||original&&request.headers.get(ORIGINAL_RUNTIME_HEADER)!==ORIGINAL_RUNTIME_CONTRACT||creator&&request.headers.get(CREATOR_RUNTIME_HEADER)!==CREATOR_RUNTIME_CONTRACT)return reply({error:'RUNTIME_VERSION_MISMATCH'},409)
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)),owner=Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('')
  try{
   const payload=request.method==='GET'?undefined:JSON.stringify(await body(request,spriteArchiveBodyLimit(path)))
-  const forwarded=new Request(request.url,{method:request.method,headers:{'Content-Type':'application/json','X-Authority-Owner':owner,[RUNTIME_HEADER]:RUNTIME_CONTRACT,...(creator?{[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}:{}),...(original?{[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}:{})},body:payload})
-  return await env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName(creator?'creator-art-v1:'+owner:original?'original-v8:'+owner:owner)).fetch(forwarded)
+  const forwarded=new Request(request.url,{method:request.method,headers:{'Content-Type':'application/json','X-Authority-Owner':owner,[RUNTIME_HEADER]:RUNTIME_CONTRACT,...(creator?{[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}:{}),...(original?{[ORIGINAL_RUNTIME_HEADER]:ORIGINAL_RUNTIME_CONTRACT}:{}),...(oldstreet?{[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}:{})},body:payload})
+  return await env.CARRIAGE_JOURNEYS.get(env.CARRIAGE_JOURNEYS.idFromName(oldstreet?'oldstreet-v1:'+owner:creator?'creator-art-v1:'+owner:original?'original-v8:'+owner:owner)).fetch(forwarded)
  }catch(e){return reply({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
 }}
 // Both stories retain their own owner keys inside the existing namespace.
@@ -75,6 +81,7 @@ export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED,JOURNAL_IMAGE_REL
 interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
+ private oldstreet?:OldStreetAuthority
  private original?:OriginalTrainAuthority
  private illustrations?:OriginalIllustrations
  private creator?:CreatorArtArchive
@@ -84,7 +91,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate?:OldStreetGate){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
@@ -209,6 +216,10 @@ export class CarriageJourneyAuthority{
     }
     throw new LabError('NOT_FOUND',404)
    }catch(e){return respond({error:e instanceof LabError?e.code:'ART_SOURCE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
+  }
+  if(url.pathname.startsWith(OLD_STREET_API_PATH+'/')){
+   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate)
+   return handleOldStreetSession(request,owner,this.oldstreet,body)
   }
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){
    this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter,this.originalDialogue)

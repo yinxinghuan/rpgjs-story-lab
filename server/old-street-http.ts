@@ -1,0 +1,29 @@
+import {LabError} from '../src/journey-runtime'
+import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
+import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
+import type {OldStreetAuthority} from './old-street-runtime'
+
+export const oldStreetJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
+/** Owner is supplied exclusively by the Worker's capability boundary. */
+export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>){
+ try{
+  if(request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
+  const url=new URL(request.url),path=url.pathname.slice(OLD_STREET_API_PATH.length)
+  if(path==='/sessions'){
+   if(request.method==='GET')return oldStreetJson({sessions:authority.directory(owner)})
+   if(request.method==='POST'){
+    const b=await readBody(request)
+    if(!b||Object.keys(b).some(k=>!['enrollment_id','locale'].includes(k))||!['zh','en'].includes(b.locale))throw new LabError('INVALID_ENROLLMENT')
+    return oldStreetJson(authority.create(owner,b.enrollment_id,b.locale))
+   }
+   throw new LabError('METHOD_NOT_ALLOWED',405)
+  }
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events))?$/.exec(path)
+  if(!m)throw new LabError('NOT_FOUND',404)
+  if(request.method==='GET'&&!m[2])return oldStreetJson(authority.get(owner,m[1]))
+  if(request.method==='GET'&&m[2]==='events')return oldStreetJson({events:authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
+  if(request.method==='POST'&&m[2]==='actions')return oldStreetJson(await authority.action(owner,m[1],await readBody(request)))
+  if(request.method==='POST'&&m[2]==='position')return oldStreetJson(authority.checkpoint(owner,m[1],await readBody(request)))
+  throw new LabError('METHOD_NOT_ALLOWED',405)
+ }catch(e){return oldStreetJson({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
+}

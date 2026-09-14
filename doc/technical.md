@@ -1542,3 +1542,7 @@ CUA 5453：从结局点击重新探索，走完整清障取照片路线到照相
 ### 物件状态与占地同步（2026-09-15）
 
 `old-street-prop-state.ts` 负责物件状态文字投射；`oldStreetObstacleBodies` 在 trolley-borrowed 时移除推车占地，保留停放点的交互绑定供归还使用。`OldStreetAuthority` 在非转场行动提交新状态时调用 oldStreetSafePosition，处理物件归还后新增碰撞。SQLite 测试覆盖站在空停放点归还、库存移除、碰撞恢复、合法邻近脚点、同请求重放与恢复；不改变原列车存档。
+
+### 旧街正式服务合同接入（2026-09-15）
+
+新增 `/api/oldstreet` Worker 路由、`old-street-http.ts` 与 `old-street-runtime-contract.ts`。前端 `oldStreetSessionHttp` 复用 cloudTransport 的私有凭证、健康握手与 RecoverableSessionClient；默认 API 来自 getGameApiBase，存储使用调用方提供的 UUID scope，内部 key 为 oldstreet-story-1:。Worker 只从 Bearer 凭证散列得到 owner，转发时覆盖客户端身份头；新故事路由到现有 Durable Object namespace 的 oldstreet-v1:<owner>，旧 original-v8 对象保持不变。目录、读档、行动、位置检查点与事件均经同一个 SessionAuthority。OLD_STREET_RELEASED=false，且默认 OldStreetGate 仍拒绝未准入画面；测试注入 gate 不能作为发布依据。本机 cookie 开发连接保留，未静默迁移它的存档到云端。账号绑定及清除浏览器身份后的恢复不是这套私有凭证合同自动提供的功能。
