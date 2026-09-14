@@ -1,8 +1,54 @@
 {
-  "status":"local-mechanism-fixed-native-recheck-pending",
-  "fixture":"_qa/map-focus.html",
-  "nativeEvidence":"_qa/native-quarry-20260914/diagnostics.txt",
-  "before":{"overflow":"hidden","worldFocusScrollX":128,"mapXBefore":-142,"mapXAfterFocus":-270,"pass":false},
-  "after":{"overflow":"clip","worldFocusScrollX":0,"mapXBefore":-142,"mapXAfterFocus":-142,"programmaticScrollIgnored":true,"journalScrollY":150,"pass":true},
-  "limits":["Synthetic geometry fixture uses production CSS, not a complete RPG renderer test","Actual Telegram Graystone Yard recovery still pending","Not deployed"]
+  "status": "local-mechanism-fixed-native-recheck-pending",
+  "fixture": "_qa/map-focus.html",
+  "nativeEvidence": "_qa/native-quarry-20260914/diagnostics.txt",
+  "before": {
+    "overflow": "hidden",
+    "worldFocusScrollX": 128,
+    "mapXBefore": -142,
+    "mapXAfterFocus": -270,
+    "pass": false
+  },
+  "after": {
+    "overflow": "clip",
+    "worldFocusScrollX": 0,
+    "mapXBefore": -142,
+    "mapXAfterFocus": -142,
+    "programmaticScrollIgnored": true,
+    "journalScrollY": 150,
+    "pass": true
+  },
+  "limits": [
+    "Synthetic geometry fixture uses production CSS, not a complete RPG renderer test",
+    "Actual Telegram Graystone Yard recovery still pending",
+    "Not deployed"
+  ],
+  "productionBuildReview": {
+    "commit": "378b765",
+    "build": "pass",
+    "tests": {
+      "passed": 721,
+      "failed": 0,
+      "note": "Initial sandbox run: 35 localhost listen EPERM failures; identical suite passed with local listening allowed."
+    },
+    "route": [
+      "repair starter",
+      "quarry route",
+      "introduce Mako"
+    ],
+    "resourcesAfterReload": {
+      "fuel": 63,
+      "condition": 87,
+      "morale": 58
+    },
+    "viewports": [
+      "390x844",
+      "320x568"
+    ],
+    "heroVisibleAfterTransition": true,
+    "heroVisibleAfterActionAndReload": true,
+    "evidenceDirectory": "_qa/map-focus-20260914",
+    "nativeAlterURecheck": "pending",
+    "deployed": false
+  }
 }
