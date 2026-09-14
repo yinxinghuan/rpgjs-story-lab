@@ -119,5 +119,16 @@
     "Review contact-neutral-opposite-neutral playback in actual renderer",
     "Generate and review remaining directions",
     "Preserve costume asymmetry; do not mirror whole character to manufacture opposite stride"
-  ]
+  ],
+  "postPreparationReview": {
+    "status": "not-admitted",
+    "observed": [
+      "Magenta background removed and all frames aligned to y=300 at 320px cell size.",
+      "Alternating boots are visible.",
+      "Generated head is narrower than original standing reference at equal total height.",
+      "Generated brown hair and brass are brighter/warmer, especially the corrected opposite frame.",
+      "Direct contact-neutral-opposite-neutral playback would risk scale and palette pulsing."
+    ],
+    "next": "Correct head/torso proportions and palette against the actual standing frame before renderer admission. Foot alignment alone is insufficient."
+  }
 }

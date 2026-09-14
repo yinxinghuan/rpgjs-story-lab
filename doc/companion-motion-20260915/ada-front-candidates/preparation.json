@@ -1,0 +1,57 @@
+{
+  "algorithm": "reviewed-magenta-connected-matte-nearest-1",
+  "baselineBounds": {
+    "l": 101,
+    "t": 87,
+    "r": 219,
+    "b": 300
+  },
+  "foot": {
+    "x": 160,
+    "y": 300
+  },
+  "frames": [
+    {
+      "name": "ada-front-contact",
+      "sourceSha256": "86b335391a2c7f7bbb7615374849baf22f2a85b69749fc8d7267f4f8286bc190",
+      "removed": 243034,
+      "sourceBounds": {
+        "l": 97,
+        "t": 92,
+        "r": 401,
+        "b": 597
+      },
+      "scale": 0.42178217821782177,
+      "outputBounds": {
+        "l": 96,
+        "t": 87,
+        "r": 225,
+        "b": 300
+      }
+    },
+    {
+      "name": "ada-front-opposite-arms",
+      "sourceSha256": "404d527df4c1ad7f8537db3eb6087dbdb2db8c39f6015ce597cc0426b8733879",
+      "removed": 243813,
+      "sourceBounds": {
+        "l": 105,
+        "t": 89,
+        "r": 398,
+        "b": 602
+      },
+      "scale": 0.4152046783625731,
+      "outputBounds": {
+        "l": 100,
+        "t": 87,
+        "r": 221,
+        "b": 300
+      }
+    }
+  ],
+  "runtimeAdmitted": false,
+  "limits": [
+    "Binary edge removal requires visual review on light and dark backgrounds",
+    "Height normalization is provisional; torso and head alignment require playback review",
+    "No direction or stride inferred from filenames; inspect actual poses"
+  ]
+}
