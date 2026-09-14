@@ -6,9 +6,13 @@ export async function spritePreviewUrl(png:SpritePng,signal?:AbortSignal) {
   if(signal?.aborted)throw Error('SPRITE_DECODE')
   const url=URL.createObjectURL(new Blob([new Uint8Array(png.bytes)],{type:'image/png'}))
   const image=new Image()
-  try {image.src=url;await (signal?abortableArtLoad(()=>image.decode(),signal):image.decode());if(image.naturalWidth!==png.width||image.naturalHeight!==png.height)throw Error();return url}
+  const decodeAbort=new AbortController(),abort=()=>decodeAbort.abort()
+  signal?.addEventListener('abort',abort,{once:true})
+  if(signal?.aborted)abort()
+  const timer=setTimeout(abort,15000)
+  try {image.src=url;await abortableArtLoad(()=>image.decode(),decodeAbort.signal);if(image.naturalWidth!==png.width||image.naturalHeight!==png.height)throw Error();return url}
   catch {URL.revokeObjectURL(url);throw Error('SPRITE_DECODE')}
-  finally {image.src=''}
+  finally {clearTimeout(timer);signal?.removeEventListener('abort',abort);image.src=''}
 }
 export async function decodeSpritePixels(png:SpritePng,signal?:AbortSignal):Promise<PixelRaster> {
   const url=await spritePreviewUrl(png,signal),image=new Image()
