@@ -1,0 +1,10 @@
+{
+  "request_id": "d3e44877-947e-4542-aacb-ff9285721f3a",
+  "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "prompt": "Create a single intact archival photograph for a quiet 2D exploration game, viewed straight on as a flat scanned print. Sepia toned hand-painted detailed illustration of an old neighborhood laundry storefront, no people and no readable text. A broad shop window spans the middle of the picture. The left half shows the left side of the window with a hanging white shirt. The right half continues the same window with a hanging striped towel. One continuous diagonal clothesline crosses the exact vertical center at mid-height and continues on both sides. A low stone doorstep crosses the lower center. Keep the horizon and window sill continuous across the center. Clear distinctive architectural details and strong readable shapes at small size. Gentle aged paper grain, warm brown monochrome, soft daylight. No photo frame, no border, no UI, no lettering, no split panels, no actual tears. Entire canvas is the one photograph. This will be displayed as matching torn halves in a game.",
+  "size": {
+    "width": 1024,
+    "height": 768
+  }
+}

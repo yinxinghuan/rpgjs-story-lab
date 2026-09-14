@@ -156,3 +156,20 @@ test('a model result cannot overwrite a newer action and model failure never mut
   assert.deepEqual(fast.get('owner',h.id),newer.head)
  }finally{raw.close()}
 })
+test('photo matching requires a correct piece and orientation before its rule can commit',async()=>{
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('owner',randomUUID(),'zh')
+  const run=async(id:string,extra={})=>{h=(await s.action('owner',h.id,{...request(h,id),...extra})).head}
+  const go=async(room:string)=>run(oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId)
+  await go('yard');await go('laundry');await run('oldstreet:borrow-trolley');await go('yard');await run('oldstreet:clear-crates');await go('cellar');await run('oldstreet:take-photos');await go('yard');await go('street');await go('photo')
+  for(const photoMatch of [undefined,{version:'laundry-print-1',piece:'piece-fern',rotation:0},{version:'laundry-print-1',piece:'piece-river',rotation:180}]){
+   await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:match-photos'),photoMatch}),/PHOTO_ALIGNMENT_REQUIRED/)
+   assert.deepEqual(s.get('owner',h.id),h)
+  }
+  await run('oldstreet:match-photos',{photoMatch:{version:'laundry-print-1',piece:'piece-river',rotation:0}})
+  assert.equal(h.save.facts['photos-matched'],true)
+  assert.equal(h.save.inventory.find(i=>i.id==='photos')?.count,1)
+  await run('oldstreet:return-photos');assert.equal(h.save.facts['photos-returned'],true)
+ }finally{raw.close()}
+})

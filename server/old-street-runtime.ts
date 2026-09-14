@@ -1,3 +1,4 @@
+import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
 import type {OriginalActionInterpreter} from './original-action-interpreter'
 import {originalActionIntentIssues} from '../src/original-action-intent'
 import {oldStreetActionNames} from '../src/old-street-action-input'
@@ -63,6 +64,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         body={...body,action}
       }
       if(!binding.admits(body.action,body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
+      if(body.action==='oldstreet:match-photos'&&!oldStreetPhotoMatches(body.photoMatch))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
       check({...h,position:pos})
       const c=oldStreetCartridge(h.save.locale),resolution=resolveDomainAction(h.save,c,body.action)
       if(!resolution || resolution.status!=='accepted')throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)

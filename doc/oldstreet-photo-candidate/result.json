@@ -1,0 +1,9 @@
+{
+  "request_id": "d3e44877-947e-4542-aacb-ff9285721f3a",
+  "task_id": "mt_fec8a38d7fb9b3d9a4bbb4e1841415df",
+  "status": "succeeded",
+  "source_url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789416899849555.png",
+  "path": "public/assets/oldstreet/laundry-print-v1.png",
+  "sha256": "725b27372703cb05e397053a3401c641ab787509361450ed4cb8e4146c6b4f86",
+  "review": "Candidate: actual CUA puzzle showed readable storefront halves, rejected mirrored piece and accepted correct right piece; not final art. White center seam and border violate intact-photo prompt. No group portrait or clock engraving claims supported."
+}

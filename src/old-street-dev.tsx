@@ -1,3 +1,4 @@
+import {OldStreetPhotoView} from './old-street-photo-view'
 import {oldStreetActionNames as actionNames} from './old-street-action-input'
 import {oldStreetPerson} from './old-street-characters'
 import {oldStreetSession} from './old-street-session'
@@ -33,6 +34,7 @@ export default function OldStreetDev() {
   const engine = useRef<any>()
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, setNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
+  const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
   const [typed, setTyped] = useState('')
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   const [feet, setFeet] = useState(head.position), [destination, setDestination] = useState<{x: number; y: number} | null>(null)
@@ -88,19 +90,32 @@ export default function OldStreetDev() {
     }, 1000)
     return () => clearInterval(timer)
   }, [ready,error])
+  async function restart(){
+    if(busyRef.current||!ready)return
+    busyRef.current=true;setBusy(true);runtime.current!.pause(true)
+    try{
+      const h=await connection.client.enroll(locale,true)
+      serverHead.current=h
+      await runtime.current!.restore(h.position,h.sceneId)
+      const next={save:h.save,scene:h.sceneId,position:h.position}
+      current.current=next;setHead(next);position.current=h.position;setFeet(h.position);setSelected(null);setError('');setNotice(cartridge.opening.blocks[0].text)
+      runtime.current!.pause(false)
+    }catch(e){setError(String(e))}finally{busyRef.current=false;setBusy(false)}
+  }
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
-  async function execute(id: string, target: string, input?:string) {
+  async function execute(id: string, target: string, input?:string, photoMatch?:unknown) {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
-      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current}})
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:{...position.current},...(photoMatch?{photoMatch}:{})})
       const nextHead = result.head as OldStreetHead
       serverHead.current = nextHead
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
-      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
-      runtime.current!.pause(Boolean(nextHead.save.facts.departed))
+      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      if(id==='oldstreet:match-photos'){if(result.accepted)setPhotoOpen(false);else setPhotoMessage(text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']))}
+      runtime.current!.pause(Boolean(nextHead.save.facts.departed)||(photoOpen&&!result.accepted))
     } catch (e) {setError(String(e)); runtime.current?.pause(true)}
     finally {busyRef.current = false; setBusy(false)}
   }
@@ -111,7 +126,7 @@ export default function OldStreetDev() {
     if (!entity || !runtime.current) return
     if (id === 'oldstreet:leave' && !confirmed) {setLeaving(true); return}
     busyRef.current = true; setBusy(true)
-    const started = runtime.current.walkTo(entity.approach, () => {void execute(id, entity.id)})
+    const started = runtime.current.walkTo(entity.approach, () => {if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
     if (!started) {busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
   }
   function sendInput(){
@@ -166,8 +181,9 @@ export default function OldStreetDev() {
     </footer>
     {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     <details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>
+    {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(false)}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p><button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
-    {outcome && <div className="os-modal" role="dialog" aria-label={text(['旅程结果','Journey result'])}><section><h2>{head.save.finale.ending?.title ?? text(['信已送到','Letter delivered'])}</h2><p>{head.save.finale.ending?.thesis}</p>{head.save.finale.ending?.preserved.map((line,i)=><p key={'p'+i}>{line}</p>)}{head.save.finale.ending?.unresolved.map((line,i)=><p key={'u'+i}>{line}</p>)}</section></div>}
+    {outcome && <div className="os-modal" role="dialog" aria-label={text(['旅程结果','Journey result'])}><section><h2>{head.save.finale.ending?.title ?? text(['信已送到','Letter delivered'])}</h2><p>{head.save.finale.ending?.thesis}</p>{head.save.finale.ending?.preserved.map((line,i)=><p key={'p'+i}>{line}</p>)}{head.save.finale.ending?.unresolved.map((line,i)=><p key={'u'+i}>{line}</p>)}<button disabled={busy||!ready} onClick={()=>{void restart()}}>{text(['重新探索','Explore again'])}</button></section></div>}
   </main>
   function stick(e: React.PointerEvent<HTMLDivElement>) {
     if (!ready || busyRef.current || leaving || error || outcome) return
