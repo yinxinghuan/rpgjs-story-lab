@@ -31,5 +31,12 @@
   "remainingContract": "Server-side token verification returning authenticated user id, or authenticated private per-user storage with server-enforced isolation and complete own-record retrieval.",
   "liveRequests": 0,
   "credentialsReadOrCopied": false,
-  "productionChanges": false
+  "productionChanges": false,
+  "archiveStructureAudit": {
+    "scope": "All archive member names outside node_modules, .git and dist",
+    "serverAdapterIncluded": false,
+    "readmeDescription": "Browser CDN shell; loader, src, dev host simulator, tests, build/upload scripts",
+    "privateEnvFiles": "Not opened or extracted",
+    "conclusion": "apiProxy is a client forwarding option, not an included authenticated backend implementation. No signing keys or unverified browser ID used."
+  }
 }
