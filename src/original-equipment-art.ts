@@ -13,9 +13,11 @@ import {fanArt,originalFanState,fanRotationPose} from './original-fan-art'
 
 export const starterResource:SceneResource={kind:'background',path:'./art/starter-states-v1.png',sha256:'320bdfa057fc5b9069245664740b9cf0d9d8e19e8c830ea8116a31eb9fe9aebe',bytes:294319,width:640,height:640}
 export const starterArt={graphic:'original-starter-v1',foot:{x:160,y:544},scale:40/326,body:{x:-20,y:-14,w:40,h:18}}
-const starter=originalTrainChapterSpatialPlan().entities.find(e=>e.id==='starter')!
-const brakes=originalTrainChapterSpatialPlan().entities.find(e=>e.id==='brakes')!
-const fan=originalTrainChapterSpatialPlan().entities.find(e=>e.id==='tunnel-fan')!
+const equipmentEntities=originalTrainChapterSpatialPlan().entities
+const dieselEntities=equipmentEntities.filter(e=>isDieselEntity(e.id))
+const starter=equipmentEntities.find(e=>e.id==='starter')!
+const brakes=equipmentEntities.find(e=>e.id==='brakes')!
+const fan=equipmentEntities.find(e=>e.id==='tunnel-fan')!
 export function originalEquipmentHasArt(id:string,assets?:OriginalAssetBindings){return isDieselEntity(id)&&Boolean(originalFixedEquipment(assets)[id])||id==='brakes'&&originalFixedEquipment(assets).brakes==='brake-parts-v1'||id==='starter'||id==='tunnel-fan'&&Boolean(originalFanRelease(assets)||originalFixedEquipment(assets)['tunnel-fan'])}
 export function originalEquipmentSlots(scene:string,assets?:OriginalAssetBindings){
  return [...originalDieselSlots(scene,assets),...(scene===brakes.scene&&originalEquipmentHasArt('brakes',assets)?['base','hose'].map(layer=>({id:'art-brake-'+layer,entityId:'brakes',layer:'brake-'+layer,graphic:brakeArt.graphic,x:brakes.position.x,y:brakes.position.y-1+(layer==='hose'?.01:0)})):[]),...(scene===starter.scene?[{id:'art-starter',entityId:starter.id,layer:'starter',graphic:starterArt.graphic,x:starter.position.x,y:starter.position.y-1}]:[]),...(scene===fan.scene&&originalEquipmentHasArt(fan.id,assets)?['housing','rotor'].map(layer=>({id:'art-fan-'+layer,entityId:fan.id,layer,graphic:'original-fan-'+layer+'-v1',x:fan.position.x,y:fan.position.y-1+(layer==='rotor'?.01:0)})):[])]
@@ -33,4 +35,5 @@ export function originalStarterSheet(image:string,assets?:OriginalAssetBindings)
 export function originalFanResources(assets?:OriginalAssetBindings){const r=originalFanRelease(assets);return (['housing','rotor']as const).map(part=>{const f=r?.[part];return [part,f?{kind:'background' as const,path:layerReleasePath(r!.id)+'/'+part,sha256:f.sha256,bytes:f.bytes,width:f.width,height:f.height}:fanArt[part]]as const})}
 export function originalBoundFanSheets(housing:string,rotor:string,assets?:OriginalAssetBindings){const r=originalFanRelease(assets);return layeredSheets('original-fan',housing,rotor,r?.housing.width??320,r?.housing.height??640,r?.spec??fanPartsSpec).map(s=>({...s,id:s.id+'-v1'}))}
 
-export function originalDieselSlots(scene:string,assets?:OriginalAssetBindings){return originalTrainChapterSpatialPlan().entities.filter(e=>e.scene===scene&&isDieselEntity(e.id)&&originalEquipmentHasArt(e.id,assets)).map(e=>originalEntityLayout(assets,e)).map(e=>({id:'art-'+e.id,entityId:e.id,layer:e.id,graphic:dieselArt.graphic,x:e.position.x,y:e.position.y-1}))}
+// Only author definitions are shared. Bindings and art-specific positions remain live.
+export function originalDieselSlots(scene:string,assets?:OriginalAssetBindings){if(!assets)return [];return dieselEntities.filter(e=>e.scene===scene&&isDieselEntity(e.id)&&originalEquipmentHasArt(e.id,assets)).map(e=>originalEntityLayout(assets,e)).map(e=>({id:'art-'+e.id,entityId:e.id,layer:e.id,graphic:dieselArt.graphic,x:e.position.x,y:e.position.y-1}))}
