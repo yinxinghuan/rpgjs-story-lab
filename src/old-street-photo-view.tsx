@@ -1,3 +1,4 @@
+import {OldStreetPuzzleHints} from './old-street-puzzle-hints'
 import React,{useEffect,useRef,useState} from 'react'
 import {oldStreetPhotoPuzzle as puzzle} from './old-street-photo-puzzle'
 export function OldStreetPhotoView({locale,busy,submit,close,feedback}:{locale:'zh'|'en';busy:boolean;feedback:string;submit:(proof:unknown)=>void;close:()=>void}){
@@ -18,6 +19,7 @@ export function OldStreetPhotoView({locale,busy,submit,close,feedback}:{locale:'
    <button disabled={!piece||busy||!loaded} onClick={()=>setRotation(r=>r===0?180:0)}>{t('转半圈','Rotate half a turn')}</button>
    <button disabled={!piece||busy||!loaded} onClick={()=>submit({version:puzzle.version,piece:selected,rotation})}>{t('试着拼合','Try matching')}</button>
   </>}
+  {loaded&&!failed&&<OldStreetPuzzleHints locale={locale} kind="photo" disabled={busy}/>}
   {feedback && <p role="status">{feedback}</p>}
  </dialog>
 }

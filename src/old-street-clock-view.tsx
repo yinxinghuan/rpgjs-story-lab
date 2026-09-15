@@ -1,3 +1,4 @@
+import {OldStreetPuzzleHints} from './old-street-puzzle-hints'
 import {useEffect,useRef,useState} from 'react'
 import image from '../doc/oldstreet-clock-inspection/candidate.png'
 import {oldStreetClockPuzzle as puzzle} from './old-street-clock-puzzle'
@@ -19,6 +20,7 @@ export function OldStreetClockView({locale,busy,feedback,submit,close}:{locale:'
    {!loaded&&<p role="status">{t('正在拿近看……','Bringing it closer…')}</p>}
    {region!==null&&<><button disabled={busy} onClick={()=>setRegion(null)}>{t('换一处看看','Look elsewhere')}</button><p>{t('你看见了什么？','What can you make out?')}</p><div className="os-clock__choices">{[['leaf','一片树叶','A leaf'],['swallows','一对燕子','Two swallows'],['key','一把钥匙','A key']].map(([id,zh,en])=><button key={id} disabled={busy||!loaded} onClick={()=>submit({version:puzzle.version,region:regions[region][0],zoom:puzzle.zoom,mark:id})}>{t(zh,en)}</button>)}</div></>}
   </>}
+  {loaded&&!failed&&<OldStreetPuzzleHints locale={locale} kind="clock" disabled={busy}/>}
   {feedback&&<p role="status">{feedback}</p>}
  </dialog>
 }
