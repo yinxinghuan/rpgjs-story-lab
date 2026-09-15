@@ -1745,3 +1745,11 @@ old-street-shed-environment-layout 从真实 north stairs 与 floor 生成墙面
 原有照片拼合内存测试扩展为临时磁盘SQLite真实Authority旅程：从街口经推车清箱进地下室，取照片、去照相馆验证拼图、归还，再回地下室。每个接受行动后关闭数据库重开，取回head并重放同一action_id，检查完整head一致。photos-taken同时投射为空架图层状态及当前场景知识；归还后库存无照片，摄影师关系仅一条，回原地再次拿取拒绝且head不变。错误拼图仍不推进。
 
 Session专项20项通过。该验证覆盖持久权威、幂等和投射输入，未实际启动renderer，不替代锁屏期间暂缓的地图截图与触控复验。未更改生产代码、存档格式或线上版本。
+
+### 启动等待与迟到回调（2026-09-15）
+
+`startup-guard.ts`为单次旧街初始化设置90秒总等待上限，覆盖恢复旅程、下载、解码和创建地图。原文件下载25秒超时保持。失败显示已有恢复覆盖层，不自动重建RPG-JS全局实例，用户重连通过整页刷新恢复原Session。超时/卸载后的迟到runtime会被dispose，不写入当前runtime或setReady。
+
+代码检查发现createRpgRenderer的onReady发生在服务端changeMap返回后，不保证客户端onAfterLoading已经确认。旧街现在在onReady保持暂停，调用已有runtime.restore等待joined+loaded双确认和脚点恢复后才开启操作；沿用RendererTransition的30秒等待及dispose合同。没有改动原列车、共享引擎API或存档。引擎已创建的全局底层实例仍需整页刷新彻底释放，不宣称可在同页无限重建。
+
+专项15项覆盖下载、延迟地图确认、正常就绪、总超时、迟到回调、卸载和恢复失败，类型检查通过。电脑仍锁屏，已请求方便时解锁；本轮浏览器与真机启动复验未完成，不把函数测试当作完整画面就绪证据。

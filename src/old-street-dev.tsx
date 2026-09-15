@@ -1,3 +1,4 @@
+import {createStartupGuard} from './startup-guard'
 import photoShelfUrl from '../doc/oldstreet-photo-shelf/cutout.png'
 import {oldStreetPhotoShelfPose,oldStreetPhotoShelfSheets} from './old-street-photo-shelf'
 import OldStreetLoading from './old-street-loading'
@@ -103,6 +104,7 @@ export default function OldStreetDev() {
     const hero = actorArt.balanced.hero
     let mounted = true
     const downloads=new AbortController()
+    const boot=createStartupGuard(code=>{downloads.abort();if(mounted)setError(code)})
     let heroBlob: string | undefined
     let watchmakerBlob: string | undefined
     let lanBlob: string | undefined
@@ -115,7 +117,7 @@ export default function OldStreetDev() {
       let restored = await connection.client.enroll(locale)
       const recovered = await connection.client.recover()
       if (recovered) restored = recovered.head
-      if (!mounted) return
+      if (!mounted||!boot.pending()) return
       serverHead.current = restored
       const restoredView = {save:restored.save,scene:restored.sceneId,position:restored.position}
       current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
@@ -125,12 +127,13 @@ export default function OldStreetDev() {
       const sources=[{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'photoShelf',url:photoShelfUrl}]:[])]
       const urls=await downloadSpatialArt(sources,{signal:downloads.signal,progress:(done,total)=>{if(mounted)setLoading({stage:'art',done,total})}})
       photoShelfBlob=urls.photoShelf;heroBlob=urls.hero;watchmakerBlob=urls.watchmaker;lanBlob=urls.lan;xuBlob=urls.xu;drawerBlob=urls.drawer;trolleyBlob=urls.trolley;pixelPropsBlob=urls.props
-      if(!mounted){Object.values(urls).forEach(url=>URL.revokeObjectURL(url));return}
+      if(!mounted||!boot.pending()){Object.values(urls).forEach(url=>URL.revokeObjectURL(url));return}
       setLoading({stage:'textures',done:sources.length,total:sources.length})
       await Promise.all(Object.values(urls).map(url=>loadSpatialArtTexture(url,pixelShop?'nearest':'linear')))
+      if(!mounted||!boot.pending())return
       const preview=new Image();preview.src=heroBlob;await preview.decode()
-      if(mounted)setLoading({stage:'map',done:sources.length,total:sources.length})
-      if (!mounted) return
+      if(mounted&&boot.pending())setLoading({stage:'map',done:sources.length,total:sources.length})
+      if (!mounted||!boot.pending()) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
         initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
@@ -154,11 +157,15 @@ export default function OldStreetDev() {
           }
         },
         onEngine: e => {engine.current = e},
-        onReady: r => {runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)},
-        onFailure: code => {if (mounted) setError(code)},
+        onReady: async r => {
+          r.pause(true)
+          if(!await boot.acceptWhenReady(r,()=>r.restore(restored.position,restored.sceneId)))return
+          runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)
+        },
+        onFailure: code => {if(boot.pending())boot.fail(code);else if(mounted)setError(code)},
       })
-    } catch (e) {if (mounted) setError(String(e))}})()
-    return () => {mounted = false; downloads.abort(); runtime.current?.destroy(); if(photoShelfBlob) URL.revokeObjectURL(photoShelfBlob)
+    } catch (e) {boot.fail(String(e))}})()
+    return () => {mounted = false; boot.cancel(); downloads.abort(); runtime.current?.destroy(); if(photoShelfBlob) URL.revokeObjectURL(photoShelfBlob)
       if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(pixelPropsBlob)URL.revokeObjectURL(pixelPropsBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
   }, [])
   useEffect(() => {
