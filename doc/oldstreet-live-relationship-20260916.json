@@ -1,0 +1,72 @@
+{
+  "cases": [
+    {
+      "input": "我现在从你这里暂领打开寄信小格的那件工具。",
+      "type": "free-input",
+      "reply": "“钥匙在这，用完带回来。”他把钥匙递给你。",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 3728,
+      "receiptReused": true,
+      "hasKey": true,
+      "relationships": []
+    },
+    {
+      "input": "我现在把开寄信小格用的那件工具交回你手里。",
+      "type": "free-input",
+      "reply": "你把钥匙交还给修表师。他笑了：“说到做到，谢谢。”",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 2475,
+      "receiptReused": true,
+      "hasKey": false,
+      "relationships": [
+        {
+          "id": "411d47ed-e2ca-49f9-825d-ba22f769fe89:relationship",
+          "actor": "老周",
+          "characterId": "zhou-watchmaker",
+          "axis": "kept-promise",
+          "delta": 1,
+          "source": "oldstreet:return-key"
+        }
+      ]
+    },
+    {
+      "input": "以后我有东西坏了，还能来请你帮忙吗？",
+      "type": "dialogue",
+      "reply": "没问题，下次有什么东西坏了，直接来找我就行。钥匙我也能继续借给你用，记得用完还给我就好。",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 2036,
+      "receiptReused": true,
+      "hasKey": false,
+      "relationships": [
+        {
+          "id": "411d47ed-e2ca-49f9-825d-ba22f769fe89:relationship",
+          "actor": "老周",
+          "characterId": "zhou-watchmaker",
+          "axis": "kept-promise",
+          "delta": 1,
+          "source": "oldstreet:return-key"
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "used": 6,
+    "limit": 6
+  },
+  "scope": "New synthetic in-memory journey only. No real player/account/save data. At most six upstream requests.",
+  "semanticReview": {
+    "passed": true,
+    "notes": [
+      "两次自然表达均不命中作者输入别名，真实模型映射到借还钥匙。",
+      "归还后恰有一次守约关系事件，后续对白与允许再次修理/借用的现有规则一致。",
+      "最后对白提及以后仍可借钥匙，但没有实际发放物品或增加关系。"
+    ],
+    "limits": [
+      "当前实证是本地 SessionAuthority 连接真实平台模型，不是生产 Worker 或手机端整段试玩。",
+      "未验证任意自由输入或所有人物关系。"
+    ]
+  }
+}
