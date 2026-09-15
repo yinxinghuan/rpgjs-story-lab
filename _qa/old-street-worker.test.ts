@@ -210,3 +210,26 @@ test('ordinary model dialogue can retry after refusal and recover a lost reply w
   assert.deepEqual(restored.save.facts,head.save.facts)
  }finally{h.close()}
 })
+
+for(const type of ['free-input','dialogue'])test(`provider failure before ${type} leaves no pending command and authored play remains available`,async()=>{
+ const {oldStreetSessionHttp}=await import('../src/old-street-session')
+ let calls=0
+ const h=harness(true,undefined,undefined,async()=>{calls++;throw Error('MODEL_HTTP_503')})
+ const values=new Map<string,string>(),storage={get length(){return values.size},key:(i:number)=>[...values.keys()][i]??null,getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v)},removeItem:(k:string)=>{values.delete(k)}} as Storage
+ const lock=async<T>(_key:string,work:()=>Promise<T>)=>work()
+ const transport:typeof fetch=async(input,init)=>handler(new Request(input,init),h.env)
+ try{
+  const client=oldStreetSessionHttp(storage,lock,transport,'https://worker.invalid').client
+  let head=await client.enroll('zh')
+  const action=async(id:string)=>{const e=oldStreetSpatialPlan(head.save).entities.find(e=>e.scene===head.sceneId&&e.actions.includes(id))!;head=(await client.send(head,{type:'action',action:id,target:e.id,position:e.approach})).head}
+  for(const room of ['photo','roof','shed'])await action(oldStreetDoors().find(d=>d.room===head.sceneId&&d.destination.room===room)!.actionId)
+  await action('oldstreet:greet-watchmaker')
+  const person=oldStreetSpatialPlan(head.save).entities.find(e=>e.id==='watchmaker')!
+  const result=await client.send(head,{type,text:type==='dialogue'?'钥匙用完以后要怎么处理？':'我现在从你这里暂领打开寄信小格的那件工具。',target:person.id,position:person.approach})
+  assert.equal(result.accepted,false);assert.equal(result.rejectionCode,'OLD_STREET_MODEL_UNAVAILABLE')
+  assert.deepEqual(result.head,head);assert.equal(client.hasPending(),false);assert.equal(calls,1)
+  await action('oldstreet:borrow-key')
+  assert.ok(head.save.inventory.some(i=>i.id==='letter-key'));assert.equal(calls,1)
+  h.reopen();assert.deepEqual(await client.enroll('zh'),head)
+ }finally{h.close()}
+})

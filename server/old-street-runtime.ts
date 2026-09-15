@@ -26,6 +26,14 @@ const unavailable:OldStreetGate = () => {throw new LabError('OLD_STREET_PRESENTA
 const plan = oldStreetSpatialPlan()
 /** Installs story semantics in the existing transaction authority, not a second save engine.
  * No production route is enabled until real presentation admission is supplied. */
+/** Only wraps the model await before a candidate or commit exists. Transport
+ * failures after a Session commit must remain ambiguous and recover by receipt. */
+async function oldStreetModelCall<T>(work:()=>Promise<T>):Promise<T>{
+ try{return await work()}catch(error){
+  if(error instanceof LabError&&['OLD_STREET_DIALOGUE_TIMEOUT','OLD_STREET_DIALOGUE_REJECTED'].includes(error.code))throw error
+  throw new LabError('OLD_STREET_MODEL_UNAVAILABLE',409)
+ }
+}
 export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined):SessionRuntime<OldStreetHead> {
   const check=(h:OldStreetHead,previous?:OldStreetHead,id?:string)=>{
     assertOldStreetHead(h)
@@ -60,7 +68,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
           if(originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
           if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
           if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
-          const candidate=await interpreter(body.text,{locale:h.save.locale,sceneId:h.sceneId,target:body.target,objective:h.save.objective,actions})
+          const candidate=await oldStreetModelCall(()=>interpreter!(body.text,{locale:h.save.locale,sceneId:h.sceneId,target:body.target,objective:h.save.objective,actions}))
           if(candidate&&allowed.includes(candidate))action=candidate
         }
         if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
@@ -112,7 +120,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const text=body.text.trim(),authored=oldStreetAuthoredTalkReply(h.save,body.target,text),useModel=(body.mode==='live'||body.mode===undefined&&!!dialogue)&&authored===null
         if(useModel&&!dialogue)throw new LabError('OLD_STREET_DIALOGUE_NOT_READY',409)
         if(useModel&&!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
-        const reply=authored??(useModel?await dialogue!(text,oldStreetDialogueContext(h,body.target)):oldStreetTalkReply(h.save,body.target,text))
+        const reply=authored??(useModel?await oldStreetModelCall(()=>dialogue!(text,oldStreetDialogueContext(h,body.target))):oldStreetTalkReply(h.save,body.target,text))
         if(typeof reply!=='string'||!reply.trim()||reply.length>(useModel?300:650))throw new LabError('OLD_STREET_DIALOGUE_REJECTED',409)
         const save=structuredClone(h.save);save.blocks.push(...oldStreetTalkBlocks(save,body.target,body.action_id,text,reply))
         const next={...h,version:h.version+1,position:pos,save};check(next,h)
@@ -130,7 +138,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
           if(!actions.length||originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
           check({...h,position:pos})
           if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
-          const candidate=await interpreter(body.text,{locale:h.save.locale,sceneId:h.sceneId,target:entity.id,objective:h.save.objective,actions:structuredClone(actions)})
+          const candidate=await oldStreetModelCall(()=>interpreter!(body.text,{locale:h.save.locale,sceneId:h.sceneId,target:entity.id,objective:h.save.objective,actions:structuredClone(actions)}))
           if(candidate&&actions.some(a=>a.id===candidate))action=candidate
         }
         if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
