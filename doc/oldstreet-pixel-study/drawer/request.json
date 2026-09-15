@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "758d3dd4-b782-44d7-925d-e2c3b5fab42e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/42620c1d7426d3d2bf6f038538d029385c4420b5/public/assets/oldstreet/drawer-state-guide.png"
+  ],
+  "size": {
+    "width": 1536,
+    "height": 768
+  },
+  "prompt": "Render this EXACT three-state furniture layout as authentic chunky hand-pixeled 2D RPG PIXEL ART. Preserve geometry, locations and steep overhead orthographic projection. All tabletop sides parallel, no vanishing point. Internally draw on a 256x128 pixel grid and nearest-neighbor enlarge 6x: visible square 6px clusters, chunky 6-12px dark brown outer contours, 3 discrete shade steps per material, large clean shapes. Limited warm desaturated oak brown, cream paper and brass palette. NO painterly shading, photographic texture, gradients, thin lines, tiny scratches, antialiasing or grain noise. Sparse stepped pixel wood marks only. Exactly 3 cells each 512x768. Tabletop top y192; feet baseline y494. LEFT closed drawer flush under tabletop, empty cardboard box on floor directly in front blocking drawer. MIDDLE drawer pulled forward, paper receipt left and round magnifying glass right, empty box moved to LEFT beside table. RIGHT identical middle with magnifying glass removed, receipt stays. Same table size, details, anchor and camera in every frame. Rectangular table top occupies x118..366 of first cell with analogous position in others. Preserve short legs and strong top-surface visibility. Pure solid MAGENTA #ff00ff outside all objects including leg gaps. No shadow on magenta, no checkerboard, no text, no labels, no extra objects. Match a dark-outlined yellow coat overhead RPG protagonist with visible large pixels."
+}

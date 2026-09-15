@@ -1,0 +1,10 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "8c5b06f7-65ce-49d1-abc6-e5fd1717c110",
+  "mode": "text",
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "prompt": "A 2x2 sprite sheet of FOUR isolated PIXEL ART objects for an overhead orthographic old watch repair shop RPG. Each cell exactly 512x512. Same pixel scale throughout: chunky 8px square pixel clusters and 8-16px dark brown outlines, discrete 3-tone shading, muted warm oak brown and brass palette. No fine detail, no gradient, no antialiasing, no photographic texture, no noise, no painterly grain. Steep 55-degree downward orthographic camera: visible rectangular tops, front faces shortened, parallel vertical and horizontal edges, no vanishing points. TOP LEFT: small squat oak cabinet with a single closed brass-locked cubby door. TOP RIGHT: EXACT SAME cabinet with door opened sideways to LEFT revealing a single cream sealed envelope inside. BOTTOM LEFT: EXACT SAME open cabinet now EMPTY with no envelope. BOTTOM RIGHT: small oak writing lectern with ONE thick open cream ledger resting on a sloped top, short stepped brown marks suggesting notes, no legible text. In each cell object fully inside x80..432, y80..432; floor contact at y432, cabinet top y96. All cabinet frames exactly same body width, height, placement, top depth, pixel size. Objects occupy about 300x336 pixels. Pure uniform #ff00ff magenta background throughout and inside all cutout gaps. No cast shadows, no people, no characters, no silhouettes of people, no decorations, no clocks, no extra loose objects, no labels. Large clean intentional color clusters, practical readable game sprites."
+}

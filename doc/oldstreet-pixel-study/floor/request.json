@@ -1,0 +1,10 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "6a25f9fe-5691-4558-976e-aaa7e1c7bed5",
+  "mode": "text",
+  "size": {
+    "width": 448,
+    "height": 832
+  },
+  "prompt": "Create a production 2D RPG PIXEL ART floor texture. Canvas 448x832, internally authored on a 224x416 pixel grid then nearest-neighbor enlarged exactly 2x. Every edge and color cluster follows this square grid. Flat overhead orthographic view, no perspective. Entire canvas is warm muted oak floorboards of a small old watch repair shop. Long vertical planks about 16 internal pixels wide with staggered joins. Limited palette of 8 muted warm ochre brown tones, low contrast. Sparse stepped 1-pixel grain marks and short broken highlights, large clean color clusters. Clear deliberate pixel art like a carefully hand-pixeled 16-bit RPG environment. No fine photographic noise, no smooth painted grain, no brush strokes, no antialiasing, no gradient, no dithering, no vignette, no lighting beams, no tiny scratches. No furniture, no borders, no walls, no doors, no objects, no text. Uniform overhead diffuse light. Edge-to-edge floor material only. Quiet background must not compete with chunky dark-outlined yellow-coat RPG character sprites."
+}

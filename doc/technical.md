@@ -1675,3 +1675,7 @@ oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹�
 `old-street-camera.ts` 只返回地图显示尺寸和平移，不更改地图坐标或 Session。默认世界铺底，镜头跟随脚点并避让标题及实际行动区高度；Canvas、背景和热点仍共享 stage，地面点击从 stage.getBoundingClientRect 反算。调试 `?debug=1&camera=overview` 可查看整图。实际本地约 365px 窗口已看到放大角色、从街口点击门进入修表铺以及镜头移动。纯函数分别验证 320×568、390×844、844×390 的边界与反换算；这些断言不是相应尺寸的实际设备画面验收。
 
 `old-street-context-action.ts` 从同一权威规则取可做动作，未认识人物仍先介绍，认识后不重复置顶问候，交还物件优先；无可做动作的已知人物进入已有话题，其他实体查看当前阻碍。结果只用于展示和排序，发送行动仍经原 Session 校验。中英文介绍/交还/交谈及关闭出口不变更存档的测试通过。探索回归共 63 项通过。
+
+### 修表铺像素候选入口（2026-09-15）
+
+`?shop_art=pixel` 选择 `doc/oldstreet-pixel-study/` 平台候选；无参数沿用旧素材。`old-street-floor.tsx` 负责候选地板，`old-street-prop-art.ts` 提供小格三态和记录册图集，`old-street-dev.tsx` 接入同一个 renderer event 与 save facts。候选开关不改变地图、碰撞、步态、权限或存档命名空间。去底/分帧来源脚本为 `scripts/prepare-oldstreet-pixel-study.mjs`。尚未生产准入，具体缺陷及实测边界见候选 review.md。

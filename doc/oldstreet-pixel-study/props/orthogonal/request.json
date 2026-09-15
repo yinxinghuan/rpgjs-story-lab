@@ -1,0 +1,10 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "0aa2bb07-13d0-4c07-acdf-72c46c2f133a",
+  "mode": "text",
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "prompt": "STRICT FRONT-ALIGNED OVERHEAD ORTHOGRAPHIC 2D RPG furniture atlas, NOT ISOMETRIC. Camera looks from SOUTH toward NORTH at a steep downward angle, with ZERO YAW. Every furniture top is an AXIS-ALIGNED RECTANGLE with exactly horizontal front and back edges, exactly vertical side edges. No diamond tops, no diagonally rotated furniture, no visible left/right side walls. Only large top and shortened FRONT face visible. 1024x1024 canvas, 2x2 equal 512px cells. Four isolated sprites in chunky 8px pixel clusters with 8px dark brown outlines, muted oak brown, 3 shade levels, sparse stepped grain, no noise or painted shading. Cell TOP LEFT: a squat locked oak cabinet, horizontal rectangular top, front face directly facing viewer with brass keyhole. Cell TOP RIGHT: identical cabinet, small front door opened outward LEFT, a sealed cream envelope inside. Cell BOTTOM LEFT: same open cabinet with envelope gone; opened door STILL PRESENT on left. Cell BOTTOM RIGHT: a short wooden lectern with open cream ledger, book top also aligned horizontal and vertical to the canvas. In each cell center at x256, ground contact y432, top edge y96, total width300. Preserve the exact cabinet body and placement across all three states. PURE FLAT MAGENTA background outside objects and gaps, no shadows. No people, text, labels, perspective convergence, isometric rotation, smooth gradients, thin details or photorealism. This is an overhead rectangular map asset set."
+}

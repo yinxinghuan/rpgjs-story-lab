@@ -1,0 +1,12 @@
+{
+  "sourceSha256": "d22c688a86ee4ce10374f2ce1204a7650715453a181dfb69e0b8b1918f5304d6",
+  "outputSha256": "3e9816d21b61486b1ff43f7daccae5af698a2c92f2314a725c4c0fcff120d220",
+  "sourceRetained": true,
+  "clipY": [
+    190,
+    502
+  ],
+  "removedPixels": 954127,
+  "operation": "magenta removal and optional furniture-only framing",
+  "productionAdmitted": false
+}

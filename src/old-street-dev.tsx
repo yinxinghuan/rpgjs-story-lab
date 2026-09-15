@@ -1,3 +1,6 @@
+import pixelDrawerUrl from '../doc/oldstreet-pixel-study/drawer/cutout.png'
+import pixelPropsUrl from '../doc/oldstreet-pixel-study/props/orthogonal/cutout.png'
+import {oldStreetCompartmentPose,oldStreetPixelPropSheet} from './old-street-prop-art'
 import {oldStreetCamera} from './old-street-camera'
 import {oldStreetContextAction} from './old-street-context-action'
 import {OldStreetDoorways} from './old-street-door-view'
@@ -35,6 +38,8 @@ import {createInitialSave} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 
+const pixelShop=new URLSearchParams(location.search).get('shop_art')==='pixel'
+const renderedProps=['watchmaker','laundry-owner','photographer','trolley','drawer',...(pixelShop?['letter-compartment','record-book']:[])]
 const plan = oldStreetSpatialPlan()
 const propNames: Record<string, [string, string]> = {
   drawer: ['抽屉', 'Drawer'], 'letter-compartment': ['小格', 'Compartment'], 'record-book': ['记录册', 'Record book'],
@@ -56,8 +61,8 @@ export default function OldStreetDev() {
   const runtime = useRef<RpgRendererRuntime>()
   const engine = useRef<any>()
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
-  const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>()
-  useEffect(()=>{if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
+  const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>(),compartmentEvent=useRef<RpgPlayer>()
+  useEffect(()=>{if(compartmentEvent.current){compartmentEvent.current.animationName.set(oldStreetCompartmentPose(head.save));compartmentEvent.current.syncChanges()}if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
@@ -89,6 +94,7 @@ export default function OldStreetDev() {
     let lanBlob: string | undefined
     let xuBlob: string | undefined
     let drawerBlob: string | undefined
+    let pixelPropsBlob:string|undefined
     let trolleyBlob: string | undefined
     void (async () => {try {
       let restored = await connection.client.enroll(locale)
@@ -113,15 +119,16 @@ export default function OldStreetDev() {
       lanBlob=URL.createObjectURL(await lanResponse.blob());await Assets.load({src:lanBlob,parser:'loadTextures'})
       const xuResponse=await fetch(xuStandingUrl);if(!xuResponse.ok)throw Error('XU_LOAD_FAILED')
       xuBlob=URL.createObjectURL(await xuResponse.blob());await Assets.load({src:xuBlob,parser:'loadTextures'})
-      const drawerResponse=await fetch(drawerStatesUrl);if(!drawerResponse.ok)throw Error('DRAWER_LOAD_FAILED')
+      const drawerResponse=await fetch(pixelShop?pixelDrawerUrl:drawerStatesUrl);if(!drawerResponse.ok)throw Error('DRAWER_LOAD_FAILED')
       drawerBlob=URL.createObjectURL(await drawerResponse.blob());await Assets.load({src:drawerBlob,parser:'loadTextures'})
+      if(pixelShop){const response=await fetch(pixelPropsUrl);if(!response.ok)throw Error('PIXEL_PROPS_LOAD_FAILED');pixelPropsBlob=URL.createObjectURL(await response.blob());await Assets.load({src:pixelPropsBlob,parser:'loadTextures'})}
       const trolleyResponse=await fetch(trolleyUrl);if(!trolleyResponse.ok)throw Error('TROLLEY_LOAD_FAILED')
       trolleyBlob=URL.createObjectURL(await trolleyResponse.blob());await Assets.load({src:trolleyBlob,parser:'loadTextures'})
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
         initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
-        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),standingActorSheet('oldstreet-xu',xuBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),oldStreetDrawerSheet(drawerBlob),oldStreetTrolleySheet(trolleyBlob)], mapEvents: room => {npcEvents.current={};trolleyEvent.current=undefined;drawerEvent.current=undefined;return oldStreetProjectedProps(current.current.save).filter(p=>p.room===room&&['watchmaker','laundry-owner','photographer','trolley','drawer'].includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(p.id==='drawer'?'oldstreet-drawer':p.id==='watchmaker'?'oldstreet-watchmaker':p.id==='trolley'?'oldstreet-trolley':p.id==='photographer'?'oldstreet-xu':'oldstreet-lan');this.animationName.set(p.id==='drawer'?oldStreetDrawerPose(current.current.save):p.id==='trolley'?oldStreetTrolleyPose(current.current.save):'stand');this.direction.set(Direction.Down);if(p.id==='drawer')drawerEvent.current=this;else if(p.id==='trolley')trolleyEvent.current=this;else npcEvents.current[p.id]=this;this.syncChanges()}}}))},
+        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),standingActorSheet('oldstreet-xu',xuBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),oldStreetDrawerSheet(drawerBlob),oldStreetTrolleySheet(trolleyBlob),...(pixelPropsBlob?[oldStreetPixelPropSheet(pixelPropsBlob,'letter-compartment'),oldStreetPixelPropSheet(pixelPropsBlob,'record-book')]:[])], mapEvents: room => {npcEvents.current={};trolleyEvent.current=undefined;drawerEvent.current=undefined;compartmentEvent.current=undefined;return oldStreetProjectedProps(current.current.save).filter(p=>p.room===room&&renderedProps.includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(['letter-compartment','record-book'].includes(p.id)?'oldstreet-'+p.id:p.id==='drawer'?'oldstreet-drawer':p.id==='watchmaker'?'oldstreet-watchmaker':p.id==='trolley'?'oldstreet-trolley':p.id==='photographer'?'oldstreet-xu':'oldstreet-lan');this.animationName.set(p.id==='letter-compartment'?oldStreetCompartmentPose(current.current.save):p.id==='drawer'?oldStreetDrawerPose(current.current.save):p.id==='trolley'?oldStreetTrolleyPose(current.current.save):'stand');this.direction.set(Direction.Down);if(p.id==='letter-compartment')compartmentEvent.current=this;else if(p.id==='record-book'){}else if(p.id==='drawer')drawerEvent.current=this;else if(p.id==='trolley')trolleyEvent.current=this;else npcEvents.current[p.id]=this;this.syncChanges()}}}))},
         walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
@@ -131,7 +138,7 @@ export default function OldStreetDev() {
         onFailure: code => {if (mounted) setError(code)},
       })
     } catch (e) {if (mounted) setError(String(e))}})()
-    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
+    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(pixelPropsBlob)URL.revokeObjectURL(pixelPropsBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
   }, [])
   useEffect(() => {
     const timer = setInterval(() => {
@@ -253,9 +260,9 @@ export default function OldStreetDev() {
       setSelected(null)
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        <OldStreetFloor room={head.scene as OldStreetRoom}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
+        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
-        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&['watchmaker','laundry-owner','photographer','trolley','drawer'].includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
+        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&renderedProps.includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
@@ -263,7 +270,7 @@ export default function OldStreetDev() {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
-        return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner','photographer','trolley','drawer'].includes(e.id)?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
+        return <button className={'os-target' + (door ? ' os-target--door' : '')+(renderedProps.includes(e.id)?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}><span className={door?'os-door-label':undefined}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</span></button>
       })}
     </div>

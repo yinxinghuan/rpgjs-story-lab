@@ -1,3 +1,4 @@
+import pixelFloor from '../doc/oldstreet-pixel-study/floor/candidate.png'
 import woodSurface from './assets/oldstreet/watch-shop-surface-v2.png'
 import laundrySurface from '../doc/oldstreet-laundry-candidate/correction/candidate.png'
 import {oldStreetFloors} from './old-street-space'
@@ -9,8 +10,9 @@ const surfaces = {
   laundry: {image:laundrySurface, crop:'240 300 500 938', wall:'#8d9879', floor:'#c3b391'},
 }
 /** Surface art never defines walkability. Room and thresholds use the collision layout. */
-export function OldStreetFloor({room}: {room: OldStreetRoom}) {
+export function OldStreetFloor({room, pixelShop=false}: {room: OldStreetRoom; pixelShop?:boolean}) {
   const floor = oldStreetFloors[room]
+  if(room==='shop'&&pixelShop)return <g><rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#806142" stroke="#30271e" strokeWidth="2"/><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#aa8452"/><image opacity=".55" href={pixelFloor} x={floor.x} y={floor.y} width={floor.w} height={floor.h} preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/></g>
   const surface = room==='shop'||room==='laundry'?surfaces[room]:null
   if (!surface) return <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>
   return <g>
