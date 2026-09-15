@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {
+      "input": "我现在从你这里暂领打开寄信小格的那件工具。",
+      "type": "free-input",
+      "reply": "“钥匙在这，用完带回来。”他把钥匙递给你。",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 3250,
+      "receiptReused": true,
+      "hasKey": true,
+      "relationships": []
+    },
+    {
+      "input": "我现在把开寄信小格用的那件工具交回你手里。",
+      "type": "free-input",
+      "reply": "你把钥匙交还给修表师。他笑了：“说到做到，谢谢。”",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 1710,
+      "receiptReused": true,
+      "hasKey": false,
+      "relationships": [
+        {
+          "id": "e1889b67-80dd-44d6-bc35-df705cc5b210:relationship",
+          "actor": "老周",
+          "characterId": "zhou-watchmaker",
+          "axis": "kept-promise",
+          "delta": 1,
+          "source": "oldstreet:return-key"
+        }
+      ]
+    },
+    {
+      "input": "以后我有东西坏了，还能来请你帮忙吗？",
+      "type": "dialogue",
+      "reply": "下次有东西要修，来叫我就好。我会帮忙的，像这次一样。",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 2002,
+      "receiptReused": true,
+      "hasKey": false,
+      "relationships": [
+        {
+          "id": "e1889b67-80dd-44d6-bc35-df705cc5b210:relationship",
+          "actor": "老周",
+          "characterId": "zhou-watchmaker",
+          "axis": "kept-promise",
+          "delta": 1,
+          "source": "oldstreet:return-key"
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "used": 6,
+    "limit": 6
+  },
+  "scope": "Compiled Worker opaque module, actual default provider, new in-memory SQLite journey. No real player data. Not workerd or deployed runtime. Bundle SHA256 9552bca7efd77dab246c6fe5a59d01dad3c2891acfa1c27c67c632be1d3bbb7b",
+  "review": {
+    "executionPassed": true,
+    "dialogueCaveat": "最后回复“像这次一样”可能被理解为已有一次修理；本轮只有借还钥匙，未发生修理。无物品/事实额外改变，暂作为措辞质量问题记录。",
+    "notVerified": [
+      "真实 workerd / Durable Object 环境",
+      "AlterU 平台画面与手机试玩"
+    ]
+  }
+}

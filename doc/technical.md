@@ -1944,3 +1944,9 @@ oldStreetCurrentPurpose 从权威库存、已介绍人物与取信事实派生�
 `oldStreetRuntime` 仅在提交前的模型调用边界捕获提供方失败，返回明确的 `OLD_STREET_MODEL_UNAVAILABLE`，不修改旅程。客户端把该明确拒绝及叙事频率限制视为已确认未执行，清除该请求待办并显示可继续选择现有行动的简短提示。对白内容拒绝和对白超时保留各自提示。此处理不包裹 Session 提交或 HTTP 传输；提交后的丢响应继续保留待办、重放同一回执，不能误清除。
 
 Worker/对白组合测试 15 项通过，其中新增两例分别模拟自然行动与交谈的提供方 503：原存档完全不变、待办清除、随后点击作者借钥匙行动仍成功且不调用模型、服务重开后可恢复。已有丢响应测试同时保持通过。类型检查通过。未进行新的真实模型请求，未发布；画面验证仍待可用窗口。
+
+### 编译后默认叙事入口实证（2026-09-16，本地）
+
+`scripts/test-oldstreet-bundled-narration.ts` 读取 `worker/index.js`，以 opaque data module 导入正式导出，用 `handleApi` 与未注入模型参数的 `CarriageJourneyAuthority` 跑当前旧街预览。唯一测试替代是内存 SQLite Durable Context；请求走真实平台模型，显式最多 6 次。本轮借还钥匙及后续关系对白三轮执行成功，单轮 3250 / 1710 / 2002 ms，原请求回放不再调用模型。证据及 bundle SHA256 在 `doc/oldstreet-bundled-narration-20260916.json`。最后回复“像这次一样”有暗示已发生修理的歧义，未造成状态变化，记录为未解决的措辞质量问题，不宣称所有对白语义完美。
+
+此测试证明编译产物与默认提供方装配可以执行，不冒充真正 workerd / Durable Object 部署或平台 UI 验收。CUA 当次仍报告锁屏。线上保持 `42b2262`，本地普通模型能力尚未随正式集中更新发布。
