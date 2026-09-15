@@ -19,6 +19,7 @@ export class OldStreetExpansionMedia{
   db.run('CREATE TABLE IF NOT EXISTS oldstreet_expansion_media_history_parts(owner TEXT NOT NULL,journey TEXT NOT NULL,id TEXT NOT NULL,attempt INTEGER NOT NULL,part INTEGER NOT NULL,data TEXT NOT NULL,PRIMARY KEY(owner,journey,id,attempt,part))')
   db.run('CREATE TABLE IF NOT EXISTS oldstreet_expansion_media_parts(owner TEXT NOT NULL,journey TEXT NOT NULL,id TEXT NOT NULL,part INTEGER NOT NULL,data TEXT NOT NULL,PRIMARY KEY(owner,journey,id,part))')
  }
+ candidateFor(h:OldStreetHead){const id=h.expansions?.[0]?.id;if(!id)return;const rows=this.db.all<{data:string}>('SELECT data FROM oldstreet_expansion_media WHERE journey=? AND id=?',h.id,id);if(rows.length!==1)return;const j=JSON.parse(rows[0].data) as ExpansionPhotoJob;return j.state==='candidate'?j.asset?.sha256:undefined}
  private key(owner:string,journey:string){const h=this.head(owner,journey),id=h.expansions?.[0]?.id;if(!id)throw new LabError('EXPANSION_NOT_REQUESTED',409);return {h,id}}
  private read(owner:string,journey:string,id:string):ExpansionPhotoJob|undefined{const row=this.db.all<{data:string}>('SELECT data FROM oldstreet_expansion_media WHERE owner=? AND journey=? AND id=?',owner,journey,id)[0];return row?JSON.parse(row.data):undefined}
  private put(owner:string,journey:string,j:ExpansionPhotoJob){this.db.run('INSERT OR REPLACE INTO oldstreet_expansion_media VALUES(?,?,?,?)',owner,journey,j.id,JSON.stringify(j))}
@@ -27,6 +28,7 @@ export class OldStreetExpansionMedia{
   const {h,id}=this.key(owner,journey)
   this.db.transaction(()=>{
    const old=this.read(owner,journey,id)
+   if(h.save.facts['darkroom-photo-matched'])return
    if(old&&(!retry||old.recoverable))return
    if(old&&old.nextAt>this.now())throw new LabError('PHOTO_RETRY_LATER',429)
    const p=this.plan(h)

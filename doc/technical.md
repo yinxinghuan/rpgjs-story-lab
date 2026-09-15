@@ -1874,3 +1874,5 @@ OldStreetExpansionMedia在原旅程数据库内按owner/journey/扩展请求ID�
 本地开发接口expansion-photo读状态/启动恢复，expansion-photo-file读取已保存字节。仅oldstreet-dev且expansion=1的暗房测试入口显示显影控件与候选。平台正式Worker尚未装配此接口；候选尚未绑定拼图或准入发现文案。图片结构检查采用inspectSizedPng的768×576合同，原journal保留768×1024合同。
 
 已完成真实平台生成，并在暗房页面实际显示。最初提示中的two-half puzzle导致分隔线；去掉玩法指令后连续画面恢复，但摄影颗粒与像素美术不匹配，继续按用户反馈修正。数据库重开、下载失败后同任务恢复、PNG持久读取的合成核心测试已通过；不将其称为完整动态解谜闭环。
+
+扩展照片现复用OldStreetPhotoView，传入当前旅程图片URL和hash，保留原固定照片合同。expansion-photo-match通过Session事务检查暗房/接近工作台/当前候选hash及拼合参数，写darkroom-photo-matched并追加可见记录；随身与发现显示此记录，已完成照片停止重生成。本地浏览器已实际选片并成功提交，生产接口仍未装配。

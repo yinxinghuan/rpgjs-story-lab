@@ -404,7 +404,7 @@ test('prepared expansion opens a real bound room with observation and return tra
  const {compileExpansionPlan}=await import('../src/old-street-expansion-plan')
  const raw=new DatabaseSync(':memory:'),db=storage(raw)
  let jobs:InstanceType<typeof OldStreetExpansionJobs>
- const s=new OldStreetAuthority(db,admit,undefined,undefined,h=>jobs?.candidateFor(h))
+ const s=new OldStreetAuthority(db,admit,undefined,undefined,h=>jobs?.candidateFor(h),()=> 'a'.repeat(64))
  try{
   let h=s.create('synthetic-owner',randomUUID(),'zh')
   const go=async(to:string)=>{h=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===to)!.actionId))).head}
@@ -422,6 +422,13 @@ test('prepared expansion opens a real bound room with observation and return tra
   const {oldStreetWalkable}=await import('../src/old-street-space')
   assert.equal(oldStreetWalkable('darkroom',{x:160,y:180},h.save),false)
   assert.equal(oldStreetWalkable('darkroom',h.position,h.save),true)
+  const proof={action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-photo-match',photoMatch:{version:'a'.repeat(64),piece:'piece-river',rotation:0}}
+  await assert.rejects(s.action('synthetic-owner',h.id,{...proof,photoMatch:{...proof.photoMatch,version:'b'.repeat(64)}}),/ALIGNMENT_REQUIRED/)
+  const result=await s.action('synthetic-owner',h.id,proof);h=result.head
+  assert.equal(h.save.facts['darkroom-photo-matched'],'a'.repeat(64))
+  assert.deepEqual(await s.action('synthetic-owner',h.id,proof),result)
+  assert.equal(s.get('synthetic-owner',h.id).save.facts['darkroom-photo-matched'],'a'.repeat(64))
   await go('photo');assert.equal(h.save.facts['darkroom-ready'],true)
+  assert.equal(h.save.facts['darkroom-photo-matched'],'a'.repeat(64))
  }finally{raw.close()}
 })
