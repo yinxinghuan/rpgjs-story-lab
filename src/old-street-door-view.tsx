@@ -1,15 +1,29 @@
 import {oldStreetDoors} from './old-street-space'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
-
-/** Preview geometry is projected from the same endpoints as movement and travel. */
+const elevation:Record<OldStreetRoom,number>={street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
+/** Physical variants share the existing endpoints; decoration cannot create a route. */
 export function OldStreetDoorways({room,facts}:{room:OldStreetRoom;facts:StorySave['facts']}){
  return <g>{oldStreetDoors().filter(d=>d.room===room).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
+  const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
   return <g key={d.id} transform={`translate(${d.position.x} ${d.position.y}) rotate(${angle})`}>
-   <rect x="-23" y="-10" width="46" height="27" fill="#a79b82"/>
-   {d.kind==='stairs'?<g fill="none" stroke="#554b3c" strokeWidth="2"><path d="M-21-9V17M21-9V17M-20-7H20M-20-1H20M-20 5H20M-20 11H20M-20 17H20"/></g>:d.kind==='door'?<g><rect x="-25" y="-11" width="6" height="30" fill="#60513c"/><rect x="19" y="-11" width="6" height="30" fill="#60513c"/><path d="M-18 14H18" stroke="#e4d4aa" strokeWidth="3"/></g>:<path d="M-23-10V14M23-10V14" fill="none" stroke="#756c59" strokeWidth="4"/>}
-   {closed?<g stroke="#785145" strokeWidth="4"><path d="M-19-4L19 10M-19 10L19-4"/></g>:<path d="M-5 5L0 0L5 5" fill="none" stroke="#f6ead0" strokeWidth="2"/>}
+   {d.kind==='alley'?<g>
+    <path d="M-25 18V-22H25V18" fill="#b0a58d"/>
+    <path d="M-24-22V-9M24-22V-9" stroke="#625e4f" strokeWidth="6"/>
+    <path d="M-22-12H22M-22-2H22M-22 8H22M-10-22V-12M9-12V-2M-6-2V8M12 8V18" stroke="#817966" strokeWidth="1" fill="none"/>
+   </g>:d.kind==='stairs'?<g>
+    <rect x="-24" y="-16" width="48" height="38" fill={outdoor?'#353f40':'#514e43'}/>
+    {[0,1,2,3,4].map(i=><g key={i}><rect x="-20" y={-14+i*7} width="40" height="6" fill={outdoor?(up?'#818d89':'#626f6c'):(up?'#b5ac93':'#928971')} opacity={up?.72+i*.055:1-i*.07}/><path d={`M-19 ${-14+i*7}H19`} stroke={outdoor?'#b1b9af':'#d7ceb5'} strokeWidth="1"/></g>)}
+    <path d="M-24-16V22M24-16V22" stroke={outdoor?'#525d59':'#726956'} strokeWidth="3"/>
+    {outdoor&&<path d="M-27-18V15M27-18V15M-27-18H-23M27-18H23" stroke="#a0a69a" strokeWidth="2" fill="none"/>}
+   </g>:<g>
+    <rect x="-23" y="-10" width="46" height="29" fill="#8f846e"/>
+    <path d="M-19 11H19M-19 16H19" stroke="#cabca0" strokeWidth="2"/>
+    <rect x="-26" y="-13" width="6" height="33" fill="#584731"/><rect x="20" y="-13" width="6" height="33" fill="#584731"/>
+    <path d="M-24-12V17M22-12V17" stroke="#a88b57" strokeWidth="1"/>
+    {closed?<g><rect x="-20" y="-10" width="40" height="21" fill="#776145" stroke="#403b2e" strokeWidth="2"/><path d="M-12-9V10M-4-9V10M4-9V10M12-9V10" stroke="#9e8156"/><rect x="-10" y="-2" width="20" height="3" fill="#434c48"/><rect x="6" y="-4" width="3" height="7" fill="#a1a69a"/></g>:<g><path d="M-20-10L-32-17V8L-20 13Z" fill="#896e47" stroke="#493c2b" strokeWidth="2"/><path d="M-23-8L-29-12V5L-23 8Z" fill="none" stroke="#b09059" strokeWidth="1"/></g>}
+   </g>}
   </g>
  })}</g>
 }

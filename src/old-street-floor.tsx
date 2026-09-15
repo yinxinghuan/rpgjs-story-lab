@@ -1,3 +1,5 @@
+import {oldStreetShopWallRegions} from './old-street-shop-environment-layout'
+import {OldStreetPhotoEnvironment} from './old-street-photo-environment'
 import {oldStreetWoodTile,oldStreetStoneTile} from './old-street-floor-material'
 import {OldStreetShedEnvironment} from './old-street-shed-environment'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
@@ -10,8 +12,19 @@ const surfaces = {
   laundry: {crop:'240 300 500 938', wall:'#8d9879', floor:'#c3b391'},
 }
 /** Surface art never defines walkability. Room and thresholds use the collision layout. */
-export function OldStreetFloor({room, pixelShop=false, art=oldStreetEnvironmentArt}: {room: OldStreetRoom; pixelShop?:boolean;art?:OldStreetEnvironmentArt}) {
+export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=oldStreetEnvironmentArt}: {room: OldStreetRoom; pixelShop?:boolean;compositeShop?:boolean;art?:OldStreetEnvironmentArt}) {
   const floor = oldStreetFloors[room]
+  // One generated atmosphere image, projected into authoritative floor/wall regions.
+  // Generated doorway coordinates are not trusted; retain runtime doors and props.
+  if(room==='shop'&&compositeShop)return <g>
+    <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#554b3b"/>
+    <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="104 320 560 736" preserveAspectRatio="none" overflow="hidden">
+      <image href={art.shopComposite} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
+    </svg>
+    {oldStreetShopWallRegions().map((r,i)=><svg key={i} x={r.x} y={r.y} width={r.width} height={r.height} viewBox={i===0?'90 28 184 264':'474 28 215 264'} preserveAspectRatio="none" overflow="hidden">
+      <image href={art.shopComposite} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
+    </svg>)}
+  </g>
   // This candidate has ~16 actual plank columns, not the requested 32.
   // Tile at half-room width: ~7 world units per plank, independent of camera zoom.
   if(room==='shop')return <g>
@@ -26,7 +39,7 @@ export function OldStreetFloor({room, pixelShop=false, art=oldStreetEnvironmentA
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-yard-stone)" stroke="#81786c" strokeWidth="6"/>
   </g>
   const surface = room==='laundry'?surfaces[room]:null
-  if (!surface) return <g><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>{pixelShop&&room==='shed'&&<OldStreetShedEnvironment image={art.shedWall}/>}</g>
+  if (!surface) return <g><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>{pixelShop&&room==='shed'&&<OldStreetShedEnvironment image={art.shedWall}/>} {pixelShop&&room==='photo'&&<OldStreetPhotoEnvironment image={art.photoWall}/>}</g>
   return <g>
     <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill={surface.wall} stroke="#463d31" strokeWidth="2"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill={surface.floor}/>

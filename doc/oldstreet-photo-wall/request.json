@@ -1,0 +1,10 @@
+{
+  "requestId": "6bf2d248-aa19-4e41-b42e-c76a29d6dd4c",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 768,
+    "height": 256
+  },
+  "prompt": "A north-wall background strip for an overhead orthographic 2D pixel-art old photographic studio RPG. Exact canvas 768x256. Two separate wall panels with completely flat pure magenta #ff00ff gap: LEFT panel x0..383 full height; middle x384..511 EMPTY; RIGHT panel x512..767 full height. Top edges and vertical edges remain parallel, no isometric yaw or perspective convergence. Steep overhead camera, thin visible wood cap on top, short wall face, no floor or ceiling. Restrained detailed pixel-painted style, crisp dark brown 3-5px outlines and small deliberate pixel clusters, muted sage-gray plaster, warm oak trim. LEFT: narrow wall-mounted wooden shelf holding a few small CLOSED dark film tins and two cream paper rolls; a short row of empty drying clips above it. RIGHT: two small EMPTY wood frames leaning on a narrow wall shelf, one simple dark box camera silhouette on the shelf. All objects mounted within the wall rectangles, small relative to wall, no freestanding furniture. No people, no portraits, no actual photographs, no text or numbers, no light bloom, no gradients, no photographic noise, no rough oversized pixels. No objects cross into the middle gap. Both panels end in a straight horizontal dark wood bottom trim, no floor below. This is quiet environment dressing, not an interactive puzzle object. Match warm oak outlined sprites and a yellow-jacket top-down character."
+}

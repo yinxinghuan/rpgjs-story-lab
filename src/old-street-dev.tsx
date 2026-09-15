@@ -1,3 +1,4 @@
+import {OldStreetGroundDetail} from './old-street-ground-detail'
 import {oldStreetRecoveryMessage} from './old-street-recovery-message'
 import cratesUrl from '../doc/oldstreet-crates/cutout.png'
 import {oldStreetCratesSheet} from './old-street-crates'
@@ -53,8 +54,9 @@ import {createInitialSave} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 
-const pixelShop=new URLSearchParams(location.search).get('shop_art')==='pixel'
-const environmentDownloads=oldStreetEnvironmentDownloads(pixelShop)
+const compositeShop=new URLSearchParams(location.search).get('shop_environment')==='whole'
+const pixelShop=compositeShop||new URLSearchParams(location.search).get('shop_art')==='pixel'
+const environmentDownloads=oldStreetEnvironmentDownloads(pixelShop,compositeShop)
 const renderedProps=['watchmaker','laundry-owner','photographer','trolley','drawer',...(pixelShop?['letter-compartment','record-book','photo-folder','viewing-table','clock-display','crates']:[])]
 const plan = oldStreetSpatialPlan()
 const propNames: Record<string, [string, string]> = {
@@ -309,7 +311,7 @@ export default function OldStreetDev() {
       setSelected(null)
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} art={environmentArt}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
+        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&renderedProps.includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}

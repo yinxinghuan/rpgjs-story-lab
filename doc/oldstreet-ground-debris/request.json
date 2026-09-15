@@ -1,0 +1,10 @@
+{
+  "requestId": "6c0b1b89-cbb1-4f29-9ade-b24992231d5a",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "prompt": "A 2x2 atlas of FOUR separate small ground-detail decals for a weathered half-abandoned old neighbourhood in a 2D orthographic overhead pixel-art RPG. Exactly four 512x512 cells on 1024x1024 canvas. Strict straight-down view onto flat ground, no isometric perspective. Each small irregular patch stays within its cell x80..432 y130..400; many transparent-to-be gaps. TOP LEFT: loose sparse cluster of 7 dry ochre-brown fallen leaves and 2 tiny twigs. TOP RIGHT: 2 small crumpled faded cream paper scraps and one torn brown paper strip, absolutely no writing or marks. BOTTOM LEFT: 5 small irregular dull gray plaster flakes with 3 tiny muted brick fragments, flat on ground, no big rubble heap. BOTTOM RIGHT: a few desaturated dead leaves mixed with a tiny tuft of dry grass, flat and modest. Match restrained fine pixel-painted game objects, crisp small dark outlines, limited muted earthy palette; detailed individual shapes but no coarse giant pixel blocks, no photorealistic noise. No cast shadow, no ground surface, no border, grid, text, labels, people, containers, treasure, shiny pickups or whole furniture. Background uniform pure bright magenta #ff00ff everywhere and inside every gap, not purple. Four discrete decals only, not a complete scene. Designed to appear subtly near walls and corners at about 20-30 game units wide, smaller than a standing adult. Irregular asymmetrical placement, do not arrange objects symmetrically."
+}

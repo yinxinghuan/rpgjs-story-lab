@@ -1,0 +1,13 @@
+{
+  "requestId": "34f02f4c-bce6-45df-b906-39d6e273da6f",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789481359435127.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 1152
+  },
+  "prompt": "Recompose this environment into a STRICT TOP DOWN ORTHOGRAPHIC game floor background. Preserve lovely warm light, old sage plaster, fine oak grain, dust and restrained detailed pixel art. CAMERA MUCH MORE OVERHEAD. ALL floorboard long edges strictly parallel vertical lines, NO trapezoid room. Map geometry is more important than furnishings. Exact 768x1152 canvas. Floor rectangle corners exactly (160,160),(608,160),(608,992),(160,992). North wall only occupies y32 to160, never below160. Left/right walls only outside x160..608. Remove the large freestanding shelves/cabinets completely. North wall is LOW and short, only small mounted empty clock cases and rusty hooks. Cut a OPEN NORTH DOORWAY through north wall between x360 and456 for the full y32..160, showing a dark passage with continuous floor. Keep south open doorway x384..480 at y992. Outside room perimeter dark neutral. ENTIRE floor rectangle empty: NO cabinets, shelves, furniture, clocks, books, people, tools, rugs or letters on the floor. All interactive furniture will be separately composited by game engine. Tiny leaves and dirt only at outermost floor edges. Fine wood boards about14px wide. Soft afternoon light patch on left floor, moderate shadows. No perspective converging lines. CRITICAL north doorway must stay open and floor begins at y160, not halfway down image. No UI or text."
+}

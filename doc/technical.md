@@ -1801,3 +1801,9 @@ old-street-environment-art.ts 纳入yard图并复用启动下载/解码；仅pix
 old-street-recovery-message.ts 将错误映射为双语恢复说明，普通界面不回显接口正文、URL或内部代码；调试入口才显示原错误。加载页复用同一说明。特写中出现错误会关闭照片/钟底面板、暂停空间模拟并露出恢复入口；关闭特写不再无条件解除错误暂停，地图点击与输入框也受错误状态约束。超时仍保留原Session待确认动作，不自动清档或重开。
 
 恢复消息与本地丢回执3项测试、类型检查通过；正常浏览器恢复到同一洗衣店、人物姓名与推车保持。此轮未在真实特写内再次注入网络失败，不能将控制代码检查当作该异常交互的实景验收。
+
+### 环境混合候选与入口表现（2026-09-15）
+
+old-street-environment-art.ts统一列出地面、北墙和杂物候选，按像素/整图开关选择下载，仍走现有下载超时和blob释放流程。old-street-ground-detail.tsx按房间放置低对比地面贴花，避开门中心，不添加碰撞；old-street-photo-environment-layout.ts从现有北门定义墙面裁切区。old-street-door-view.tsx按door/alley/stairs渲染门扇插销、连续铺地和踏步，地下/屋顶高度只影响踏步表现，不改权威连接。
+
+shop_environment=whole显式开启修表铺整图分区候选，并启用pixel互动家具；缺省仍保留原入口。old-street-floor.tsx从同一生成图片裁取完整地面与北墙两段，后门留空依旧来自oldStreetShopWallRegions。只整图候选下载shopComposite；所有物品、动作、寻路、碰撞、存档语义保持原合同。原图没有精确遵守布局，不能直接用其门位或墙边作为引擎边界。后续若统一家具光照应在同一游戏镜头复验，不把背景烘焙光误认作完整动态光照。
