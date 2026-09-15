@@ -1,0 +1,107 @@
+{
+  "commit": "923aa0b478cb8cb2d7d601b58619cdcb643fbc05",
+  "previewVersion": "oldstreet-preview-audio-expansion-20260916",
+  "tests": {
+    "local": 947,
+    "failures": 0,
+    "spatialJourneys": 120,
+    "spatialFailures": 0
+  },
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "files": [
+      {
+        "path": "index.html",
+        "bytes": 1684,
+        "sha256": "ca1bc951648d712aef8d1f489f32ac4f69c3b970963cb8dcf195ac599d7a8c3c"
+      },
+      {
+        "path": "assets/index-CcMFV_5Y.js",
+        "bytes": 73997,
+        "sha256": "dcf9555bb2032798a99da383350fa80547e6c089d3a54c4e4cd0dbf768efa159"
+      },
+      {
+        "path": "assets/old-street-dev-CinxPqha.js",
+        "bytes": 111873,
+        "sha256": "86b149ec9e183464923b8ed52d66227383b5461d3485575b3527ef67caed9045"
+      },
+      {
+        "path": "assets/candidate-4l6dkyvt.png",
+        "bytes": 168887,
+        "sha256": "79d87757b3e9d3af9c9de99a53a76aa49ba10cf57976ad95942bbcecd19dbec5"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.txt",
+        "bytes": 107869,
+        "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+      }
+    ],
+    "health": {
+      "ok": true,
+      "production": false,
+      "preview": true,
+      "previewVersion": "oldstreet-preview-audio-expansion-20260916",
+      "identityMode": "anonymous-capability-v1",
+      "runtimeContract": "oldstreet-session-1.map-2"
+    }
+  },
+  "smoke": {
+    "syntheticJourney": true,
+    "scene": "street",
+    "restored": true,
+    "capabilities": {
+      "planning": true,
+      "media": true
+    },
+    "modelCalls": 0,
+    "mediaCalls": 0
+  },
+  "distribution": {
+    "ok": true,
+    "session_id": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+    "page": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "health": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/api/health",
+    "remix": "https://github.com/yinxinghuan/rpgjs-story-lab/archive/refs/heads/main.zip",
+    "storage": "durable-object-sqlite",
+    "identity_mode": "anonymous-capability-v1"
+  },
+  "pagesRun": 35012456575,
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "files": [
+      {
+        "path": "index.html",
+        "bytes": 1684,
+        "sha256": "ca1bc951648d712aef8d1f489f32ac4f69c3b970963cb8dcf195ac599d7a8c3c"
+      },
+      {
+        "path": "assets/index-CcMFV_5Y.js",
+        "bytes": 73997,
+        "sha256": "dcf9555bb2032798a99da383350fa80547e6c089d3a54c4e4cd0dbf768efa159"
+      },
+      {
+        "path": "assets/old-street-dev-CinxPqha.js",
+        "bytes": 111873,
+        "sha256": "86b149ec9e183464923b8ed52d66227383b5461d3485575b3527ef67caed9045"
+      },
+      {
+        "path": "assets/candidate-4l6dkyvt.png",
+        "bytes": 168887,
+        "sha256": "79d87757b3e9d3af9c9de99a53a76aa49ba10cf57976ad95942bbcecd19dbec5"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.txt",
+        "bytes": 107869,
+        "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+      }
+    ],
+    "health": null
+  },
+  "limits": [
+    "Audio timbre and iPhone background recovery not verified by listening.",
+    "CUA sound toggle changed on to off; refresh observation interrupted by tool timeout.",
+    "Anonymous journey capabilities remain; no verified platform account binding.",
+    "Online smoke did not generate new content; real model/media previously verified through local Worker code."
+  ],
+  "pagesConclusion": "success"
+}
