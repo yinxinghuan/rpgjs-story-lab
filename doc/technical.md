@@ -1717,3 +1717,7 @@ old-street-action-input 补充常规物品操作的中英文完整句式：拿�
 `old-street-floor-material.ts` 从实际 room floor 得到源图裁切，校验范围并固定2:1源像素/世界单位。`OldStreetFloor` 用嵌套SVG viewBox裁切，不重新编辑PNG或拉伸源图。像素候选覆盖shop/shed；只有shop绘制原工作墙。其他房间保持原表现，没有把所有房间强行换成木地板。
 
 78项探索回归、类型检查和cloud构建通过。新增检查读取真实PNG头确认大小、两轴密度一致、裁切不越界、像素对齐、门口可行走及shop原取样范围未变。CUA在1280×720的5456独立旅程检查工作棚地板，点击行走后角色落脚正常，经院门前往修表铺；外部访客栏通过其关闭按钮收起。未新增游戏、未发布线上；工作棚家具与墙面仍未完成，窄屏与平台实机并未在本轮重新验收。
+
+### 工作棚北墙候选（2026-09-15）
+
+old-street-shed-environment-layout 从真实 north stairs 与 floor 生成墙面区域；old-street-shed-environment 只显示两个已检查的原图裁切，固定等比.25。像素候选 OldStreetFloor 在地板外加这一装饰层，未添加碰撞、热点、事件或剧情知识。79项探索回归、类型和cloud构建通过；实际窄屏靠近观察见 doc/oldstreet-shed-wall/review.md。原图生成间隔错误被明确丢弃，游戏通口保持48世界单位。未发布线上。

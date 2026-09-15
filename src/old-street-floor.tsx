@@ -1,3 +1,4 @@
+import {OldStreetShedEnvironment} from './old-street-shed-environment'
 import {oldStreetWoodRegion,oldStreetWoodSource} from './old-street-floor-material'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import pixelFloor from '../doc/oldstreet-pixel-study/floor/candidate.png'
@@ -22,6 +23,7 @@ export function OldStreetFloor({room, pixelShop=false}: {room: OldStreetRoom; pi
       <image opacity=".55" href={pixelFloor} width={oldStreetWoodSource.width} height={oldStreetWoodSource.height} style={{imageRendering:'pixelated'}}/>
     </svg>
     {room==='shop'&&<OldStreetShopEnvironment/>}
+    {room==='shed'&&<OldStreetShedEnvironment/>}
   </g>
   const surface = room==='shop'||room==='laundry'?surfaces[room]:null
   if (!surface) return <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>

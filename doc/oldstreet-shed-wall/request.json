@@ -1,0 +1,13 @@
+{
+  "requestId": "fc85ba21-a559-40c7-a4b3-9bdda96c49a6",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789454407046481.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 256
+  },
+  "prompt": "Create two fixed background WALL PANELS for the riverside work shed in the SAME 2D pixel RPG as the reference. Preserve the reference warm muted palette, chunky stepped pixel clusters, brown timber outlines and orthographic overhead RPG elevation. Make the line weight and pixels consistent across both panels. This is an environment sprite strip, not a perspective room illustration.\nExact layout: 768x256 canvas. Left panel occupies x=0..319, right panel x=448..767, with x=320..447 entirely flat magenta. Each panel fills its entire 320x256 rectangle edge-to-edge, no magenta inside either panel. No perspective convergence, no side walls, no floor, no shadows outside panels. Horizontal straight top and bottom edges. Both panels same height and scale. Flat warm gray-green plaster inside a dark weathered timber frame, brown baseboard at bottom.\nLEFT panel: a permanently bolted shallow wooden wall shelf, three closed unlabelled tins, a coiled rope on a fixed hook. RIGHT panel: fixed pegboard with tiny screwdrivers, pliers and a small hand saw attached to wall. Tool shapes simple and readable, subdued contrast. These are background work implements, no highlighted quest objects.\nNO clocks, watches, keys, letters, photographs, cupboards, doors, stairs, seats, tables, characters, text or numbers. The actual game will supply its staircase between the panels. Do not draw any entrance. Do not add tabletop or projecting furniture. Crisp deliberately hand-pixeled 16-bit RPG style. No glossy shading, no realistic noise, no brush texture, no gradient. All surfaces visible to the same fixed camera. Two rectangular wall modules only."
+}
