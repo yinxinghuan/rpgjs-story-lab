@@ -1,0 +1,1955 @@
+{
+  "commit": "42b2262310bfa68e4d0f4c38d1a76b2edac24816",
+  "previewVersion": "oldstreet-preview-art-gait-20260916",
+  "fixes": [
+    "Default entry loads admitted pixel props and complete shop environment without test query parameters.",
+    "Hero cycle reduced from 94.2857 to 56 world units; movement speed unchanged; footstep interval 28."
+  ],
+  "main": {
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "total": 160,
+    "matched": 160,
+    "failures": [],
+    "files": [
+      {
+        "path": "alteru-storage-scope.js",
+        "status": 200,
+        "bytes": 2136,
+        "match": true
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.txt",
+        "status": 200,
+        "bytes": 107869,
+        "match": true
+      },
+      {
+        "path": "art/ada-standing-v1.png",
+        "status": 200,
+        "bytes": 36405,
+        "match": true
+      },
+      {
+        "path": "art/approved/dawn-junction-c0b4a545.png",
+        "status": 200,
+        "bytes": 2472753,
+        "match": true
+      },
+      {
+        "path": "art/approved/mountain-pass-e83947a9.png",
+        "status": 200,
+        "bytes": 2851713,
+        "match": true
+      },
+      {
+        "path": "art/approved/graystone-yard-78f22e9b.png",
+        "status": 200,
+        "bytes": 3346737,
+        "match": true
+      },
+      {
+        "path": "art/approved/flood-bridge-e38ff237.png",
+        "status": 200,
+        "bytes": 2685518,
+        "match": true
+      },
+      {
+        "path": "art/approved/north-cape-8fc11a96.png",
+        "status": 200,
+        "bytes": 2811504,
+        "match": true
+      },
+      {
+        "path": "art/approved/pine-line-90af55e7.png",
+        "status": 200,
+        "bytes": 2736873,
+        "match": true
+      },
+      {
+        "path": "art/approved/tunnel-b084000a.png",
+        "status": 200,
+        "bytes": 3068960,
+        "match": true
+      },
+      {
+        "path": "art/baggage-car.png",
+        "status": 200,
+        "bytes": 2304167,
+        "match": true
+      },
+      {
+        "path": "art/approved/sleeping-town-f9922760.png",
+        "status": 200,
+        "bytes": 2807539,
+        "match": true
+      },
+      {
+        "path": "art/brake-parts-v1.png",
+        "status": 200,
+        "bytes": 167950,
+        "match": true
+      },
+      {
+        "path": "art/bench.png",
+        "status": 200,
+        "bytes": 1181880,
+        "match": true
+      },
+      {
+        "path": "art/carriage-floor.png",
+        "status": 200,
+        "bytes": 1944908,
+        "match": true
+      },
+      {
+        "path": "art/carriage-orthogonal.png",
+        "status": 200,
+        "bytes": 2251050,
+        "match": true
+      },
+      {
+        "path": "art/carriage-narrow.png",
+        "status": 200,
+        "bytes": 2190558,
+        "match": true
+      },
+      {
+        "path": "art/diesel-reserve-candidate-v1.png",
+        "status": 200,
+        "bytes": 311036,
+        "match": true
+      },
+      {
+        "path": "art/carriage-v2.png",
+        "status": 200,
+        "bytes": 2168551,
+        "match": true
+      },
+      {
+        "path": "art/fan-housing-v1.png",
+        "status": 200,
+        "bytes": 74600,
+        "match": true
+      },
+      {
+        "path": "art/direction-study.png",
+        "status": 200,
+        "bytes": 1966712,
+        "match": true
+      },
+      {
+        "path": "art/fan-rotor-v1.png",
+        "status": 200,
+        "bytes": 36046,
+        "match": true
+      },
+      {
+        "path": "art/lin-standing-v1.png",
+        "status": 200,
+        "bytes": 86794,
+        "match": true
+      },
+      {
+        "path": "art/driving-cab.png",
+        "status": 200,
+        "bytes": 2129062,
+        "match": true
+      },
+      {
+        "path": "art/hero-study.png",
+        "status": 200,
+        "bytes": 622067,
+        "match": true
+      },
+      {
+        "path": "art/mako-standing-v1.png",
+        "status": 200,
+        "bytes": 121059,
+        "match": true
+      },
+      {
+        "path": "art/mechanic-v2.png",
+        "status": 200,
+        "bytes": 684433,
+        "match": true
+      },
+      {
+        "path": "art/overhead/attendant.png",
+        "status": 200,
+        "bytes": 699200,
+        "match": true
+      },
+      {
+        "path": "art/original-north-cape.png",
+        "status": 200,
+        "bytes": 2566605,
+        "match": true
+      },
+      {
+        "path": "art/overhead/hero.png",
+        "status": 200,
+        "bytes": 508692,
+        "match": true
+      },
+      {
+        "path": "art/original-river-valley.png",
+        "status": 200,
+        "bytes": 3016350,
+        "match": true
+      },
+      {
+        "path": "art/overhead/mechanic.png",
+        "status": 200,
+        "bytes": 705093,
+        "match": true
+      },
+      {
+        "path": "art/overhead/hero-gait-v2.png",
+        "status": 200,
+        "bytes": 460181,
+        "match": true
+      },
+      {
+        "path": "art/overhead/props.png",
+        "status": 200,
+        "bytes": 1189225,
+        "match": true
+      },
+      {
+        "path": "art/references/starter-open-source-v1.png",
+        "status": 200,
+        "bytes": 186884,
+        "match": true
+      },
+      {
+        "path": "art/platform-north-cape-candidate.png",
+        "status": 200,
+        "bytes": 2221448,
+        "match": true
+      },
+      {
+        "path": "art/props-v2.png",
+        "status": 200,
+        "bytes": 1179076,
+        "match": true
+      },
+      {
+        "path": "art/ren-standing-v1.png",
+        "status": 200,
+        "bytes": 106450,
+        "match": true
+      },
+      {
+        "path": "art/starter-states-v1.png",
+        "status": 200,
+        "bytes": 294319,
+        "match": true
+      },
+      {
+        "path": "art/train-at-dawn-junction-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/rescue-walkway.png",
+        "status": 200,
+        "bytes": 2378719,
+        "match": true
+      },
+      {
+        "path": "art/train-at-flood-bridge-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-graystone-yard-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-mountain-pass-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-pine-line-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-sleeping-town-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-tunnel-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/yard-pump-candidate-v1.png",
+        "status": 200,
+        "bytes": 471277,
+        "match": true
+      },
+      {
+        "path": "art/seat.png",
+        "status": 200,
+        "bytes": 809035,
+        "match": true
+      },
+      {
+        "path": "art/train-equipment.png",
+        "status": 200,
+        "bytes": 3059804,
+        "match": true
+      },
+      {
+        "path": "assets/actor-sheet-DxhMDK9B.js",
+        "status": 200,
+        "bytes": 1096644,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-4l6dkyvt.png",
+        "status": 200,
+        "bytes": 168887,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-B7nVlJ2y.png",
+        "status": 200,
+        "bytes": 214355,
+        "match": true
+      },
+      {
+        "path": "assets/browser-journey-rP3M1ZQc.js",
+        "status": 200,
+        "bytes": 3737,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-BZEfYVu8.png",
+        "status": 200,
+        "bytes": 1027957,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-Bibbj1iy.png",
+        "status": 200,
+        "bytes": 198108,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-C0AW3pNZ.png",
+        "status": 200,
+        "bytes": 595691,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-CAUrsaIi.png",
+        "status": 200,
+        "bytes": 1131996,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-CBF1DSoB.png",
+        "status": 200,
+        "bytes": 688319,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-CvKq6ayX.png",
+        "status": 200,
+        "bytes": 1442049,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-D1S5jbBr.png",
+        "status": 200,
+        "bytes": 726652,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-D84gp_4I.png",
+        "status": 200,
+        "bytes": 939764,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-DMxtihrp.png",
+        "status": 200,
+        "bytes": 470738,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-DvlKojCf.png",
+        "status": 200,
+        "bytes": 161124,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-JGIVqWQG.png",
+        "status": 200,
+        "bytes": 250418,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-actual-DJV_mvu8.png",
+        "status": 200,
+        "bytes": 1704995,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-vUXoK7g8.png",
+        "status": 200,
+        "bytes": 287366,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-D6S-SCEu.png",
+        "status": 200,
+        "bytes": 2424351,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-w-nZI_co.png",
+        "status": 200,
+        "bytes": 226422,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-Dlz7kNu8.png",
+        "status": 200,
+        "bytes": 1167298,
+        "match": true
+      },
+      {
+        "path": "assets/creator-BTHba6TF.css",
+        "status": 200,
+        "bytes": 6247,
+        "match": true
+      },
+      {
+        "path": "assets/canvasengine-CCC-_bmI.js",
+        "status": 200,
+        "bytes": 1504206,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-zDXrcTTV.png",
+        "status": 200,
+        "bytes": 1348961,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-BW_myfX9.png",
+        "status": 200,
+        "bytes": 112239,
+        "match": true
+      },
+      {
+        "path": "assets/creator-96AUOBek.js",
+        "status": 200,
+        "bytes": 154952,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-BcewpqEK.png",
+        "status": 200,
+        "bytes": 220291,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-Boq3Si-6.png",
+        "status": 200,
+        "bytes": 132008,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-C4NoaVOX.png",
+        "status": 200,
+        "bytes": 243373,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-D0u-ODSR.png",
+        "status": 200,
+        "bytes": 82569,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-DGqIbAFJ.png",
+        "status": 200,
+        "bytes": 65325,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-h3UpCtkf.png",
+        "status": 200,
+        "bytes": 391838,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-t8SeP4xq.png",
+        "status": 200,
+        "bytes": 104757,
+        "match": true
+      },
+      {
+        "path": "assets/device-map-candidate-D_wxdvTK.js",
+        "status": 200,
+        "bytes": 152503,
+        "match": true
+      },
+      {
+        "path": "assets/index-CwMXFlS-.css",
+        "status": 200,
+        "bytes": 2542,
+        "match": true
+      },
+      {
+        "path": "assets/old-street-dev-D_ah6SJf.css",
+        "status": 200,
+        "bytes": 9990,
+        "match": true
+      },
+      {
+        "path": "assets/index-FmWtcSOp.js",
+        "status": 200,
+        "bytes": 73990,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/drawer-state-guide.png",
+        "status": 200,
+        "bytes": 17091,
+        "match": true
+      },
+      {
+        "path": "assets/old-street-dev-BsrZf3qe.js",
+        "status": 200,
+        "bytes": 112616,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/drawer-state-guide.svg",
+        "status": 200,
+        "bytes": 2927,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/laundry-layout-guide.png",
+        "status": 200,
+        "bytes": 15023,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/laundry-layout-guide.svg",
+        "status": 200,
+        "bytes": 327,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/watch-shop-layout-guide.png",
+        "status": 200,
+        "bytes": 16451,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/laundry-print-v1.png",
+        "status": 200,
+        "bytes": 1432933,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/watch-shop-layout-guide.svg",
+        "status": 200,
+        "bytes": 385,
+        "match": true
+      },
+      {
+        "path": "assets/original-action-intent-BgZ1-06j.js",
+        "status": 200,
+        "bytes": 562,
+        "match": true
+      },
+      {
+        "path": "assets/pixi-DMXpPjpr.js",
+        "status": 200,
+        "bytes": 276,
+        "match": true
+      },
+      {
+        "path": "assets/original-game-hucheqzP.css",
+        "status": 200,
+        "bytes": 9755,
+        "match": true
+      },
+      {
+        "path": "assets/reducer-Be2oj2DN.js",
+        "status": 200,
+        "bytes": 5404,
+        "match": true
+      },
+      {
+        "path": "assets/original-game-DSE-N4E9.js",
+        "status": 200,
+        "bytes": 137821,
+        "match": true
+      },
+      {
+        "path": "assets/rolldown-runtime-QTnfLwEv.js",
+        "status": 200,
+        "bytes": 694,
+        "match": true
+      },
+      {
+        "path": "assets/sprite-config-BohXmN3o.js",
+        "status": 200,
+        "bytes": 295,
+        "match": true
+      },
+      {
+        "path": "assets/sprite-preparation.worker-6PDCvCv8.js",
+        "status": 200,
+        "bytes": 4381,
+        "match": true
+      },
+      {
+        "path": "assets/space-C5CWLVFS.js",
+        "status": 200,
+        "bytes": 1451,
+        "match": true
+      },
+      {
+        "path": "assets/standing-BcZ9Ettq.png",
+        "status": 200,
+        "bytes": 196486,
+        "match": true
+      },
+      {
+        "path": "assets/states-DBvuQYjy.png",
+        "status": 200,
+        "bytes": 420469,
+        "match": true
+      },
+      {
+        "path": "assets/style-BOV4mFAg.js",
+        "status": 200,
+        "bytes": 359041,
+        "match": true
+      },
+      {
+        "path": "assets/standing-DbOl76CJ.png",
+        "status": 200,
+        "bytes": 193574,
+        "match": true
+      },
+      {
+        "path": "assets/style-NUDpuPK2.css",
+        "status": 200,
+        "bytes": 26711,
+        "match": true
+      },
+      {
+        "path": "creator.html",
+        "status": 200,
+        "bytes": 1658,
+        "match": true
+      },
+      {
+        "path": "index.html",
+        "status": 200,
+        "bytes": 1684,
+        "match": true
+      },
+      {
+        "path": "licenses/@pixi__colord.txt",
+        "status": 200,
+        "bytes": 1160,
+        "match": true
+      },
+      {
+        "path": "licenses/@hono__vite-dev-server.txt",
+        "status": 200,
+        "bytes": 1391,
+        "match": true
+      },
+      {
+        "path": "licenses/@rolldown__binding-darwin-arm64.txt",
+        "status": 200,
+        "bytes": 1302,
+        "match": true
+      },
+      {
+        "path": "licenses/@signe__reactive.txt",
+        "status": 200,
+        "bytes": 1069,
+        "match": true
+      },
+      {
+        "path": "licenses/glob-to-regexp.txt",
+        "status": 200,
+        "bytes": 1301,
+        "match": true
+      },
+      {
+        "path": "licenses/cssfontparser.txt",
+        "status": 200,
+        "bytes": 1158,
+        "match": true
+      },
+      {
+        "path": "licenses/stackback.txt",
+        "status": 200,
+        "bytes": 1352,
+        "match": true
+      },
+      {
+        "path": "licenses/yoga-layout.txt",
+        "status": 200,
+        "bytes": 1158,
+        "match": true
+      },
+      {
+        "path": "map/baggage.tmx",
+        "status": 200,
+        "bytes": 2183,
+        "match": true
+      },
+      {
+        "path": "map/cab.tmx",
+        "status": 200,
+        "bytes": 1618,
+        "match": true
+      },
+      {
+        "path": "map/carriage.png",
+        "status": 200,
+        "bytes": 8554,
+        "match": true
+      },
+      {
+        "path": "map/carriage.svg",
+        "status": 200,
+        "bytes": 5860,
+        "match": true
+      },
+      {
+        "path": "map/carriage.tmx",
+        "status": 200,
+        "bytes": 3176,
+        "match": true
+      },
+      {
+        "path": "map/carriage.tsx",
+        "status": 200,
+        "bytes": 176,
+        "match": true
+      },
+      {
+        "path": "map/dawn-junction-c0b4a545.tmx",
+        "status": 200,
+        "bytes": 1895,
+        "match": true
+      },
+      {
+        "path": "map/flood-bridge-e38ff237.tmx",
+        "status": 200,
+        "bytes": 1894,
+        "match": true
+      },
+      {
+        "path": "map/graystone-yard-78f22e9b.tmx",
+        "status": 200,
+        "bytes": 1893,
+        "match": true
+      },
+      {
+        "path": "map/mountain-pass-e83947a9.tmx",
+        "status": 200,
+        "bytes": 2174,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-cellar.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-darkroom.tmx",
+        "status": 200,
+        "bytes": 1339,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-laundry.tmx",
+        "status": 200,
+        "bytes": 1339,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-photo.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-roof.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-shed.tmx",
+        "status": 200,
+        "bytes": 1339,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-shop.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-street.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-yard.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/pine-line-90af55e7.tmx",
+        "status": 200,
+        "bytes": 2741,
+        "match": true
+      },
+      {
+        "path": "map/train-at-dawn-junction.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-dead-station.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-flood-bridge.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/sleeping-town-f9922760.tmx",
+        "status": 200,
+        "bytes": 1894,
+        "match": true
+      },
+      {
+        "path": "map/train-at-graystone-yard.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-mountain-pass.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-pine-line.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-sleeping-town.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-river-valley.tmx",
+        "status": 200,
+        "bytes": 1338,
+        "match": true
+      },
+      {
+        "path": "map/train-at-tunnel.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/transparent.png",
+        "status": 200,
+        "bytes": 98,
+        "match": true
+      },
+      {
+        "path": "map/walkway.tmx",
+        "status": 200,
+        "bytes": 1475,
+        "match": true
+      },
+      {
+        "path": "map/tunnel-b084000a.tmx",
+        "status": 200,
+        "bytes": 1893,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/index.html",
+        "status": 200,
+        "bytes": 16158,
+        "match": true
+      },
+      {
+        "path": "poster.png",
+        "status": 200,
+        "bytes": 1278857,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/scene-balanced.png",
+        "status": 200,
+        "bytes": 1955099,
+        "match": true
+      },
+      {
+        "path": "spritesheets/hero.png",
+        "status": 200,
+        "bytes": 2277,
+        "match": true
+      },
+      {
+        "path": "spritesheets/hero.svg",
+        "status": 200,
+        "bytes": 6939,
+        "match": true
+      },
+      {
+        "path": "spritesheets/mechanic.png",
+        "status": 200,
+        "bytes": 2254,
+        "match": true
+      },
+      {
+        "path": "spritesheets/mechanic.svg",
+        "status": 200,
+        "bytes": 6237,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/scene-current.png",
+        "status": 200,
+        "bytes": 1431986,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/scene-high.png",
+        "status": 200,
+        "bytes": 1879152,
+        "match": true
+      }
+    ]
+  },
+  "pagesRun": 35014701617,
+  "pagesStatus": "success",
+  "checks": {
+    "build": "passed",
+    "motionAudioTests": 14,
+    "defaultEntryBrowser": "photo, street, shop, drawer interaction passed"
+  },
+  "limits": [
+    "No iPhone animation capture; mobile perceived cadence remains to be judged.",
+    "Prior all-assets verification proves distribution, not visual placement; default-entry browser check covers representative rooms."
+  ],
+  "pages": {
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "total": 160,
+    "matched": 160,
+    "failures": [],
+    "files": [
+      {
+        "path": "alteru-storage-scope.js",
+        "status": 200,
+        "bytes": 2136,
+        "match": true
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.txt",
+        "status": 200,
+        "bytes": 107869,
+        "match": true
+      },
+      {
+        "path": "art/ada-standing-v1.png",
+        "status": 200,
+        "bytes": 36405,
+        "match": true
+      },
+      {
+        "path": "art/approved/dawn-junction-c0b4a545.png",
+        "status": 200,
+        "bytes": 2472753,
+        "match": true
+      },
+      {
+        "path": "art/approved/mountain-pass-e83947a9.png",
+        "status": 200,
+        "bytes": 2851713,
+        "match": true
+      },
+      {
+        "path": "art/approved/north-cape-8fc11a96.png",
+        "status": 200,
+        "bytes": 2811504,
+        "match": true
+      },
+      {
+        "path": "art/approved/sleeping-town-f9922760.png",
+        "status": 200,
+        "bytes": 2807539,
+        "match": true
+      },
+      {
+        "path": "art/approved/flood-bridge-e38ff237.png",
+        "status": 200,
+        "bytes": 2685518,
+        "match": true
+      },
+      {
+        "path": "art/approved/pine-line-90af55e7.png",
+        "status": 200,
+        "bytes": 2736873,
+        "match": true
+      },
+      {
+        "path": "art/approved/tunnel-b084000a.png",
+        "status": 200,
+        "bytes": 3068960,
+        "match": true
+      },
+      {
+        "path": "art/baggage-car.png",
+        "status": 200,
+        "bytes": 2304167,
+        "match": true
+      },
+      {
+        "path": "art/approved/graystone-yard-78f22e9b.png",
+        "status": 200,
+        "bytes": 3346737,
+        "match": true
+      },
+      {
+        "path": "art/brake-parts-v1.png",
+        "status": 200,
+        "bytes": 167950,
+        "match": true
+      },
+      {
+        "path": "art/carriage-narrow.png",
+        "status": 200,
+        "bytes": 2190558,
+        "match": true
+      },
+      {
+        "path": "art/bench.png",
+        "status": 200,
+        "bytes": 1181880,
+        "match": true
+      },
+      {
+        "path": "art/carriage-orthogonal.png",
+        "status": 200,
+        "bytes": 2251050,
+        "match": true
+      },
+      {
+        "path": "art/carriage-v2.png",
+        "status": 200,
+        "bytes": 2168551,
+        "match": true
+      },
+      {
+        "path": "art/diesel-reserve-candidate-v1.png",
+        "status": 200,
+        "bytes": 311036,
+        "match": true
+      },
+      {
+        "path": "art/direction-study.png",
+        "status": 200,
+        "bytes": 1966712,
+        "match": true
+      },
+      {
+        "path": "art/carriage-floor.png",
+        "status": 200,
+        "bytes": 1944908,
+        "match": true
+      },
+      {
+        "path": "art/fan-housing-v1.png",
+        "status": 200,
+        "bytes": 74600,
+        "match": true
+      },
+      {
+        "path": "art/fan-rotor-v1.png",
+        "status": 200,
+        "bytes": 36046,
+        "match": true
+      },
+      {
+        "path": "art/hero-study.png",
+        "status": 200,
+        "bytes": 622067,
+        "match": true
+      },
+      {
+        "path": "art/driving-cab.png",
+        "status": 200,
+        "bytes": 2129062,
+        "match": true
+      },
+      {
+        "path": "art/lin-standing-v1.png",
+        "status": 200,
+        "bytes": 86794,
+        "match": true
+      },
+      {
+        "path": "art/mako-standing-v1.png",
+        "status": 200,
+        "bytes": 121059,
+        "match": true
+      },
+      {
+        "path": "art/mechanic-v2.png",
+        "status": 200,
+        "bytes": 684433,
+        "match": true
+      },
+      {
+        "path": "art/original-north-cape.png",
+        "status": 200,
+        "bytes": 2566605,
+        "match": true
+      },
+      {
+        "path": "art/overhead/attendant.png",
+        "status": 200,
+        "bytes": 699200,
+        "match": true
+      },
+      {
+        "path": "art/overhead/hero-gait-v2.png",
+        "status": 200,
+        "bytes": 460181,
+        "match": true
+      },
+      {
+        "path": "art/overhead/hero.png",
+        "status": 200,
+        "bytes": 508692,
+        "match": true
+      },
+      {
+        "path": "art/overhead/mechanic.png",
+        "status": 200,
+        "bytes": 705093,
+        "match": true
+      },
+      {
+        "path": "art/original-river-valley.png",
+        "status": 200,
+        "bytes": 3016350,
+        "match": true
+      },
+      {
+        "path": "art/platform-north-cape-candidate.png",
+        "status": 200,
+        "bytes": 2221448,
+        "match": true
+      },
+      {
+        "path": "art/references/starter-open-source-v1.png",
+        "status": 200,
+        "bytes": 186884,
+        "match": true
+      },
+      {
+        "path": "art/overhead/props.png",
+        "status": 200,
+        "bytes": 1189225,
+        "match": true
+      },
+      {
+        "path": "art/ren-standing-v1.png",
+        "status": 200,
+        "bytes": 106450,
+        "match": true
+      },
+      {
+        "path": "art/props-v2.png",
+        "status": 200,
+        "bytes": 1179076,
+        "match": true
+      },
+      {
+        "path": "art/rescue-walkway.png",
+        "status": 200,
+        "bytes": 2378719,
+        "match": true
+      },
+      {
+        "path": "art/train-at-flood-bridge-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-dawn-junction-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/starter-states-v1.png",
+        "status": 200,
+        "bytes": 294319,
+        "match": true
+      },
+      {
+        "path": "art/train-at-graystone-yard-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-mountain-pass-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/seat.png",
+        "status": 200,
+        "bytes": 809035,
+        "match": true
+      },
+      {
+        "path": "art/train-at-pine-line-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-sleeping-town-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "art/train-at-tunnel-whitebox.png",
+        "status": 200,
+        "bytes": 6238,
+        "match": true
+      },
+      {
+        "path": "assets/actor-sheet-DxhMDK9B.js",
+        "status": 200,
+        "bytes": 1096644,
+        "match": true
+      },
+      {
+        "path": "art/yard-pump-candidate-v1.png",
+        "status": 200,
+        "bytes": 471277,
+        "match": true
+      },
+      {
+        "path": "assets/browser-journey-rP3M1ZQc.js",
+        "status": 200,
+        "bytes": 3737,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-4l6dkyvt.png",
+        "status": 200,
+        "bytes": 168887,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-B7nVlJ2y.png",
+        "status": 200,
+        "bytes": 214355,
+        "match": true
+      },
+      {
+        "path": "art/train-equipment.png",
+        "status": 200,
+        "bytes": 3059804,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-Bibbj1iy.png",
+        "status": 200,
+        "bytes": 198108,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-BZEfYVu8.png",
+        "status": 200,
+        "bytes": 1027957,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-C0AW3pNZ.png",
+        "status": 200,
+        "bytes": 595691,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-CAUrsaIi.png",
+        "status": 200,
+        "bytes": 1131996,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-CvKq6ayX.png",
+        "status": 200,
+        "bytes": 1442049,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-D1S5jbBr.png",
+        "status": 200,
+        "bytes": 726652,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-CBF1DSoB.png",
+        "status": 200,
+        "bytes": 688319,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-D84gp_4I.png",
+        "status": 200,
+        "bytes": 939764,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-DMxtihrp.png",
+        "status": 200,
+        "bytes": 470738,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-D6S-SCEu.png",
+        "status": 200,
+        "bytes": 2424351,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-DvlKojCf.png",
+        "status": 200,
+        "bytes": 161124,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-JGIVqWQG.png",
+        "status": 200,
+        "bytes": 250418,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-Dlz7kNu8.png",
+        "status": 200,
+        "bytes": 1167298,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-actual-DJV_mvu8.png",
+        "status": 200,
+        "bytes": 1704995,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-vUXoK7g8.png",
+        "status": 200,
+        "bytes": 287366,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-w-nZI_co.png",
+        "status": 200,
+        "bytes": 226422,
+        "match": true
+      },
+      {
+        "path": "assets/candidate-zDXrcTTV.png",
+        "status": 200,
+        "bytes": 1348961,
+        "match": true
+      },
+      {
+        "path": "assets/canvasengine-CCC-_bmI.js",
+        "status": 200,
+        "bytes": 1504206,
+        "match": true
+      },
+      {
+        "path": "assets/creator-BTHba6TF.css",
+        "status": 200,
+        "bytes": 6247,
+        "match": true
+      },
+      {
+        "path": "assets/creator-96AUOBek.js",
+        "status": 200,
+        "bytes": 154952,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-BW_myfX9.png",
+        "status": 200,
+        "bytes": 112239,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-BcewpqEK.png",
+        "status": 200,
+        "bytes": 220291,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-Boq3Si-6.png",
+        "status": 200,
+        "bytes": 132008,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-D0u-ODSR.png",
+        "status": 200,
+        "bytes": 82569,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-DGqIbAFJ.png",
+        "status": 200,
+        "bytes": 65325,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-h3UpCtkf.png",
+        "status": 200,
+        "bytes": 391838,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-C4NoaVOX.png",
+        "status": 200,
+        "bytes": 243373,
+        "match": true
+      },
+      {
+        "path": "assets/cutout-t8SeP4xq.png",
+        "status": 200,
+        "bytes": 104757,
+        "match": true
+      },
+      {
+        "path": "assets/index-CwMXFlS-.css",
+        "status": 200,
+        "bytes": 2542,
+        "match": true
+      },
+      {
+        "path": "assets/index-FmWtcSOp.js",
+        "status": 200,
+        "bytes": 73990,
+        "match": true
+      },
+      {
+        "path": "assets/device-map-candidate-D_wxdvTK.js",
+        "status": 200,
+        "bytes": 152503,
+        "match": true
+      },
+      {
+        "path": "assets/old-street-dev-BsrZf3qe.js",
+        "status": 200,
+        "bytes": 112616,
+        "match": true
+      },
+      {
+        "path": "assets/old-street-dev-D_ah6SJf.css",
+        "status": 200,
+        "bytes": 9990,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/drawer-state-guide.png",
+        "status": 200,
+        "bytes": 17091,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/drawer-state-guide.svg",
+        "status": 200,
+        "bytes": 2927,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/laundry-layout-guide.png",
+        "status": 200,
+        "bytes": 15023,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/laundry-layout-guide.svg",
+        "status": 200,
+        "bytes": 327,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/watch-shop-layout-guide.png",
+        "status": 200,
+        "bytes": 16451,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/laundry-print-v1.png",
+        "status": 200,
+        "bytes": 1432933,
+        "match": true
+      },
+      {
+        "path": "assets/oldstreet/watch-shop-layout-guide.svg",
+        "status": 200,
+        "bytes": 385,
+        "match": true
+      },
+      {
+        "path": "assets/original-action-intent-BgZ1-06j.js",
+        "status": 200,
+        "bytes": 562,
+        "match": true
+      },
+      {
+        "path": "assets/original-game-hucheqzP.css",
+        "status": 200,
+        "bytes": 9755,
+        "match": true
+      },
+      {
+        "path": "assets/pixi-DMXpPjpr.js",
+        "status": 200,
+        "bytes": 276,
+        "match": true
+      },
+      {
+        "path": "assets/original-game-DSE-N4E9.js",
+        "status": 200,
+        "bytes": 137821,
+        "match": true
+      },
+      {
+        "path": "assets/reducer-Be2oj2DN.js",
+        "status": 200,
+        "bytes": 5404,
+        "match": true
+      },
+      {
+        "path": "assets/rolldown-runtime-QTnfLwEv.js",
+        "status": 200,
+        "bytes": 694,
+        "match": true
+      },
+      {
+        "path": "assets/sprite-config-BohXmN3o.js",
+        "status": 200,
+        "bytes": 295,
+        "match": true
+      },
+      {
+        "path": "assets/space-C5CWLVFS.js",
+        "status": 200,
+        "bytes": 1451,
+        "match": true
+      },
+      {
+        "path": "assets/sprite-preparation.worker-6PDCvCv8.js",
+        "status": 200,
+        "bytes": 4381,
+        "match": true
+      },
+      {
+        "path": "assets/standing-BcZ9Ettq.png",
+        "status": 200,
+        "bytes": 196486,
+        "match": true
+      },
+      {
+        "path": "assets/standing-DbOl76CJ.png",
+        "status": 200,
+        "bytes": 193574,
+        "match": true
+      },
+      {
+        "path": "assets/states-DBvuQYjy.png",
+        "status": 200,
+        "bytes": 420469,
+        "match": true
+      },
+      {
+        "path": "assets/style-BOV4mFAg.js",
+        "status": 200,
+        "bytes": 359041,
+        "match": true
+      },
+      {
+        "path": "assets/style-NUDpuPK2.css",
+        "status": 200,
+        "bytes": 26711,
+        "match": true
+      },
+      {
+        "path": "creator.html",
+        "status": 200,
+        "bytes": 1658,
+        "match": true
+      },
+      {
+        "path": "index.html",
+        "status": 200,
+        "bytes": 1684,
+        "match": true
+      },
+      {
+        "path": "licenses/@hono__vite-dev-server.txt",
+        "status": 200,
+        "bytes": 1391,
+        "match": true
+      },
+      {
+        "path": "licenses/@pixi__colord.txt",
+        "status": 200,
+        "bytes": 1160,
+        "match": true
+      },
+      {
+        "path": "licenses/@rolldown__binding-darwin-arm64.txt",
+        "status": 200,
+        "bytes": 1302,
+        "match": true
+      },
+      {
+        "path": "licenses/@signe__reactive.txt",
+        "status": 200,
+        "bytes": 1069,
+        "match": true
+      },
+      {
+        "path": "licenses/glob-to-regexp.txt",
+        "status": 200,
+        "bytes": 1301,
+        "match": true
+      },
+      {
+        "path": "licenses/cssfontparser.txt",
+        "status": 200,
+        "bytes": 1158,
+        "match": true
+      },
+      {
+        "path": "licenses/stackback.txt",
+        "status": 200,
+        "bytes": 1352,
+        "match": true
+      },
+      {
+        "path": "licenses/yoga-layout.txt",
+        "status": 200,
+        "bytes": 1158,
+        "match": true
+      },
+      {
+        "path": "map/cab.tmx",
+        "status": 200,
+        "bytes": 1618,
+        "match": true
+      },
+      {
+        "path": "map/baggage.tmx",
+        "status": 200,
+        "bytes": 2183,
+        "match": true
+      },
+      {
+        "path": "map/carriage.svg",
+        "status": 200,
+        "bytes": 5860,
+        "match": true
+      },
+      {
+        "path": "map/carriage.tmx",
+        "status": 200,
+        "bytes": 3176,
+        "match": true
+      },
+      {
+        "path": "map/carriage.tsx",
+        "status": 200,
+        "bytes": 176,
+        "match": true
+      },
+      {
+        "path": "map/dawn-junction-c0b4a545.tmx",
+        "status": 200,
+        "bytes": 1895,
+        "match": true
+      },
+      {
+        "path": "map/carriage.png",
+        "status": 200,
+        "bytes": 8554,
+        "match": true
+      },
+      {
+        "path": "map/flood-bridge-e38ff237.tmx",
+        "status": 200,
+        "bytes": 1894,
+        "match": true
+      },
+      {
+        "path": "map/graystone-yard-78f22e9b.tmx",
+        "status": 200,
+        "bytes": 1893,
+        "match": true
+      },
+      {
+        "path": "map/mountain-pass-e83947a9.tmx",
+        "status": 200,
+        "bytes": 2174,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-cellar.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-darkroom.tmx",
+        "status": 200,
+        "bytes": 1339,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-laundry.tmx",
+        "status": 200,
+        "bytes": 1339,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-photo.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-roof.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-shed.tmx",
+        "status": 200,
+        "bytes": 1339,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-shop.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-street.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/oldstreet-yard.tmx",
+        "status": 200,
+        "bytes": 1335,
+        "match": true
+      },
+      {
+        "path": "map/pine-line-90af55e7.tmx",
+        "status": 200,
+        "bytes": 2741,
+        "match": true
+      },
+      {
+        "path": "map/sleeping-town-f9922760.tmx",
+        "status": 200,
+        "bytes": 1894,
+        "match": true
+      },
+      {
+        "path": "map/train-at-dawn-junction.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-dead-station.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-flood-bridge.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-graystone-yard.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-mountain-pass.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-pine-line.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-river-valley.tmx",
+        "status": 200,
+        "bytes": 1338,
+        "match": true
+      },
+      {
+        "path": "map/train-at-sleeping-town.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/train-at-tunnel.tmx",
+        "status": 200,
+        "bytes": 1614,
+        "match": true
+      },
+      {
+        "path": "map/transparent.png",
+        "status": 200,
+        "bytes": 98,
+        "match": true
+      },
+      {
+        "path": "map/tunnel-b084000a.tmx",
+        "status": 200,
+        "bytes": 1893,
+        "match": true
+      },
+      {
+        "path": "map/walkway.tmx",
+        "status": 200,
+        "bytes": 1475,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/index.html",
+        "status": 200,
+        "bytes": 16158,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/scene-balanced.png",
+        "status": 200,
+        "bytes": 1955099,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/scene-current.png",
+        "status": 200,
+        "bytes": 1431986,
+        "match": true
+      },
+      {
+        "path": "perspective-lab/scene-high.png",
+        "status": 200,
+        "bytes": 1879152,
+        "match": true
+      },
+      {
+        "path": "poster.png",
+        "status": 200,
+        "bytes": 1278857,
+        "match": true
+      },
+      {
+        "path": "spritesheets/hero.png",
+        "status": 200,
+        "bytes": 2277,
+        "match": true
+      },
+      {
+        "path": "spritesheets/hero.svg",
+        "status": 200,
+        "bytes": 6939,
+        "match": true
+      },
+      {
+        "path": "spritesheets/mechanic.png",
+        "status": 200,
+        "bytes": 2254,
+        "match": true
+      },
+      {
+        "path": "spritesheets/mechanic.svg",
+        "status": 200,
+        "bytes": 6237,
+        "match": true
+      }
+    ]
+  }
+}
