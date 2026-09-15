@@ -14,7 +14,7 @@ export function compileExpansionPlan(intent:OldStreetExpansionRequest,raw:unknow
  return {
   version:1 as const,requestId:intent.id,template:intent.template,content:{...content,
    arrival:locale==='zh'?'小灯照着旧工作台，门仍通向照相馆。':'A small lamp lights the old workbench. The door leads back to the photo studio.',
-   observation:locale==='zh'?'显影盘里的影像还没有清晰，可以先在房间里看看。':'The print in the developing tray is not clear yet. You can look around the room first.'},
+   observation:locale==='zh'?'工作台上的照片还看不清，可以先在房间里看看。':'The photograph on the workbench is not clear yet. You can look around the room first.'},
   // One checked layout for the first experiment; model output cannot move a doorway.
   space:{id:'darkroom',sourceScene:intent.sourceScene,floor:{x:88,y:112,w:208,h:320},
    entrance:{side:'S' as const,position:{x:192,y:432},arrival:{x:192,y:396}},

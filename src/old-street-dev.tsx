@@ -342,7 +342,7 @@ export default function OldStreetDev() {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPerson(e.id)?.appearance ?? oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
-        return <button className={'os-target' + (door ? ' os-target--door' : '')+(renderedProps.includes(e.id)?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
+        return <button className={'os-target' + (door ? ' os-target--door' : '')+(renderedProps.includes(e.id)||e.id==='developing-bench'?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}><span className={door?'os-door-label':undefined}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</span></button>
       })}
     </div>
