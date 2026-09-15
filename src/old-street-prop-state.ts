@@ -1,6 +1,7 @@
 import type {StorySave} from './vendor/original-train/types'
 
-/** Physical state labels used until each corresponding art state is admitted. */
+/** Semantic physical states shared by map labels and dialogue knowledge.
+ * These do not assert that appearance or each art state has been admitted. */
 export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): readonly [string, string] | undefined {
   const f = save.facts
   switch (id) {

@@ -1,3 +1,4 @@
+import {oldStreetSceneKnowledge} from '../src/old-street-scene-knowledge'
 import type {ModelRequest} from './model'
 import {LabError} from '../src/journey-runtime'
 import type {OldStreetHead} from '../src/old-street-head'
@@ -7,9 +8,9 @@ export function oldStreetDialogueContext(h:OldStreetHead,entity:string){
  const p=oldStreetPerson(entity),person=p&&h.save.characters.find(c=>c.id===p.id)
  if(!p||p.room!==h.sceneId||!person)throw new LabError('OLD_STREET_DIALOGUE_TARGET_REQUIRED',409)
  return {locale:h.save.locale,sceneId:h.sceneId,speaker:{id:p.id,name:person.name},
-  knowledge:oldStreetTalkTopics(h.save,entity).map(t=>({id:t.id,text:t.reply})),
+  knowledge:[...oldStreetTalkTopics(h.save,entity).map(t=>({id:t.id,text:t.reply})),...oldStreetSceneKnowledge(h.save,h.sceneId)],
   recentTurns:oldStreetConversation(h.save,p.id),
-  visualStatus:'Appearance details have not been admitted for this character. Do not invent clothing, colors or body details.'}
+  visualStatus:'Knowledge contains semantic states, not admitted appearance details. Character and object appearance details are not admitted. Do not invent clothing, colors, materials or body details.'}
 }
 export type OldStreetDialogueContext=ReturnType<typeof oldStreetDialogueContext>
 export type OldStreetDialogueGenerator=(input:string,context:OldStreetDialogueContext)=>Promise<string>
