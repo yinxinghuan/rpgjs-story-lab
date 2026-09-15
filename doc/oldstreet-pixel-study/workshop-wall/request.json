@@ -1,0 +1,10 @@
+{
+  "requestId": "54c612ce-8efb-49bc-abfb-98dbcacef7b4",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 896,
+    "height": 256
+  },
+  "prompt": "A single narrow background wall strip for a top-down 2D RPG watch repair shop. Exact canvas 896x256. It is a rectangular NORTH wall seen straight-on from the south with a steep overhead camera, no isometric yaw, no perspective convergence. All edges horizontal/vertical, small visible wooden cap along upper edge. Authentic hand-pixeled 16-bit RPG style: chunky 4px square pixel clusters, dark warm brown 4-8px outlines, muted ochre wood and desaturated olive plaster, three discrete shade steps, NO photographic noise, no gradients, no soft painting, no tiny scratches. Layout MUST be exact: LEFT wall segment x0..399 fills full height, RIGHT wall segment x592..895 fills full height, MIDDLE x400..591 is a completely empty solid MAGENTA #ff00ff rectangular gap for an existing game doorway. Nothing may cross this gap. Left segment contains two small old wall clocks with cream round faces and simple pixel hands mounted on olive plaster above a narrow shelf with three closed spare-parts tins. Right segment contains a wooden pegboard with three small neatly hanging repair tools and brass watch wheels, and one warm unlit desk-lamp silhouette mounted near its edge. Bottom edge y255 is flat at the wall-foot, NO floor in this image. No loose objects outside wall rectangles, no people, no text, no readable numerals, no door or doorway drawing inside the magenta gap, no cast shadows outside segments. Two wall panels only. Detail stays quiet and visually coherent with dark-outlined oak game furniture. All clocks and tools small relative to wall, no large centerpiece."
+}
