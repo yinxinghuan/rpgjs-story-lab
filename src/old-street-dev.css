@@ -18,3 +18,7 @@
 .os-journeys ul{list-style:none;padding:0;display:grid;gap:8px}.os-journeys li button{width:100%;text-align:left;display:grid;gap:4px}.os-journeys li span{font-size:14px}.os-journeys li small{font-size:12px}
 
 .os-preview-label{display:block;font-size:11px;line-height:1.3;font-weight:400;color:#756d60}.os-journeys details{margin-top:24px;border-top:1px solid #c9bfad;padding-top:16px}.os-journeys summary{min-height:44px;cursor:pointer}.os-journeys a{display:block;min-height:44px;color:inherit}
+
+/* The opening remains visible below the transparent, finger-sized hit target. */
+.os-dev .os-target--door{width:44px;height:44px;min-width:44px;padding:0!important;border:0!important;background:transparent;opacity:1;overflow:visible;box-shadow:none}.os-target--door:focus-visible{outline:2px solid #f5e5a8;outline-offset:2px}.os-door-label{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);width:max-content;max-width:86px;font-size:11px;line-height:1.2;color:#f6ead0;text-shadow:0 1px 3px #142020,1px 0 3px #142020,-1px 0 3px #142020;pointer-events:none}.os-target--door[data-side=S] .os-door-label{bottom:auto;top:100%}.os-target--door[data-closed=true] .os-door-label{color:#e3b9a7}
+.os-door-label{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.os-target--door[data-side=N] .os-door-label{bottom:calc(50% + 5px)}.os-target--door[data-side=S] .os-door-label{top:calc(50% + 5px)}

@@ -1,3 +1,4 @@
+import {OldStreetDoorways} from './old-street-door-view'
 import {OLD_STREET_PREVIEW_VERSION} from './old-street-runtime-contract'
 import drawerStatesUrl from '../doc/oldstreet-drawer-guided/states.png'
 import {oldStreetDrawerPose,oldStreetDrawerSheet} from './old-street-prop-art'
@@ -238,7 +239,7 @@ export default function OldStreetDev() {
       setSelected(null)
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        <OldStreetFloor room={head.scene as OldStreetRoom}/>
+        <OldStreetFloor room={head.scene as OldStreetRoom}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&['watchmaker','laundry-owner','photographer','trolley','drawer'].includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
@@ -248,8 +249,8 @@ export default function OldStreetDev() {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
         const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
-        return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner','photographer','trolley','drawer'].includes(e.id)?' os-target--actor':'')} key={e.id} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
-          disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</button>
+        return <button className={'os-target' + (door ? ' os-target--door' : '')+(['watchmaker','laundry-owner','photographer','trolley','drawer'].includes(e.id)?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
+          disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}><span className={door?'os-door-label':undefined}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</span></button>
       })}
     </div>
     </div>

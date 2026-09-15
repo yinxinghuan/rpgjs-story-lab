@@ -1,6 +1,6 @@
 import woodSurface from './assets/oldstreet/watch-shop-surface-v2.png'
 import laundrySurface from '../doc/oldstreet-laundry-candidate/correction/candidate.png'
-import {oldStreetDoors, oldStreetFloors} from './old-street-space'
+import {oldStreetFloors} from './old-street-space'
 import type {OldStreetRoom} from './old-street-cartridge'
 
 // Reviewed clean surface regions only. Generated doors/furniture never define space.
@@ -19,7 +19,6 @@ export function OldStreetFloor({room}: {room: OldStreetRoom}) {
     <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox={surface.crop} preserveAspectRatio="none" overflow="hidden">
       <image href={surface.image} width="1024" height="1536"/>
     </svg>
-    {oldStreetDoors().filter(door => door.room === room).map(door => <rect key={door.id}
-      x={door.position.x-18} y={door.position.y-12} width="36" height="24" fill={surface.floor}/>) }
+
   </g>
 }
