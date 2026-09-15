@@ -1,3 +1,4 @@
+import {oldStreetWoodRegion,oldStreetWoodSource} from './old-street-floor-material'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import pixelFloor from '../doc/oldstreet-pixel-study/floor/candidate.png'
 import woodSurface from './assets/oldstreet/watch-shop-surface-v2.png'
@@ -13,7 +14,15 @@ const surfaces = {
 /** Surface art never defines walkability. Room and thresholds use the collision layout. */
 export function OldStreetFloor({room, pixelShop=false}: {room: OldStreetRoom; pixelShop?:boolean}) {
   const floor = oldStreetFloors[room]
-  if(room==='shop'&&pixelShop)return <g><rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#806142" stroke="#30271e" strokeWidth="2"/><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#aa8452"/><image opacity=".55" href={pixelFloor} x={floor.x} y={floor.y} width={floor.w} height={floor.h} preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/><OldStreetShopEnvironment/></g>
+  const wood=pixelShop?oldStreetWoodRegion(room):null
+  if(wood)return <g>
+    <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#806142" stroke="#30271e" strokeWidth="2"/>
+    <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#aa8452"/>
+    <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox={wood.viewBox} overflow="hidden">
+      <image opacity=".55" href={pixelFloor} width={oldStreetWoodSource.width} height={oldStreetWoodSource.height} style={{imageRendering:'pixelated'}}/>
+    </svg>
+    {room==='shop'&&<OldStreetShopEnvironment/>}
+  </g>
   const surface = room==='shop'||room==='laundry'?surfaces[room]:null
   if (!surface) return <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>
   return <g>
