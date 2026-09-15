@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "materials": [
+    {
+      "id": "wood-narrow-01",
+      "category": "floor",
+      "family": "wood",
+      "status": "candidate",
+      "reason": "窄板比例已做本地实景检查，材质细节仍待定版。",
+      "source": "../../doc/oldstreet-pixel-study/floor-narrow/candidate-actual.png",
+      "sha256": "b44ffa60efbe8ae1f8245d571e3d0ba7df56ec87f555d1a4d686a4b9ded7d271",
+      "image": {
+        "width": 832,
+        "height": 1536
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "review": "../../doc/visual.md",
+      "render": {
+        "mode": "repeat",
+        "tileWidth": 112,
+        "opacity": 0.72,
+        "observedColumnsApprox": 16
+      }
+    },
+    {
+      "id": "wood-coarse-01",
+      "category": "floor",
+      "family": "wood",
+      "status": "rejected",
+      "reason": "用户否决：像素颗粒过大，不得沿用。",
+      "source": "../../doc/oldstreet-pixel-study/floor/candidate.png",
+      "sha256": "26ec0c644e720a504b383dbd395f286cc4a49080ca4454c040ff089cf5c48319",
+      "image": {
+        "width": 448,
+        "height": 832
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "review": "../../doc/visual.md",
+      "render": null
+    },
+    {
+      "id": "wood-shop-surface-v2",
+      "category": "floor",
+      "family": "wood",
+      "status": "rejected",
+      "reason": "用户否决：裁切到房间后的木板尺寸相对人物过大，不得作为基准。",
+      "source": "../../src/assets/oldstreet/watch-shop-surface-v2.png",
+      "sha256": "a848859a8d7bb76091229e86090cf934cab6be9e82b3dd806cf1f3dd61731e96",
+      "image": {
+        "width": 1024,
+        "height": 1536
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "review": "../../doc/visual.md",
+      "render": null
+    }
+  ]
+}

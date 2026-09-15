@@ -1,7 +1,10 @@
-/** Measured dimensions of the current local candidate; not a general art baseline. */
-export const oldStreetWoodSource={width:832,height:1536,observedColumns:16} as const
+import {getMaterial} from './material-library'
+// This game explicitly previews a candidate; the reusable library does not admit it yet.
+const wood=getMaterial('wood-narrow-01',{allowCandidate:true})
+if(!wood.render)throw Error('WOOD_RENDER_METADATA_MISSING')
+export const oldStreetWoodSource={...wood.image,observedColumns:wood.render.observedColumnsApprox}
 export const oldStreetWoodTile={
- width:112,
- height:112*oldStreetWoodSource.height/oldStreetWoodSource.width,
- opacity:.72,
-} as const
+ width:wood.render.tileWidth,
+ height:wood.render.tileWidth*wood.image.height/wood.image.width,
+ opacity:wood.render.opacity,
+}

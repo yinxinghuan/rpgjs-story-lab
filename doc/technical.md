@@ -1765,3 +1765,7 @@ Session专项20项通过。该验证覆盖持久权威、幂等和投射输入�
 ### 照相馆工作台候选（2026-09-15）
 
 像素候选入口将viewing-table占位替换为平台生成的去底桌子，原动作与碰撞保持。单帧512×512、脚点256/448、等比0.125；与人物道具共用启动加载，候选文件总数13。实景及准入边界见doc/oldstreet-photo-table/review.md。
+
+### 地板素材目录（2026-09-15）
+
+src/material-library/catalog.json开始统一登记地板素材，source相对该目录解析，保留PNG尺寸、SHA256、分类、投影、拼接验证状态、显示参数和审查原因。index.ts默认只返回approved；当前旧街显式allowCandidate读取wood-narrow-01。rejected永远不能被选择，未知ID明确失败。old-street-floor-material从目录读取板宽/透明度，图片仍由Vite静态import打包，候选与否决图片没有被复制成第二份原图。现阶段不是平台数据库或完整制作页素材选择器。
