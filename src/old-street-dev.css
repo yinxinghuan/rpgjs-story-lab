@@ -15,3 +15,4 @@
 .os-world{width:100%;min-height:0;flex:1;display:flex;justify-content:center;align-items:center;overflow:hidden}.os-world .os-stage{flex:none;max-width:none}
 .os-actions{flex:none;height:clamp(120px,29dvh,244px);min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 0}.os-turn{max-height:none;overflow:visible}
 .os-dev>footer{flex:none;min-height:64px}.os-dev .os-stick{width:64px;height:64px;flex:none}.os-dev>details{flex:none;width:min(100%,520px);font-size:12px;max-height:20dvh;overflow:auto}.os-dev>details>summary{min-height:20px}
+.os-journeys ul{list-style:none;padding:0;display:grid;gap:8px}.os-journeys li button{width:100%;text-align:left;display:grid;gap:4px}.os-journeys li span{font-size:14px}.os-journeys li small{font-size:12px}

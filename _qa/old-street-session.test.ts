@@ -296,3 +296,22 @@ test('arrival checkpoint survives refused inspection without a story turn and ca
   assert.deepEqual(s.get('arrival-owner',h.id),newer)
  }finally{raw.close()}
 })
+
+test('journey directory isolates owners and retains completed journeys when starting again',async()=>{
+ const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('directory-owner',randomUUID(),'zh')
+  s.create('other-owner',randomUUID(),'en')
+  const original=h.id
+  for(const step of ['photo','roof','shed','oldstreet:borrow-key','roof','photo','street','shop','oldstreet:unlock-letter','oldstreet:take-letter','street','oldstreet:leave']){
+   const id=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===step)!.actionId
+   h=(await s.action('directory-owner',h.id,request(h,id))).head
+  }
+  const newJourney=s.create('directory-owner',randomUUID(),'zh'),rows=s.directory('directory-owner')
+  assert.equal(rows.length,2);assert.equal(rows.find(r=>r.id===original)?.complete,true)
+  assert.equal(rows.find(r=>r.id===newJourney.id)?.complete,false)
+  assert.deepEqual(s.get('directory-owner',original),h)
+  assert.equal(s.directory('other-owner').length,1)
+  assert.throws(()=>s.get('other-owner',original))
+ }finally{raw.close()}
+})

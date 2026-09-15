@@ -41,6 +41,7 @@ export function oldStreetDevPlugin(){
     owner=randomUUID();res.setHeader('Set-Cookie',`oldstreet_dev_owner=${owner}; HttpOnly; SameSite=Strict; Path=${prefix}; Max-Age=2592000`)
    }
    const s=authority()
+   if(route==='/sessions'&&req.method==='GET')return send(200,{sessions:s.directory(owner)})
    if(route==='/sessions'&&req.method==='POST'){
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
     return send(200,s.create(owner,body.enrollment_id,body.locale))

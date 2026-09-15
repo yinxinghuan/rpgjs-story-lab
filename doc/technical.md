@@ -1634,3 +1634,11 @@ old-street-turn.ts 比对同旅程、同场景、恰好增加一版的 head，�
 old-street-dev 的 os-world 使用 ResizeObserver 测量实际剩余宽高，stage宽为min(width,height×2/3)、高为宽×1.5；沿用点击坐标转换和真实renderer host缩放。固定主容器限制页面外溢，os-actions自行滚动；os-turn移除第二层滚动，避免嵌套滚动。observer卸载时disconnect，世界布局/碰撞坐标不修改。
 
 浏览器复验发现点击低位话题会保留行动区旧滚动位置而遮住新回复；新 turn/notice/error 到达时将该区scrollTop归零，复拍后提问、回答和底部摇杆/行动按钮同时可见。测试中手动关闭外部guest banner检查构图，不修改生产shell；仍未宣称精确320/390与软键盘设备验收。
+
+### 旧街旅程目录（2026-09-15）
+
+OldStreetAuthority.directory 在原 owner 隔离目录上增加 complete；Worker已有GET /sessions，cookie开发桥补同合同。旧街上限本为每身份100旅程，列表覆盖全部；不读取跨身份数据。OldStreetJourneysView使用原生modal，空/载入/失败重试状态分离。selectJourney调用原RecoverableSessionClient.selectSession，沿用pending门禁，再恢复权威head、renderer和完成状态。
+
+周期位置保存跳过已完成或位置未变的旅程；成功后更新serverHead中的确认位置，避免原地重复写入不断刷新目录时间。切换失败关闭列表并显示恢复错误，不在modal背后隐藏错误。
+
+实际本机Worker浏览器从含照片/旧钟结果的新旅程切换到较早只取信的旅程，后者库存只有钥匙、结局不含支线结果；新旅程仍在目录中。25项Session/Worker测试（含新目录身份隔离与重开保留）、类型检查、开发构建通过。不是平台账号跨设备自动识别验收。

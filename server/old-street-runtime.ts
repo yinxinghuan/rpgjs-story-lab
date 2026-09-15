@@ -105,5 +105,6 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
   }
 }
 export class OldStreetAuthority extends SessionAuthority<OldStreetHead> {
+  override directory(owner:string){return super.directory(owner).map(row=>({...row,complete:this.get(owner,row.id).save.finale.status==='complete'}))}
   constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator){super(db,oldStreetRuntime(admit,interpreter,dialogue))}
 }
