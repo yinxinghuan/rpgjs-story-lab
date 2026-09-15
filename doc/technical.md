@@ -1679,3 +1679,5 @@ oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹�
 ### 修表铺像素候选入口（2026-09-15）
 
 `?shop_art=pixel` 选择 `doc/oldstreet-pixel-study/` 平台候选；无参数沿用旧素材。`old-street-floor.tsx` 负责候选地板，`old-street-prop-art.ts` 提供小格三态和记录册图集，`old-street-dev.tsx` 接入同一个 renderer event 与 save facts。候选开关不改变地图、碰撞、步态、权限或存档命名空间。去底/分帧来源脚本为 `scripts/prepare-oldstreet-pixel-study.mjs`。尚未生产准入，具体缺陷及实测边界见候选 review.md。
+
+像素候选现通过 `layered-state-sheet.ts` 和 RPG-JS 同事件多 graphic 复用固定桌面/柜顶，前部区域才随同一权威 animationName 变化。所有取图通过源 PNG 的纹理区域完成；原版仍使用整帧图集。分层原点、接缝和裁剪范围在 `_qa/old-street-layered-props.test.ts` 验证，避免把固定家具烘焙回背景或脱离脚点深度排序。
