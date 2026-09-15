@@ -3,7 +3,7 @@ import type {OriginalActionInterpreter} from '../server/original-action-interpre
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomBytes,randomUUID} from 'node:crypto'
-import {mkdtempSync,rmSync} from 'node:fs'
+import {mkdtempSync,rmSync,readFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {PreflightStorage} from '../server/preflight-storage'
@@ -15,15 +15,16 @@ import type {OldStreetHead} from '../src/old-street-head'
 
 const handler=createHandler(true,false,false,()=>false,()=>false,false,false,false,true)
 function request(path:string,token:string,body?:unknown){return new Request('https://worker.invalid'+base+path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+token,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[header]:contract,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)})}
-function harness(admitted=true,interpreter?:OriginalActionInterpreter){
+function harness(admitted=true,interpreter?:OriginalActionInterpreter,providers?:ConstructorParameters<typeof CarriageJourneyAuthority>[12]){
+ const pending:Promise<unknown>[]=[]
  const dir=mkdtempSync(join(tmpdir(),'oldstreet-worker-')),storage=new PreflightStorage(dir),objects=new Map<string,CarriageJourneyAuthority>(),names=new Set<string>()
  const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(id:unknown)=>({fetch:async(r:Request)=>{
   const key=String(id);names.add(key)
   let object=objects.get(key)
-  if(!object){object=new CarriageJourneyAuthority(storage.context(key),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,admitted?()=>true:()=>{throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)},interpreter);objects.set(key,object)}
+  if(!object){object=new CarriageJourneyAuthority({...storage.context(key),waitUntil:p=>pending.push(p)},undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,admitted?()=>true:()=>{throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)},interpreter,undefined,providers);objects.set(key,object)}
   return object.fetch(r)
  }})}}
- return {env,names,reopen:()=>{objects.clear();storage.close()},close:()=>{objects.clear();storage.close();rmSync(dir,{recursive:true,force:true})}}
+ return {env,names,drain:()=>Promise.all(pending.splice(0)),reopen:()=>{objects.clear();storage.close()},close:()=>{objects.clear();storage.close();rmSync(dir,{recursive:true,force:true})}}
 }
 test('oldstreet Worker stays release-gated and rejects untrusted identity and runtime',async()=>{
  const h=harness(false),token=randomBytes(32).toString('base64url')
@@ -116,5 +117,29 @@ test('Worker passes bounded natural input to the injected interpreter but questi
   const before=head.version,response=await handler(request('/sessions/'+head.id+'/actions',token,input('我现在借用那把开小格的钥匙。')),h.env)
   assert.equal(response.status,200);head=(await response.json()).head
   assert.equal(calls,1);assert.equal(head.version,before+1);assert.ok(head.save.inventory.some(i=>i.id==='letter-key'))
+ }finally{h.close()}
+})
+
+
+test('Worker expansion routes share the journey capability and retain generated photo bytes',async()=>{
+ const bytes=new Uint8Array(readFileSync('doc/dynamic-expansion-probe/photo/candidate-04.png'))
+ const h=harness(true,undefined,{model:async()=>({title:'暗房',discovery:'旧街的屋檐。',photograph:'A quiet old street in monochrome pixel art.'}),photo:async(_,onTask)=>{onTask('synthetic-worker-photo');return bytes}})
+ const token=randomBytes(32).toString('base64url'),other=randomBytes(32).toString('base64url')
+ try{
+  let head=await (await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'zh'}),h.env)).json() as OldStreetHead
+  const send=async(extra:any)=>{const r=await handler(request('/sessions/'+head.id+'/actions',token,{action_id:randomUUID(),expected_version:head.version,sceneId:head.sceneId,position:head.position,...extra}),h.env);assert.equal(r.status,200,JSON.stringify(await r.clone().json()));head=(await r.json()).head}
+  const door=oldStreetDoors().find(d=>d.room==='street'&&d.destination.room==='photo')!
+  const entity=oldStreetSpatialPlan(head.save).entities.find(e=>e.id===door.id)!
+  await send({type:'action',action:door.actionId,target:door.id,position:entity.approach})
+  await send({type:'expansion-request',template:'photo-darkroom-v1',text:'查看暗房'})
+  const root='/sessions/'+head.id
+  assert.equal((await handler(request(root+'/expansion',token,{}),h.env)).status,200);await h.drain()
+  await send({type:'expansion-activate'})
+  assert.equal((await handler(request(root+'/expansion-photo',token,{}),h.env)).status,200);await h.drain()
+  const asset=await handler(request(root+'/expansion-photo-file',token),h.env)
+  assert.equal(asset.status,200);assert.equal(asset.headers.get('Content-Type'),'image/png');assert.deepEqual(new Uint8Array(await asset.arrayBuffer()),bytes)
+  h.reopen()
+  assert.deepEqual(new Uint8Array(await (await handler(request(root+'/expansion-photo-file',token),h.env)).arrayBuffer()),bytes)
+  assert.notEqual((await handler(request(root+'/expansion-photo-file',other),h.env)).status,200)
  }finally{h.close()}
 })

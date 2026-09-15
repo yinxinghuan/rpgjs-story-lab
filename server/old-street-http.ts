@@ -29,7 +29,7 @@ export function oldStreetExpansionOperation(method:string,owner:string,id:string
 
 export const oldStreetJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
 /** Owner is supplied exclusively by the Worker's capability boundary. */
-export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;background:(p:Promise<unknown>)=>void}){
+export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void}){
  try{
   if(request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(OLD_STREET_API_PATH.length)
@@ -42,8 +42,16 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
+  if(m[2]==='expansion-photo'){
+   if(!expansion)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
+   return oldStreetJson(oldStreetExpansionPhotoOperation(request.method,owner,m[1],expansion.media,expansion.produce,request.method==='POST'?await readBody(request):undefined,expansion.background))
+  }
+  if(m[2]==='expansion-photo-file'&&request.method==='GET'){
+   if(!expansion)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
+   return new Response(new Uint8Array(await expansion.media.file(owner,m[1])),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
+  }
   if(m[2]==='expansion')return oldStreetJson(oldStreetExpansionOperation(request.method,owner,m[1],expansion?.jobs,request.method==='POST'?await readBody(request):undefined,expansion?.background??(()=>{})))
   if(request.method==='GET'&&!m[2])return oldStreetJson(authority.get(owner,m[1]))
   if(request.method==='GET'&&m[2]==='events')return oldStreetJson({events:authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
