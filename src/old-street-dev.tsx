@@ -87,6 +87,7 @@ export default function OldStreetDev() {
   const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>(),compartmentEvent=useRef<RpgPlayer>(),photoShelfEvent=useRef<RpgPlayer>(),photoTableEvent=useRef<RpgPlayer>(),clockDisplayEvent=useRef<RpgPlayer>(),cratesEvent=useRef<RpgPlayer>()
   useEffect(()=>{if(cratesEvent.current){const p=oldStreetProjectedProps(head.save).find(p=>p.id==='crates')!;void cratesEvent.current.teleport({x:p.body.x,y:p.body.y});cratesEvent.current.syncChanges()}if(clockDisplayEvent.current){clockDisplayEvent.current.animationName.set(oldStreetClockDisplayPose(head.save));clockDisplayEvent.current.syncChanges()}if(photoTableEvent.current){photoTableEvent.current.animationName.set(oldStreetPhotoTablePose(head.save));photoTableEvent.current.syncChanges()}if(photoShelfEvent.current){photoShelfEvent.current.animationName.set(oldStreetPhotoShelfPose(head.save));photoShelfEvent.current.syncChanges()}if(compartmentEvent.current){compartmentEvent.current.animationName.set(oldStreetCompartmentPose(head.save));compartmentEvent.current.syncChanges()}if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
   const [environmentArt,setEnvironmentArt]=useState(oldStreetEnvironmentArt)
+  const [doorCratesArt,setDoorCratesArt]=useState<string>()
   const [loading,setLoading]=useState({stage:'journey',done:0,total:(pixelShop?11:6)+environmentDownloads.length})
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
@@ -151,6 +152,7 @@ export default function OldStreetDev() {
         if(id.startsWith('environment-')){const image=new Image();image.src=url;await image.decode()}
         else await loadSpatialArtTexture(url,pixelShop?'nearest':'linear')
       }))
+      if(mounted&&boot.pending())setDoorCratesArt(cratesBlob)
       if(mounted&&boot.pending())setEnvironmentArt({...oldStreetEnvironmentArt,...Object.fromEntries(environmentDownloads.map(e=>[e.id.slice('environment-'.length),urls[e.id]]))})
       if(!mounted||!boot.pending())return
       const preview=new Image();preview.src=heroBlob;await preview.decode()
@@ -311,7 +313,7 @@ export default function OldStreetDev() {
       setSelected(null)
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
+        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt}/>
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&renderedProps.includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
