@@ -1777,3 +1777,13 @@ old-street-photo-table.ts将固定桌子与独立合拢照片夹作为同一事�
 ### 洗衣店归还旧钟的实体表现（2026-09-15）
 
 新增clock-display固定柜台，复用木搁架并叠加平台生成座钟；仅clock-returned时显示座钟，物件标签同步当前场景知识。像素候选共14份资源，原规则/存档字段不变；柜台碰撞已纳入共享布局。细节与实证见doc/oldstreet-mantel-clock/review.md。
+
+### 本地试玩请求超时（2026-09-15）
+
+`old-street-session.ts` 的本地 cookie transport 现在与生产 action 请求一样使用30秒 AbortSignal，且禁用HTTP缓存。超时不属于领域终止错误，RecoverableSessionClient 保留原 action_id，重新连接后读取服务端权威状态并重放原请求获取幂等回执。不会因为超时创建新旅程或清空存档。
+
+`_qa/old-street-local-recovery.test.ts` 使用真实内存SQLite Authority，注入服务端提交后丢回执的超时：过门与拿放大镜均恢复至原提交版本，物品仅一份，事件不重复，待确认队列清空。该测试是合成网络故障证据，不是线上断网实机验收。
+
+### 旧箱可见清路后果（2026-09-15）
+
+像素候选入口新增独立木箱事件，old-street-crates.ts 定义单帧脚点与缩放；old-street-dev.tsx 在启动阶段下载/解码并回收blob，清路与续玩均从 oldStreetProjectedProps 的同一碰撞投射更新位置。素材不定义路线，不新增事实。真实本地借推车、搬箱、过台阶、返回、刷新路线已验证；正式人物与整套场景美术仍未准入。

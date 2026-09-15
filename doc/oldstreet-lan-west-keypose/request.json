@@ -1,0 +1,13 @@
+{
+  "requestId": "84423bae-7d09-4a9e-99aa-16524a049518",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789421967259733.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "Make a strictly localized edit to this existing sprite sheet. Keep the original 1024x1408 canvas, magenta background, twelve positions, exact pixel density, head size, overhead camera elevation, clothing, body proportions and ALL other eleven figures unchanged. Edit ONLY the FIRST figure in the SECOND ROW (cell at upper-left x=0 y=352, approximately 341x352). That figure currently faces right and must instead face LEFT, matching the viewpoint and identity of the MIDDLE figure in that same second row. Use that middle figure as the exact head and torso reference: prominent top of head, compressed cheek, visible top of shoulders, green shirt, cream apron, brown pants. Give this single corrected figure the OPPOSITE walking phase to the RIGHTMOST figure of the SECOND ROW: its near leg must trail to screen RIGHT while the far leg extends to screen LEFT. The near arm swings to screen LEFT while the far arm trails right. Show this unmistakably in the overlap of the two trouser legs and hands. Preserve the head and torso angle of the middle reference, not an eye-level side profile. Keep whole figure centered in the same cell with original foot baseline. Do not mirror the entire sheet, do not redesign the woman, do not change any other figure or any pixel outside that first cell of the second row. No text, grid, shadows or new props. Only one local character pose correction."
+}

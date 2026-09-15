@@ -13,7 +13,7 @@ export function oldStreetSessionHttp(storage:Storage,lock:SessionLock,request:ty
 }
 export function oldStreetSession(storage:Storage,lock:SessionLock,request:typeof fetch=fetch){
  const api=async(path:string,body?:unknown)=>{
-  const response=await request(getGameApiBase()+'/api/oldstreet-dev'+path,{method:body===undefined?'GET':'POST',credentials:'same-origin',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)})
+  const response=await request(getGameApiBase()+'/api/oldstreet-dev'+path,{method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(30000),headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)})
   const value=await response.json();if(!response.ok)throw Error(value.error??'SESSION_REQUEST_FAILED');return value
  }
  const client=new RecoverableSessionClient<OldStreetHead>(storage,'oldstreet-dev-1:',api,sessionPolicy,lock)

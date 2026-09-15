@@ -1,0 +1,13 @@
+{
+  "requestId": "ffa8abed-731f-4cac-b182-ab67437470a0",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789461506892008.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Create one isolated small group of TWO closed old wooden packing crates for the SAME overhead orthographic pixel-art exploration game as this reference. Match its crisp dark brown outlines, restrained warm wood palette, pixel density and visible top surfaces with shortened front faces. No perspective vanishing point. One larger closed rectangular crate and a smaller closed crate beside it, both resting on same floor plane, combined compact footprint. No shelf, book, photos, legs, wheels, handles, writing, labels, people, or environment. Keep full group within x80..432 y96..432 on a 512x512 canvas, foot contact y432. Moderate readable plank detail and small nail heads, no oversized coarse pixels, no photorealistic grain, no smooth gradients. Entire surrounding background and gaps between boxes uniform pure magenta #ff00ff; no ground shadow. Exactly one reusable crate group, suitable for rendering at about 40 world pixels wide next to a 16-world-pixel-wide person."
+}

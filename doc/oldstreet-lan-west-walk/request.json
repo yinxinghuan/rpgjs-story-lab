@@ -1,0 +1,13 @@
+{
+  "requestId": "99109481-559f-4dac-a9a9-fae89ef8de40",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789421967259733.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 512
+  },
+  "prompt": "Create ONLY THREE full-body sprite frames of the SAME laundry shop woman from the reference, all facing WEST (screen LEFT), all at the same steep overhead orthographic camera elevation. Preserve short dark hair, moss green rolled sleeves, cream apron, brown trousers and brown shoes, stocky silhouette and crisp dark pixel outlines. Large visible crown, compressed face, no eye-level perspective. One horizontal row, three equal 320x512 cells, flat pure magenta #ff00ff background including all limb gaps. No grid, captions, shadows or environment. Each woman is about 145 pixels wide and 270 pixels tall, foot baseline y=440, centered in her cell. Frame 1: walking left, anatomical LEFT leg reaching toward screen left and RIGHT leg trailing to screen right, opposite arm swing. Frame 2: STOP pose facing left, both feet together beneath hips and both arms resting down. Frame 3: walking left, anatomical RIGHT leg reaching toward screen left and LEFT leg trailing to screen right, opposite arm swing to frame 1. Show the change in near versus far leg overlap and arm positions clearly; frame 3 must not duplicate frame 1. Keep head and torso position and scale identical. Exactly three figures facing left; no front, back or right-facing figure. Pixel art with intentional crisp pixel clusters and restrained colors matching reference; do not add smooth painterly rendering."
+}

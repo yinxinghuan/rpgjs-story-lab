@@ -1,0 +1,55 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {DatabaseSync} from 'node:sqlite'
+import {OldStreetAuthority} from '../server/old-street-runtime'
+import type {AuthorityStorage} from '../server/session-authority'
+import {oldStreetSession} from '../src/old-street-session'
+import {oldStreetSpatialPlan,oldStreetDoors} from '../src/old-street-space'
+
+test('local transport bounds a lost receipt and recovers the same committed action once',async t=>{
+ const raw=new DatabaseSync(':memory:')
+ const db:AuthorityStorage={all:(sql,...b)=>raw.prepare(sql).all(...b) as any,run:(sql,...b)=>{raw.prepare(sql).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const result=work();raw.exec('COMMIT');return result}catch(e){raw.exec('ROLLBACK');throw e}}}
+ const server=new OldStreetAuthority(db,()=>true)
+ const values=new Map<string,string>()
+ const storage:Storage={get length(){return values.size},key:i=>[...values.keys()][i]??null,getItem:k=>values.get(k)??null,setItem:(k,v)=>{values.set(k,String(v))},removeItem:k=>{values.delete(k)},clear:()=>values.clear()}
+ let controller:AbortController,loseReceipt=false
+ const actionIds:string[]=[]
+ t.mock.method(AbortSignal,'timeout',(ms:number)=>{assert.equal(ms,30000);controller=new AbortController();return controller.signal})
+ const request:typeof fetch=async(url,init)=>{
+  assert.equal(init?.cache,'no-store');assert.equal(init?.credentials,'same-origin');assert.ok(init?.signal)
+  const path=String(url).split('/api/oldstreet-dev')[1],body=init?.body?JSON.parse(String(init.body)):undefined
+  let result:unknown
+  if(path==='/sessions')result=server.create('test-owner',body.enrollment_id,body.locale)
+  else if(path.endsWith('/actions')){
+   actionIds.push(body.action_id);result=await server.action('test-owner',path.split('/')[2],body)
+   if(loseReceipt){loseReceipt=false;controller.abort(new DOMException('Synthetic lost receipt','TimeoutError'));init.signal.throwIfAborted()}
+  }else result=server.get('test-owner',path.split('/')[2])
+  return Response.json(result)
+ }
+ try{
+  const connection=oldStreetSession(storage,async(_name,work)=>work(),request)
+  const start=await connection.client.enroll('zh')
+  const door=oldStreetDoors().find(d=>d.room==='street'&&d.destination.room==='shop')!
+  const target=oldStreetSpatialPlan(start.save).entities.find(e=>e.id===door.id)!
+  loseReceipt=true
+  await assert.rejects(connection.client.send(start,{type:'action',action:door.actionId,target:target.id,position:target.approach}),{name:'TimeoutError'})
+  assert.equal(connection.client.hasPending(),true)
+  assert.equal(server.get('test-owner',start.id).version,start.version+1)
+  const recovered=await connection.client.recover()
+  assert.equal(recovered.head.sceneId,'shop');assert.equal(recovered.head.version,start.version+1)
+  assert.equal(actionIds.length,2);assert.equal(actionIds[0],actionIds[1])
+  assert.equal(server.events('test-owner',start.id,0).length,1)
+  assert.equal(connection.client.hasPending(),false)
+  const drawer=oldStreetSpatialPlan(recovered.head.save).entities.find(e=>e.id==='drawer')!
+  const opened=await connection.client.send(recovered.head,{type:'action',action:'oldstreet:move-box',target:'drawer',position:drawer.approach})
+  loseReceipt=true
+  await assert.rejects(connection.client.send(opened.head,{type:'action',action:'oldstreet:take-lens',target:'drawer',position:drawer.approach}),{name:'TimeoutError'})
+  assert.equal(connection.client.hasPending(),true)
+  const resumed=await connection.client.recover()
+  assert.equal(resumed.head.save.inventory.find((i:{id:string})=>i.id==='lens')?.count,1)
+  assert.equal(resumed.head.version,opened.head.version+1)
+  assert.equal(actionIds.at(-1),actionIds.at(-2))
+  assert.equal(server.events('test-owner',start.id,0).length,3)
+  assert.equal(connection.client.hasPending(),false)
+ }finally{raw.close()}
+})
