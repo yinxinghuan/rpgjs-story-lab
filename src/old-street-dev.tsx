@@ -1,3 +1,5 @@
+import {oldStreetCamera} from './old-street-camera'
+import {oldStreetContextAction} from './old-street-context-action'
 import {OldStreetDoorways} from './old-street-door-view'
 import {OLD_STREET_PREVIEW_VERSION} from './old-street-runtime-contract'
 import drawerStatesUrl from '../doc/oldstreet-drawer-guided/states.png'
@@ -71,8 +73,11 @@ export default function OldStreetDev() {
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   const [feet, setFeet] = useState(head.position), [destination, setDestination] = useState<{x: number; y: number} | null>(null)
   const stage = useRef<HTMLDivElement>(null), world=useRef<HTMLDivElement>(null)
-  const [worldWidth,setWorldWidth]=useState(192)
-  useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setWorldWidth(Math.max(1,Math.min(entry.contentRect.width,entry.contentRect.height*2/3))) });observer.observe(node);return()=>observer.disconnect()},[])
+  const [viewport,setViewport]=useState({width:390,height:844}),[actionHeight,setActionHeight]=useState(160)
+  const overview=debug&&new URLSearchParams(location.search).get('camera')==='overview'
+  const camera=oldStreetCamera(viewport,feet,actionHeight,overview)
+  useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
+  useEffect(()=>{const node=actionPanel.current;if(!node)return;const observer=new ResizeObserver(([entry])=>setActionHeight(entry.contentRect.height+24));observer.observe(node);return()=>observer.disconnect()},[])
   const [diagnostic, setDiagnostic] = useState('')
   useEffect(() => {if(!debug)return;const timer = setInterval(() => setDiagnostic(JSON.stringify({sheets:engine.current?.getCurrentPlayer()?.graphicsSignals().map((g:any)=>({keys:Object.keys(g),width:g.width,height:g.height,textures:Object.keys(g.textures??{})})),players:Object.keys(engine.current?.sceneMap.players() ?? {}).length,motion:runtime.current?.motion?.(),render:runtime.current?.diagnostics?.()})), 2000); return () => clearInterval(timer)}, [])
   useEffect(() => {
@@ -223,16 +228,24 @@ export default function OldStreetDev() {
   const chosen = entities.find(e => e.id === selected) ?? nearest
   const knownSpeaker=chosen&&oldStreetPerson(chosen.id)&&head.save.characters.some(c=>c.id===oldStreetPerson(chosen.id)?.id)
   const talkTopics=chosen?oldStreetTalkTopics(head.save,chosen.id):[]
-  const actions = chosen?.actions.filter(id => ruleFor(id)?.status === 'accepted') ?? []
+  const actions = chosen?oldStreetContextAction(head.save,chosen).actions:[]
+  const nearbyAction=nearest?oldStreetContextAction(head.save,nearest):undefined
+  function useNearby(){
+    if(!nearest||!nearbyAction)return
+    setSelected(nearest.id)
+    if(nearbyAction.primary.kind==='action')request(nearbyAction.primary.id)
+    else if(nearbyAction.primary.kind==='inspect')setNotice(nearbyAction.reason)
+    else {setNotice('');requestAnimationFrame(()=>actionPanel.current?.querySelector<HTMLButtonElement>('button')?.focus())}
+  }
   const label = (id: string) => {
     const door = oldStreetDoors().find(d => d.actionId === id)
     return door ? text(oldStreetRooms[door.destination.room]) : text(actionNames[id.replace('oldstreet:', '')] ?? [id, id])
   }
   const outcome = oldStreetOutcome(head.save)
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
-  return <main className="os-dev" data-release={OLD_STREET_PREVIEW_VERSION}>
+  return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
     <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}>{text(['街区','Neighbourhood'])}</button><button ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setJournalOpen(true)}}>{text(['随身与发现','Items & discoveries'])}</button><button disabled={!ready||busy||!!error} onClick={()=>{runtime.current?.pause(true);setJourneysOpen(true)}}>{text(['旅程','Journeys'])}</button></nav></header>
-    <div className="os-world" ref={world}><div className="os-stage" style={{width:worldWidth,height:worldWidth*1.5}} ref={stage} onPointerDown={e => {
+    <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving) return
       const r = e.currentTarget.getBoundingClientRect()
       runtime.current?.walkTo({x: (e.clientX - r.left) * 384 / r.width, y: (e.clientY - r.top) * 576 / r.height})
@@ -263,7 +276,7 @@ export default function OldStreetDev() {
     </section>
     <footer>
       <div className="os-stick" role="group" aria-label={text(['移动摇杆', 'Movement joystick'])} onPointerDown={e => {e.currentTarget.setPointerCapture(e.pointerId); stick(e)}} onPointerMove={e => {if (e.currentTarget.hasPointerCapture(e.pointerId)) stick(e)}} onPointerUp={() => runtime.current?.move(0, 0)} onPointerCancel={() => runtime.current?.move(0, 0)} onLostPointerCapture={() => runtime.current?.move(0, 0)}><span/></div>
-      <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={() => {if (nearest) {setSelected(nearest.id); const id = nearest.actions.find(a => ruleFor(a)?.status === 'accepted'); if (id) request(id)}}}>{busy ? text(['正在走近…', 'Approaching…']) : nearest?.actions.find(a => ruleFor(a)?.status === 'accepted') ? label(nearest.actions.find(a => ruleFor(a)?.status === 'accepted')!) : text(['走近物件', 'Move closer'])}</button>
+      <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : nearbyAction?.primary.kind==='action'?label(nearbyAction.primary.id):nearbyAction?.primary.kind==='talk'?text(['交谈','Talk']):nearbyAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
     {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>}

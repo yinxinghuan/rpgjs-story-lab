@@ -1668,3 +1668,10 @@ oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹�
 `src/old-street-door-view.tsx` 从 `oldStreetDoors()` 投射门槛、巷道与步级，旋转来自 endpoint.side，关闭提示来自同一 gate/facts。`old-street-dev.tsx` 保留原有 44px 可操作按钮、名称和转场逻辑，点击层透明；`old-street-floor.tsx` 移除独立方向无关的门补丁。未改变地图尺寸、碰撞、接近点、出入落点或权威规则。小屏上下边缘的标签裁切在真实画面发现后修正。
 
 本地真实 renderer 实际走完街口→修表铺→合住院→街口；点击未清障的地下储物室出口仍留在院落，并显示旧箱挡住台阶。刷新恢复当前场景。57 项探索回归与 TypeScript 通过。本轮仅验证当前浏览器约 365px 窗口，尚未做精确 320/390 尺寸或 iPhone 实机复验；程序绘制空间提示不等于最终美术准入。
+
+
+### 本地沉浸镜头与就近行动（未发布）
+
+`old-street-camera.ts` 只返回地图显示尺寸和平移，不更改地图坐标或 Session。默认世界铺底，镜头跟随脚点并避让标题及实际行动区高度；Canvas、背景和热点仍共享 stage，地面点击从 stage.getBoundingClientRect 反算。调试 `?debug=1&camera=overview` 可查看整图。实际本地约 365px 窗口已看到放大角色、从街口点击门进入修表铺以及镜头移动。纯函数分别验证 320×568、390×844、844×390 的边界与反换算；这些断言不是相应尺寸的实际设备画面验收。
+
+`old-street-context-action.ts` 从同一权威规则取可做动作，未认识人物仍先介绍，认识后不重复置顶问候，交还物件优先；无可做动作的已知人物进入已有话题，其他实体查看当前阻碍。结果只用于展示和排序，发送行动仍经原 Session 校验。中英文介绍/交还/交谈及关闭出口不变更存档的测试通过。探索回归共 63 项通过。
