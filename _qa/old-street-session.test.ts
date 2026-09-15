@@ -399,7 +399,7 @@ test('expansion HTTP starts background work and returns before model completion'
  }finally{raw.close()}
 })
 
-test('prepared expansion opens a real bound room with observation and return travel',async()=>{
+for(const decision of ['keep','leave'])test(`prepared expansion opens a real bound room, saves ${decision} choice and permits return travel`,async()=>{
  const {OldStreetExpansionJobs}=await import('../server/old-street-expansion-jobs')
  const {compileExpansionPlan}=await import('../src/old-street-expansion-plan')
  const raw=new DatabaseSync(':memory:'),db=storage(raw)
@@ -428,6 +428,16 @@ test('prepared expansion opens a real bound room with observation and return tra
   assert.equal(h.save.facts['darkroom-photo-matched'],'a'.repeat(64))
   assert.deepEqual(await s.action('synthetic-owner',h.id,proof),result)
   assert.equal(s.get('synthetic-owner',h.id).save.facts['darkroom-photo-matched'],'a'.repeat(64))
+  const choose={action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-photo-decision',decision}
+  const chosen=await s.action('synthetic-owner',h.id,choose);h=chosen.head
+  assert.equal(h.save.facts['darkroom-photo-choice'],decision)
+  assert.equal(h.save.inventory.filter(i=>i.id==='darkroom-print').length,decision==='keep'?1:0)
+  assert.deepEqual(await s.action('synthetic-owner',h.id,choose),chosen)
+  await assert.rejects(s.action('synthetic-owner',h.id,{...choose,expected_version:h.version,action_id:randomUUID()}),/ACTION_UNAVAILABLE/)
+  const {oldStreetJournal}=await import('../src/old-street-journal')
+  assert.ok(oldStreetJournal(h.save).notes.find(n=>n.id==='darkroom-photo')?.text.includes(decision==='keep'?'身上':'留在暗房'))
+  const observed=await s.action('synthetic-owner',h.id,request(h,'oldstreet:observe-darkroom'));h=observed.head
+  assert.ok(observed.text.includes(decision==='keep'?'行囊里':'显影台上'))
   await go('photo');assert.equal(h.save.facts['darkroom-ready'],true)
   assert.equal(h.save.facts['darkroom-photo-matched'],'a'.repeat(64))
  }finally{raw.close()}

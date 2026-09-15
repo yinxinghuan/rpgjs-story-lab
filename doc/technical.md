@@ -1876,3 +1876,5 @@ OldStreetExpansionMedia在原旅程数据库内按owner/journey/扩展请求ID�
 已完成真实平台生成，并在暗房页面实际显示。最初提示中的two-half puzzle导致分隔线；去掉玩法指令后连续画面恢复，但摄影颗粒与像素美术不匹配，继续按用户反馈修正。数据库重开、下载失败后同任务恢复、PNG持久读取的合成核心测试已通过；不将其称为完整动态解谜闭环。
 
 扩展照片现复用OldStreetPhotoView，传入当前旅程图片URL和hash，保留原固定照片合同。expansion-photo-match通过Session事务检查暗房/接近工作台/当前候选hash及拼合参数，写darkroom-photo-matched并追加可见记录；随身与发现显示此记录，已完成照片停止重生成。本地浏览器已实际选片并成功提交，生产接口仍未装配。
+
+照片去向由expansion-photo-decision走同一Session事务，只在暗房工作台旁且拼合完成/未选择时接受keep或leave。keep增加darkroom-print一次，leave不增加物品；事实用于发现页和阶段结局。请求回执重放不会重复领取；两分支的核心测试通过。本地真实旅程选择keep后，随身显示旧街照片，发现页显示“你把拼好的照片带在身上”。不采用候选中未经画面支持的放大机/显影槽描述；此分支不是任意动态剧情推演。

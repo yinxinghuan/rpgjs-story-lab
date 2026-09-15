@@ -46,10 +46,20 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(!['action','free-input','dialogue','expansion-request','expansion-activate','expansion-photo-match'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(!['action','free-input','dialogue','expansion-request','expansion-activate','expansion-photo-match','expansion-photo-decision'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='expansion-photo-decision'){
+        if(h.sceneId!=='darkroom'||!h.save.facts['darkroom-photo-matched']||h.save.facts['darkroom-photo-choice']||!['keep','leave'].includes(body.decision)||!binding.canInteract('developing-bench',h.sceneId,pos))throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)
+        const save=structuredClone(h.save),keep=body.decision==='keep'
+        save.facts['darkroom-photo-choice']=body.decision
+        if(keep)save.inventory.push({id:'darkroom-print',label:save.locale==='zh'?'旧街照片':'Old street photograph',count:1,rarity:'common'})
+        const text=save.locale==='zh'?(keep?'你把拼好的旧街照片收进随身行囊。':'你把照片平整地留在显影台上。'):(keep?'You tuck the completed street photograph into your bag.':'You leave the photograph flat on the developing bench.')
+        recordOldStreetInteraction(save,'developing-bench','expansion-photo-decision',text,body.action_id)
+        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        return {head:next,kind:'expansion-photo-decision',accepted:true,text}
+      }
       if(body.type==='expansion-photo-match'){
         if(h.save.facts['darkroom-photo-matched'])throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)
         const hash=expansionPhoto?.(h)
@@ -117,12 +127,13 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(body.action==='oldstreet:inspect-clock'&&!oldStreetClockObserved(body.clockInspection))throw new LabError('OLD_STREET_CLOCK_INSPECTION_REQUIRED',409)
       if(body.action==='oldstreet:match-photos'&&!oldStreetPhotoMatches(body.photoMatch))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
       let next:OldStreetHead, text=resolution.successText
+      if(body.action==='oldstreet:observe-darkroom'&&h.save.facts['darkroom-photo-matched']){const keep=h.save.facts['darkroom-photo-choice']==='keep';text=h.save.locale==='zh'?(keep?'拼好的旧街照片已在你的行囊里。':'拼好的旧街照片平放在显影台上。'):(keep?'The completed street photograph is in your bag.':'The completed street photograph lies flat on the developing bench.')}
       if(oldStreetDoors().some(d=>d.actionId===body.action)) {
         const result=prepareDoorTravel(h.save,c,binding,{scene:h.sceneId,target:body.target,position:pos,actionId:body.action})
         next={...h,version:h.version+1,save:result.save,sceneId:result.scene,position:result.position}
       } else {
         const save=structuredClone(h.save);applyDomainResolution(save,c,resolution)
-        text=recordOldStreetInteraction(save,body.target,body.action,resolution.successText,body.action_id).map(b=>b.text).join("\n")
+        text=recordOldStreetInteraction(save,body.target,body.action,text,body.action_id).map(b=>b.text).join("\n")
         // Returning a borrowed object can restore collision underneath the player.
         next={...h,version:h.version+1,save,position:oldStreetSafePosition(h.sceneId,pos,save)}
       }

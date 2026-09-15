@@ -2,6 +2,7 @@ import type {StorySave} from './vendor/original-train/types'
 export function oldStreetJournal(save:StorySave){
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
  const details:Record<string,string>={
+  'darkroom-print':t('在暗房拼合的旧街照片。','The old street photograph you matched in the darkroom.'),
   lens:t('可以看清细小的刻记。','Useful for examining tiny marks.'),
   trolley:t('从洗衣店借来，用完可以放回原处。','Borrowed from the laundry; return it to its bay when finished.'),
   'letter-key':t('修表师借给你的小格钥匙，用完要交还。','The watchmaker lent you this compartment key. Bring it back when finished.'),
@@ -21,7 +22,7 @@ export function oldStreetJournal(save:StorySave){
   const events=[...new Set(save.relationships.filter(r=>r.characterId===c.id&&r.delta>0&&encounters[r.axis]?.character===c.id).map(r=>encounters[r.axis].text))]
   return {id:c.id,title:c.name,text:[c.role,...events].filter(Boolean).join(' · ')}
  })
- if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:t('屋檐与石板路已拼合成完整的街景。','The rooflines and paving join into a complete street view.')})
+ if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:f['darkroom-photo-choice']==='keep'?t('你把拼好的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('拼好的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('屋檐与石板路已拼合成完整的街景。','The rooflines and paving join into a complete street view.')})
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
  note('clock-mark-known',['钟底的刻记','Mark beneath the clock'],['放大镜下能看见一对燕子。','Two swallows are engraved beneath the clock.'])
  note('clock-returned',['旧钟的来历','The clock’s history'],['洗衣店主说，这是母亲留下的钟。','The laundry owner said the clock belonged to her mother.'])
