@@ -111,6 +111,7 @@ export default function OldStreetDev() {
   const [environmentArt,setEnvironmentArt]=useState(oldStreetEnvironmentArt)
   const [doorCratesArt,setDoorCratesArt]=useState<string>()
   const [loading,setLoading]=useState({stage:'journey',done:0,total:(pixelShop?11:6)+environmentDownloads.length})
+  const [pendingSpeech,setPendingSpeech]=useState<string|null>(null)
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
@@ -272,6 +273,7 @@ export default function OldStreetDev() {
     finally{busyRef.current=false;setBusy(false);runtime.current?.pause(connection.client.hasPending())}
   }
   async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false,clockInspection?:unknown) {
+    if(input!==undefined)setNotice(text(dialogue?['等候回应…','Waiting for a reply…']:['正在行动…','Taking action…']))
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
@@ -287,6 +289,7 @@ export default function OldStreetDev() {
       // A stale checkpoint falls through to the session conflict/recovery path;
       // never overwrite a newer scene with this tab's arrival position.
       const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,...(new URLSearchParams(location.search).get('interpret')==='live'?{mode:'live'}:new URLSearchParams(location.search).get('interpret')==='local'?{mode:'local'}:{})}),target,position:arrivedPosition,...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
+      if(input!==undefined&&result.accepted!==true)setTyped(input)
       const nextHead = result.head as OldStreetHead
       if(result.accepted&&nextHead.version>h.version&&!dialogue){
         const gained=nextHead.save.inventory.some(item=>item.count>(h.save.inventory.find(old=>old.id===item.id)?.count??0))
@@ -310,8 +313,8 @@ export default function OldStreetDev() {
       if(id==='oldstreet:inspect-clock'){if(result.accepted)setClockOpen(false);else setClockMessage(text(['再仔细看看刻记，也可以换一处观察。','Look more closely at the mark, or examine another area.']))}
       if(id==='oldstreet:match-photos'){if(result.accepted)setPhotoOpen(false);else setPhotoMessage(text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']))}
       runtime.current!.pause(Boolean(nextHead.save.facts.departed)||Boolean(requiredInspection)||expansionInspection||((photoOpen||clockOpen)&&!result.accepted))
-    } catch (e) {setError(String(e)); runtime.current?.pause(true)}
-    finally {busyRef.current = false; setBusy(false)}
+    } catch (e) {if(input!==undefined)setTyped(input);setError(String(e)); runtime.current?.pause(true)}
+    finally {setPendingSpeech(null);busyRef.current = false; setBusy(false)}
   }
   function request(id: string, confirmed = false) {
     if (!ready || busyRef.current || error || current.current.save.facts.departed) return
@@ -326,8 +329,8 @@ export default function OldStreetDev() {
   function sendInput(dialogue=false,provided?:string){
     if(!chosen||!(provided??typed).trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
     const input=(provided??typed).trim(),target=chosen.id
-    busyRef.current=true;setBusy(true)
-    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){busyRef.current=false;setBusy(false)}
+    busyRef.current=true;setBusy(true);setTurn([]);setPendingSpeech(dialogue?input:null);setNotice(text(['正在走近…','Walking closer…']))
+    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){setPendingSpeech(null);busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
     else setTyped('')
   }
   function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e})}
@@ -378,7 +381,7 @@ export default function OldStreetDev() {
     </div>
     </div>
     <section className="os-actions" ref={actionPanel} aria-label={text(['当前行动', 'Current actions'])}>
-      {turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
+      {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['交谈','Conversation'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
       {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
       {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
