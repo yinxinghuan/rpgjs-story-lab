@@ -1,0 +1,13 @@
+{
+  "requestId": "26066731-077e-4d0c-8ce3-0daea8c12e5f",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/42b2262310bfa68e4d0f4c38d1a76b2edac24816/doc/oldstreet-lan-candidate/standing.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Render exactly ONE isolated full body pixel-art sprite, not a sprite sheet. Use ONLY the SECOND character from the left in the reference: a short-haired adult laundry woman facing screen LEFT, moss-green rolled-sleeve shirt, cream work apron, brown trousers, dark brown shoes. Preserve that character identity, chunky clean pixel clusters, black-brown outline, compact proportions and the exact elevated orthographic camera: top of head and top of shoulders clearly visible, no perspective vanishing point. She walks toward screen LEFT. One unambiguous walking key pose: the NEAR leg (visible side closest to viewer) extends FORWARD toward screen LEFT, the FAR leg trails toward screen RIGHT; NEAR arm swings BACK toward screen RIGHT and FAR arm forward toward LEFT. Keep torso upright and same left-facing head as reference. No extra limbs, no extra characters or poses. Whole sprite centered with generous empty margin, approximately 170 pixels wide and 310 pixels tall. Flat solid pure magenta #FF00FF background everywhere outside the body, no checkerboard, no gradient, no ground shadow, no scenery, no text. Do not turn her toward screen right. Do not add painterly smoothing or new accessories."
+}

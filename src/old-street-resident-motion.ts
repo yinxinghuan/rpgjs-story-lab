@@ -1,6 +1,7 @@
+import {oldStreetStride,oldStreetHeroScale} from './old-street-space'
 import {createDistancePoseSelector,moveWithCollision,type Point} from './vendor/space-motion/distance-motion'
 
-const gait=createDistancePoseSelector(55*.22/.14,['stride-0','stride-1','stride-2','stride-1'])
+const gait=createDistancePoseSelector(oldStreetStride*.22/oldStreetHeroScale,['stride-0','stride-1','stride-2','stride-1'])
 /** Cosmetic single-player activity, bounded inside the authored interaction area. */
 export class OldStreetResidentMotion {
  position:Point
