@@ -24,6 +24,15 @@ test('approach, selection, pause and blocked movement all stop actual displaceme
  for(const [paused,selected,walkable] of [[true,false,true],[false,true,true],[false,false,false]] as const){m.update(.04,far,paused,selected,()=>walkable);assert.deepEqual(m.position,stopped);assert.equal(m.pose,'stand')}
  m.update(4,far,false,false,()=>true);assert.deepEqual(m.position,stopped)
 })
+test('interaction pause keeps the resident still while facing the nearby speaker',()=>{
+ const m=new OldStreetResidentMotion(home)
+ for(const [offset,direction] of [[{x:-50,y:0},'left'],[{x:50,y:0},'right'],[{x:0,y:-50},'up'],[{x:0,y:50},'down']] as const){
+  m.update(1/60,{x:home.x+offset.x,y:home.y+offset.y},true,false,()=>{throw new Error('paused resident must not attempt a step')})
+  assert.deepEqual(m.position,home);assert.equal(m.pose,'stand');assert.equal(m.direction,direction)
+ }
+ m.update(1/60,far,true,false,()=>true)
+ assert.deepEqual(m.position,home);assert.equal(m.direction,'down')
+})
 test('moving position drives body and approach, without a stale authoritative person wall',()=>{
  for(const dx of [-24,0,24]){
   const p={x:home.x+dx,y:home.y},positions={watchmaker:p},prop=oldStreetProjectedProps(save,positions).find(p=>p.id==='watchmaker')!

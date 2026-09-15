@@ -16,10 +16,12 @@ export class OldStreetResidentMotion {
  }
  update(dt:number,hero:Point,paused:boolean,selected:boolean,walkable:(p:Point)=>boolean){
   this.pose='stand'
-  if(paused||!Number.isFinite(dt)||dt<=0||dt>.25)return
+  if(!Number.isFinite(dt)||dt<=0||dt>.25)return
   const dx=hero.x-this.position.x,dy=hero.y-this.position.y,d=Math.hypot(dx,dy)
   this.attending=selected||d<(this.attending?120:100)
   if(this.attending){if(d>1)this.direction=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';return}
+  // Interaction pauses locomotion, not attention to the nearby speaker.
+  if(paused)return
   if(this.rest>0){this.rest=Math.max(0,this.rest-dt);return}
   const remaining=this.home.x+this.sign*24-this.position.x
   const result=moveWithCollision(this.position,{x:Math.sign(remaining)*Math.min(Math.abs(remaining),24*dt),y:0},walkable)

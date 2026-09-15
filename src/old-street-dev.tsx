@@ -189,7 +189,7 @@ export default function OldStreetDev() {
               })
               if(before.x!==m.position.x||before.y!==m.position.y){void event.teleport({x:m.position.x-12,y:m.position.y-12});setResidentPosition({...m.position})}
               event.direction.set(m.direction as Direction);event.animationName.set(m.pose);event.syncChanges()
-            }else if(!paused){const dx=hero.x-prop.position.x,dy=hero.y-prop.position.y;if(Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}
+            }else {const dx=hero.x-prop.position.x,dy=hero.y-prop.position.y;if(Math.hypot(dx,dy)>1&&Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}
           }
         },
         onEngine: e => {engine.current = e},
@@ -263,6 +263,8 @@ export default function OldStreetDev() {
     try {
       const h = serverHead.current!
       runtime.current!.pause(true)
+      const interactionTarget=liveEntities().find(entity=>entity.id===target&&entity.scene===h.sceneId)
+      if(interactionTarget)runtime.current!.face?.(interactionTarget.position)
       const arrivedPosition={...position.current}
       // Flush arrival after any older periodic checkpoint. A refused action
       // restores this location without committing a story turn.
