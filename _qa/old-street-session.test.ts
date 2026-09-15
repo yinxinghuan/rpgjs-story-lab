@@ -357,3 +357,23 @@ test('expansion intention persists through reopen without admitting a room or bl
   assert.equal(oldStreetSpatialPlan(next.save).scenes.some(scene=>scene.id==='photo-darkroom'),false)
  }finally{raw.close();rmSync(temp,{recursive:true,force:true})}
 })
+
+test('expansion plan job survives archive reopen and does not replay generation',async()=>{
+ const {OldStreetExpansionJobs}=await import('../server/old-street-expansion-jobs')
+ const {compileExpansionPlan}=await import('../src/old-street-expansion-plan')
+ const raw=new DatabaseSync(':memory:'),db=storage(raw),s=new OldStreetAuthority(db,admit)
+ try{
+  let h=s.create('synthetic-owner',randomUUID(),'zh')
+  h=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room==='street'&&d.destination.room==='photo')!.actionId))).head
+  h=(await s.action('synthetic-owner',h.id,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-request',template:'photo-darkroom-v1',text:'想看看暗房'})).head
+  let calls=0
+  const produce=async(intent:any)=>{calls++;return compileExpansionPlan(intent,{title:'暗房',discovery:'两边窗沿接上了。',photograph:'A continuous old storefront with windows.'})}
+  let jobs=new OldStreetExpansionJobs(db,(o,id)=>s.get(o,id),produce)
+  assert.equal(jobs.enqueue('synthetic-owner',h.id).state,'queued')
+  const result=await jobs.run('synthetic-owner',h.id)
+  assert.equal(result?.state,'candidate');assert.deepEqual(s.get('synthetic-owner',h.id),h)
+  jobs=new OldStreetExpansionJobs(db,(o,id)=>s.get(o,id),produce)
+  assert.deepEqual(jobs.enqueue('synthetic-owner',h.id),result)
+  assert.deepEqual(await jobs.run('synthetic-owner',h.id),result);assert.equal(calls,1)
+ }finally{raw.close()}
+})
