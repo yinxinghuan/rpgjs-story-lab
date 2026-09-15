@@ -1,3 +1,4 @@
+import {oldStreetEnvironmentArt,oldStreetEnvironmentDownloads} from './old-street-environment-art'
 import {createStartupGuard} from './startup-guard'
 import photoShelfUrl from '../doc/oldstreet-photo-shelf/cutout.png'
 import {oldStreetPhotoShelfPose,oldStreetPhotoShelfSheets} from './old-street-photo-shelf'
@@ -46,6 +47,7 @@ import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 
 const pixelShop=new URLSearchParams(location.search).get('shop_art')==='pixel'
+const environmentDownloads=oldStreetEnvironmentDownloads(pixelShop)
 const renderedProps=['watchmaker','laundry-owner','photographer','trolley','drawer',...(pixelShop?['letter-compartment','record-book','photo-folder']:[])]
 const plan = oldStreetSpatialPlan()
 const propNames: Record<string, [string, string]> = {
@@ -75,7 +77,8 @@ export default function OldStreetDev() {
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
   const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>(),compartmentEvent=useRef<RpgPlayer>(),photoShelfEvent=useRef<RpgPlayer>()
   useEffect(()=>{if(photoShelfEvent.current){photoShelfEvent.current.animationName.set(oldStreetPhotoShelfPose(head.save));photoShelfEvent.current.syncChanges()}if(compartmentEvent.current){compartmentEvent.current.animationName.set(oldStreetCompartmentPose(head.save));compartmentEvent.current.syncChanges()}if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
-  const [loading,setLoading]=useState({stage:'journey',done:0,total:pixelShop?8:6})
+  const [environmentArt,setEnvironmentArt]=useState(oldStreetEnvironmentArt)
+  const [loading,setLoading]=useState({stage:'journey',done:0,total:(pixelShop?8:6)+environmentDownloads.length})
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
@@ -105,6 +108,7 @@ export default function OldStreetDev() {
     let mounted = true
     const downloads=new AbortController()
     const boot=createStartupGuard(code=>{downloads.abort();if(mounted)setError(code)})
+    let environmentBlobs:string[]=[]
     let heroBlob: string | undefined
     let watchmakerBlob: string | undefined
     let lanBlob: string | undefined
@@ -124,12 +128,17 @@ export default function OldStreetDev() {
       resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
       setNotice(restored.version===0?cartridge.opening.blocks[0].text:text(['已恢复旅程。', 'Journey restored.']))
       const npcArt=actorArt.balanced.mechanic
-      const sources=[{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'photoShelf',url:photoShelfUrl}]:[])]
+      const sources=[...environmentDownloads,{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'photoShelf',url:photoShelfUrl}]:[])]
       const urls=await downloadSpatialArt(sources,{signal:downloads.signal,progress:(done,total)=>{if(mounted)setLoading({stage:'art',done,total})}})
       photoShelfBlob=urls.photoShelf;heroBlob=urls.hero;watchmakerBlob=urls.watchmaker;lanBlob=urls.lan;xuBlob=urls.xu;drawerBlob=urls.drawer;trolleyBlob=urls.trolley;pixelPropsBlob=urls.props
       if(!mounted||!boot.pending()){Object.values(urls).forEach(url=>URL.revokeObjectURL(url));return}
+      environmentBlobs=environmentDownloads.map(e=>urls[e.id])
       setLoading({stage:'textures',done:sources.length,total:sources.length})
-      await Promise.all(Object.values(urls).map(url=>loadSpatialArtTexture(url,pixelShop?'nearest':'linear')))
+      await Promise.all(Object.entries(urls).map(async([id,url])=>{
+        if(id.startsWith('environment-')){const image=new Image();image.src=url;await image.decode()}
+        else await loadSpatialArtTexture(url,pixelShop?'nearest':'linear')
+      }))
+      if(mounted&&boot.pending())setEnvironmentArt({...oldStreetEnvironmentArt,...Object.fromEntries(environmentDownloads.map(e=>[e.id.slice('environment-'.length),urls[e.id]]))})
       if(!mounted||!boot.pending())return
       const preview=new Image();preview.src=heroBlob;await preview.decode()
       if(mounted&&boot.pending())setLoading({stage:'map',done:sources.length,total:sources.length})
@@ -165,7 +174,7 @@ export default function OldStreetDev() {
         onFailure: code => {if(boot.pending())boot.fail(code);else if(mounted)setError(code)},
       })
     } catch (e) {boot.fail(String(e))}})()
-    return () => {mounted = false; boot.cancel(); downloads.abort(); runtime.current?.destroy(); if(photoShelfBlob) URL.revokeObjectURL(photoShelfBlob)
+    return () => {mounted = false; environmentBlobs.forEach(url=>URL.revokeObjectURL(url)); boot.cancel(); downloads.abort(); runtime.current?.destroy(); if(photoShelfBlob) URL.revokeObjectURL(photoShelfBlob)
       if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(pixelPropsBlob)URL.revokeObjectURL(pixelPropsBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
   }, [])
   useEffect(() => {
@@ -289,7 +298,7 @@ export default function OldStreetDev() {
       setSelected(null)
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
+        <OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} art={environmentArt}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts}/>
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&renderedProps.includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
