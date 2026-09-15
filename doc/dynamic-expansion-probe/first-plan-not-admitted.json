@@ -1,0 +1,90 @@
+{
+  "kind": "synthetic-model-probe",
+  "intent": {
+    "version": 1,
+    "id": "synthetic-expansion-20260916",
+    "template": "photo-darkroom-v1",
+    "sourceScene": "photo",
+    "input": "我想看看照相馆后面封着的暗房，找找有没有值得保存的老街影像。",
+    "status": "requested",
+    "requestedAtVersion": 0
+  },
+  "plan": {
+    "version": 1,
+    "requestId": "synthetic-expansion-20260916",
+    "template": "photo-darkroom-v1",
+    "content": {
+      "title": "暗房里的旧影",
+      "arrival": "你推开照相馆后门，进入一个昏暗的小室。昏黄的灯光透过红色的窗帘，洒在陈旧的工作台上。空气中弥漫着化学药剂的味道，几张半成品的照片静静地摆放着。",
+      "observation": "你走近工作台，发现上面放着一台老式放大机和几张刚刚显影的照片。显影盘中，影像渐渐浮现出一条安静的老街，石板路两旁是雕花木窗和斑驳的墙面。你仔细观察，照片上的细节隐约透露着曾经的繁华。",
+      "discovery": "这张照片捕捉了旧街区独特的建筑风格和安宁的氛围，保存了那段时光的静谧。它或许能成为重现旧日记忆的珍贵资料。",
+      "photograph": "A clear, detailed black and white photograph of an old street featuring continuous edges. The street is paved with uneven stone slabs leading through a narrow lane flanked by aged buildings with wooden framed windows and weathered facades. The architecture shows traditional craftsmanship with carved wooden shutters and tiled roofs. The scene contains no people or text, emphasizing the quiet, deserted atmosphere of the historic neighborhood."
+    },
+    "space": {
+      "id": "photo-darkroom",
+      "sourceScene": "photo",
+      "floor": {
+        "x": 88,
+        "y": 112,
+        "w": 208,
+        "h": 320
+      },
+      "entrance": {
+        "side": "S",
+        "position": {
+          "x": 192,
+          "y": 432
+        },
+        "arrival": {
+          "x": 192,
+          "y": 396
+        }
+      },
+      "bench": {
+        "id": "developing-bench",
+        "body": {
+          "x": 136,
+          "y": 160,
+          "w": 112,
+          "h": 48
+        },
+        "approach": {
+          "x": 192,
+          "y": 244
+        }
+      }
+    },
+    "baseline": {
+      "floor": "photoFloor",
+      "wall": "photoWall",
+      "bench": "viewing-table",
+      "lighting": "dim-warm"
+    },
+    "actions": [
+      {
+        "id": "observe-bench",
+        "requires": []
+      },
+      {
+        "id": "match-print",
+        "requires": [
+          "photograph"
+        ]
+      }
+    ],
+    "media": [
+      {
+        "id": "atmosphere",
+        "requiredForEntry": false,
+        "requiredForAction": false,
+        "description": "An empty worn photographic darkroom surface, orthographic overhead, subdued warm lighting. No doors, furniture, people or objects; these remain independent."
+      },
+      {
+        "id": "photograph",
+        "requiredForEntry": false,
+        "requiredForAction": true,
+        "description": "A clear, detailed black and white photograph of an old street featuring continuous edges. The street is paved with uneven stone slabs leading through a narrow lane flanked by aged buildings with wooden framed windows and weathered facades. The architecture shows traditional craftsmanship with carved wooden shutters and tiled roofs. The scene contains no people or text, emphasizing the quiet, deserted atmosphere of the historic neighborhood."
+      }
+    ]
+  }
+}

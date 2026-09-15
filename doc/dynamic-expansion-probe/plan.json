@@ -1,0 +1,90 @@
+{
+  "kind": "synthetic-model-probe",
+  "intent": {
+    "version": 1,
+    "id": "synthetic-expansion-20260916",
+    "template": "photo-darkroom-v1",
+    "sourceScene": "photo",
+    "input": "我想看看照相馆后面封着的暗房，找找有没有值得保存的老街影像。",
+    "status": "requested",
+    "requestedAtVersion": 0
+  },
+  "plan": {
+    "version": 1,
+    "requestId": "synthetic-expansion-20260916",
+    "template": "photo-darkroom-v1",
+    "content": {
+      "title": "暗房里的老街印象",
+      "discovery": "通过放大这张老照片，你发现街道两侧的建筑风格细节，透露出上世纪中叶的生活节奏与社区氛围，仿佛时光静止在这里。",
+      "photograph": "A clear old street scene showing a continuous row of traditional mid-20th century buildings with tiled roofs and wooden window frames. The street is empty and clean, edged by narrow sidewalks and occasional street lamps. The architecture features modest, two-story structures with faded paint and small balconies. The image is composed so that the left and right halves align perfectly to form a continuous, uninterrupted view of the street, emphasizing the quiet, abandoned atmosphere.",
+      "arrival": "小灯照着旧工作台，门仍通向照相馆。",
+      "observation": "显影盘里的影像还没有清晰，可以先在房间里看看。"
+    },
+    "space": {
+      "id": "photo-darkroom",
+      "sourceScene": "photo",
+      "floor": {
+        "x": 88,
+        "y": 112,
+        "w": 208,
+        "h": 320
+      },
+      "entrance": {
+        "side": "S",
+        "position": {
+          "x": 192,
+          "y": 432
+        },
+        "arrival": {
+          "x": 192,
+          "y": 396
+        }
+      },
+      "bench": {
+        "id": "developing-bench",
+        "body": {
+          "x": 136,
+          "y": 160,
+          "w": 112,
+          "h": 48
+        },
+        "approach": {
+          "x": 192,
+          "y": 244
+        }
+      }
+    },
+    "baseline": {
+      "floor": "photoFloor",
+      "wall": "photoWall",
+      "bench": "viewing-table",
+      "lighting": "dim-warm"
+    },
+    "actions": [
+      {
+        "id": "observe-bench",
+        "requires": []
+      },
+      {
+        "id": "match-print",
+        "requires": [
+          "photograph"
+        ]
+      }
+    ],
+    "media": [
+      {
+        "id": "atmosphere",
+        "requiredForEntry": false,
+        "requiredForAction": false,
+        "description": "An empty worn photographic darkroom surface, orthographic overhead, subdued warm lighting. No doors, furniture, people or objects; these remain independent."
+      },
+      {
+        "id": "photograph",
+        "requiredForEntry": false,
+        "requiredForAction": true,
+        "description": "A clear old street scene showing a continuous row of traditional mid-20th century buildings with tiled roofs and wooden window frames. The street is empty and clean, edged by narrow sidewalks and occasional street lamps. The architecture features modest, two-story structures with faded paint and small balconies. The image is composed so that the left and right halves align perfectly to form a continuous, uninterrupted view of the street, emphasizing the quiet, abandoned atmosphere."
+      }
+    ]
+  }
+}
