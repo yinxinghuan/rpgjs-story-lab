@@ -424,15 +424,18 @@ for(const decision of ['keep','leave'])test(`prepared expansion opens a real bou
   assert.equal(oldStreetWalkable('darkroom',h.position,h.save),true)
   const proof={action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-photo-match',photoMatch:{version:'a'.repeat(64),piece:'piece-river',rotation:0}}
   await assert.rejects(s.action('synthetic-owner',h.id,{...proof,photoMatch:{...proof.photoMatch,version:'b'.repeat(64)}}),/ALIGNMENT_REQUIRED/)
+  await assert.rejects(s.action('synthetic-owner',h.id,{...proof,type:'free-input',target:'developing-bench',text:'把照片拼起来',photoMatch:undefined}),/ALIGNMENT_REQUIRED/)
   const result=await s.action('synthetic-owner',h.id,proof);h=result.head
   assert.equal(h.save.facts['darkroom-photo-matched'],'a'.repeat(64))
   assert.deepEqual(await s.action('synthetic-owner',h.id,proof),result)
   assert.equal(s.get('synthetic-owner',h.id).save.facts['darkroom-photo-matched'],'a'.repeat(64))
   const choose={action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-photo-decision',decision}
-  const chosen=await s.action('synthetic-owner',h.id,choose);h=chosen.head
+  const selection=decision==='keep'?{...choose,type:'free-input',target:'developing-bench',text:'把照片带走'}:choose
+  await assert.rejects(s.action('synthetic-owner',h.id,{...selection,action_id:randomUUID(),type:'free-input',target:'developing-bench',text:'先不要把照片带走'}),/INPUT_UNSUPPORTED/)
+  const chosen=await s.action('synthetic-owner',h.id,selection);h=chosen.head
   assert.equal(h.save.facts['darkroom-photo-choice'],decision)
   assert.equal(h.save.inventory.filter(i=>i.id==='darkroom-print').length,decision==='keep'?1:0)
-  assert.deepEqual(await s.action('synthetic-owner',h.id,choose),chosen)
+  assert.deepEqual(await s.action('synthetic-owner',h.id,selection),chosen)
   await assert.rejects(s.action('synthetic-owner',h.id,{...choose,expected_version:h.version,action_id:randomUUID()}),/ACTION_UNAVAILABLE/)
   const {oldStreetJournal}=await import('../src/old-street-journal')
   assert.ok(oldStreetJournal(h.save).notes.find(n=>n.id==='darkroom-photo')?.text.includes(decision==='keep'?'身上':'留在暗房'))

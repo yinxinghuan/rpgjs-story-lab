@@ -50,6 +50,22 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='free-input'&&h.sceneId==='darkroom'&&body.target==='developing-bench'){
+        if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
+        if(!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
+        const allowed=['oldstreet:observe-darkroom',...(!h.save.facts['darkroom-photo-matched']?(expansionPhoto?.(h)?['oldstreet:match-darkroom-photo']:[]):!h.save.facts['darkroom-photo-choice']?['oldstreet:keep-darkroom-photo','oldstreet:leave-darkroom-photo']:[])]
+        let action=resolveOldStreetInput(body.text,h.save.locale,allowed)
+        if(!action&&body.mode==='live'){
+          const actions=allowed.map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
+          if(originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
+          if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
+          if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+          const candidate=await interpreter(body.text,{locale:h.save.locale,sceneId:h.sceneId,target:body.target,objective:h.save.objective,actions})
+          if(candidate&&allowed.includes(candidate))action=candidate
+        }
+        if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
+        body=action==='oldstreet:match-darkroom-photo'?{...body,type:'expansion-photo-match'}:action==='oldstreet:keep-darkroom-photo'||action==='oldstreet:leave-darkroom-photo'?{...body,type:'expansion-photo-decision',decision:action==='oldstreet:keep-darkroom-photo'?'keep':'leave'}:{...body,type:'action',action}
+      }
       if(body.type==='expansion-photo-decision'){
         if(h.sceneId!=='darkroom'||!h.save.facts['darkroom-photo-matched']||h.save.facts['darkroom-photo-choice']||!['keep','leave'].includes(body.decision)||!binding.canInteract('developing-bench',h.sceneId,pos))throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)
         const save=structuredClone(h.save),keep=body.decision==='keep'

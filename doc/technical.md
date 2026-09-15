@@ -1884,3 +1884,5 @@ Worker装配新增可注入扩展model/photo providers，复用当前authority�
 后续实证：worker-live/result.json记录正式handler/authority加本地SQLite实际调用叙事与媒体服务，完成拼合/leave并关闭重建后恢复图片和事实。真实输出图已检查，不复用合成producer。线上Durable Object执行、平台身份和移动网络恢复仍待集中验收。
 
 扩展入口不再依赖expansion=1：每个旅程读取一次expansion-capabilities，由后台报告planning/media，缺接口或不可用时不显示新扩展入口；默认不触发生成。debug保留候选重生成。Worker与loopback接口同合同。真实5460去掉expansion参数后，原暗房、照片选择、随身物品和PNG仍恢复；两项Worker测试分别覆盖能力可用/不可用。不等于线上已开放：正式服务仍受原发布开关控制。
+
+暗房free-input按当前完成/选择/图片就绪状态构造动作许可，别名与可选live interpreter均仅返回已有动作ID，转到expansion-photo-match/decision原提交分支。匹配意图缺实际拼合参数时返回原ALIGNMENT_REQUIRED，客户端请求同一照片局部界面，不直接写完成事实。查看/领取/留下同按钮共用版本和回执。新增规则测试覆盖文字拼合需操作、文字领取、否定不领取及回执；真实5460输入“看看显影台”后走近并显示照片在行囊里的当前状态。新文字触发拼合界面的浏览器分支仍未单独试玩，不扩大本次证据。
