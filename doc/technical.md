@@ -1851,3 +1851,9 @@ server/old-street-expansion-jobs.ts使用现有AuthorityStorage保存每旅程/�
 扩展任务新增GET/POST sessions/:id/expansion处理，POST先入队并交给background执行，GET只读状态。old-street-dev-plugin在已有显式模型预算配置存在时装配计划生成器，共用模型预算；未配置时明确返回EXPANSION_PLANNER_NOT_READY，不伪造模型结果。公共HTTP处理器支持注入同一任务服务，但Worker尚未装配，生产不启用。玩家UI与新房间仍待接入。
 
 新增一项核心测试（调用HTTP操作处理函数，非真实网络）：延迟模型Promise保持未完成，POST已返回queued、GET为planning，旧地图实际Session转场可提交；释放模型后candidate保存，玩家仍在新位置。类型检查通过。未进行新模型调用或旧路线全链回归。
+
+### 扩展玩家入口接线（2026-09-16）
+
+显式?expansion=1在照相馆行动区显示OldStreetExpansionView，默认隐藏，避免未完成实验混入试玩。意向通过RecoverableSessionClient保存；之后POST扩展任务，queued/planning每8秒读取一次。离开房间卸载并停止读取，返回时依据旅程expansions恢复查询；candidate只显示方案已保存/入口准备中，不开放尚未接通的地图。无模型配置或网络错误显示可继续原探索，不全屏阻塞。
+
+新界面在真实浏览器的320px容器检查了展开、输入区域、空输入禁用，无横向溢出；这是独立组件显示检查，未提交假请求或触发模型，不能替代游戏内提交/恢复全链。真实地图接入仍待完成。

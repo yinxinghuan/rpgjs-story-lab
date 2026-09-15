@@ -1,3 +1,4 @@
+import {OldStreetExpansionView} from './old-street-expansion-view'
 import {OldStreetBuildingEdges} from './old-street-boundaries'
 import {OldStreetGroundDetail} from './old-street-ground-detail'
 import {oldStreetRecoveryMessage} from './old-street-recovery-message'
@@ -233,6 +234,21 @@ export default function OldStreetDev() {
     }catch(e){setJourneysOpen(false);setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
+  async function requestExpansion(input:string){
+    const h=serverHead.current
+    if(!h||!ready||busyRef.current||error||outcome)throw Error('NOT_READY')
+    if(h.expansions?.length)return
+    busyRef.current=true;setBusy(true);runtime.current?.pause(true)
+    try{
+      const result=await connection.client.send(h,{type:'expansion-request',template:'photo-darkroom-v1',text:input,position:{...position.current}})
+      const nextHead=result.head as OldStreetHead
+      if(!nextHead.expansions?.length)throw Error('EXPANSION_NOT_SAVED')
+      serverHead.current=nextHead
+      const next={save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
+      current.current=next;setHead(next)
+    }catch(e){if(connection.client.hasPending())setError(e instanceof Error?e.message:'SESSION_REQUEST_FAILED');throw e}
+    finally{busyRef.current=false;setBusy(false);runtime.current?.pause(connection.client.hasPending())}
+  }
   async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false,clockInspection?:unknown) {
     try {
       const h = serverHead.current!
@@ -334,6 +350,7 @@ export default function OldStreetDev() {
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
       {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
       {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
+      {new URLSearchParams(location.search).get('expansion')==='1'&&head.scene==='photo'&&serverHead.current&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} submit={requestExpansion}/>}
       <small>{text(['随身：', 'Carrying: '])}{head.save.inventory.map(i => i.label).join(' · ') || text(['无', 'Nothing'])}</small>
     </section>
     <footer>
