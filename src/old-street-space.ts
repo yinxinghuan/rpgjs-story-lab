@@ -9,7 +9,8 @@ type Side = 'N' | 'S' | 'E' | 'W'
 type Endpoint = {side: Side; fraction: number}
 export const oldStreetBody = {w: 16, h: 26}
 export const oldStreetHeroScale = .24
-export const oldStreetStride = 55 * oldStreetHeroScale / .14
+// A complete left/right cycle; independent of camera zoom and sprite display scale.
+export const oldStreetStride = 56
 /** Logical blockout coordinates, not approved art or final room proportions. */
 export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
   darkroom: {x:88,y:112,w:208,h:320},

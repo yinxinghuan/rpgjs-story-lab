@@ -14,8 +14,8 @@ export class StreetFootsteps{
   this.elapsed+=dt
   if(moved<.01){this.distance=0;return}
   this.distance+=moved
-  if(this.distance<16||this.elapsed<.12)return
-  this.distance%=16;this.elapsed=0
+  if(this.distance<28||this.elapsed<.12)return
+  this.distance%=28;this.elapsed=0
   return ['shop','photo','shed','darkroom'].includes(room)?'wood':'stone'
  }
 }
