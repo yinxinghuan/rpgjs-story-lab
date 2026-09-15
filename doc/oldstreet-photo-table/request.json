@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "742b63d1-410a-4c90-b27f-6c5185e5556e",
+  "mode": "edit",
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Using the reference ONLY for its pixel art style, muted wood palette, thin dark contour and RPG camera angle, create ONE small photography sorting table. 512x512 square image. Single object centered, full silhouette inside x100..412 y80..440. Raised orthographic top-down 2D RPG view, tabletop horizontal left to right, parallel edges, no isometric diagonal. Four short wooden legs and visible broad top plane. Plain matte dark honey wood table, modest thin legs, tabletop width about 1.5 times depth. On its tabletop one small warm cream desk mat and a compact black unlit desk magnifier at the back-left corner; otherwise CLEAR EMPTY working surface. No photographs, no writing, no letters, no drawers, no person. Crisp fine pixel art with restrained 1-2 pixel dark outlines and simple 3-tone shading, matching the reference furniture style. Entire outside background EXACT flat solid #FF00FF magenta, no checkerboard, no shadow on background, no gradient, no magenta inside object. No other object or panel. Game sprite only.",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789451817908142.png"
+  ]
+}
