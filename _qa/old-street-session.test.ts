@@ -398,3 +398,30 @@ test('expansion HTTP starts background work and returns before model completion'
   assert.equal(jobs.get('synthetic-owner',h.id)?.state,'candidate');assert.equal(s.get('synthetic-owner',h.id).sceneId,'street')
  }finally{raw.close()}
 })
+
+test('prepared expansion opens a real bound room with observation and return travel',async()=>{
+ const {OldStreetExpansionJobs}=await import('../server/old-street-expansion-jobs')
+ const {compileExpansionPlan}=await import('../src/old-street-expansion-plan')
+ const raw=new DatabaseSync(':memory:'),db=storage(raw)
+ let jobs:InstanceType<typeof OldStreetExpansionJobs>
+ const s=new OldStreetAuthority(db,admit,undefined,undefined,h=>jobs?.candidateFor(h))
+ try{
+  let h=s.create('synthetic-owner',randomUUID(),'zh')
+  const go=async(to:string)=>{h=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===to)!.actionId))).head}
+  await go('photo')
+  h=(await s.action('synthetic-owner',h.id,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-request',template:'photo-darkroom-v1',text:'想看看暗房'})).head
+  const activate=()=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-activate'})
+  await assert.rejects(s.action('synthetic-owner',h.id,activate()),/EXPANSION_UNAVAILABLE/)
+  jobs=new OldStreetExpansionJobs(db,(o,id)=>s.get(o,id),async intent=>compileExpansionPlan(intent,{title:'暗房',discovery:'旧街影像。',photograph:'An old storefront with continuous window edges.'}))
+  jobs.enqueue('synthetic-owner',h.id);await jobs.run('synthetic-owner',h.id)
+  h=(await s.action('synthetic-owner',h.id,activate())).head
+  assert.equal(h.save.facts['darkroom-ready'],true)
+  await go('darkroom')
+  h=(await s.action('synthetic-owner',h.id,request(h,'oldstreet:observe-darkroom'))).head
+  assert.equal(h.sceneId,'darkroom');assert.equal(h.save.inventory.length,0)
+  const {oldStreetWalkable}=await import('../src/old-street-space')
+  assert.equal(oldStreetWalkable('darkroom',{x:160,y:180},h.save),false)
+  assert.equal(oldStreetWalkable('darkroom',h.position,h.save),true)
+  await go('photo');assert.equal(h.save.facts['darkroom-ready'],true)
+ }finally{raw.close()}
+})

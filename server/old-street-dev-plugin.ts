@@ -24,7 +24,7 @@ export function oldStreetDevPlugin(){
   const db=raw
   db.exec('PRAGMA busy_timeout=5000')
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
-  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined)
+  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h))
   if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
   return service
  }

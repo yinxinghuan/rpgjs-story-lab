@@ -7,12 +7,14 @@ export const oldStreetId = 'old-street-letter'
 export const oldStreetRooms = {
   street: ['街口', 'Street'], shop: ['修表铺', 'Watch shop'], yard: ['合住院', 'Courtyard'],
   laundry: ['洗衣店', 'Laundry'], photo: ['照相馆', 'Photo studio'], cellar: ['地下储物室', 'Cellar'],
+  darkroom: ['暗房', 'Darkroom'],
   roof: ['屋顶', 'Roof terrace'], shed: ['河边工作棚', 'Riverside workshop'],
 } as const
 export type OldStreetRoom = keyof typeof oldStreetRooms
 export const oldStreetConnections: ReadonlyArray<{
   id: string; a: OldStreetRoom; b: OldStreetRoom; kind: 'door' | 'alley' | 'stairs'; gate?: string
 }> = [
+  {id: 'studio-darkroom', a: 'photo', b: 'darkroom', kind: 'door', gate: 'darkroom-ready'},
   {id: 'shop-front', a: 'street', b: 'shop', kind: 'door'},
   {id: 'studio-front', a: 'street', b: 'photo', kind: 'door'},
   {id: 'yard-alley', a: 'street', b: 'yard', kind: 'alley'},
@@ -27,6 +29,7 @@ export const oldStreetConnections: ReadonlyArray<{
 export const oldStreetTravelId = (edge: string, from: OldStreetRoom) => `oldstreet:through:${edge}:${from}`
 export const oldStreetActionId = (name: string) => `oldstreet:${name}`
 export const oldStreetActionRooms: Record<string, OldStreetRoom> = {
+  'observe-darkroom':'darkroom',
   'greet-watchmaker':'shed', 'greet-laundry':'laundry', 'greet-photographer':'photo',
   'move-box': 'shop', 'take-lens': 'shop', 'borrow-trolley': 'laundry', 'clear-crates': 'yard',
   'return-trolley': 'laundry', 'borrow-key': 'shed', 'return-key': 'shed', 'lift-latch': 'shed',
@@ -74,6 +77,7 @@ export function oldStreetRules(locale: Locale): DomainActionRule[] {
   action('take-clock', [once('clock-taken')], [flag('clock-taken', true), item('clock', '待归还的旧钟', 'Clock to return')], '修表师把旧钟递来：“洗衣店的，替我带过去吧。”', 'The watchmaker hands you the clock. “It belongs to the laundry. Could you take it back?”')
   action('inspect-clock', [has('clock'), has('lens'), once('clock-mark-known')], [flag('clock-mark-known', true)], '放大镜下，钟底刻着一对燕子。', 'Through the lens you see two swallows engraved beneath the clock.')
   action('return-clock', [has('clock'), once('clock-returned')], [remove('clock'), flag('clock-returned', true)], '店主接过钟：“这是我母亲的钟，谢谢你送回来。”她把它摆回柜台。', 'The owner takes the clock. “This was my mother’s. Thank you for bringing it back.” She sets it on the counter.')
+  action('observe-darkroom', [need('darkroom-ready',true,'房间仍在准备。','The room is still being prepared.')], [], '显影盘里的影像还没有清晰，可以先在房间里看看。', 'The print is not clear yet. You can look around the room first.')
   action('take-photos', [once('photos-taken')], [flag('photos-taken', true), item('photos', '旧照片夹', 'Old photo folder')], '你取下印着照相馆标记的照片夹。', 'You take the folder bearing the photo studio’s mark.')
   action('match-photos', [has('photos'), once('photos-matched')], [flag('photos-matched', true)], '窗沿和晾衣绳接上，洗衣店的旧店面重新连成一张照片。', 'The window sill and clothesline align, completing the old photograph of the laundry storefront.')
   action('return-photos', [has('photos'), need('photos-matched', true, '先在放大台比对照片。', 'Compare the photos on the viewing table first.'), once('photos-returned')], [remove('photos'), flag('photos-returned', true)], '摄影师接过照片：“这份底片原来在这里，谢谢你替我找回来。”', 'The photographer takes the photos. “So this is where the negatives went. Thank you for finding them.”')

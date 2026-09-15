@@ -12,6 +12,13 @@ export class OldStreetExpansionJobs{
  }
  private intent(owner:string,journey:string){const h=this.head(owner,journey),intent=h.expansions?.[0];if(!intent)throw new LabError('EXPANSION_NOT_REQUESTED',409);return {h,intent}}
  private write(owner:string,journey:string,job:ExpansionJob){this.db.run('INSERT OR REPLACE INTO oldstreet_expansion_jobs VALUES(?,?,?,?)',owner,journey,job.id,JSON.stringify(job))}
+ candidateFor(head:OldStreetHead):ExpansionPlan|undefined{
+  const intent=head.expansions?.[0];if(!intent)return
+  const rows=this.db.all<{data:string}>('SELECT data FROM oldstreet_expansion_jobs WHERE journey=? AND id=?',head.id,intent.id)
+  if(rows.length!==1)return
+  const job=JSON.parse(rows[0].data) as ExpansionJob
+  return job.state==='candidate'?job.plan:undefined
+ }
  get(owner:string,journey:string):ExpansionJob|null{
   const {intent}=this.intent(owner,journey);return this.read(owner,journey,intent.id)
  }

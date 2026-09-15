@@ -62,6 +62,7 @@ const environmentDownloads=oldStreetEnvironmentDownloads(pixelShop,compositeShop
 const renderedProps=['watchmaker','laundry-owner','photographer','trolley','drawer',...(pixelShop?['letter-compartment','record-book','photo-folder','viewing-table','clock-display','crates']:[])]
 const plan = oldStreetSpatialPlan()
 const propNames: Record<string, [string, string]> = {
+ 'developing-bench':['显影台','Developing bench'],
   drawer: ['抽屉', 'Drawer'], 'letter-compartment': ['小格', 'Compartment'], 'record-book': ['记录册', 'Record book'],
   trolley: ['推车', 'Trolley'], crates: ['旧箱', 'Crates'],
   'photo-folder': ['照片夹', 'Photo folder'],
@@ -234,13 +235,13 @@ export default function OldStreetDev() {
     }catch(e){setJourneysOpen(false);setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
-  async function requestExpansion(input:string){
+  async function requestExpansion(input:string,activate=false){
     const h=serverHead.current
     if(!h||!ready||busyRef.current||error||outcome)throw Error('NOT_READY')
-    if(h.expansions?.length)return
+    if(h.expansions?.length&&!activate)return
     busyRef.current=true;setBusy(true);runtime.current?.pause(true)
     try{
-      const result=await connection.client.send(h,{type:'expansion-request',template:'photo-darkroom-v1',text:input,position:{...position.current}})
+      const result=await connection.client.send(h,{type:activate?'expansion-activate':'expansion-request',template:'photo-darkroom-v1',text:input,position:{...position.current}})
       const nextHead=result.head as OldStreetHead
       if(!nextHead.expansions?.length)throw Error('EXPANSION_NOT_SAVED')
       serverHead.current=nextHead
@@ -300,7 +301,7 @@ export default function OldStreetDev() {
     else setTyped('')
   }
   function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e})}
-  const entities = liveEntities().filter(e => e.scene === head.scene)
+  const entities = liveEntities().filter(e => e.scene === head.scene && (!e.id.includes('studio-darkroom')||head.save.facts['darkroom-ready']))
   const nearest = [...entities].filter(e => Math.hypot(e.position.x - feet.x, e.position.y - feet.y) < 54)
     .sort((a, b) => Math.hypot(a.position.x - feet.x, a.position.y - feet.y) - Math.hypot(b.position.x - feet.x, b.position.y - feet.y))[0]
   const chosen = entities.find(e => e.id === selected) ?? nearest
@@ -331,8 +332,9 @@ export default function OldStreetDev() {
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
         {pixelShop&&head.scene==='street'&&<OldStreetBuildingEdges/>}<OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt} stoneImage={pixelShop?environmentArt.stoneStair:undefined} woodImage={pixelShop?environmentArt.doorWood:undefined}/>
+        {head.scene==='darkroom'&&<image href={photoTableUrl} x="136" y="104" width="112" height="112"/>}
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
-        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&renderedProps.includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
+        {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!(head.scene==='darkroom'&&b.x===136)&&!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&renderedProps.includes(p.id)&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
@@ -350,7 +352,7 @@ export default function OldStreetDev() {
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
       {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
       {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
-      {new URLSearchParams(location.search).get('expansion')==='1'&&head.scene==='photo'&&serverHead.current&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} submit={requestExpansion}/>}
+      {new URLSearchParams(location.search).get('expansion')==='1'&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} submit={requestExpansion} activate={()=>requestExpansion('',true)}/>}
       <small>{text(['随身：', 'Carrying: '])}{head.save.inventory.map(i => i.label).join(' · ') || text(['无', 'Nothing'])}</small>
     </section>
     <footer>

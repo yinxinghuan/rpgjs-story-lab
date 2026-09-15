@@ -2,7 +2,7 @@ import {useEffect,useRef,useState} from 'react'
 import {oldStreetKnownMap,oldStreetKnownRoute} from './old-street-map'
 import {oldStreetRooms,type OldStreetRoom} from './old-street-cartridge'
 import type {StorySave,Locale} from './vendor/original-train/types'
-const positions:Record<OldStreetRoom,[number,number]>={cellar:[60,50],shed:[180,50],roof:[300,50],laundry:[60,150],yard:[180,150],photo:[300,150],shop:[60,250],street:[180,250]}
+const positions:Record<OldStreetRoom,[number,number]>={darkroom:[315,180],cellar:[60,50],shed:[180,50],roof:[300,50],laundry:[60,150],yard:[180,150],photo:[300,150],shop:[60,250],street:[180,250]}
 export function OldStreetMapView({save,room,locale,onClose}:{save:StorySave;room:OldStreetRoom;locale:Locale;onClose:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,label=(id:OldStreetRoom)=>oldStreetRooms[id][locale==='zh'?0:1]
  const [destination,setDestination]=useState(room),dialog=useRef<HTMLDialogElement>(null)

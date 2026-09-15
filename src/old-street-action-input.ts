@@ -1,6 +1,7 @@
 import type {Locale} from './vendor/original-train/types'
 import {originalActionIntentIssues} from './original-action-intent'
 export const oldStreetActionNames: Record<string, [string, string]> = {
+ 'observe-darkroom':['查看显影台','Examine developing bench'],
   'greet-watchmaker':['打个招呼','Say hello'], 'greet-laundry':['打个招呼','Say hello'], 'greet-photographer':['打个招呼','Say hello'],
   'move-box': ['移开空盒', 'Move box'], 'take-lens': ['拿放大镜', 'Take lens'], 'borrow-trolley': ['借推车', 'Borrow trolley'],
   'clear-crates': ['移开旧箱', 'Move crates'], 'return-trolley': ['归还推车', 'Return trolley'], 'borrow-key': ['问候并借钥匙', 'Ask for key'],

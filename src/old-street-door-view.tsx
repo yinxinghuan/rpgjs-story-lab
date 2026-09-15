@@ -2,10 +2,10 @@ import {oldStreetDoors} from './old-street-space'
 import {OldStreetCurtain} from './old-street-curtain'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
-const elevation:Record<OldStreetRoom,number>={street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
+const elevation:Record<OldStreetRoom,number>={darkroom:0,street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
 /** Physical variants share the existing endpoints; decoration cannot create a route. */
 export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:{room:OldStreetRoom;facts:StorySave['facts'];cratesImage?:string;stoneImage?:string;woodImage?:string}){
- return <g>{oldStreetDoors().filter(d=>d.room===room).map(d=>{
+ return <g>{oldStreetDoors().filter(d=>d.room===room&&(d.gate!=='darkroom-ready'||facts['darkroom-ready'])).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
   const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
   return <g key={d.id} transform={`translate(${d.position.x} ${d.position.y}) rotate(${angle})`}>

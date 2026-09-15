@@ -12,6 +12,7 @@ export const oldStreetHeroScale = .24
 export const oldStreetStride = 55 * oldStreetHeroScale / .14
 /** Logical blockout coordinates, not approved art or final room proportions. */
 export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
+  darkroom: {x:88,y:112,w:208,h:320},
   street: {x: 56, y: 32, w: 272, h: 512}, shop: {x: 80, y: 80, w: 224, h: 416},
   yard: {x: 48, y: 48, w: 288, h: 480}, laundry: {x: 88, y: 112, w: 208, h: 352},
   photo: {x: 72, y: 96, w: 240, h: 384}, cellar: {x: 88, y: 64, w: 208, h: 448},
@@ -19,6 +20,7 @@ export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
 }
 const pair = (a: Side, af: number, b: Side, bf: number): [Endpoint, Endpoint] => [{side: a, fraction: af}, {side: b, fraction: bf}]
 const doorPlacement: Record<string, [Endpoint, Endpoint]> = {
+  'studio-darkroom': pair('E', .33, 'S', .5),
   'shop-front': pair('W', .25, 'S', .6), 'studio-front': pair('E', .4, 'S', .5),
   'yard-alley': pair('N', .5, 'S', .5), 'shop-back': pair('N', .55, 'W', .6),
   'laundry-back': pair('W', .3, 'E', .5), 'cellar-steps': pair('N', .3, 'S', .45),
@@ -67,6 +69,7 @@ export const oldStreetProps = [
   prop('watchmaker', 'shed', .65, .45, ['greet-watchmaker', 'borrow-key', 'return-key', 'take-clock']),
   prop('photo-folder', 'cellar', .3, .4, ['take-photos']),
   prop('viewing-table', 'photo', .3, .3, ['match-photos']),
+  {id:'developing-bench',room:'darkroom',position:{x:192,y:192},approach:{x:192,y:244},body:{x:136,y:160,w:112,h:48},actions:[oldStreetActionId('observe-darkroom')]},
   prop('photographer', 'photo', .7, .65, ['greet-photographer', 'return-photos', 'consent-photo']),
   prop('street-exit', 'street', .5, .88, ['leave']),
 ]

@@ -1,3 +1,4 @@
+import type {ExpansionPlan} from '../src/old-street-expansion-plan'
 import {oldStreetClockObserved} from '../src/old-street-clock-puzzle'
 import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
 import {oldStreetAuthoredTalkReply,oldStreetTalkReply,oldStreetTalkBlocks} from '../src/old-street-conversation'
@@ -25,7 +26,7 @@ const unavailable:OldStreetGate = () => {throw new LabError('OLD_STREET_PRESENTA
 const plan = oldStreetSpatialPlan()
 /** Installs story semantics in the existing transaction authority, not a second save engine.
  * No production route is enabled until real presentation admission is supplied. */
-export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator):SessionRuntime<OldStreetHead> {
+export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined):SessionRuntime<OldStreetHead> {
   const check=(h:OldStreetHead,previous?:OldStreetHead,id?:string)=>{
     assertOldStreetHead(h)
     if(admit(structuredClone(h),previous?structuredClone(previous):undefined,id)!==true)throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)
@@ -45,10 +46,18 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(!['action','free-input','dialogue','expansion-request'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(!['action','free-input','dialogue','expansion-request','expansion-activate'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='expansion-activate'){
+        const expansion=expansionPlan?.(h)
+        if(h.sceneId!=='photo'||!expansion||expansion.requestId!==h.expansions?.[0]?.id)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
+        const save=structuredClone(h.save);save.facts['darkroom-ready']=true
+        if(!save.map.some(n=>n.id==='darkroom'))save.map.push({id:'darkroom',label:save.locale==='zh'?'暗房':'Darkroom',current:false,visited:false})
+        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        return {head:next,kind:'expansion-activate',accepted:true,text:save.locale==='zh'?'暗房门可以打开了。':'The darkroom door can now be opened.'}
+      }
       if(body.type==='expansion-request'){
         if(h.sceneId!=='photo'||body.template!=='photo-darkroom-v1')throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
@@ -114,5 +123,5 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
 }
 export class OldStreetAuthority extends SessionAuthority<OldStreetHead> {
   override directory(owner:string){return super.directory(owner).map(row=>({...row,complete:this.get(owner,row.id).save.finale.status==='complete'}))}
-  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator){super(db,oldStreetRuntime(admit,interpreter,dialogue))}
+  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined){super(db,oldStreetRuntime(admit,interpreter,dialogue,expansionPlan))}
 }
