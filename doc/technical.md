@@ -1807,3 +1807,5 @@ old-street-recovery-message.ts 将错误映射为双语恢复说明，普通界�
 old-street-environment-art.ts统一列出地面、北墙和杂物候选，按像素/整图开关选择下载，仍走现有下载超时和blob释放流程。old-street-ground-detail.tsx按房间放置低对比地面贴花，避开门中心，不添加碰撞；old-street-photo-environment-layout.ts从现有北门定义墙面裁切区。old-street-door-view.tsx按door/alley/stairs渲染门扇插销、连续铺地和踏步，地下/屋顶高度只影响踏步表现，不改权威连接。
 
 shop_environment=whole显式开启修表铺整图分区候选，并启用pixel互动家具；缺省仍保留原入口。old-street-floor.tsx从同一生成图片裁取完整地面与北墙两段，后门留空依旧来自oldStreetShopWallRegions。只整图候选下载shopComposite；所有物品、动作、寻路、碰撞、存档语义保持原合同。原图没有精确遵守布局，不能直接用其门位或墙边作为引擎边界。后续若统一家具光照应在同一游戏镜头复验，不把背景烘焙光误认作完整动态光照。
+
+整图候选北墙追加比例修正：源裁切高度=源宽×目标墙高/目标墙宽，使viewBox与渲染矩形等比，避免壁钟变椭圆。365×677北门同状态截图复验圆形与通行开口；没有改地面裁切或存档。

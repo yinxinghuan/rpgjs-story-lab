@@ -21,7 +21,7 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="104 320 560 736" preserveAspectRatio="none" overflow="hidden">
       <image href={art.shopComposite} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
     </svg>
-    {oldStreetShopWallRegions().map((r,i)=><svg key={i} x={r.x} y={r.y} width={r.width} height={r.height} viewBox={i===0?'90 28 184 264':'474 28 215 264'} preserveAspectRatio="none" overflow="hidden">
+    {oldStreetShopWallRegions().map((r,i)=><svg key={i} x={r.x} y={r.y} width={r.width} height={r.height} viewBox={`${i===0?90:474} 28 ${i===0?184:215} ${(i===0?184:215)*r.height/r.width}`} preserveAspectRatio="none" overflow="hidden">
       <image href={art.shopComposite} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
     </svg>)}
   </g>
