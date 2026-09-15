@@ -1,4 +1,5 @@
 import {oldStreetDoors} from './old-street-space'
+import {OldStreetCurtain} from './old-street-curtain'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
 const elevation:Record<OldStreetRoom,number>={street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
@@ -23,7 +24,7 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
     </g>}
     <path d="M-24-16V22M24-16V22" stroke={outdoor?'#525d59':'#726956'} strokeWidth="3"/>
     {outdoor&&<path d="M-27-18V15M27-18V15M-27-18H-23M27-18H23" stroke="#a0a69a" strokeWidth="2" fill="none"/>}
-   </g>:<g>
+   </g>:d.id.includes('laundry-back')?<OldStreetCurtain side={d.side}/>:<g>
     <rect x="-23" y="-10" width="46" height="29" fill="#8f846e"/>
     <path d="M-19 11H19M-19 16H19" stroke="#cabca0" strokeWidth="2"/>
     <rect x="-26" y="-13" width="6" height="33" fill="#584731"/><rect x="20" y="-13" width="6" height="33" fill="#584731"/>
