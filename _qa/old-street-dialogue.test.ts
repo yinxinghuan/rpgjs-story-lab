@@ -33,3 +33,14 @@ test('generation deadline does not wait forever for an unresponsive provider',as
  const generate=createOldStreetDialogueGenerator(()=>new Promise(()=>{}),5)
  await assert.rejects(generate('你好',oldStreetDialogueContext(head,'watchmaker')),/TIMEOUT/)
 })
+
+test('dialogue knowledge separates current location, key possession and optional help',()=>{
+ const fresh=structuredClone(head)
+ const before=oldStreetDialogueContext(fresh,'watchmaker')
+ assert.match(before.knowledge.find(k=>k.id==='current-place')!.text,/河边工作棚/)
+ assert.match(before.knowledge.find(k=>k.id==='key-status')!.text,/没有小格钥匙/)
+ assert.match(before.knowledge.find(k=>k.id==='optional-help')!.text,/可选帮助/)
+ fresh.save.inventory.push({id:'letter-key',label:'小格钥匙',count:1,rarity:'common'})
+ assert.match(oldStreetDialogueContext(fresh,'watchmaker').knowledge.find(k=>k.id==='key-status')!.text,/现在持有/)
+ assert.equal(before.knowledge.some(k=>k.text.includes('其他人也能')),false)
+})

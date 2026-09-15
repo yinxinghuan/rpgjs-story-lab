@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "input": "家里托我来拿那封信，我已经到这里了，接下来该找什么？",
+      "reply": "你可以先找修表铺的小格，信就放那里。钥匙我可以借给你。拿到信后别忘了帮我把洗衣店的钟送还给店主。",
+      "source": "model",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 3211,
+      "stateUnchanged": true,
+      "receiptReused": true
+    },
+    {
+      "input": "那把钥匙借给我以后，我该怎么处理它？",
+      "reply": "钥匙借给你后，拿到信之后记得把洗衣店的钟送还给店主。",
+      "source": "model",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 2089,
+      "stateUnchanged": true,
+      "receiptReused": true
+    },
+    {
+      "input": "你记得我刚才问了什么吗？",
+      "reply": "你刚才对我说：“那把钥匙借给我以后，我该怎么处理它？”",
+      "source": "author",
+      "pass": true,
+      "requests": 0,
+      "elapsedMs": 6,
+      "stateUnchanged": true,
+      "receiptReused": true
+    }
+  ],
+  "usage": {
+    "used": 4,
+    "limit": 6
+  },
+  "scope": "New synthetic in-memory journey only. No real player/account/save data. At most six upstream requests.",
+  "semanticReview": {
+    "passed": false,
+    "issues": [
+      "First reply attaches an unrelated optional clock errand to the main letter request.",
+      "Second reply does not answer key handling and redirects to clock delivery."
+    ],
+    "note": "Case pass flags measure state/receipt mechanics only, not dialogue usefulness."
+  }
+}

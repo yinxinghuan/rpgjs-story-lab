@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "input": "家里托我来拿那封信，我已经到这里了，接下来该找什么？",
+      "reply": "你现在已经到了修表铺，可以用小格钥匙打开寄信小格，取出那封信。之后可以选择帮忙送钟或找照片，但这些是可选的。",
+      "source": "model",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 3734,
+      "stateUnchanged": true,
+      "receiptReused": true
+    },
+    {
+      "input": "那把钥匙借给我以后，我该怎么处理它？",
+      "reply": "小格钥匙只用于打开修表铺的寄信小格。用完后，可以在河边的工作棚交还给修表师，不需要送钟。",
+      "source": "model",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 2591,
+      "stateUnchanged": true,
+      "receiptReused": true
+    },
+    {
+      "input": "你记得我刚才问了什么吗？",
+      "reply": "你刚才对我说：“那把钥匙借给我以后，我该怎么处理它？”",
+      "source": "author",
+      "pass": true,
+      "requests": 0,
+      "elapsedMs": 23,
+      "stateUnchanged": true,
+      "receiptReused": true
+    }
+  ],
+  "usage": {
+    "used": 4,
+    "limit": 6
+  },
+  "scope": "New synthetic in-memory journey only. No real player/account/save data. At most six upstream requests.",
+  "semanticReview": {
+    "passed": false,
+    "issues": [
+      "Reply incorrectly claims player is at the watch shop; actual scene is the riverside shed."
+    ],
+    "note": "pass fields check state and receipt mechanics only; not semantic approval."
+  }
+}

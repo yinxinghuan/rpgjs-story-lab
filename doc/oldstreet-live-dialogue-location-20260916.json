@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "input": "家里托我来拿那封信，我已经到这里了，接下来该找什么？",
+      "reply": "你需要先跟我借小格钥匙，这样才能打开修表铺的寄信小格拿信。钥匙用完可以在这里还给我。",
+      "source": "model",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 3362,
+      "stateUnchanged": true,
+      "receiptReused": true
+    },
+    {
+      "input": "那把钥匙借给我以后，我该怎么处理它？",
+      "reply": "用完小格钥匙后，请你一定要在河边工作棚把它交还给我。这样其他人也能用来取信。你不需要送钟，也不强制你送钟或做其他事。",
+      "source": "model",
+      "pass": true,
+      "requests": 2,
+      "elapsedMs": 2080,
+      "stateUnchanged": true,
+      "receiptReused": true
+    },
+    {
+      "input": "你记得我刚才问了什么吗？",
+      "reply": "你刚才对我说：“那把钥匙借给我以后，我该怎么处理它？”",
+      "source": "author",
+      "pass": true,
+      "requests": 0,
+      "elapsedMs": 10,
+      "stateUnchanged": true,
+      "receiptReused": true
+    }
+  ],
+  "usage": {
+    "used": 4,
+    "limit": 6
+  },
+  "scope": "New synthetic in-memory journey only. No real player/account/save data. At most six upstream requests.",
+  "semanticReview": {
+    "passed": false,
+    "issues": [
+      "Second reply invents other people using this letter key, which is not an authored fact."
+    ],
+    "note": "pass fields check state and receipt mechanics only; not semantic approval."
+  }
+}
