@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "7eae6af4-4013-4708-8ba7-a075633f34b9",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789451991270966.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 512
+  },
+  "prompt": "Two separate GAME OBJECT SPRITES, one per 512x512 cell on a 1024x512 flat magenta canvas. Match the reference muted oak palette, chunky pixel clusters and dark brown outlines. Fixed overhead orthographic camera looking from south to north, ZERO YAW, no perspective convergence; tops are horizontal/vertical rectangles, large visible top and shortened front. LEFT cell: ONE EMPTY short wooden open shelf/table, x128..384 y128..416. Axis-aligned rectangular top x128..384,y128..280, two short sturdy legs to y416, no doors, no back panel, no drawers, absolutely NOTHING resting on it. RIGHT cell: ONE closed dusty blue cardboard PHOTOGRAPH FOLDER, isolated and lying flat horizontally, centred x768 y232, width176 height96, simple cream photo corner protruding from top, no visible image, no readable text, no symbols that reveal contents. Same top-view angle. Folder is a separate object layer intended to be placed onto the left shelf by the game. No cabinet, locks, keyholes, hinges, book, envelope, people or cast shadows. Pure flat magenta background outside objects and inside leg gap. Sparse 6-8px pixel clusters and clear outlines; no tiny grain, no painterly or smooth gradient shading. Preserve the reference game style."
+}

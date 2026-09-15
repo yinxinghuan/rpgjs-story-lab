@@ -1,0 +1,65 @@
+{
+  "sourceRetained": true,
+  "sourceSha256": "972da45fc219089520309f01b0449f5fe45dde4c810707d7a722a831cdaed974",
+  "sha256": "40442c75f8d917823f79adf4ded71500d486e6c613e4f515d4d11c71ea9ac0a0",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 512,
+    "cellHeight": 512,
+    "foot": {
+      "x": 256,
+      "y": 448
+    },
+    "kind": "actor",
+    "backgroundMode": "magenta",
+    "neutralMin": 200,
+    "chromaMax": 20
+  },
+  "algorithm": "magenta-matte-unmix-1",
+  "metrics": {
+    "removed": 367965,
+    "edgeCorrected": 2301,
+    "corePreserved": 151670
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        122,
+        84,
+        413,
+        422
+      ],
+      "sourceAnchor": {
+        "x": 267,
+        "y": 422
+      },
+      "offset": {
+        "x": -11,
+        "y": 26
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        649,
+        115,
+        887,
+        391
+      ],
+      "sourceAnchor": {
+        "x": 256,
+        "y": 391
+      },
+      "offset": {
+        "x": 0,
+        "y": 57
+      }
+    }
+  ],
+  "walkingAdmitted": false,
+  "productionAdmitted": false
+}
