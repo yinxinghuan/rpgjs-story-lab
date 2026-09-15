@@ -61,6 +61,7 @@ export default function OldStreetDev() {
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
+  const visibleTurn=useRef(turn);visibleTurn.current=turn
   const actionPanel=useRef<HTMLElement>(null)
   useEffect(()=>{if(actionPanel.current)actionPanel.current.scrollTop=0},[turn,notice,error])
   const setNotice=(value:string)=>{updateNotice(value);setTurn([])}
@@ -124,7 +125,7 @@ export default function OldStreetDev() {
         walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
-        onPosition: p => {position.current = p; if (mounted) setFeet(p);for(const [id,event] of Object.entries(npcEvents.current)){const prop=oldStreetProjectedProps(current.current.save).find(e=>e.id===id);if(!prop||prop.room!==runtime.current?.scene())continue;const dx=p.x-prop.position.x,dy=p.y-prop.position.y;if(Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}}, onDestination: p => {if (mounted) setDestination(p)},
+        onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current&&visibleTurn.current.length){visibleTurn.current=[];setNotice('');setSelected(null)}};for(const [id,event] of Object.entries(npcEvents.current)){const prop=oldStreetProjectedProps(current.current.save).find(e=>e.id===id);if(!prop||prop.room!==runtime.current?.scene())continue;const dx=p.x-prop.position.x,dy=p.y-prop.position.y;if(Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
         onEngine: e => {engine.current = e},
         onReady: r => {runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)},
         onFailure: code => {if (mounted) setError(code)},
