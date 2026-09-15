@@ -1,0 +1,19 @@
+{
+  "taskId": "mt_6cdc806b5118ba1fb409e29916cd7845",
+  "sha256": "b44ffa60efbe8ae1f8245d571e3d0ba7df56ec87f555d1a4d686a4b9ded7d271",
+  "actualSize": [
+    832,
+    1536
+  ],
+  "requestedSize": [
+    896,
+    1664
+  ],
+  "admission": "local-candidate-only",
+  "columnsObservedApprox": 16,
+  "renderTileWorldSize": [
+    112,
+    208
+  ],
+  "opacity": 0.28
+}

@@ -1,0 +1,10 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "492edcb9-032e-42bf-9a9f-ed92c337792f",
+  "mode": "text",
+  "size": {
+    "width": 896,
+    "height": 1664
+  },
+  "prompt": "Create a quiet finely scaled pixel art floor material for a top-down orthographic 2D RPG watch shop. Full canvas 896x1664 pixels represents a floor 224 by 416 game world units. CRITICAL SCALE: about 32 narrow vertical wood plank columns across the full width. Each plank is only 28 image pixels wide, with staggered end joints every 120 to 200 image pixels. These are narrow short floorboards, never oversized timber beams. A human character body will be about 80 image pixels wide: three boards must fit beneath that width. Muted medium warm brown oak with very low contrast between boards. Hairline dark brown joints only 2 image pixels thick, no heavy black outlines. Fine deliberate crisp pixel clusters, subtle sparse grain, not large blocky patches. Flat uniform overhead light; no perspective or vanishing point. Edge-to-edge material only, no borders, no walls, furniture, people, shadows, labels or objects. Do not simulate a miniature room. No glossy highlights, no photographic noise, no chunky jagged streaks. The floor must stay visually quieter than the character."
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "requestSha256": "568d635376097623b471e28b731ffab9f8b167036426a04355c865fc313ca1a2",
+  "requestId": "492edcb9-032e-42bf-9a9f-ed92c337792f",
+  "status": "failed",
+  "startedAt": "2026-09-15T11:44:54.648Z",
+  "attempts": 2,
+  "error": "IMAGE_SIZE_MISMATCH",
+  "retryable": true,
+  "elapsedMs": 16046,
+  "task": {
+    "task_id": "mt_6cdc806b5118ba1fb409e29916cd7845",
+    "request_id": "492edcb9-032e-42bf-9a9f-ed92c337792f",
+    "status": "succeeded",
+    "type": "image",
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789472728627859.png",
+      "width": 832,
+      "height": 1536,
+      "format": "png"
+    },
+    "timing_ms": 2170
+  }
+}
