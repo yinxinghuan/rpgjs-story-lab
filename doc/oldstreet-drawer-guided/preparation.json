@@ -1,0 +1,44 @@
+{
+  "sourceRetained": true,
+  "sourceSha256": "767b86bbe3cb9a6a05f5933ac8a30f6b80a98dfe0c1f4b775090572db4b80fce",
+  "outputSha256": "958d7e7ed888fb6c5aaa2dbf0f2627ead3ffa4eae4e197c3d6c674cf3cd52a26",
+  "repair": {
+    "baseFrame": 1,
+    "targetFrame": 2,
+    "emptyWoodSourceFrame": 2,
+    "region": [
+      176,
+      375,
+      329,
+      440
+    ],
+    "receiptPolygon": [
+      [
+        174,
+        381
+      ],
+      [
+        215,
+        374
+      ],
+      [
+        232,
+        428
+      ],
+      [
+        187,
+        439
+      ]
+    ],
+    "sourceOffset": [
+      9,
+      0
+    ]
+  },
+  "removedPixels": 961307,
+  "productionAdmitted": false,
+  "limitations": [
+    "Third-frame empty wood patch requires seam review",
+    "Candidate texture style is flatter than B character detail"
+  ]
+}

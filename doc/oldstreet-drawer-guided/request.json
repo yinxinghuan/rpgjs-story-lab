@@ -1,0 +1,13 @@
+{
+  "requestId": "09d2e8e3-d75c-4187-8452-4d5419829090",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/42620c1d7426d3d2bf6f038538d029385c4420b5/public/assets/oldstreet/drawer-state-guide.png"
+  ],
+  "size": {
+    "width": 1536,
+    "height": 768
+  },
+  "prompt": "Texture this exact 3-state RPG object layout. Preserve every silhouette, rectilinear orthographic geometry and every object location in the reference. Do not redesign the table or add perspective. All tabletops are exact rectangles, equal front and back width, parallel sides, camera looking down steeply. Add warm aged oak grain, fine crisp pixel-painted shading, brass drawer pulls, dark outlines, textured cardboard and paper. Exactly three equal 512x768 cells. LEFT: CLOSED flush drawer; a hollow empty cardboard box stands on the floor in front obstructing the drawer. MIDDLE: box moved to the left beside the table; drawer extended toward viewer with one paper receipt on left and one round magnifying glass on right. RIGHT: identical to middle except magnifying glass removed, receipt remains. Match geometry and anchors exactly from reference; no scale or angle differences between cells. Feet baseline remains y490, tabletop top y192. Magenta flat background remains everywhere outside objects including between legs; no cast shadow, no gradient, no labels or text, no additional tools. It is a high-overhead orthographic pixel-art furniture sheet, not isometric or 3D perspective. Preserve the visible empty box in every cell."
+}

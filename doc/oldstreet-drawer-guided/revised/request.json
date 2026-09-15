@@ -1,0 +1,13 @@
+{
+  "requestId": "d0716e3c-0e22-4b52-95b3-70076b281c90",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/42620c1d7426d3d2bf6f038538d029385c4420b5/public/assets/oldstreet/drawer-state-guide.png"
+  ],
+  "size": {
+    "width": 1536,
+    "height": 768
+  },
+  "prompt": "Add detailed aged oak wood, cardboard and brass textures to this three-frame game object guide while preserving its exact shapes and positions. Keep the rectangular orthographic tabletop, equal frame scale, short legs and steep overhead view. Left frame: closed drawer, empty open box in front. Middle: drawer open with a receipt and magnifying glass inside, box moved left. Right: same as middle but magnifying glass gone. Three equal cells. Crisp warm hand-painted pixel art. Do not change geometry, do not add perspective, no text or grid. Keep the flat magenta background and empty spaces between objects."
+}

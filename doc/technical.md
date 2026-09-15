@@ -1642,3 +1642,7 @@ OldStreetAuthority.directory 在原 owner 隔离目录上增加 complete；Worke
 周期位置保存跳过已完成或位置未变的旅程；成功后更新serverHead中的确认位置，避免原地重复写入不断刷新目录时间。切换失败关闭列表并显示恢复错误，不在modal背后隐藏错误。
 
 实际本机Worker浏览器从含照片/旧钟结果的新旅程切换到较早只取信的旅程，后者库存只有钥匙、结局不含支线结果；新旅程仍在目录中。25项Session/Worker测试（含新目录身份隔离与重开保留）、类型检查、开发构建通过。不是平台账号跨设备自动识别验收。
+
+### 抽屉图形状态（2026-09-15）
+
+oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹理锚定台脚；独立RPG固定事件共享原drawer身份，恢复head后更新animationName，卸载释放blob。没有新增图形专属存档。prepare-oldstreet-drawer保存原图，以指定区域/纸片轮廓修复第三帧，再连通去底，所有操作可追溯。
