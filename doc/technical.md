@@ -1831,3 +1831,7 @@ OldStreetDoorways新增stoneImage，像素入口从environmentArt统一下载石
 old-street-floor.tsx将现有院子铺石pattern用于street，保持相同世界单位纹理尺度；shed改用现有cellarFloor中0 272 360 640干燥区域，仍显示原北墙。没有新增资源导入、网络请求或素材生成，不改变碰撞、门、物件及存档。类型检查通过，工作棚实际365×677南楼梯落点地面与人物显示已检查。
 
 街口365×677实际从院子巷口返回，铺石尺度与院子一致，人物、两侧店门和北巷口仍可辨；未新增转场门槛。当前街道缺建筑立面与街边环境，不能仅凭铺地替换认定完整街景达标。
+
+old-street-boundary-layout.ts按street现有东西侧门坐标裁分墙段，所有段严格在walkable floor之外；old-street-boundaries.tsx只渲染低矮砌体与窗格，不添加交互或碰撞。仅像素候选street启用。边界/门净空测试与类型检查通过。
+
+从新增墙体旁的照相馆店门实际转场成功，未改变房间或物件状态。画面边界测试不等于全立面美术验收。
