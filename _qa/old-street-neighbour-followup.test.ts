@@ -16,7 +16,7 @@ for(const locale of ['zh','en'] as const)test(`${locale}: unlocked compartment g
  const s=new OldStreetAuthority(db,()=>true)
  try{
   let h=s.create('synthetic-owner',randomUUID(),locale)
-  const request=(action:string)=>{const e=oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;assert.ok(e,action);return {action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,target:e.id,position:e.approach,type:'action',action}}
+  const request=(action:string)=>{const e=oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;assert.ok(e,action);return {action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,target:e.id,position:e.id==='watchmaker'?{x:e.approach.x+(locale==='zh'?24:-24),y:e.approach.y}:e.approach,type:'action',action}}
   for(const step of ['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','yard','shed']){
    const action=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===step)!.actionId
    h=(await s.action('synthetic-owner',h.id,request(action))).head
@@ -32,7 +32,7 @@ for(const locale of ['zh','en'] as const)test(`${locale}: unlocked compartment g
   const followup=topics.find(t=>t.id==='kept-promise')!;assert.ok(followup)
   assert.ok(oldStreetDialogueContext(h,'watchmaker').knowledge.some(k=>k.id===followup.id&&k.text===followup.reply))
   const e=oldStreetSpatialPlan(h.save).entities.find(e=>e.id==='watchmaker')!
-  h=(await s.action('synthetic-owner',h.id,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,target:e.id,position:e.approach,type:'dialogue',text:followup.text})).head
+  h=(await s.action('synthetic-owner',h.id,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,target:e.id,position:e.id==='watchmaker'?{x:e.approach.x+(locale==='zh'?24:-24),y:e.approach.y}:e.approach,type:'dialogue',text:followup.text})).head
   assert.equal(h.save.blocks.at(-1)?.text,followup.reply)
   h=(await s.action('synthetic-owner',h.id,request('oldstreet:greet-watchmaker'))).head
   assert.match(h.save.blocks.at(-1)!.text,locale==='zh'?/已经打开/:/already open/)

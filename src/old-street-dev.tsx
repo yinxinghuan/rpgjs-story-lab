@@ -1,3 +1,5 @@
+import {OldStreetResidentMotion} from './old-street-resident-motion'
+import {findGridPath} from './grid-path'
 import pixelDrawerUrl from '../doc/oldstreet-pixel-study/drawer/cutout.png'
 import pixelPropsUrl from '../doc/oldstreet-pixel-study/props/orthogonal/cutout.png'
 import {oldStreetCompartmentPose,oldStreetPixelPropSheet,oldStreetPixelLayeredSheets} from './old-street-prop-art'
@@ -31,7 +33,7 @@ import lanStandingUrl from '../doc/oldstreet-lan-candidate/standing.png'
 import xuStandingUrl from '../doc/oldstreet-xu-candidate/standing.png'
 import {actorArt} from './art-catalog'
 import {oldStreetCartridge, oldStreetRooms, oldStreetOutcome, type OldStreetRoom} from './old-street-cartridge'
-import {oldStreetBody, oldStreetHeroScale, oldStreetStride, bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetObstacleBodies, oldStreetProjectedProps, oldStreetPath, oldStreetWalkable} from './old-street-space'
+import {oldStreetBody, oldStreetHeroScale, oldStreetStride, bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetObstacleBodies, oldStreetProjectedProps, oldStreetWalkable} from './old-street-space'
 import {OldStreetFloor} from './old-street-floor'
 import {oldStreetPropState} from './old-street-prop-state'
 import {createInitialSave} from './vendor/original-train/engine/reducer'
@@ -60,6 +62,11 @@ export default function OldStreetDev() {
   const position = useRef(head.position)
   const runtime = useRef<RpgRendererRuntime>()
   const engine = useRef<any>()
+  const resident=useRef(new OldStreetResidentMotion(oldStreetProjectedProps({facts:{}}).find(p=>p.id==='watchmaker')!.position))
+  const [,setResidentPosition]=useState({...resident.current.position})
+  const residentControls=useRef({paused:true,selected:false})
+  const residentPositions=()=>({watchmaker:resident.current.position})
+  const localWalkable=(p:{x:number;y:number},room:string)=>oldStreetWalkable(room,p,current.current.save,oldStreetBody,residentPositions())
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
   const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>(),compartmentEvent=useRef<RpgPlayer>()
   useEffect(()=>{if(compartmentEvent.current){compartmentEvent.current.animationName.set(oldStreetCompartmentPose(head.save));compartmentEvent.current.syncChanges()}if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
@@ -84,6 +91,7 @@ export default function OldStreetDev() {
   const camera=oldStreetCamera(viewport,feet,actionHeight,overview)
   useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
   useEffect(()=>{const node=actionPanel.current;if(!node)return;const observer=new ResizeObserver(([entry])=>setActionHeight(entry.contentRect.height+24));observer.observe(node);return()=>observer.disconnect()},[])
+  residentControls.current={paused:busy||!!error||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||leaving||!!head.save.facts.departed,selected:selected==='watchmaker'}
   const [diagnostic, setDiagnostic] = useState('')
   useEffect(() => {if(!debug)return;const timer = setInterval(() => setDiagnostic(JSON.stringify({sheets:engine.current?.getCurrentPlayer()?.graphicsSignals().map((g:any)=>({keys:Object.keys(g),width:g.width,height:g.height,textures:Object.keys(g.textures??{})})),players:Object.keys(engine.current?.sceneMap.players() ?? {}).length,motion:runtime.current?.motion?.(),render:runtime.current?.diagnostics?.()})), 2000); return () => clearInterval(timer)}, [])
   useEffect(() => {
@@ -104,6 +112,7 @@ export default function OldStreetDev() {
       serverHead.current = restored
       const restoredView = {save:restored.save,scene:restored.sceneId,position:restored.position}
       current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
+      resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
       setNotice(restored.version===0?cartridge.opening.blocks[0].text:text(['已恢复旅程。', 'Journey restored.']))
       const preview = new Image()
       const response = await fetch(new URL(hero.path, document.baseURI))
@@ -128,11 +137,25 @@ export default function OldStreetDev() {
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
         initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
-        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),standingActorSheet('oldstreet-xu',xuBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),...(pixelShop?oldStreetPixelLayeredSheets(drawerBlob,'drawer'):[oldStreetDrawerSheet(drawerBlob)]),oldStreetTrolleySheet(trolleyBlob),...(pixelPropsBlob?[...oldStreetPixelLayeredSheets(pixelPropsBlob,'letter-compartment'),oldStreetPixelPropSheet(pixelPropsBlob,'record-book')]:[])], mapEvents: room => {npcEvents.current={};trolleyEvent.current=undefined;drawerEvent.current=undefined;compartmentEvent.current=undefined;return oldStreetProjectedProps(current.current.save).filter(p=>p.room===room&&renderedProps.includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(pixelShop&&['drawer','letter-compartment'].includes(p.id)?['oldstreet-'+p.id+'-top','oldstreet-'+p.id+'-front']:['letter-compartment','record-book'].includes(p.id)?'oldstreet-'+p.id:p.id==='drawer'?'oldstreet-drawer':p.id==='watchmaker'?'oldstreet-watchmaker':p.id==='trolley'?'oldstreet-trolley':p.id==='photographer'?'oldstreet-xu':'oldstreet-lan');this.animationName.set(p.id==='letter-compartment'?oldStreetCompartmentPose(current.current.save):p.id==='drawer'?oldStreetDrawerPose(current.current.save):p.id==='trolley'?oldStreetTrolleyPose(current.current.save):'stand');this.direction.set(Direction.Down);if(p.id==='letter-compartment')compartmentEvent.current=this;else if(p.id==='record-book'){}else if(p.id==='drawer')drawerEvent.current=this;else if(p.id==='trolley')trolleyEvent.current=this;else npcEvents.current[p.id]=this;this.syncChanges()}}}))},
-        walkable: (p, room) => oldStreetWalkable(room, p, current.current.save),
+        spritesheets: [actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),standingActorSheet('oldstreet-xu',xuBlob,256,352,{x:128,y:328},.22,{x:16,y:28}),...(pixelShop?oldStreetPixelLayeredSheets(drawerBlob,'drawer'):[oldStreetDrawerSheet(drawerBlob)]),oldStreetTrolleySheet(trolleyBlob),...(pixelPropsBlob?[...oldStreetPixelLayeredSheets(pixelPropsBlob,'letter-compartment'),oldStreetPixelPropSheet(pixelPropsBlob,'record-book')]:[])], mapEvents: room => {resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(current.current.save).find(p=>p.id==='watchmaker')!.position,current.current.position);setResidentPosition({...resident.current.position});npcEvents.current={};trolleyEvent.current=undefined;drawerEvent.current=undefined;compartmentEvent.current=undefined;return oldStreetProjectedProps(current.current.save,residentPositions()).filter(p=>p.room===room&&renderedProps.includes(p.id)).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic(pixelShop&&['drawer','letter-compartment'].includes(p.id)?['oldstreet-'+p.id+'-top','oldstreet-'+p.id+'-front']:['letter-compartment','record-book'].includes(p.id)?'oldstreet-'+p.id:p.id==='drawer'?'oldstreet-drawer':p.id==='watchmaker'?'oldstreet-watchmaker':p.id==='trolley'?'oldstreet-trolley':p.id==='photographer'?'oldstreet-xu':'oldstreet-lan');this.animationName.set(p.id==='letter-compartment'?oldStreetCompartmentPose(current.current.save):p.id==='drawer'?oldStreetDrawerPose(current.current.save):p.id==='trolley'?oldStreetTrolleyPose(current.current.save):'stand');this.direction.set(Direction.Down);if(p.id==='letter-compartment')compartmentEvent.current=this;else if(p.id==='record-book'){}else if(p.id==='drawer')drawerEvent.current=this;else if(p.id==='trolley')trolleyEvent.current=this;else npcEvents.current[p.id]=this;this.syncChanges()}}}))},
+        walkable: localWalkable,
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
-        findPath: (a, b, room) => oldStreetPath(room, a, b, current.current.save),
-        onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current&&visibleTurn.current.length){visibleTurn.current=[];setNotice('');setSelected(null)}};for(const [id,event] of Object.entries(npcEvents.current)){const prop=oldStreetProjectedProps(current.current.save).find(e=>e.id===id);if(!prop||prop.room!==runtime.current?.scene())continue;const dx=p.x-prop.position.x,dy=p.y-prop.position.y;if(Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
+        findPath: (a, b, room) => findGridPath(a,b,p=>localWalkable(p,room)),
+        onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current)setSelected(null);if(moved&&!busyRef.current&&visibleTurn.current.length){visibleTurn.current=[];setNotice('');setSelected(null)}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
+        onFrame:(dt,hero,room,paused)=>{
+          for(const [id,event] of Object.entries(npcEvents.current)){
+            const prop=oldStreetProjectedProps(current.current.save,residentPositions()).find(p=>p.id===id&&p.room===room);if(!prop)continue
+            if(id==='watchmaker'){
+              const m=resident.current,before={...m.position}
+              m.update(dt,hero,paused||residentControls.current.paused,residentControls.current.selected,p=>{
+                const body={x:p.x-12,y:p.y-12,w:32,h:28}
+                return oldStreetWalkable(room,body,current.current.save,{w:32,h:28})&&!(body.x<hero.x+oldStreetBody.w&&body.x+body.w>hero.x&&body.y<hero.y+oldStreetBody.h&&body.y+body.h>hero.y)
+              })
+              if(before.x!==m.position.x||before.y!==m.position.y){void event.teleport({x:m.position.x-12,y:m.position.y-12});setResidentPosition({...m.position})}
+              event.direction.set(m.direction as Direction);event.animationName.set(m.pose);event.syncChanges()
+            }else if(!paused){const dx=hero.x-prop.position.x,dy=hero.y-prop.position.y;if(Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}
+          }
+        },
         onEngine: e => {engine.current = e},
         onReady: r => {runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)},
         onFailure: code => {if (mounted) setError(code)},
@@ -216,7 +239,7 @@ export default function OldStreetDev() {
   function request(id: string, confirmed = false) {
     if (!ready || busyRef.current || error || current.current.save.facts.departed) return
     const binding = bindOldStreet(locale, current.current.save), target = binding.targetFor(id, current.current.scene)
-    const entity = oldStreetSpatialPlan(current.current.save).entities.find(e => e.id === target)
+    const entity = liveEntities().find(e => e.id === target)
     if (!entity || !runtime.current) return
     if (id === 'oldstreet:leave' && !confirmed) {setLeaving(true); return}
     busyRef.current = true; setBusy(true)
@@ -230,7 +253,8 @@ export default function OldStreetDev() {
     if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){busyRef.current=false;setBusy(false)}
     else setTyped('')
   }
-  const entities = oldStreetSpatialPlan(head.save).entities.filter(e => e.scene === head.scene)
+  function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e})}
+  const entities = liveEntities().filter(e => e.scene === head.scene)
   const nearest = [...entities].filter(e => Math.hypot(e.position.x - feet.x, e.position.y - feet.y) < 54)
     .sort((a, b) => Math.hypot(a.position.x - feet.x, a.position.y - feet.y) - Math.hypot(b.position.x - feet.x, b.position.y - feet.y))[0]
   const chosen = entities.find(e => e.id === selected) ?? nearest

@@ -14,7 +14,7 @@ type Position=RendererPoint
 type SceneId=string
 export type RendererMotion={scene:string;renderedScene:string|null;position:Position;renderedPosition:Position|null;direction:string;renderedDirection:string|null;animation:string;renderedAnimation:string|null;paused:boolean}
 export type RpgRendererRuntime={position:()=>Position;intent?:()=>Position;renderedPosition:()=>Position|null;motion?:()=>RendererMotion|null;diagnostics?:()=>unknown;move:(x:number,y:number)=>void;walkTo:(p:Position,onArrival?:()=>void)=>boolean;pause:(v:boolean)=>void;restore:(p:Position,scene?:string)=>Promise<void>;scene:()=>string;renderedScene:()=>string|null;renderedEvents:()=>string[];destroy:()=>void}
-export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;heroBody?:{w:number;h:number};strideLength?:number;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];canWaitForRoute?:(point:Position,scene:string)=>boolean;onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void;onFailure?:(code:'RENDERER_CONTEXT_LOST')=>void}
+export type RpgRendererOptions={host:HTMLElement;width:number;height:number;sceneIds:string[];mapIds?:Record<string,string>;initialScene:string;initialPosition:Position;heroGraphic:string;heroBody?:{w:number;h:number};strideLength?:number;spritesheets:any[];mapEvents:(scene:string)=>any[];walkable:(p:Position,scene:string)=>boolean;safePosition:(p:Position,scene:string)=>Position;findPath:(start:Position,end:Position,scene:string)=>Position[];canWaitForRoute?:(point:Position,scene:string)=>boolean;onFrame?:(dt:number,position:Position,scene:string,paused:boolean)=>void;onReady:(runtime:RpgRendererRuntime)=>void;onPosition:(p:Position)=>void;onDestination:(p:Position|null)=>void;onEngine?:(engine:RpgClientEngine)=>void;onFailure?:(code:'RENDERER_CONTEXT_LOST')=>void}
 // This RPG-JS beta owns page-global providers. A second instance needs a page
 // reload until complete provider/client disposal has been proven.
 let created=false
@@ -102,6 +102,7 @@ function tick(time:number){
   }else stand()
   if(finished){const fn=arrive;arrive=undefined;reportDestination(null);stand();fn?.()}
  }
+ options.onFrame?.(dt,{...pos},activeScene,paused||changing||context.failed()||document.hidden||!player);
  project();frame=requestAnimationFrame(tick)
 }
 frame=requestAnimationFrame(tick)
