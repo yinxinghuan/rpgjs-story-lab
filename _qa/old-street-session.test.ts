@@ -267,7 +267,10 @@ test('clock clue requires observed region and identification, including free inp
    await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:inspect-clock'),clockInspection:proof}),/CLOCK_INSPECTION_REQUIRED/)
    assert.equal(s.get('owner',h.id).version,h.version);assert.equal(s.get('owner',h.id).save.facts['clock-mark-known'],false)
   }
-  await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:inspect-clock'),type:'free-input',text:'检查钟底',mode:'local'}),/CLOCK_INSPECTION_REQUIRED/)
+  for(const text of ['检查钟底','查看钟底','检查钟底刻记']){
+   await assert.rejects(s.action('owner',h.id,{...request(h,'oldstreet:inspect-clock'),type:'free-input',text,mode:'local'}),/CLOCK_INSPECTION_REQUIRED/)
+   assert.equal(s.get('owner',h.id).version,h.version);assert.equal(s.get('owner',h.id).save.facts['clock-mark-known'],false)
+  }
   const body={...request(h,'oldstreet:inspect-clock'),clockInspection:valid},result=await s.action('owner',h.id,body)
   assert.equal(result.head.version,h.version+1);assert.equal(result.head.save.facts['clock-mark-known'],true)
   assert.deepEqual(await s.action('owner',h.id,body),result)
