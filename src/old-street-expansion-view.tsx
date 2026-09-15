@@ -14,10 +14,10 @@ export function OldStreetExpansionView({locale,sessionId,requested,disabled,api,
   setSending(true);setFailed(false)
   try{if(!requested)await submit(input.trim());const r=await api('/sessions/'+sessionId+'/expansion',{retry:job?.state==='failed'});setJob(r.job);setRefresh(n=>n+1)}catch{setFailed(true)}finally{setSending(false)}
  }
- return <details className="os-expansion"><summary>{t('探索新的去处','Explore somewhere new')}</summary>
-  {!requested&&<textarea aria-label={t('想探索什么','What would you like to explore?')} maxLength={500} value={input} onChange={e=>setInput(e.target.value)} disabled={disabled||sending} placeholder={t('比如：想看看照相馆后面的暗房','For example: explore the darkroom behind the studio')}/>}
-  <p role="status">{failed?t('准备暂时不可用，原来的探索仍可继续。','Preparation is unavailable. You can continue exploring.'):job?.state==='candidate'?t('扩展方案已保存，入口还在准备中。','The expansion plan is saved. Its entrance is still being prepared.'):job?.state==='planning'||job?.state==='queued'?t('正在准备新的去处，可以先继续逛。','Preparing the new area. You can keep exploring.'):job?.state==='failed'?t('这次准备中断了，可以重试。','Preparation was interrupted. You can retry.'):requested?t('你的想法已保存。','Your idea is saved.'):t('从这里提出一个想探索的新去处。','Describe a new place you would like to explore from here.')}</p>
+ return <details className="os-expansion"><summary>{t('探查暗房','Explore the darkroom')}</summary>
+  {!requested&&<textarea aria-label={t('想在暗房寻找什么','What would you like to find in the darkroom?')} maxLength={500} value={input} onChange={e=>setInput(e.target.value)} disabled={disabled||sending} placeholder={t('比如：想看看照相馆后面的暗房','For example: explore the darkroom behind the studio')}/>}
+  <p role="status">{failed?t('准备暂时不可用，原来的探索仍可继续。','Preparation is unavailable. You can continue exploring.'):job?.state==='candidate'?t('暗房已经准备好，可以继续探索。','The darkroom is ready to explore.'):job?.state==='planning'||job?.state==='queued'?t('正在准备新的去处，可以先继续逛。','Preparing the new area. You can keep exploring.'):job?.state==='failed'?t('这次准备中断了，可以重试。','Preparation was interrupted. You can retry.'):requested?t('你的想法已保存。','Your idea is saved.'):t('照相馆后面还有一间暗房。你想在那里寻找什么？','There is a darkroom behind the studio. What would you like to find there?')}</p>
   {(failed||!job||job.state==='failed')&&<button disabled={disabled||sending||(!requested&&!input.trim())} onClick={()=>void start()}>{t(sending?'正在保存…':requested?'继续准备':'提出想法',sending?'Saving…':requested?'Continue preparation':'Suggest a place')}</button>}
-  {job?.state==='candidate'&&<button disabled={disabled||sending} onClick={()=>{setSending(true);void activate().catch(()=>setFailed(true)).finally(()=>setSending(false))}}>{t('准备暗房入口','Prepare the darkroom entrance')}</button>}
+  {job?.state==='candidate'&&<button disabled={disabled||sending} onClick={()=>{setSending(true);void activate().catch(()=>setFailed(true)).finally(()=>setSending(false))}}>{t('继续探索暗房','Continue exploring the darkroom')}</button>}
  </details>
 }

@@ -42,8 +42,9 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
+  if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion})}
   if(m[2]==='expansion-photo'){
    if(!expansion)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
    return oldStreetJson(oldStreetExpansionPhotoOperation(request.method,owner,m[1],expansion.media,expansion.produce,request.method==='POST'?await readBody(request):undefined,expansion.background))

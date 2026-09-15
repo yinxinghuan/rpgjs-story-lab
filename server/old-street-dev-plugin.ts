@@ -55,9 +55,10 @@ export function oldStreetDevPlugin(){
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
     return send(200,s.create(owner,body.enrollment_id,body.locale))
    }
-   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file))?$/.exec(route)
+   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities))?$/.exec(route)
    if(!match)return send(404,{error:'NOT_FOUND'})
    const [,id,operation]=match
+   if(operation==='expansion-capabilities'&&req.method==='GET'){s.get(owner,id);return send(200,{planning:!!expansions,media:!!expansionMedia})}
    if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
    if(operation==='expansion-photo-file'&&req.method==='GET'){
     if(!expansionMedia)return send(503,{error:'EXPANSION_MEDIA_NOT_READY'})
