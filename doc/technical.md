@@ -1908,3 +1908,7 @@ oldStreetCurrentPurpose 从权威库存、已介绍人物与取信事实派生�
 ## 自由输入自动选择后台能力（2026-09-16，本地未发布）
 
 客户端不再把未带 interpret 参数的输入强制发为 local。Session 在 mode 缺省时，先匹配确定动作/固定话题，再按实际注入的 interpreter/dialogue 决定是否使用模型；未配置仍走本地规则。显式 interpret=local/live 保留调试语义，live 而服务未配置仍报不可用。暗房自由动作沿用同一选择规则。28项 Session/对白测试通过，覆盖默认调用、固定话题不调用、显式local、回执去重及拒绝无部分提交。线上普通叙事默认provider仍由 OLD_STREET_RELEASED 控制且尚未开放，不将这次接线修复误报为完整线上模型交谈通过。
+
+## 正式入口缺图修复（2026-09-16）
+
+用户发现线上缺图，根因是 pixelShop/compositeShop 仍要求试验query；根地址因此关闭了部分环境下载和独立物件列表。默认改为完整像素物件与整图修表铺背景；仅 shop_environment=layered / shop_art=legacy 显式退回对照。已在不带任何参数的5460根地址恢复原合成旅程，进入照相馆、街口、修表铺确认当前环境与记录册显示。不是上传缺失的先验结论；发布后另对dist全资源进行HTTP/字节一致性检查。

@@ -58,8 +58,8 @@ import {createInitialSave} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 
-const compositeShop=new URLSearchParams(location.search).get('shop_environment')==='whole'
-const pixelShop=compositeShop||new URLSearchParams(location.search).get('shop_art')==='pixel'
+const compositeShop=new URLSearchParams(location.search).get('shop_environment')!=='layered'
+const pixelShop=compositeShop||new URLSearchParams(location.search).get('shop_art')!=='legacy'
 const environmentDownloads=oldStreetEnvironmentDownloads(pixelShop,compositeShop)
 const renderedProps=['watchmaker','laundry-owner','photographer','trolley','drawer',...(pixelShop?['letter-compartment','record-book','photo-folder','viewing-table','clock-display','crates']:[])]
 const plan = oldStreetSpatialPlan()
