@@ -1,3 +1,5 @@
+import {oldStreetPhotoShelfPose} from '../src/old-street-photo-shelf'
+import {oldStreetSceneKnowledge} from '../src/old-street-scene-knowledge'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
@@ -156,11 +158,22 @@ test('a model result cannot overwrite a newer action and model failure never mut
   assert.deepEqual(fast.get('owner',h.id),newer.head)
  }finally{raw.close()}
 })
-test('photo matching requires a correct piece and orientation before its rule can commit',async()=>{
- const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
+test('photo side quest survives disk recovery and lost receipts without restoring the taken folder',async()=>{
+ const temp=mkdtempSync(join(tmpdir(),'oldstreet-photo-recovery-')),file=join(temp,'synthetic.sqlite')
+ let raw=new DatabaseSync(file),s=new OldStreetAuthority(storage(raw),admit)
  try{
   let h=s.create('owner',randomUUID(),'zh')
-  const run=async(id:string,extra={})=>{h=(await s.action('owner',h.id,{...request(h,id),...extra})).head}
+  const run=async(id:string,extra={})=>{
+   const body={...request(h,id),...extra},result=await s.action('owner',h.id,body);h=result.head
+   raw.close();raw=new DatabaseSync(file);s=new OldStreetAuthority(storage(raw),admit)
+   assert.deepEqual(s.get('owner',h.id),h)
+   assert.deepEqual(await s.action('owner',h.id,body),result,'lost receipt replays the committed result')
+   assert.deepEqual(s.get('owner',h.id),h,'replay must not change inventory or relationships')
+   if(h.save.facts['photos-taken']){
+    assert.equal(oldStreetPhotoShelfPose(h.save),'empty')
+    assert.match(oldStreetSceneKnowledge(h.save,'cellar').find(k=>k.id==='visible:photo-folder')!.text,/空搁架/)
+   }
+  }
   const go=async(room:string)=>run(oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===room)!.actionId)
   await go('yard');await go('laundry');await run('oldstreet:borrow-trolley');await go('yard');await run('oldstreet:clear-crates');await go('cellar');await run('oldstreet:take-photos');await go('yard');await go('street');await go('photo')
   for(const photoMatch of [undefined,{version:'laundry-print-1',piece:'piece-fern',rotation:0},{version:'laundry-print-1',piece:'piece-river',rotation:180}]){
@@ -171,7 +184,14 @@ test('photo matching requires a correct piece and orientation before its rule ca
   assert.equal(h.save.facts['photos-matched'],true)
   assert.equal(h.save.inventory.find(i=>i.id==='photos')?.count,1)
   await run('oldstreet:return-photos');assert.equal(h.save.facts['photos-returned'],true)
- }finally{raw.close()}
+  assert.ok(!h.save.inventory.some(i=>i.id==='photos'&&i.count>0))
+  assert.equal(h.save.relationships.filter(r=>r.characterId==='xu-photographer'&&r.axis==='returned-photographs').length,1)
+  await go('street');await go('yard');await go('cellar')
+  const before=h
+  await assert.rejects(s.action('owner',h.id,request(h,'oldstreet:take-photos')),/ACTION_UNAVAILABLE/)
+  assert.deepEqual(s.get('owner',h.id),before)
+  assert.equal(oldStreetPhotoShelfPose(h.save),'empty')
+ }finally{raw.close();rmSync(temp,{recursive:true,force:true})}
 })
 test('legacy footprint upgrades in place without resetting story or journey identity',()=>{
  const raw=new DatabaseSync(':memory:'),s=new OldStreetAuthority(storage(raw),admit)
