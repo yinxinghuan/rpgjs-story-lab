@@ -1823,3 +1823,5 @@ OldStreetDoorways接收已下载的crates blob。只有cellar房间、crates-cle
 ### 石阶局部材质复用（2026-09-15）
 
 OldStreetDoorways新增stoneImage，像素入口从environmentArt统一下载石阶修正版。整图透视未准入，仅选三个石踏面区域绘制在原40×6踏步矩形，五级踏步/侧墙/方向仍由原SVG几何定义。riverside-stairs金属外梯不使用石材。不是新碰撞或新路线，不改变出入口脚点、档案或清箱事实。
+
+地下室像素入口增加cellarFloor，统一下载/释放；old-street-floor.tsx以源0 256 512 832裁区映射原房间地面，使用none充满且overflow裁切，排除意外生成的人物。该图只作底层环境，不改变碰撞或角色名单。

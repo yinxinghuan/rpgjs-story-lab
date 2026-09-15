@@ -1,0 +1,10 @@
+{
+  "requestId": "a1d716d3-b006-480f-8e06-ef692e37fb02",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 512,
+    "height": 1088
+  },
+  "prompt": "One continuous floor-only environmental texture for an overhead orthographic 2D pixel-painted adventure game. Exact512x1088 canvas. Old basement storage room cement floor, every pixel a flat floor plane, directly overhead with parallel axes. Muted warm gray dusty cement in the center, desaturated cool slate-green moisture staining only along right and bottom margins. Gentle diffuse warmer ambient patch in upper left fading across surface, no black areas. Finely drawn small pixel clusters and crisp restrained scratches, NOT photographic noise, NOT smooth plastic, NOT chunky coarse squares. Hairline irregular shallow cracks in a few places, faint old scrape tracks and scuffs, scattered tiny plaster specks only within40pixels of perimeter. Main central route has lighter swept wear and is entirely clear. Long-neglected but safe structural floor, modest ruin feeling, NO open holes or collapsed areas. Surface is continuous poured cement: NO tiles, NO floorboards, NO rugs, NO drawn walls or skirting, NO borders, NO room diagram, NO perspective or horizon. Absolutely NO objects: no furniture, shelf, cabinet, chair, crates, stairs, doors, people, pipes, bottles, paper, letters, photos or tools. NO text, icons, UI, arrows, checkerboard, magenta. This will sit under separately rendered shelves, characters and stairs. Cohesive atmospheric full-room floor, not a repeating tile. Preserve readable low-contrast ground for a dark-outlined yellow-jacket character."
+}
