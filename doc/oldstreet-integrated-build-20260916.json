@@ -1,0 +1,28 @@
+{
+  "sourceCommit": "ab016d1859d0edec69ad7212ec34c906225e8a8f",
+  "command": "npm run build",
+  "passed": true,
+  "checks": [
+    "TypeScript",
+    "spatial cartridge binding",
+    "Vite cloud build",
+    "existing original-story distribution resource hashes",
+    "opaque-module Worker startup and creator health"
+  ],
+  "workerSha256": "9552bca7efd77dab246c6fe5a59d01dad3c2891acfa1c27c67c632be1d3bbb7b",
+  "frontEndFileCount": 160,
+  "published": false,
+  "uiVerified": false,
+  "uiBlocker": "CUA reports Mac locked; automatic unlock failed",
+  "remaining": [
+    "Actual dialogue wait/retry presentation",
+    "Resident walking in renderer",
+    "Full AlterU playthrough",
+    "Verified platform identity for account recovery",
+    "Lan and Xu admitted walking assets"
+  ],
+  "warnings": [
+    "Existing historical train media URL warnings",
+    "Large Vite chunks"
+  ]
+}
