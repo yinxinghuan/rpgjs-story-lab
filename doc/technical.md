@@ -1835,3 +1835,9 @@ old-street-floor.tsx将现有院子铺石pattern用于street，保持相同世�
 old-street-boundary-layout.ts按street现有东西侧门坐标裁分墙段，所有段严格在walkable floor之外；old-street-boundaries.tsx只渲染低矮砌体与窗格，不添加交互或碰撞。仅像素候选street启用。边界/门净空测试与类型检查通过。
 
 从新增墙体旁的照相馆店门实际转场成功，未改变房间或物件状态。画面边界测试不等于全立面美术验收。
+
+### 动态扩展请求起点（2026-09-16）
+
+OldStreetHead新增可选expansions，旧存档无需填充。首个模板photo-darkroom-v1仅接收当前照相馆的玩家意向；通过现有SessionAuthority action事务写入requested记录，包含原始意向、action id和请求时版本。它不改变StorySave、空间清单或碰撞，不调用媒体/模型。相同请求复用现有回执，离开原房间仍保存意向。
+
+本轮仅新增一项核心测试：真实SQLite提交、关闭重开、同请求重放、继续回街口且意向保留、未出现新房间。该项及类型检查通过。模型计划、素材任务、地图激活及玩家输入入口尚未接通；不得将此起点宣称为动态支线闭环完成。下一步从该记录生成结构化计划，再绑定必要素材清单与新地图版本。

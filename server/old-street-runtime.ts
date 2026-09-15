@@ -45,10 +45,18 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(!['action','free-input','dialogue'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(!['action','free-input','dialogue','expansion-request'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='expansion-request'){
+        if(h.sceneId!=='photo'||body.template!=='photo-darkroom-v1')throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
+        if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
+        if(h.expansions?.length)throw new LabError('OLD_STREET_EXPANSION_ALREADY_REQUESTED',409)
+        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:body.text.trim(),status:'requested',requestedAtVersion:h.version}]}
+        check(next,h)
+        return {head:next,kind:'expansion-request',accepted:true,text:h.save.locale==='zh'?'已记下你想探索的新去处。准备好后才能进入；现在可以继续逛。':'Your exploration idea is saved. You can keep exploring while the new area is prepared.'}
+      }
       if(body.type==='dialogue'){
         const person=oldStreetPerson(body.target)
         if(!person||person.room!==h.sceneId||!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('OLD_STREET_DIALOGUE_TARGET_REQUIRED',409)

@@ -1,7 +1,8 @@
 import type {StorySave} from './vendor/original-train/types'
 import {LabError} from './journey-runtime'
+import {assertOldStreetExpansions,type OldStreetExpansionRequest} from './old-street-expansion'
 import {oldStreetSpatialPlan,oldStreetWalkable,bindOldStreet} from './old-street-space'
-export type OldStreetHead = {id:string; version:number; mapVersion:string; sceneId:string; position:{x:number;y:number}; save:StorySave}
+export type OldStreetHead = {id:string; version:number; mapVersion:string; sceneId:string; position:{x:number;y:number}; save:StorySave;expansions?:OldStreetExpansionRequest[]}
 const plan = oldStreetSpatialPlan()
 export function assertOldStreetHead(value:unknown): asserts value is OldStreetHead {
   const h=value as OldStreetHead, s=h?.save
@@ -10,5 +11,5 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     || ![plan.mapVersion,'oldstreet-blockout-1'].includes(h.mapVersion) || !s.facts || !Array.isArray(s.map) || !Array.isArray(s.inventory)
     || !Array.isArray(s.blocks) || !Array.isArray(s.characters) || !Array.isArray(s.relationships)
     || !h.position || !oldStreetWalkable(h.sceneId,h.position,s,h.mapVersion==='oldstreet-blockout-1'?{w:9,h:15}:undefined)) throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)
-  try {bindOldStreet(s.locale,s).locate(s,h.sceneId)} catch {throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)}
+  try {bindOldStreet(s.locale,s).locate(s,h.sceneId);assertOldStreetExpansions(h.expansions)} catch {throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)}
 }

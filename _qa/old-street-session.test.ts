@@ -338,3 +338,22 @@ test('journey directory isolates owners and retains completed journeys when star
   assert.throws(()=>s.get('other-owner',original))
  }finally{raw.close()}
 })
+
+test('expansion intention persists through reopen without admitting a room or blocking exploration',async()=>{
+ const temp=mkdtempSync(join(tmpdir(),'oldstreet-expansion-')),file=join(temp,'journey.sqlite')
+ let raw=new DatabaseSync(file),s=new OldStreetAuthority(storage(raw),admit)
+ try{
+  let h=s.create('synthetic-owner',randomUUID(),'zh')
+  h=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room==='street'&&d.destination.room==='photo')!.actionId))).head
+  const before=structuredClone(h.save),b={action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-request',template:'photo-darkroom-v1',text:'我想看看照相馆后面封着的暗房。'}
+  const result=await s.action('synthetic-owner',h.id,b);h=result.head
+  assert.deepEqual(h.save,before);assert.equal(h.sceneId,'photo')
+  assert.equal(h.expansions?.[0].status,'requested');assert.equal(h.expansions?.[0].input,b.text)
+  raw.close();raw=new DatabaseSync(file);s=new OldStreetAuthority(storage(raw),admit)
+  assert.deepEqual(s.get('synthetic-owner',h.id),h)
+  assert.deepEqual(await s.action('synthetic-owner',h.id,b),result)
+  const next=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room==='photo'&&d.destination.room==='street')!.actionId))).head
+  assert.equal(next.sceneId,'street');assert.deepEqual(next.expansions,h.expansions)
+  assert.equal(oldStreetSpatialPlan(next.save).scenes.some(scene=>scene.id==='photo-darkroom'),false)
+ }finally{raw.close();rmSync(temp,{recursive:true,force:true})}
+})
