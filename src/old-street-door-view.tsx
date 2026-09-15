@@ -3,7 +3,7 @@ import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
 const elevation:Record<OldStreetRoom,number>={street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
 /** Physical variants share the existing endpoints; decoration cannot create a route. */
-export function OldStreetDoorways({room,facts,cratesImage,stoneImage}:{room:OldStreetRoom;facts:StorySave['facts'];cratesImage?:string;stoneImage?:string}){
+export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:{room:OldStreetRoom;facts:StorySave['facts'];cratesImage?:string;stoneImage?:string;woodImage?:string}){
  return <g>{oldStreetDoors().filter(d=>d.room===room).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
   const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
@@ -28,7 +28,20 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage}:{room:OldS
     <path d="M-19 11H19M-19 16H19" stroke="#cabca0" strokeWidth="2"/>
     <rect x="-26" y="-13" width="6" height="33" fill="#584731"/><rect x="20" y="-13" width="6" height="33" fill="#584731"/>
     <path d="M-24-12V17M22-12V17" stroke="#a88b57" strokeWidth="1"/>
-    {closed?<g><rect x="-20" y="-10" width="40" height="21" fill="#776145" stroke="#403b2e" strokeWidth="2"/><path d="M-12-9V10M-4-9V10M4-9V10M12-9V10" stroke="#9e8156"/><rect x="-10" y="-2" width="20" height="3" fill="#434c48"/><rect x="6" y="-4" width="3" height="7" fill="#a1a69a"/></g>:<g><path d="M-20-10L-32-17V8L-20 13Z" fill="#896e47" stroke="#493c2b" strokeWidth="2"/><path d="M-23-8L-29-12V5L-23 8Z" fill="none" stroke="#b09059" strokeWidth="1"/></g>}
+    {closed?<g>
+      <rect x="-20" y="-10" width="40" height="21" fill="#776145"/>
+      {woodImage?<image href={woodImage} x="-20" y="-10" width="40" height="21" preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/>:<path d="M-12-9V10M-4-9V10M4-9V10M12-9V10" stroke="#9e8156"/>}
+      <rect x="-20" y="-10" width="40" height="21" fill="none" stroke="#403b2e" strokeWidth="2"/>
+      <path d="M-18-7V8M18-7V8" stroke="#b19b70" strokeWidth=".7" opacity=".6"/>
+      <rect x="-10" y="-2" width="20" height="3" fill="#434c48"/><rect x="6" y="-4" width="3" height="7" fill="#a1a69a"/>
+      <path d="M-18-7H-13M-18 6H-13" stroke="#363b35" strokeWidth="2"/>
+    </g>:<g>
+      <path d="M-20-10L-32-17V8L-20 15Z" fill="#896e47"/>
+      {woodImage&&<g transform="matrix(.3 .175 0 1 -32 -17)"><image href={woodImage} width="40" height="25" preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/></g>}
+      <path d="M-20-10L-32-17V8L-20 15Z" fill="none" stroke="#493c2b" strokeWidth="2"/>
+      <path d="M-23-8L-29-12V5L-23 9Z" fill="none" stroke="#b09059" strokeWidth=".8"/>
+      <path d="M-29-1V2" stroke="#bdb7a0" strokeWidth="2"/>
+    </g>}
    </g>}
    {closed&&d.gate==='crates-cleared'&&room==='cellar'&&<g transform={`rotate(${-angle})`}>
     {cratesImage?<image href={cratesImage} x="-27" y="-42" width="54" height="54" style={{imageRendering:'pixelated'}}/>:<g fill="#80613e" stroke="#453b2b" strokeWidth="2"><rect x="-23" y="-22" width="27" height="25"/><rect x="3" y="-15" width="23" height="20"/><path d="M-20-17H1M-20-10H1M6-10H23"/></g>}
