@@ -54,7 +54,7 @@ export function oldStreetDoors() {
 type Prop = {id: string; room: OldStreetRoom; position: SpatialPoint; approach: SpatialPoint; actions: string[]; body: Rect}
 const prop = (id: string, room: OldStreetRoom, x: number, y: number, actions: string[]): Prop => {
   const position = pointIn(room, x, y)
-  return {id, room, position, approach: {x: position.x, y: position.y + (['watchmaker','laundry-owner','photographer','drawer'].includes(id)?44:28)}, actions: actions.map(oldStreetActionId), body: {x: position.x - 12, y: position.y - 12, w: 32, h: 28}}
+  return {id, room, position, approach: {x: position.x, y: position.y + (['watchmaker','laundry-owner','photographer','drawer','letter-compartment'].includes(id)?44:28)}, actions: actions.map(oldStreetActionId), body: {x: position.x - 12, y: position.y - 12, w: 32, h: 28}}
 }
 export const oldStreetProps = [
   prop('drawer', 'shop', .28, .32, ['move-box', 'take-lens', 'inspect-clock']),
