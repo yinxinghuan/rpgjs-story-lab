@@ -13,7 +13,8 @@
   "columnsObservedApprox": 16,
   "renderTileWorldSize": [
     112,
-    208
+    206.76923076923077
   ],
-  "opacity": 0.28
+  "opacity": 0.28,
+  "runtimeReview": "365x677: walked from northern door to lower room; camera followed, no obvious large tile boundary. Local candidate only."
 }

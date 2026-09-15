@@ -1,3 +1,4 @@
+import {oldStreetWoodTile} from './old-street-floor-material'
 import {OldStreetShedEnvironment} from './old-street-shed-environment'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import narrowWood from '../doc/oldstreet-pixel-study/floor-narrow/candidate-actual.png'
@@ -15,7 +16,7 @@ export function OldStreetFloor({room, pixelShop=false}: {room: OldStreetRoom; pi
   // This candidate has ~16 actual plank columns, not the requested 32.
   // Tile at half-room width: ~7 world units per plank, independent of camera zoom.
   if(room==='shop')return <g>
-    <defs><pattern id="os-narrow-wood" x={floor.x} y={floor.y} width="112" height="208" patternUnits="userSpaceOnUse"><image href={narrowWood} width="112" height="208" preserveAspectRatio="none" opacity=".28"/></pattern></defs>
+    <defs><pattern id="os-narrow-wood" x={floor.x} y={floor.y} width={oldStreetWoodTile.width} height={oldStreetWoodTile.height} patternUnits="userSpaceOnUse"><image href={narrowWood} width={oldStreetWoodTile.width} height={oldStreetWoodTile.height} opacity={oldStreetWoodTile.opacity}/></pattern></defs>
     <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#806142" stroke="#463d31" strokeWidth="2"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#a08866"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-narrow-wood)"/>
