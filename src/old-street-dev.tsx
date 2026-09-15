@@ -1,3 +1,5 @@
+import OldStreetLoading from './old-street-loading'
+import {downloadSpatialArt} from './spatial-art-download'
 import {OldStreetResidentMotion} from './old-street-resident-motion'
 import {findGridPath} from './grid-path'
 import pixelDrawerUrl from '../doc/oldstreet-pixel-study/drawer/cutout.png'
@@ -70,6 +72,7 @@ export default function OldStreetDev() {
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
   const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>(),compartmentEvent=useRef<RpgPlayer>()
   useEffect(()=>{if(compartmentEvent.current){compartmentEvent.current.animationName.set(oldStreetCompartmentPose(head.save));compartmentEvent.current.syncChanges()}if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
+  const [loading,setLoading]=useState({stage:'journey',done:0,total:pixelShop?7:6})
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
@@ -97,6 +100,7 @@ export default function OldStreetDev() {
   useEffect(() => {
     const hero = actorArt.balanced.hero
     let mounted = true
+    const downloads=new AbortController()
     let heroBlob: string | undefined
     let watchmakerBlob: string | undefined
     let lanBlob: string | undefined
@@ -114,25 +118,15 @@ export default function OldStreetDev() {
       current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
       resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
       setNotice(restored.version===0?cartridge.opening.blocks[0].text:text(['已恢复旅程。', 'Journey restored.']))
-      const preview = new Image()
-      const response = await fetch(new URL(hero.path, document.baseURI))
-      if (!response.ok) throw Error('HERO_LOAD_FAILED')
-      heroBlob = URL.createObjectURL(await response.blob())
-      preview.src = heroBlob
-      await preview.decode()
-      await loadSpatialArtTexture(heroBlob,pixelShop?'nearest':'linear')
       const npcArt=actorArt.balanced.mechanic
-      const npcResponse=await fetch(new URL(npcArt.path,document.baseURI));if(!npcResponse.ok)throw Error('WATCHMAKER_LOAD_FAILED')
-      watchmakerBlob=URL.createObjectURL(await npcResponse.blob());await loadSpatialArtTexture(watchmakerBlob,pixelShop?'nearest':'linear')
-      const lanResponse=await fetch(lanStandingUrl);if(!lanResponse.ok)throw Error('LAN_LOAD_FAILED')
-      lanBlob=URL.createObjectURL(await lanResponse.blob());await loadSpatialArtTexture(lanBlob,pixelShop?'nearest':'linear')
-      const xuResponse=await fetch(xuStandingUrl);if(!xuResponse.ok)throw Error('XU_LOAD_FAILED')
-      xuBlob=URL.createObjectURL(await xuResponse.blob());await loadSpatialArtTexture(xuBlob,pixelShop?'nearest':'linear')
-      const drawerResponse=await fetch(pixelShop?pixelDrawerUrl:drawerStatesUrl);if(!drawerResponse.ok)throw Error('DRAWER_LOAD_FAILED')
-      drawerBlob=URL.createObjectURL(await drawerResponse.blob());await loadSpatialArtTexture(drawerBlob,pixelShop?'nearest':'linear')
-      if(pixelShop){const response=await fetch(pixelPropsUrl);if(!response.ok)throw Error('PIXEL_PROPS_LOAD_FAILED');pixelPropsBlob=URL.createObjectURL(await response.blob());await loadSpatialArtTexture(pixelPropsBlob,pixelShop?'nearest':'linear')}
-      const trolleyResponse=await fetch(trolleyUrl);if(!trolleyResponse.ok)throw Error('TROLLEY_LOAD_FAILED')
-      trolleyBlob=URL.createObjectURL(await trolleyResponse.blob());await loadSpatialArtTexture(trolleyBlob,pixelShop?'nearest':'linear')
+      const sources=[{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl}]:[])]
+      const urls=await downloadSpatialArt(sources,{signal:downloads.signal,progress:(done,total)=>{if(mounted)setLoading({stage:'art',done,total})}})
+      heroBlob=urls.hero;watchmakerBlob=urls.watchmaker;lanBlob=urls.lan;xuBlob=urls.xu;drawerBlob=urls.drawer;trolleyBlob=urls.trolley;pixelPropsBlob=urls.props
+      if(!mounted){Object.values(urls).forEach(url=>URL.revokeObjectURL(url));return}
+      setLoading({stage:'textures',done:sources.length,total:sources.length})
+      await Promise.all(Object.values(urls).map(url=>loadSpatialArtTexture(url,pixelShop?'nearest':'linear')))
+      const preview=new Image();preview.src=heroBlob;await preview.decode()
+      if(mounted)setLoading({stage:'map',done:sources.length,total:sources.length})
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
@@ -161,7 +155,7 @@ export default function OldStreetDev() {
         onFailure: code => {if (mounted) setError(code)},
       })
     } catch (e) {if (mounted) setError(String(e))}})()
-    return () => {mounted = false; runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(pixelPropsBlob)URL.revokeObjectURL(pixelPropsBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
+    return () => {mounted = false; downloads.abort(); runtime.current?.destroy(); if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(pixelPropsBlob)URL.revokeObjectURL(pixelPropsBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
   }, [])
   useEffect(() => {
     const timer = setInterval(() => {
@@ -300,7 +294,7 @@ export default function OldStreetDev() {
     </div>
     </div>
     <section className="os-actions" ref={actionPanel} aria-label={text(['当前行动', 'Current actions'])}>
-      {turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
+      {turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error?.startsWith('Error: ART_DOWNLOAD_')?text(['人物或物件未能下载完成，请重新连接并恢复旅程。','Characters or objects could not finish downloading. Reconnect to recover your journey.']):error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
       {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
       {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
@@ -310,7 +304,8 @@ export default function OldStreetDev() {
       <div className="os-stick" role="group" aria-label={text(['移动摇杆', 'Movement joystick'])} onPointerDown={e => {e.currentTarget.setPointerCapture(e.pointerId); stick(e)}} onPointerMove={e => {if (e.currentTarget.hasPointerCapture(e.pointerId)) stick(e)}} onPointerUp={() => runtime.current?.move(0, 0)} onPointerCancel={() => runtime.current?.move(0, 0)} onLostPointerCapture={() => runtime.current?.move(0, 0)}><span/></div>
       <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : nearbyAction?.primary.kind==='action'?label(nearbyAction.primary.id):nearbyAction?.primary.kind==='talk'?text(['交谈','Talk']):nearbyAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
-    {error && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
+    {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} onRetry={()=>location.reload()}/>}
+    {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>}
     {journeysOpen&&<OldStreetJourneysView locale={locale} current={serverHead.current?.id??''} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error))}}/>}
