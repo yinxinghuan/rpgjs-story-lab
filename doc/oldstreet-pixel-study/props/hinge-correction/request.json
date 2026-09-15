@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "ebd5263e-927d-498d-9c76-d6cb66035276",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789451991270966.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "prompt": "Make ONE very small correction to this exact 1024x1024 pixel RPG sprite atlas. Preserve the four cells, all furniture shapes, exact pixel positions, overhead zero-yaw perspective, large rectangular tops, brown palette, 8px stepped pixel outlines and flat magenta background. In TOP LEFT cell only, change the CLOSED cabinet front: move BOTH tiny brass hinges from the RIGHT door edge to the LEFT door edge, and move its brass keyhole/handle to the RIGHT side of the door. Remove the old right hinges completely. The door must be left-hinged so it opens to the left exactly as shown in top-right and bottom-left cells. Keep every other visible part the same, especially cabinet top, legs, and the other three sprites. Do not change the open door or the envelope or ledger. Do not change shading, add text, invent anything, soften pixels, rotate or resize the furniture. This is a continuity correction, not a redesign."
+}

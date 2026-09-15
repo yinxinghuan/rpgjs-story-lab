@@ -35,7 +35,8 @@ export function oldStreetPixelLayeredSheets(image:string,kind:'drawer'|'letter-c
   const top=drawer?356:275,height=drawer?147:237
   const frame:StateLayerFrame={crop:{x:drawer?i*512:(i%2)*512,y:drawer?top:Math.floor(i/2)*512+top,width:512,height},
    anchor:[f.center/512,(f.foot-top)/height],
-   scale:drawer?[.16*253/oldStreetPixelDrawerFrames[i].width,.16]:[.125,.125*153/(f.foot-top)]}
+   // The original closed door is right-hinged; reflect only this front around its measured center.
+   scale:drawer?[.16*253/oldStreetPixelDrawerFrames[i].width,.16]:[state==='closed'?-.125:.125,.125*153/(f.foot-top)]}
   return [state,frame]
  }))
  return [layeredStateSheet('oldstreet-'+kind+'-top',image,size,{closed:common,open:common,empty:common}),

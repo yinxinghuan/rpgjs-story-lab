@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "8f49f8c3-a7b7-4391-9ea2-994af7682731",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789451991270966.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Output ONE sprite only: the CLOSED wooden cabinet from the upper-left of the reference, filling a 512x512 square. Preserve its overhead orthographic zero-yaw angle, rectangular top, muted brown oak palette, chunky stepped 8px pixel clusters and dark brown outline. Cabinet outer bounding rectangle x120..404,y96..428; large rectangular top x120..404,y96..275; legs extend to y428. One single closed door on front between legs, y286..393. Exactly TWO brass hinges on the LEFT edge of that door at x172. ONE brass keyhole plate on the RIGHT half of the door at x313. No hinges on right, no center handle, no open doors. Solid flat magenta behind and between legs. No atlas, no envelope, no book, no text, no other objects. Keep front face short and top large, same as original top-left sprite. Pixels must remain crisp, not painterly, no gradients or noise. The image is a 2D game sprite for the SAME reference cabinet, not a new design."
+}
