@@ -56,6 +56,28 @@
       "seamless": "unverified",
       "review": "../../doc/visual.md",
       "render": null
+    },
+    {
+      "id": "courtyard-stone-01",
+      "category": "floor",
+      "family": "stone",
+      "status": "candidate",
+      "reason": "按人物尺寸缩小纹理单元，待真实场景检查，不宣称无缝。",
+      "source": "../../doc/oldstreet-yard-floor/candidate.png",
+      "sha256": "cac1d02410c916adb16498f07b95b32c176bda2aa02bcaf57a9c13b927ab1420",
+      "image": {
+        "width": 576,
+        "height": 960
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "review": "../../doc/oldstreet-yard-floor/review.md",
+      "render": {
+        "mode": "repeat",
+        "tileWidth": 112,
+        "opacity": 1,
+        "observedColumnsApprox": 10
+      }
     }
   ]
 }

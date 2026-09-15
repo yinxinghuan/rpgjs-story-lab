@@ -8,3 +8,7 @@ export const oldStreetWoodTile={
  height:wood.render.tileWidth*wood.image.height/wood.image.width,
  opacity:wood.render.opacity,
 }
+
+const stone=getMaterial('courtyard-stone-01',{allowCandidate:true})
+if(!stone.render)throw Error('STONE_RENDER_METADATA_MISSING')
+export const oldStreetStoneTile={width:stone.render.tileWidth,height:stone.render.tileWidth*stone.image.height/stone.image.width,opacity:stone.render.opacity}

@@ -1,0 +1,10 @@
+{
+  "requestId": "9df064ee-c1eb-4016-8b98-8fed109b20f4",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 576,
+    "height": 960
+  },
+  "prompt": "A floor-only texture for a 2D overhead orthographic pixel-art exploration RPG: an old shared courtyard paved with small warm gray stone setts. Canvas exactly 576x960. Straight-down plan view, perfectly parallel grout rows with NO perspective, NO isometric rotation, NO converging edges. At the final game size this entire image covers 288x480 world units and a person is 16 units wide: individual paving stones must be about 12-20 source pixels wide, not large slabs. Many small irregular rectangular setts, staggered joints, low contrast gray-beige surfaces, subtle wear, tiny cracks, restrained occasional moss inside joints. Detailed intentional pixel-painted texture comparable to a finely rendered old ceramic tile floor, crisp small clusters, no coarse mosaic blocks, no smooth photographic noise, no blur, no gradients. Flat even warm daylight. Entire frame is walkable ground texture ONLY, edge to edge. No border, walls, buildings, doors, stairs, furniture, crates, plants, puddles, path markings, characters, shadows, text or UI. Do not draw a complete scene. Keep texture quiet and uniform enough that a dark-outlined yellow-clothed character and wooden crates remain immediately readable. Slight natural variations between stones, avoid strong repeated decorative motifs."
+}

@@ -1,4 +1,4 @@
-import {oldStreetWoodTile} from './old-street-floor-material'
+import {oldStreetWoodTile,oldStreetStoneTile} from './old-street-floor-material'
 import {OldStreetShedEnvironment} from './old-street-shed-environment'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
@@ -20,6 +20,10 @@ export function OldStreetFloor({room, pixelShop=false, art=oldStreetEnvironmentA
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#a08866"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-narrow-wood)"/>
     {pixelShop&&<OldStreetShopEnvironment image={art.shopWall}/>}
+  </g>
+  if(room==='yard'&&pixelShop)return <g>
+    <defs><pattern id="os-yard-stone" x={floor.x} y={floor.y} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} patternUnits="userSpaceOnUse"><image href={art.yard} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} opacity={oldStreetStoneTile.opacity} style={{imageRendering:'pixelated'}}/></pattern></defs>
+    <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-yard-stone)" stroke="#81786c" strokeWidth="6"/>
   </g>
   const surface = room==='laundry'?surfaces[room]:null
   if (!surface) return <g><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>{pixelShop&&room==='shed'&&<OldStreetShedEnvironment image={art.shedWall}/>}</g>

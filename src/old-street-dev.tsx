@@ -1,3 +1,4 @@
+import {oldStreetRecoveryMessage} from './old-street-recovery-message'
 import cratesUrl from '../doc/oldstreet-crates/cutout.png'
 import {oldStreetCratesSheet} from './old-street-crates'
 import mantelClockUrl from '../doc/oldstreet-mantel-clock/cutout.png'
@@ -58,9 +59,9 @@ const renderedProps=['watchmaker','laundry-owner','photographer','trolley','draw
 const plan = oldStreetSpatialPlan()
 const propNames: Record<string, [string, string]> = {
   drawer: ['抽屉', 'Drawer'], 'letter-compartment': ['小格', 'Compartment'], 'record-book': ['记录册', 'Record book'],
-  trolley: ['推车', 'Trolley'], 'laundry-owner': ['店主位置', 'Shopkeeper position'], crates: ['旧箱', 'Crates'],
-  watchmaker: ['修表师位置', 'Watchmaker position'], 'photo-folder': ['照片夹', 'Photo folder'],
-  'viewing-table': ['放大台', 'Viewing table'], photographer: ['摄影师位置', 'Photographer position'], 'street-exit': ['回家', 'Home'],
+  trolley: ['推车', 'Trolley'], crates: ['旧箱', 'Crates'],
+  'photo-folder': ['照片夹', 'Photo folder'],
+  'viewing-table': ['放大台', 'Viewing table'], 'street-exit': ['回家', 'Home'],
 }
 export default function OldStreetDev() {
   const locale = navigator.language.startsWith('zh') ? 'zh' : 'en'
@@ -97,6 +98,7 @@ export default function OldStreetDev() {
   const [mapOpen,setMapOpen]=useState(false),mapButton=useRef<HTMLButtonElement>(null)
   const [clockOpen,setClockOpen]=useState(false),[clockMessage,setClockMessage]=useState('')
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
+  useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);runtime.current?.pause(true)}},[error])
   const [typed, setTyped] = useState('')
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   const [feet, setFeet] = useState(head.position), [destination, setDestination] = useState<{x: number; y: number} | null>(null)
@@ -301,7 +303,7 @@ export default function OldStreetDev() {
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
     <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}>{text(['街区','Neighbourhood'])}</button><button ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setJournalOpen(true)}}>{text(['随身与发现','Items & discoveries'])}</button><button disabled={!ready||busy||!!error} onClick={()=>{runtime.current?.pause(true);setJourneysOpen(true)}}>{text(['旅程','Journeys'])}</button></nav></header>
     <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
-      if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving) return
+      if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || journalOpen || mapOpen || journeysOpen || clockOpen || photoOpen) return
       const r = e.currentTarget.getBoundingClientRect()
       runtime.current?.walkTo({x: (e.clientX - r.left) * 384 / r.width, y: (e.clientY - r.top) * 576 / r.height})
       setSelected(null)
@@ -316,31 +318,31 @@ export default function OldStreetDev() {
       {entities.map(e => {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
-        const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
+        const title = known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPerson(e.id)?.appearance ?? oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
         return <button className={'os-target' + (door ? ' os-target--door' : '')+(renderedProps.includes(e.id)?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}><span className={door?'os-door-label':undefined}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</span></button>
       })}
     </div>
     </div>
     <section className="os-actions" ref={actionPanel} aria-label={text(['当前行动', 'Current actions'])}>
-      {turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error?.startsWith('Error: ART_DOWNLOAD_')?text(['人物或物件未能下载完成，请重新连接并恢复旅程。','Characters or objects could not finish downloading. Reconnect to recover your journey.']):error || notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
+      {turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['交谈','Conversation'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
       <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
       {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
-      {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
+      {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以说说你想做什么','Or describe what you want to do'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
       <small>{text(['随身：', 'Carrying: '])}{head.save.inventory.map(i => i.label).join(' · ') || text(['无', 'Nothing'])}</small>
     </section>
     <footer>
       <div className="os-stick" role="group" aria-label={text(['移动摇杆', 'Movement joystick'])} onPointerDown={e => {e.currentTarget.setPointerCapture(e.pointerId); stick(e)}} onPointerMove={e => {if (e.currentTarget.hasPointerCapture(e.pointerId)) stick(e)}} onPointerUp={() => runtime.current?.move(0, 0)} onPointerCancel={() => runtime.current?.move(0, 0)} onLostPointerCapture={() => runtime.current?.move(0, 0)}><span/></div>
       <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : nearbyAction?.primary.kind==='action'?label(nearbyAction.primary.id):nearbyAction?.primary.kind==='talk'?text(['交谈','Talk']):nearbyAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
-    {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} onRetry={()=>location.reload()}/>}
+    {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} onRetry={()=>location.reload()}/>}
     {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
-    {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{diagnostic}</pre></details>}
+    {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{error?JSON.stringify({error,renderer:diagnostic}):diagnostic}</pre></details>}
     {journeysOpen&&<OldStreetJourneysView locale={locale} current={serverHead.current?.id??''} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
-    {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error))}}/>}
+    {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {journalOpen&&<OldStreetJournalView save={head.save} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
-    {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(false)}}/>}
+    {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p>{borrowedItems.length>0&&<p>{text(['还带着待归还的物品：','You still have items to return: '])}{borrowedItems.map(i=>i.label).join(' · ')}{text(['。可以再逛逛，先把它们送回去。','. You can stay and return them first.'])}</p>}<button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
     {outcome && <div className="os-modal" role="dialog" aria-label={text(['旅程结果','Journey result'])}><section><h2>{head.save.finale.ending?.title ?? text(['信已送到','Letter delivered'])}</h2><p>{head.save.finale.ending?.thesis}</p>{head.save.finale.ending?.preserved.map((line,i)=><p key={'p'+i}>{line}</p>)}{head.save.finale.ending?.unresolved.map((line,i)=><p key={'u'+i}>{line}</p>)}<button disabled={busy||!ready} onClick={()=>{void restart()}}>{text(['重新探索','Explore again'])}</button><button disabled={busy||!ready} onClick={()=>setJourneysOpen(true)}>{text(['查看旅程','View journeys'])}</button></section></div>}
   </main>
