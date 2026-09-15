@@ -1,0 +1,10 @@
+{
+  "requestId": "2e28d2fe-c6f6-4af5-8ac0-d172622fd76c",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "One reusable architectural game sprite: short OLD STONE STAIRCASE ascending NORTH (up the image), steep overhead orthographic 2D pixel-painted adventure style. Camera sees broad upper tread surfaces and thin front risers. STRICT axis aligned: all steps horizontal, side edges vertical and parallel, NO isometric yaw, NO perspective convergence. Centered within canvas with generous pure flat #ff00ff magenta margin on all sides. Stair body fits x70..442, y70..442. Six broad shallow limestone steps, narrow low stone cheek walls left and right, small square landing at upper end. Total stairs about as wide as long, tread rise visually shallow. Muted warm gray stone with fine crisp dark brown-gray outlines, restrained detailed pixel clusters, tiny chips on step noses, worn pale center of each tread, moss only in outside side-wall cracks, fine settled dust. Old but structurally intact and clearly walkable. Match a warm muted yellow-jacket top-down RPG character and outlined oak furniture. No people, no doors, no buildings, no full room, no railing tall posts, no rubble blocking steps, no objects, no floor outside staircase, no text, no arrows, no glow, no decorative symbols. Pure magenta background, NO checkerboard and no cast shadow outside the stone footprint. Detailed clean pixel art, not coarse voxels, not photorealistic and not smooth vector."
+}

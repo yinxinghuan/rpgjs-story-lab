@@ -1,0 +1,13 @@
+{
+  "requestId": "e49a3e18-b445-45c3-b84e-664015f63fd7",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Correct this game staircase to TRUE ORTHOGRAPHIC TOP DOWN projection. Preserve the existing pixel-painted worn beige stone, moss, dark outlines, pure magenta background and northward ascent. REMOVE ALL perspective taper: left outer edge must be the vertical line x72 for its ENTIRE length, right outer edge the vertical line x440 for its ENTIRE length. Stair upper and lower ends EXACTLY same width368px. Left inner tread edge x112 and right inner tread edge x400, all horizontal step treads EXACTLY288px wide from top to bottom. Side cheek walls are straight vertical parallel strips, not diagonals. Stair spans y48 to456. Six wide horizontal treads, upper landing at y48..112. Steep overhead camera: broad visible top surfaces, shallow narrow dark horizontal riser strips. No vanishing point, no narrowing in distance. A rectangular staircase sprite with parallel lines, like a top-down tiled RPG map, NOT a trapezoid illustration. Keep detailed worn edges, pale scuffed centers, little moss in cracks and sharp fine pixel clusters. No extra objects, no people, no text, no cast shadow beyond stone, isolated pure flat magenta #ff00ff.",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789484069131106.png"
+  ]
+}
