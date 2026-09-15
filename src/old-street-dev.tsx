@@ -286,7 +286,7 @@ export default function OldStreetDev() {
       })
       // A stale checkpoint falls through to the session conflict/recovery path;
       // never overwrite a newer scene with this tab's arrival position.
-      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:arrivedPosition,...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
+      const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,...(new URLSearchParams(location.search).get('interpret')==='live'?{mode:'live'}:new URLSearchParams(location.search).get('interpret')==='local'?{mode:'local'}:{})}),target,position:arrivedPosition,...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
       const nextHead = result.head as OldStreetHead
       if(result.accepted&&nextHead.version>h.version&&!dialogue){
         const gained=nextHead.save.inventory.some(item=>item.count>(h.save.inventory.find(old=>old.id===item.id)?.count??0))

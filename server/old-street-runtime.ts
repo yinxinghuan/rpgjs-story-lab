@@ -55,7 +55,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
         const allowed=['oldstreet:observe-darkroom',...(!h.save.facts['darkroom-photo-matched']?(expansionPhoto?.(h)?['oldstreet:match-darkroom-photo']:[]):!h.save.facts['darkroom-photo-choice']?['oldstreet:keep-darkroom-photo','oldstreet:leave-darkroom-photo']:[])]
         let action=resolveOldStreetInput(body.text,h.save.locale,allowed)
-        if(!action&&body.mode==='live'){
+        if(!action&&(body.mode==='live'||body.mode===undefined&&!!interpreter)){
           const actions=allowed.map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
           if(originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
           if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
@@ -109,7 +109,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(!h.save.characters.some(c=>c.id===person.id))throw new LabError('OLD_STREET_DIALOGUE_INTRODUCTION_REQUIRED',409)
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         check({...h,position:pos})
-        const text=body.text.trim(),authored=oldStreetAuthoredTalkReply(h.save,body.target,text),useModel=body.mode==='live'&&authored===null
+        const text=body.text.trim(),authored=oldStreetAuthoredTalkReply(h.save,body.target,text),useModel=(body.mode==='live'||body.mode===undefined&&!!dialogue)&&authored===null
         if(useModel&&!dialogue)throw new LabError('OLD_STREET_DIALOGUE_NOT_READY',409)
         if(useModel&&!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
         const reply=authored??(useModel?await dialogue!(text,oldStreetDialogueContext(h,body.target)):oldStreetTalkReply(h.save,body.target,text))
@@ -123,7 +123,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const entity=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
         if(!entity||!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
         let action=resolveOldStreetInput(body.text,h.save.locale,entity.actions)
-        if(!action&&body.mode==='live'){
+        if(!action&&(body.mode==='live'||body.mode===undefined&&!!interpreter)){
           if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
           const c=oldStreetCartridge(h.save.locale)
           const actions=entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,c,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
