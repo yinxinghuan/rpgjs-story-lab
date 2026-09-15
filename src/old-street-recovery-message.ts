@@ -8,3 +8,12 @@ export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
  if(/SESSION_SELECTION_CHANGED|VERSION_CONFLICT|STALE_POSITION/.test(error))return text('这段旅程的进度有变化，请重新连接以继续最新进度。','This journey has changed. Reconnect to continue from its latest progress.')
  return text('暂时没能确认这一步的结果。请重新连接，我们会核对进度后继续。','This step could not be confirmed. Reconnect so we can check your progress and continue.')
 }
+
+/** A confirmed refusal has no pending outcome; the player can continue in place. */
+export function oldStreetActionFailureMessage(code:string,locale:'zh'|'en'){
+ const text=(zh:string,en:string)=>locale==='zh'?zh:en
+ if(code==='OLD_STREET_DIALOGUE_TIMEOUT')return text('这次没等到回应。可以再问一次，或先看看别处。','No reply came this time. Ask again, or explore somewhere else.')
+ if(code==='OLD_STREET_DIALOGUE_REJECTED')return text('这次没能回答。可以换个问法，或选择一个话题。','That question could not be answered. Rephrase it, or choose a topic.')
+ if(code==='OLD_STREET_DIALOGUE_NOT_READY'||code==='OLD_STREET_INTERPRETER_NOT_READY')return text('暂时无法回应这句话。可以先选择现有的话题或行动。','A reply is unavailable right now. Choose an available topic or action for now.')
+ return text('这一步没有完成，可以换个做法再试。','That step was not completed. Try another approach.')
+}

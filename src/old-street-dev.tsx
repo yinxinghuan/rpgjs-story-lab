@@ -3,7 +3,7 @@ import {OldStreetExpansionView} from './old-street-expansion-view'
 import {OldStreetExpansionPhotoView} from './old-street-expansion-photo-view'
 import {OldStreetBuildingEdges} from './old-street-boundaries'
 import {OldStreetGroundDetail} from './old-street-ground-detail'
-import {oldStreetRecoveryMessage} from './old-street-recovery-message'
+import {oldStreetRecoveryMessage,oldStreetActionFailureMessage} from './old-street-recovery-message'
 import cratesUrl from '../doc/oldstreet-crates/cutout.png'
 import {oldStreetCratesSheet} from './old-street-crates'
 import mantelClockUrl from '../doc/oldstreet-mantel-clock/cutout.png'
@@ -300,7 +300,7 @@ export default function OldStreetDev() {
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
       const blockedReason=attemptedAction?[...new Set(resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons??[])].join(' '):undefined
-      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode) ?? '')
+      setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode?oldStreetActionFailureMessage(result.rejectionCode,locale):undefined) ?? '')
       setTurn(oldStreetTurn(h,nextHead,result.accepted===true))
       const expansionInspection=next.scene==='darkroom'&&target==='developing-bench'&&result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'
       if(expansionInspection)setExpansionPhotoRequest(n=>n+1)

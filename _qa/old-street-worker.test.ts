@@ -170,3 +170,43 @@ test('default preview gate configures ordinary dialogue independently of final r
   assert.equal(restored.version,head.version);assert.equal(calls,2)
  }finally{h.close()}
 })
+
+test('ordinary model dialogue can retry after refusal and recover a lost reply without generating twice',async()=>{
+ const {oldStreetSessionHttp}=await import('../src/old-street-session')
+ let calls=0,fail=true,lose=false
+ const h=harness(true,undefined,undefined,async()=>{
+  calls++
+  if(fail)throw new LabError('OLD_STREET_DIALOGUE_TIMEOUT',409)
+  return calls===2?{text:'用完钥匙后，在工作棚还给我就好。',knowledgeIds:['key-use']}:{valid:true,issues:[]}
+ })
+ const values=new Map<string,string>(),storage={get length(){return values.size},key:(i:number)=>[...values.keys()][i]??null,getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v)},removeItem:(k:string)=>{values.delete(k)}} as Storage
+ const lock=async<T>(_key:string,work:()=>Promise<T>)=>work()
+ const transport:typeof fetch=async(input,init)=>{
+  const r=new Request(input,init),response=await handler(r,h.env)
+  if(lose&&r.url.endsWith('/actions')&&response.ok){lose=false;throw Error('CONNECTION_LOST')}
+  return response
+ }
+ try{
+  let client=oldStreetSessionHttp(storage,lock,transport,'https://worker.invalid').client
+  let head=await client.enroll('zh')
+  const action=async(id:string)=>{const e=oldStreetSpatialPlan(head.save).entities.find(e=>e.scene===head.sceneId&&e.actions.includes(id))!;head=(await client.send(head,{type:'action',action:id,target:e.id,position:e.approach})).head}
+  for(const room of ['photo','roof','shed'])await action(oldStreetDoors().find(d=>d.room===head.sceneId&&d.destination.room===room)!.actionId)
+  await action('oldstreet:greet-watchmaker')
+  const person=oldStreetSpatialPlan(head.save).entities.find(e=>e.id==='watchmaker')!
+  const input={type:'dialogue',text:'钥匙用完以后要怎么处理？',target:person.id,position:person.approach}
+  const refused=await client.send(head,input)
+  assert.equal(refused.accepted,false);assert.equal(refused.rejectionCode,'OLD_STREET_DIALOGUE_TIMEOUT')
+  assert.deepEqual(refused.head,head);assert.equal(client.hasPending(),false);assert.equal(calls,1)
+  fail=false;lose=true
+  await assert.rejects(client.send(head,input),/CONNECTION_LOST/)
+  assert.equal(client.hasPending(),true);assert.equal(calls,3)
+  h.reopen();client=oldStreetSessionHttp(storage,lock,transport,'https://worker.invalid').client
+  await client.enroll('zh');await client.recover()
+  const restored=await client.enroll('zh')
+  assert.equal(client.hasPending(),false);assert.equal(calls,3)
+  assert.equal(restored.version,head.version+1)
+  assert.equal(restored.save.blocks.length,head.save.blocks.length+2)
+  assert.deepEqual(restored.save.inventory,head.save.inventory)
+  assert.deepEqual(restored.save.facts,head.save.facts)
+ }finally{h.close()}
+})
