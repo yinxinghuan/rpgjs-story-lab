@@ -1,4 +1,13 @@
 import type {StorySave} from './vendor/original-train/types'
+export function oldStreetCurrentPurpose(save:StorySave){
+ const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
+ if(f.departed===true)return t('信已经交给家人。','The letter has been delivered.')
+ if(f['letter-taken']===true)return t('信已收好，可以从街口回家；也可以继续逛逛。','You have the letter. Go home from the street, or keep exploring.')
+ if(f['letter-unlocked']===true)return t('修表铺的小格已经打开，回去收好里面的信。','The compartment in the watch shop is open. Collect the letter inside.')
+ if(save.inventory.some(i=>i.id==='letter-key'&&i.count>0))return t('带钥匙回修表铺，打开小格取信。','Take the key to the watch shop and open the compartment to collect the letter.')
+ if(save.characters.some(c=>c.id==='zhou-watchmaker'&&c.status==='known'))return t('向河边工作棚的修表师借小格钥匙，再回铺里取信。','Borrow the compartment key from the watchmaker at the riverside workshop, then return to the shop for the letter.')
+ return t('到修表铺取家人寄存的信。','Collect your family’s letter from the watch shop.')
+}
 export function oldStreetJournal(save:StorySave){
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
  const details:Record<string,string>={
@@ -33,5 +42,5 @@ export function oldStreetJournal(save:StorySave){
  for(const subject of ['clock','photo'])if(f[`${subject}-consent`]===true){
   notes.push({id:`${subject}-record`,title:subject==='clock'?t('旧钟记录','Clock record'):t('旧照记录','Photograph record'),text:f[`${subject}-recorded`]===true?t('获准留下的这一条已放进修表铺记录册。','The approved entry is in the watch shop’s record book.'):t('主人已同意留下这一条，目前未放在记录册中。','The owner approved this entry; it is not currently in the record book.')})
  }
- return {purpose:f.departed===true?t('信已经交给家人。','The letter has been delivered.'):f['letter-taken']===true?t('信已收好，可以从街口回家；也可以继续逛逛。','You have the letter. Go home from the street, or keep exploring.'):t('到修表铺取家人寄存的信。','Collect your family’s letter from the watch shop.'),items:save.inventory.filter(i=>i.count>0).map(i=>({id:i.id,title:i.label,count:i.count,text:details[i.id]??i.detail??''})),notes,people}
+ return {purpose:oldStreetCurrentPurpose(save),items:save.inventory.filter(i=>i.count>0).map(i=>({id:i.id,title:i.label,count:i.count,text:details[i.id]??i.detail??''})),notes,people}
 }

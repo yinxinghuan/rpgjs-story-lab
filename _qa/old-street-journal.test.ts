@@ -46,3 +46,21 @@ for(const locale of ['zh','en'] as const)test(`people show only introduced ident
  assert.equal(oldStreetJournal(s).people[0].text.includes(locale==='zh'?'钥匙':'key'),false)
  assert.equal(oldStreetJournal(s).people.some(p=>p.id==='lan-laundry'),false)
 })
+
+for(const locale of ['zh','en'] as const)test(`current purpose follows learned progress and survives a returned key (${locale})`,async()=>{
+ const {recordOldStreetInteraction}=await import('../src/old-street-characters')
+ const s=createInitialSave(oldStreetCartridge(locale)),purpose=()=>oldStreetJournal(JSON.parse(JSON.stringify(s))).purpose
+ assert.doesNotMatch(purpose(),/河边|riverside/)
+ recordOldStreetInteraction(s,'watchmaker','oldstreet:greet-watchmaker','hello','purpose-intro')
+ assert.match(purpose(),locale==='zh'?/借小格钥匙/:/Borrow the compartment key/)
+ s.inventory.push({id:'letter-key',label:'key',count:1,rarity:'common'});s.facts['key-borrowed']=true
+ assert.match(purpose(),locale==='zh'?/带钥匙回/:/Take the key/)
+ s.inventory=[];s.facts['key-borrowed']=false
+ assert.match(purpose(),locale==='zh'?/借小格钥匙/:/Borrow the compartment key/)
+ s.facts['letter-unlocked']=true
+ assert.match(purpose(),locale==='zh'?/已经打开/:/is open/)
+ s.facts['letter-taken']=true
+ assert.match(purpose(),locale==='zh'?/也可以继续/:/or keep exploring/)
+ s.facts.departed=true
+ assert.match(purpose(),locale==='zh'?/已经交给/:/has been delivered/)
+})
