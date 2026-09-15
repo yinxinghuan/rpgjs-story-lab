@@ -1,3 +1,4 @@
+import {oldStreetLetterGuidance} from './old-street-letter-guidance'
 import type {StorySave,StoryBlock} from './vendor/original-train/types'
 import {oldStreetPerson} from './old-street-characters'
 
@@ -16,7 +17,7 @@ export function oldStreetTalkTopics(save:StorySave,entity:string){
  if(!p||!save.characters.some(c=>c.id===p.id))return []
  const topic=(id:string,z:string,e:string,zr:string,er:string)=>({id,text:zh?z:e,reply:zh?zr:er})
  const route=entity==='watchmaker'
-  ?topic('letter','信在哪里？','Where is the letter?',f['letter-taken']?'信已经在你手里了。你可以沿街口回家，也可以再逛逛。':f['key-borrowed']?'拿着钥匙回修表铺，打开那个小格就能找到信。':'信放在修表铺的小格里。钥匙可以借给你。',f['letter-taken']?'You have the letter. You can head home or keep exploring.':f['key-borrowed']?'Take the key to the watch shop and open the compartment.':'The letter is in the shop compartment. You may borrow the key.')
+  ?{id:'letter',text:zh?'信在哪里？':'Where is the letter?',reply:oldStreetLetterGuidance(save)}
   :entity==='laundry-owner'
   ?topic('steps','院里的台阶怎么过去？','How do I reach the courtyard steps?',f['crates-cleared']?'旧箱已经移到墙边，台阶可以走了。':f['trolley-borrowed']?'你已经借了推车，把台阶前的旧箱搬开就行。':'旁边有推车可以借，把挡路的旧箱搬到墙边就能过去。',f['crates-cleared']?'The crates are by the wall now; the steps are clear.':f['trolley-borrowed']?'Use the trolley you borrowed to move the crates.':'Borrow the trolley beside me and move the crates to the wall.')
   :topic('roof','这座楼梯通到哪里？','Where do these stairs lead?','楼梯通向屋顶。穿过屋顶，从另一头下去就是河边工作棚。','Up to the roof. Cross it and take the far stairs down to the riverside workshop.')
@@ -25,7 +26,16 @@ export function oldStreetTalkTopics(save:StorySave,entity:string){
   :entity==='laundry-owner'
   ?topic('clock','能说说那口旧钟吗？','Could you tell me about the old clock?',f['clock-returned']?'那是母亲留下的钟。谢谢你送回来。要记录它的来历，可以先问我。':'那口钟送去修了，我还在等它回来。',f['clock-returned']?'It was my mother’s clock. Thank you for returning it. Ask me before recording its history.':'It is away for repairs. I am waiting for it to come back.')
   :topic('photos','你在找什么照片？','Which photographs are you looking for?',f['photos-returned']?'你送回来的照片已经收好了。要留下其中一张，可以让我来选。':'我在找一份旧照片夹。上面有照相馆的标记，找到后可以拿到放大台上比对。',f['photos-returned']?'Your returned photographs are safely stored. Let me choose one if you want to share it.':'An old folder marked with this studio’s stamp. Bring it to the viewing table to compare the photographs.')
- return [route,personal]
+ const helped=(axis:string)=>save.relationships.some(r=>r.characterId===p.id&&r.axis===axis&&r.delta>0)
+ const carrying=(id:string)=>save.inventory.some(i=>i.id===id&&i.count>0)
+ const afterHelp=entity==='watchmaker'&&helped('kept-promise')&&!carrying('letter-key')&&!f['key-borrowed']
+  ?topic('kept-promise','下次还能来找你吗？','May I come by again?','钥匙说还就还，这点让我放心。下次有东西要修，来叫我就好。','You brought the key back as promised. I appreciate that. If you need something repaired, come and find me.')
+  :entity==='laundry-owner'&&helped('returned-family-clock')&&f['clock-returned']
+  ?topic('returned-clock','钟摆回来以后呢？','How is it having the clock back?','听见它走，我总算不用老回头看那块空地方了。谢谢你特意跑这一趟。','Hearing it tick, I can stop looking back at that empty spot. Thank you for making the trip.')
+  :entity==='photographer'&&helped('returned-photographs')&&f['photos-returned']
+  ?topic('returned-photos','照片都收好了吗？','Are the photographs safe now?','都收好了。你肯一张张比对，再把它们送回来，我很感激。','They are safely put away. I appreciate you taking the time to match them and bring them back.')
+  :null
+ return [route,personal,...(afterHelp?[afterHelp]:[])]
 }
 const memory=/(?:记得|回忆|我刚才说)|\b(?:remember|recall)\b/i
 export function oldStreetAuthoredTalkReply(save:StorySave,entity:string,input:string):string|null{

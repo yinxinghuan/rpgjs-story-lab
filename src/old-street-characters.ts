@@ -1,3 +1,4 @@
+import {oldStreetLetterGuidance} from './old-street-letter-guidance'
 import type {CharacterDefinition,Locale,StorySave,StoryBlock} from './vendor/original-train/types'
 const cast = [
  {id:'zhou-watchmaker',entity:'watchmaker',room:'shed',name:['老周','Zhou'],role:['修表师','Watchmaker'],intro:['灰发老人抬起头：“叫我老周就好，我在这儿修表。你是来取信的吧？”','The gray-haired man looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”']},
@@ -14,7 +15,7 @@ export function recordOldStreetInteraction(save:StorySave,entity:string,action:s
  const p=oldStreetPerson(entity),blocks:StoryBlock[]=[]
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en
  if(action==='oldstreet:greet-laundry')text=(save.facts['trolley-borrowed']?t('推车用完放回来就行。','Return the trolley when you finish.'):t('推车就在旁边，需要可以借。','The trolley is beside you; you may borrow it.'))+' '+(save.facts['crates-cleared']?t('院里的台阶已经通了，谢谢你。','The courtyard steps are clear now. Thank you.'):t('院里的旧箱挡着台阶。','Crates block the courtyard steps.'))
- if(action==='oldstreet:greet-watchmaker')text=save.facts['letter-taken']?(save.facts['yard-unlatched']?t('信收好了吧？沿院门回街口就能回家。','Got the letter safely? The courtyard gate leads back toward home.'):t('信收好了吧？把这边的插销抬起来，就能走院门近路。','Got the letter safely? Lift the bolt on this side to open the courtyard shortcut.')):save.facts['key-borrowed']?t('钥匙已经给你了，信在铺里的小格。','You have the key. The letter is in the shop compartment.'):text
+ if(action==='oldstreet:greet-watchmaker')text=oldStreetLetterGuidance(save)+(save.facts['yard-unlatched']?'':t(' 院门的插销能从这边打开。',' The courtyard gate can be unbolted from this side.'))
  if(action==='oldstreet:greet-photographer'&&save.facts['photos-returned'])text=t('你找回的照片已经收好了，谢谢。楼梯仍然通向屋顶。','The photographs you found are safely put away. Thank you. The stairs still lead to the roof.')
  if(p&&!save.characters.some(c=>c.id===p.id)){
   const definition=oldStreetCharacterDefinitions(save.locale).find(c=>c.id===p.id)!

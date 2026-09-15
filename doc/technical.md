@@ -1685,3 +1685,9 @@ oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹�
 修表铺像素候选的墙面由 `old-street-shop-environment-layout.ts` 从实际北门坐标计算两侧显示矩形；`old-street-shop-environment.tsx` 仅采样平台墙面图的两个无品红区域。背景位于 floor 之外，不新增碰撞或剧情实体。测试检查真实源像素及门口空隙；这是环境候选，细节见 `doc/oldstreet-pixel-study/workshop-wall/review.md`。
 
 `spatial-art-texture.ts` 在旧街图片预加载阶段显式配置 Pixi TextureSource 的采样方式；`?shop_art=pixel` 使用 nearest，原版 linear，避免更改全局 TextureStyle 影响其他页面。后续生成素材接入时需将其显示采样与实际美术类型一起配置；PNG 分辨率、Canvas antialias 与源纹理 sampler 是不同层。`render-diagnostics.ts` 的调试树仅输出白名单采样枚举，可用于确认引擎实际切帧继承了所选 source。
+
+### 已完成帮助的后续对白（2026-09-15）
+
+`old-street-conversation.ts` 复用已有的角色关系事件，在人物已介绍且当前事实/借物状态吻合时追加一个短话题。没有新增关系存储或奖励；既有 authored dialogue 提交和 `oldStreetDialogueContext` 共用这些话题。`old-street-letter-guidance.ts` 统一取信指路，优先检查已取信、已开锁、持有钥匙，避免玩家开锁后先还钥匙时被要求再借一次。
+
+70 项探索回归、TypeScript 与 cloud 构建通过。新增检查覆盖中英文真实 Authority 动作、幂等重放、数据库实例重建后恢复、对话提交、模型知识投射及重新借钥匙后的话题撤下。5456 独立本地旅程实际经修表铺→合住院→河边工作棚，归还钥匙后第三话题出现，点击后显示玩家与老周两张短对白卡；测试没有改动 5455 用户旅程。当前窄屏对话区内部仍需滚动，这次不代表 UI 最终验收，也未调用真实模型或发布线上版本。
