@@ -6,6 +6,7 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
   const f = save.facts
   switch (id) {
     case 'trolley': return f['trolley-borrowed'] === true ? ['推车停放处 · 空', 'Trolley bay · empty'] : ['推车', 'Trolley']
+    case 'viewing-table': return f['photos-returned'] === true ? ['放大台 · 已归还的照片夹', 'Viewing table · returned photo folder'] : ['放大台', 'Viewing table']
     case 'photo-folder': return f['photos-taken'] === true ? ['空搁架', 'Empty shelf'] : ['照片夹', 'Photo folder']
     case 'drawer': return f['lens-taken'] === true ? ['抽屉 · 收据', 'Drawer · receipt'] : f['drawer-open'] === true ? ['抽屉 · 放大镜', 'Drawer · lens'] : ['被空盒挡住的抽屉', 'Drawer behind box']
     case 'letter-compartment': return f['letter-taken'] === true ? ['小格 · 空', 'Compartment · empty'] : f['letter-unlocked'] === true ? ['小格 · 密封信', 'Compartment · letter'] : ['锁着的小格', 'Locked compartment']
