@@ -21,7 +21,7 @@ import {oldStreetActionNames as actionNames,resolveOldStreetInput} from './old-s
 import {oldStreetPerson} from './old-street-characters'
 import {oldStreetSession,oldStreetSessionHttp} from './old-street-session'
 import type {OldStreetHead} from './old-street-head'
-import {Assets} from 'pixi.js'
+import {loadSpatialArtTexture} from './spatial-art-texture'
 import React, {useEffect, useRef, useState} from 'react'
 import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
 import {actorSheet,standingActorSheet} from './actor-sheet'
@@ -111,19 +111,19 @@ export default function OldStreetDev() {
       heroBlob = URL.createObjectURL(await response.blob())
       preview.src = heroBlob
       await preview.decode()
-      await Assets.load({src: heroBlob, parser: 'loadTextures'})
+      await loadSpatialArtTexture(heroBlob,pixelShop?'nearest':'linear')
       const npcArt=actorArt.balanced.mechanic
       const npcResponse=await fetch(new URL(npcArt.path,document.baseURI));if(!npcResponse.ok)throw Error('WATCHMAKER_LOAD_FAILED')
-      watchmakerBlob=URL.createObjectURL(await npcResponse.blob());await Assets.load({src:watchmakerBlob,parser:'loadTextures'})
+      watchmakerBlob=URL.createObjectURL(await npcResponse.blob());await loadSpatialArtTexture(watchmakerBlob,pixelShop?'nearest':'linear')
       const lanResponse=await fetch(lanStandingUrl);if(!lanResponse.ok)throw Error('LAN_LOAD_FAILED')
-      lanBlob=URL.createObjectURL(await lanResponse.blob());await Assets.load({src:lanBlob,parser:'loadTextures'})
+      lanBlob=URL.createObjectURL(await lanResponse.blob());await loadSpatialArtTexture(lanBlob,pixelShop?'nearest':'linear')
       const xuResponse=await fetch(xuStandingUrl);if(!xuResponse.ok)throw Error('XU_LOAD_FAILED')
-      xuBlob=URL.createObjectURL(await xuResponse.blob());await Assets.load({src:xuBlob,parser:'loadTextures'})
+      xuBlob=URL.createObjectURL(await xuResponse.blob());await loadSpatialArtTexture(xuBlob,pixelShop?'nearest':'linear')
       const drawerResponse=await fetch(pixelShop?pixelDrawerUrl:drawerStatesUrl);if(!drawerResponse.ok)throw Error('DRAWER_LOAD_FAILED')
-      drawerBlob=URL.createObjectURL(await drawerResponse.blob());await Assets.load({src:drawerBlob,parser:'loadTextures'})
-      if(pixelShop){const response=await fetch(pixelPropsUrl);if(!response.ok)throw Error('PIXEL_PROPS_LOAD_FAILED');pixelPropsBlob=URL.createObjectURL(await response.blob());await Assets.load({src:pixelPropsBlob,parser:'loadTextures'})}
+      drawerBlob=URL.createObjectURL(await drawerResponse.blob());await loadSpatialArtTexture(drawerBlob,pixelShop?'nearest':'linear')
+      if(pixelShop){const response=await fetch(pixelPropsUrl);if(!response.ok)throw Error('PIXEL_PROPS_LOAD_FAILED');pixelPropsBlob=URL.createObjectURL(await response.blob());await loadSpatialArtTexture(pixelPropsBlob,pixelShop?'nearest':'linear')}
       const trolleyResponse=await fetch(trolleyUrl);if(!trolleyResponse.ok)throw Error('TROLLEY_LOAD_FAILED')
-      trolleyBlob=URL.createObjectURL(await trolleyResponse.blob());await Assets.load({src:trolleyBlob,parser:'loadTextures'})
+      trolleyBlob=URL.createObjectURL(await trolleyResponse.blob());await loadSpatialArtTexture(trolleyBlob,pixelShop?'nearest':'linear')
       if (!mounted) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),

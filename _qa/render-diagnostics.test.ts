@@ -14,3 +14,12 @@ test('display diagnostics bound a large scene without modifying it',()=>{
  assert.equal(result.nodes,2048);assert.equal(result.truncated,true)
  assert.equal(result.rows.length,32);assert.equal(children.length,3000)
 })
+test('sampling diagnostics admit only known modes and never texture resources',()=>{
+ const text=JSON.stringify(inspectDisplayTree({children:[
+  {texture:{source:{scaleMode:'nearest',resource:'private-resource'}}},
+  {texture:{source:{scaleMode:'linear'}}},
+  {texture:{source:{scaleMode:'private-mode'}}},
+ ]}))
+ assert.match(text,/"sampling":"nearest"/);assert.match(text,/"sampling":"linear"/)
+ assert.match(text,/"sampling":null/);assert.doesNotMatch(text,/private|resource/)
+})

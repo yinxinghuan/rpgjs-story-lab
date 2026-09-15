@@ -1683,3 +1683,5 @@ oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹�
 像素候选现通过 `layered-state-sheet.ts` 和 RPG-JS 同事件多 graphic 复用固定桌面/柜顶，前部区域才随同一权威 animationName 变化。所有取图通过源 PNG 的纹理区域完成；原版仍使用整帧图集。分层原点、接缝和裁剪范围在 `_qa/old-street-layered-props.test.ts` 验证，避免把固定家具烘焙回背景或脱离脚点深度排序。
 
 修表铺像素候选的墙面由 `old-street-shop-environment-layout.ts` 从实际北门坐标计算两侧显示矩形；`old-street-shop-environment.tsx` 仅采样平台墙面图的两个无品红区域。背景位于 floor 之外，不新增碰撞或剧情实体。测试检查真实源像素及门口空隙；这是环境候选，细节见 `doc/oldstreet-pixel-study/workshop-wall/review.md`。
+
+`spatial-art-texture.ts` 在旧街图片预加载阶段显式配置 Pixi TextureSource 的采样方式；`?shop_art=pixel` 使用 nearest，原版 linear，避免更改全局 TextureStyle 影响其他页面。后续生成素材接入时需将其显示采样与实际美术类型一起配置；PNG 分辨率、Canvas antialias 与源纹理 sampler 是不同层。`render-diagnostics.ts` 的调试树仅输出白名单采样枚举，可用于确认引擎实际切帧继承了所选 source。
