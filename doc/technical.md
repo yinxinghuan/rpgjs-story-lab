@@ -1809,3 +1809,5 @@ old-street-environment-art.ts统一列出地面、北墙和杂物候选，按像
 shop_environment=whole显式开启修表铺整图分区候选，并启用pixel互动家具；缺省仍保留原入口。old-street-floor.tsx从同一生成图片裁取完整地面与北墙两段，后门留空依旧来自oldStreetShopWallRegions。只整图候选下载shopComposite；所有物品、动作、寻路、碰撞、存档语义保持原合同。原图没有精确遵守布局，不能直接用其门位或墙边作为引擎边界。后续若统一家具光照应在同一游戏镜头复验，不把背景烘焙光误认作完整动态光照。
 
 整图候选北墙追加比例修正：源裁切高度=源宽×目标墙高/目标墙宽，使viewBox与渲染矩形等比，避免壁钟变椭圆。365×677北门同状态截图复验圆形与通行开口；没有改地面裁切或存档。
+
+照相馆SVG墙饰使用meet时，overflow:hidden仅裁视口，不能阻止viewBox外原图进入等比留白。现对image再加源坐标crop clipPath；365×677真实楼梯落点修复前后截图确认洋红漏底消除。
