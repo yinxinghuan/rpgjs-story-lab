@@ -1,0 +1,10 @@
+{
+  "requestId": "0eaccbe0-5503-49cf-aaba-e62f3ee1fe8f",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 640,
+    "height": 1024
+  },
+  "prompt": "A single continuous FLOOR-ONLY background for a steep overhead orthographic pixel-painted 2D adventure game, old photographic studio in a partly abandoned neighborhood. Exact 640x1024 canvas, every pixel is the same horizontal floor plane viewed directly from above, no walls, no perspective, no horizon. Worn muted olive-gray linoleum with small subtle cream and dark flecks, restrained granular pixel-art detail with deliberate crisp 2-3px clusters. NOT photographic noise, NOT watercolor, NOT glossy, NOT coarse chunky pixels. No large tiles, no floorboards, no grid, no giant seams. Surface was once swept often but now aging: subtle scuffed walk route in the central third, faint worn chair marks only at upper-left edge, small matte patches and softened scratches. Low contrast dust collects along extreme edges, a few tiny plaster flakes in two corners, leave main floor clear. Soft broad warm afternoon light patch enters from upper-left, cool desaturated ambient shade along right edge; no drawn windows or architecture, no hard window-frame shadows. Floor remains clearly readable throughout, no black voids. No people, furniture, rugs, tables, chairs, boxes, cameras, photographs, clocks, tools, books, letters, text, symbols, arrows, UI or border. Cohesive quiet lived-in atmosphere, detailed but subordinate to dark-outlined character and wooden furniture sprites placed later. This is one full-room environmental floor, not a seamless tile."
+}
