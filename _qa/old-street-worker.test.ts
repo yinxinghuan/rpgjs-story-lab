@@ -146,12 +146,12 @@ test('Worker expansion routes share the journey capability and retain generated 
 })
 
 
-test('Worker without expansion providers reports capability unavailable without blocking the journey',async()=>{
+test('Worker preview advertises released expansion providers without making a generation request',async()=>{
  const h=harness(),token=randomBytes(32).toString('base64url')
  try{
   const head=await (await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'zh'}),h.env)).json() as OldStreetHead
   const r=await handler(request('/sessions/'+head.id+'/expansion-capabilities',token),h.env)
-  assert.equal(r.status,200);assert.deepEqual(await r.json(),{planning:false,media:false})
+  assert.equal(r.status,200);assert.deepEqual(await r.json(),{planning:true,media:true})
   assert.equal((await handler(request('/sessions/'+head.id,token),h.env)).status,200)
  }finally{h.close()}
 })

@@ -6,7 +6,8 @@ export const OLD_STREET_RELEASED = false
 
 // Public playable preview is distinct from final art/content admission.
 export const OLD_STREET_PREVIEW_RELEASED = true
-export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-preview-20260915'
+export const OLD_STREET_EXPANSION_RELEASED = true
+export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-preview-audio-expansion-20260916'
 export function oldStreetEntry(mode:string,hostname:string,search:string){
  const q=new URLSearchParams(search)
  if(hostname.endsWith('.github.io')||mode==='pages'||q.has('create_art')||q.has('scene_preview')||q.get('story_runtime')==='legacy')return false

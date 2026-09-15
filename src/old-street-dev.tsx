@@ -1,3 +1,4 @@
+import {OldStreetAudio,StreetFootsteps} from './old-street-audio'
 import {OldStreetExpansionView} from './old-street-expansion-view'
 import {OldStreetExpansionPhotoView} from './old-street-expansion-photo-view'
 import {OldStreetBuildingEdges} from './old-street-boundaries'
@@ -72,6 +73,16 @@ const propNames: Record<string, [string, string]> = {
 export default function OldStreetDev() {
   const locale = navigator.language.startsWith('zh') ? 'zh' : 'en'
   const text = (pair: readonly [string, string]) => pair[locale === 'zh' ? 0 : 1]
+  const audio=useRef<OldStreetAudio>(),footsteps=useRef(new StreetFootsteps())
+  const [soundEnabled,setSoundEnabled]=useState(()=>{try{return window.alteruLocalStorage.getItem('oldstreet-sound')!=='off'}catch{return true}})
+  const soundPreference=useRef(soundEnabled);soundPreference.current=soundEnabled
+  useEffect(()=>{
+    const sound=new OldStreetAudio();sound.setEnabled(soundEnabled);audio.current=sound
+    const unlock=()=>sound.unlock(),quiet=()=>{if(document.hidden)sound.setEnabled(false);else sound.setEnabled(soundPreference.current)}
+    window.addEventListener('pointerdown',unlock);window.addEventListener('keydown',unlock);document.addEventListener('visibilitychange',quiet)
+    return()=>{window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);document.removeEventListener('visibilitychange',quiet);sound.dispose()}
+  },[])
+  const toggleSound=()=>setSoundEnabled(value=>{audio.current?.setEnabled(!value);if(!value)audio.current?.unlock();try{window.alteruLocalStorage.setItem('oldstreet-sound',value?'off':'on')}catch{};return !value})
   const [cartridge] = useState(() => oldStreetCartridge(locale))
   const [head, setHead] = useState(() => ({save: createInitialSave(cartridge), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}))
   const debug = new URLSearchParams(location.search).get('debug') === '1'
@@ -179,6 +190,7 @@ export default function OldStreetDev() {
         findPath: (a, b, room) => findGridPath(a,b,p=>localWalkable(p,room)),
         onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current)setSelected(null);if(moved&&!busyRef.current&&visibleTurn.current.length){visibleTurn.current=[];setNotice('');setSelected(null)}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
         onFrame:(dt,hero,room,paused)=>{
+          const step=footsteps.current.update(dt,hero,room,paused);if(step)audio.current?.play(step)
           for(const [id,event] of Object.entries(npcEvents.current)){
             const prop=oldStreetProjectedProps(current.current.save,residentPositions()).find(p=>p.id===id&&p.room===room);if(!prop)continue
             if(id==='watchmaker'){
@@ -276,6 +288,11 @@ export default function OldStreetDev() {
       // never overwrite a newer scene with this tab's arrival position.
       const result = await connection.client.send(h,{...(input===undefined?{type:'action',action:id}:{type:dialogue?'dialogue':'free-input',text:input,mode:new URLSearchParams(location.search).get('interpret')==='live'?'live':'local'}),target,position:arrivedPosition,...(photoMatch?{photoMatch}:{}),...(clockInspection?{clockInspection}:{})})
       const nextHead = result.head as OldStreetHead
+      if(result.accepted&&nextHead.version>h.version&&!dialogue){
+        const gained=nextHead.save.inventory.some(item=>item.count>(h.save.inventory.find(old=>old.id===item.id)?.count??0))
+        if(gained)audio.current?.play('pickup')
+        else if(target!=='watchmaker'&&target!=='laundry-owner'&&target!=='photographer'&&nextHead.sceneId===h.sceneId&&JSON.stringify(h.save.facts)!==JSON.stringify(nextHead.save.facts))audio.current?.play('handle')
+      }
       serverHead.current = nextHead
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current = next
@@ -376,7 +393,7 @@ export default function OldStreetDev() {
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} onRetry={()=>location.reload()}/>}
     {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{error?JSON.stringify({error,renderer:diagnostic}):diagnostic}</pre></details>}
-    {journeysOpen&&<OldStreetJourneysView locale={locale} current={serverHead.current?.id??''} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
+    {journeysOpen&&<OldStreetJourneysView soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {journalOpen&&<OldStreetJournalView save={head.save} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}

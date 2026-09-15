@@ -4,7 +4,7 @@ import {createOldStreetExpansionPlanner} from '../server/old-street-expansion-pl
 import {createOldStreetDialogueGenerator,type OldStreetDialogueGenerator} from '../server/old-street-dialogue'
 import {OldStreetAuthority,type OldStreetGate} from '../server/old-street-runtime'
 import {handleOldStreetSession,oldStreetJson} from '../server/old-street-http'
-import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED,OLD_STREET_PREVIEW_RELEASED,OLD_STREET_PREVIEW_VERSION} from '../src/old-street-runtime-contract'
+import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED,OLD_STREET_EXPANSION_RELEASED,OLD_STREET_PREVIEW_RELEASED,OLD_STREET_PREVIEW_VERSION} from '../src/old-street-runtime-contract'
 import {ORIGINAL_STORY_RELEASED} from '../src/original-release'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import {createOriginalActionInterpreter} from '../server/original-action-interpreter'
@@ -225,7 +225,7 @@ export class CarriageJourneyAuthority{
   }
   if(url.pathname.startsWith(OLD_STREET_API_PATH+'/')){
    this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate,this.oldStreetInterpreter??(OLD_STREET_RELEASED?createOriginalActionInterpreter(chatModel):undefined),this.oldStreetDialogue??(OLD_STREET_RELEASED?createOldStreetDialogueGenerator(chatModel):undefined),h=>this.expansions?.candidateFor(h),h=>this.expansionMedia?.candidateFor(h))
-   if(OLD_STREET_RELEASED)this.expansionProviders??={model:chatModel,photo:expansionPhotoProducer()}
+   if(OLD_STREET_EXPANSION_RELEASED)this.expansionProviders??={model:chatModel,photo:expansionPhotoProducer()}
    if(this.expansionProviders){
     this.expansions??=new OldStreetExpansionJobs(this.db,(o,id)=>this.oldstreet!.get(o,id),createOldStreetExpansionPlanner(this.expansionProviders.model))
     this.expansionMedia??=new OldStreetExpansionMedia(this.db,(o,id)=>this.oldstreet!.get(o,id),h=>this.expansions?.candidateFor(h))

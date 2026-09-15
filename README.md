@@ -1,10 +1,12 @@
-# 留一盏灯 · Carriage 07
+# 旧街最后一封信 · 试玩
 
 基于 [RPG-JS](https://github.com/RSamaium/RPG-JS)，作者 Samuel Ronce，MIT 许可证；保留的依赖许可证见 `public/THIRD_PARTY_NOTICES.txt`。内部叙事核心来自 AlterU stateful-story-template，固定版本见 `src/vendor/story/ENGINE_SOURCE.json`。场景和角色素材为本实验制作，未采用 starter 游戏美术。
 
 **[云端试运行入口](https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/)** · [前端镜像与旧手机存档](https://yinxinghuan.github.io/rpgjs-story-lab/)
 
-在 Safari 中打开，竖屏游玩。点过道行走或拖动左下摇杆，走近物件后点右下行动按钮；也可直接点物件自动走近。右上角查看物品、旅程记录和设置。四处场景：客厢、行李检修车、驾驶室、轨旁接应步道；两种供电选择对应不同接应方式。
+在旧街寻找修表师，借钥匙取回家人的信，也可以帮助居民归还旧物。点地面行走或拖动左下摇杆，走近物件后点右下行动按钮；人物有预设话题，也可输入自己的行动。照相馆可以探查暗房，生成并拼合旧街照片。声音开关位于“旅程”面板。旧列车保留在旅程面板的旧版参考入口，原存档不混用。
+
+主站提供权威旅程与动态内容；GitHub Pages 仅作静态前端/源码镜像，不提供同 Worker 后台。当前仍为试玩，平台账号跨设备恢复与完整体验验收尚未完成。
 
 ## 背景制作与候选检查
 
