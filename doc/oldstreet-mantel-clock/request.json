@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "0217267b-e263-4d85-b2c2-e1a15eaff6f3",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789451817908142.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Create ONE small old wooden mantel clock sprite, matching the reference wooden furniture pixel art treatment, outline weight, warm muted honey oak palette and raised orthographic overhead RPG angle. 512x512 canvas, isolated whole object centered with large margins, clock silhouette fits x130..382 y120..420. Rectangular wooden base and a modest arched upper housing. A round cream clock face with two dark hands and simple tick marks, no numerals or text. Clearly visible top surface, horizontal base left to right, parallel vertical edges, no isometric diagonals. This is an old family clock to sit on a small shop counter, not a tall grandfather clock or alarm clock. Warm aged oak, delicate sparse wood detail, crisp pixel clusters, thin dark contour, no glossy plastic. Underside has a brass maker plate with two swallows but it is HIDDEN from this upright angle: do NOT put birds on the visible clock. Exact flat #FF00FF background, no checkerboard, shadow, floor, table, people or additional objects. Entire clock inside canvas, crisp sprite edges."
+}

@@ -60,6 +60,7 @@ export const oldStreetProps = [
   prop('drawer', 'shop', .28, .32, ['move-box', 'take-lens', 'inspect-clock']),
   prop('letter-compartment', 'shop', .7, .32, ['unlock-letter', 'take-letter']),
   prop('record-book', 'shop', .3, .65, ['record-clock', 'record-photo', 'withdraw-clock', 'withdraw-photo']),
+  prop('clock-display', 'laundry', .65, .13, []),
   prop('trolley', 'laundry', .3, .3, ['borrow-trolley', 'return-trolley']),
   prop('laundry-owner', 'laundry', .66, .65, ['greet-laundry', 'return-clock', 'consent-clock']),
   prop('crates', 'yard', .3, .13, ['clear-crates']),

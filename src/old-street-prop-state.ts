@@ -5,6 +5,7 @@ import type {StorySave} from './vendor/original-train/types'
 export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): readonly [string, string] | undefined {
   const f = save.facts
   switch (id) {
+    case 'clock-display': return f['clock-returned'] === true ? ['柜台 · 已归还的旧钟', 'Counter · returned clock'] : ['柜台', 'Counter']
     case 'trolley': return f['trolley-borrowed'] === true ? ['推车停放处 · 空', 'Trolley bay · empty'] : ['推车', 'Trolley']
     case 'viewing-table': return f['photos-returned'] === true ? ['放大台 · 已归还的照片夹', 'Viewing table · returned photo folder'] : ['放大台', 'Viewing table']
     case 'photo-folder': return f['photos-taken'] === true ? ['空搁架', 'Empty shelf'] : ['照片夹', 'Photo folder']
