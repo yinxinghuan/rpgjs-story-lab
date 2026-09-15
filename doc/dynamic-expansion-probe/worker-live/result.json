@@ -1,0 +1,20 @@
+{
+  "mode": "real-model-and-media/local-worker-handler",
+  "modelCalls": 1,
+  "photoCalls": 1,
+  "plan": {
+    "title": "暗房里的旧街影像",
+    "discovery": "这张旧照片展现了这条安静街道的昔日风貌，石板路与木窗框透露出岁月的痕迹，仿佛时光凝固在那一刻。",
+    "photograph": "A monochrome pixel art image of an old street featuring a cobblestone road flanked by aged buildings with wooden window frames and shuttered doors. The street is empty and quiet, with slight shadows cast by tall, narrow structures. The architecture is simple and traditional, with visible roof tiles and small chimneys. No people or text are present, emphasizing the stillness and solitude of the scene.",
+    "arrival": "小灯照着旧工作台，门仍通向照相馆。",
+    "observation": "工作台上的照片还看不清，可以先在房间里看看。"
+  },
+  "asset": {
+    "sha256": "66beb11f08c8368368889e4bf6aa875e0004bb1d91a4d964dc8fa984e7547f34",
+    "bytes": 521102,
+    "width": 768,
+    "height": 576
+  },
+  "choice": "leave",
+  "restored": true
+}
