@@ -4,7 +4,7 @@ import {createOldStreetExpansionPlanner} from '../server/old-street-expansion-pl
 import {createOldStreetDialogueGenerator,type OldStreetDialogueGenerator} from '../server/old-street-dialogue'
 import {OldStreetAuthority,type OldStreetGate} from '../server/old-street-runtime'
 import {handleOldStreetSession,oldStreetJson} from '../server/old-street-http'
-import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED,OLD_STREET_EXPANSION_RELEASED,OLD_STREET_PREVIEW_RELEASED,OLD_STREET_PREVIEW_VERSION} from '../src/old-street-runtime-contract'
+import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED,OLD_STREET_NARRATION_PREVIEW,OLD_STREET_EXPANSION_RELEASED,OLD_STREET_PREVIEW_RELEASED,OLD_STREET_PREVIEW_VERSION} from '../src/old-street-runtime-contract'
 import {ORIGINAL_STORY_RELEASED} from '../src/original-release'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import {createOriginalActionInterpreter} from '../server/original-action-interpreter'
@@ -45,6 +45,7 @@ async function body(request:Request,limit=6000){
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
+const oldStreetPreviewPresentation:OldStreetGate=()=>true
 export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false,originalProduction=false,illustrationsAvailable=ORIGINAL_ILLUSTRATION_RELEASED,oldStreetEnabled=OLD_STREET_RELEASED||OLD_STREET_PREVIEW_RELEASED){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
  const creator=path===CREATOR_API_PATH||path.startsWith(CREATOR_API_PATH+'/')
@@ -97,7 +98,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate:OldStreetGate|undefined=OLD_STREET_PREVIEW_RELEASED?()=>true:undefined,private oldStreetInterpreter?:OriginalActionInterpreter,private oldStreetDialogue?:OldStreetDialogueGenerator,private expansionProviders?:{model:ModelRequest;photo:ExpansionPhotoProducer}){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate:OldStreetGate|undefined=OLD_STREET_PREVIEW_RELEASED?oldStreetPreviewPresentation:undefined,private oldStreetInterpreter?:OriginalActionInterpreter,private oldStreetDialogue?:OldStreetDialogueGenerator,private expansionProviders?:{model:ModelRequest;photo:ExpansionPhotoProducer}){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
@@ -107,6 +108,10 @@ export class CarriageJourneyAuthority{
   if(originalGate===originalReleasedPresentation){
    this.originalInterpreter??=createOriginalActionInterpreter(modelRequest??chatModel)
    this.originalDialogue??=createOriginalDialogueGenerator(modelRequest??chatModel)
+  }
+  if(oldStreetGate===oldStreetPreviewPresentation&&OLD_STREET_NARRATION_PREVIEW){
+   this.oldStreetInterpreter??=createOriginalActionInterpreter(modelRequest??chatModel)
+   this.oldStreetDialogue??=createOldStreetDialogueGenerator(modelRequest??chatModel)
   }
   this.authority=new ProductionAuthority(db,(input,save,target,live)=>propose(input,save,target,live&&ONLINE_NARRATION_AVAILABLE,modelRequest))
  }
@@ -224,7 +229,7 @@ export class CarriageJourneyAuthority{
    }catch(e){return respond({error:e instanceof LabError?e.code:'ART_SOURCE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
   }
   if(url.pathname.startsWith(OLD_STREET_API_PATH+'/')){
-   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate,this.oldStreetInterpreter??(OLD_STREET_RELEASED?createOriginalActionInterpreter(chatModel):undefined),this.oldStreetDialogue??(OLD_STREET_RELEASED?createOldStreetDialogueGenerator(chatModel):undefined),h=>this.expansions?.candidateFor(h),h=>this.expansionMedia?.candidateFor(h))
+   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate,this.oldStreetInterpreter,this.oldStreetDialogue,h=>this.expansions?.candidateFor(h),h=>this.expansionMedia?.candidateFor(h))
    if(OLD_STREET_EXPANSION_RELEASED)this.expansionProviders??={model:chatModel,photo:expansionPhotoProducer()}
    if(this.expansionProviders){
     this.expansions??=new OldStreetExpansionJobs(this.db,(o,id)=>this.oldstreet!.get(o,id),createOldStreetExpansionPlanner(this.expansionProviders.model))

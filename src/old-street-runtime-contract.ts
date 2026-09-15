@@ -7,6 +7,8 @@ export const OLD_STREET_RELEASED = false
 // Public playable preview is distinct from final art/content admission.
 export const OLD_STREET_PREVIEW_RELEASED = true
 export const OLD_STREET_EXPANSION_RELEASED = true
+// Preview capability, not complete-game or verified-account admission.
+export const OLD_STREET_NARRATION_PREVIEW = true
 export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-preview-art-gait-20260916'
 export function oldStreetEntry(mode:string,hostname:string,search:string){
  const q=new URLSearchParams(search)
