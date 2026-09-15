@@ -3,5 +3,5 @@ export const oldStreetWoodSource={width:832,height:1536,observedColumns:16} as c
 export const oldStreetWoodTile={
  width:112,
  height:112*oldStreetWoodSource.height/oldStreetWoodSource.width,
- opacity:.28,
+ opacity:.72,
 } as const
