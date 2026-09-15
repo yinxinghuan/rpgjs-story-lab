@@ -1847,3 +1847,7 @@ OldStreetHead新增可选expansions，旧存档无需填充。首个模板photo-
 server/old-street-expansion-jobs.ts使用现有AuthorityStorage保存每旅程/请求的queued、planning、candidate或failed记录。生成器注入，22秒信号预算；完成后保存计划候选，读取或重复run不重复生成。中断超时保留失败，需要显式retry，最多2次；不会激活地图或推进StorySave。当前尚未接HTTP/调度/游戏UI。
 
 针对新增核心机制的一项SQLite测试通过：入队→生成→重建任务服务→取回同一候选，模型调用计数保持1，原旅程不变。首次测试发现旅程读取的内部事务与任务事务嵌套，已将授权读取和事务内行读取分开；同项复验通过。该测试重建服务对象，未模拟进程重启或真实网络任务，不能扩大证据范围。类型检查通过。
+
+扩展任务新增GET/POST sessions/:id/expansion处理，POST先入队并交给background执行，GET只读状态。old-street-dev-plugin在已有显式模型预算配置存在时装配计划生成器，共用模型预算；未配置时明确返回EXPANSION_PLANNER_NOT_READY，不伪造模型结果。公共HTTP处理器支持注入同一任务服务，但Worker尚未装配，生产不启用。玩家UI与新房间仍待接入。
+
+新增一项核心测试（调用HTTP操作处理函数，非真实网络）：延迟模型Promise保持未完成，POST已返回queued、GET为planning，旧地图实际Session转场可提交；释放模型后candidate保存，玩家仍在新位置。类型检查通过。未进行新模型调用或旧路线全链回归。

@@ -2,10 +2,22 @@ import {LabError} from '../src/journey-runtime'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
 import type {OldStreetAuthority} from './old-street-runtime'
+import type {OldStreetExpansionJobs} from './old-street-expansion-jobs'
+
+export function oldStreetExpansionOperation(method:string,owner:string,id:string,jobs:OldStreetExpansionJobs|undefined,body:unknown,background:(p:Promise<unknown>)=>void){
+ if(!jobs)throw new LabError('EXPANSION_PLANNER_NOT_READY',503)
+ if(method==='GET')return {job:jobs.get(owner,id)}
+ if(method!=='POST')throw new LabError('METHOD_NOT_ALLOWED',405)
+ const b=body as {retry?:unknown}
+ if(!b||typeof b!=='object'||Array.isArray(b)||Object.keys(b).some(k=>k!=='retry')||b.retry!==undefined&&typeof b.retry!=='boolean')throw new LabError('INVALID_EXPANSION_REQUEST')
+ const job=jobs.enqueue(owner,id,b.retry===true)
+ if(job.state==='queued')background(jobs.run(owner,id))
+ return {job}
+}
 
 export const oldStreetJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
 /** Owner is supplied exclusively by the Worker's capability boundary. */
-export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>){
+export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;background:(p:Promise<unknown>)=>void}){
  try{
   if(request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(OLD_STREET_API_PATH.length)
@@ -18,8 +30,9 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
+  if(m[2]==='expansion')return oldStreetJson(oldStreetExpansionOperation(request.method,owner,m[1],expansion?.jobs,request.method==='POST'?await readBody(request):undefined,expansion?.background??(()=>{})))
   if(request.method==='GET'&&!m[2])return oldStreetJson(authority.get(owner,m[1]))
   if(request.method==='GET'&&m[2]==='events')return oldStreetJson({events:authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
   if(request.method==='POST'&&m[2]==='actions')return oldStreetJson(await authority.action(owner,m[1],await readBody(request)))

@@ -377,3 +377,24 @@ test('expansion plan job survives archive reopen and does not replay generation'
   assert.deepEqual(await jobs.run('synthetic-owner',h.id),result);assert.equal(calls,1)
  }finally{raw.close()}
 })
+
+test('expansion HTTP starts background work and returns before model completion',async()=>{
+ const {OldStreetExpansionJobs}=await import('../server/old-street-expansion-jobs')
+ const {oldStreetExpansionOperation}=await import('../server/old-street-http')
+ const {compileExpansionPlan}=await import('../src/old-street-expansion-plan')
+ const raw=new DatabaseSync(':memory:'),db=storage(raw),s=new OldStreetAuthority(db,admit)
+ try{
+  let h=s.create('synthetic-owner',randomUUID(),'zh')
+  h=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room==='street'&&d.destination.room==='photo')!.actionId))).head
+  h=(await s.action('synthetic-owner',h.id,{action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position,type:'expansion-request',template:'photo-darkroom-v1',text:'想看看暗房'})).head
+  let release!:()=>void;const gate=new Promise<void>(r=>release=r),tasks:Promise<unknown>[]=[]
+  const jobs=new OldStreetExpansionJobs(db,(o,id)=>s.get(o,id),async intent=>{await gate;return compileExpansionPlan(intent,{title:'暗房',discovery:'窗沿接上了。',photograph:'Old storefront, continuous sill.'})})
+  const response=oldStreetExpansionOperation('POST','synthetic-owner',h.id,jobs,{},p=>tasks.push(p))
+  assert.equal(response.job?.state,'queued');assert.equal(tasks.length,1)
+  assert.equal(oldStreetExpansionOperation('GET','synthetic-owner',h.id,jobs,undefined,()=>{}).job?.state,'planning')
+  const moved=await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room==='photo'&&d.destination.room==='street')!.actionId))
+  assert.equal(moved.head.sceneId,'street')
+  release();await Promise.all(tasks)
+  assert.equal(jobs.get('synthetic-owner',h.id)?.state,'candidate');assert.equal(s.get('synthetic-owner',h.id).sceneId,'street')
+ }finally{raw.close()}
+})

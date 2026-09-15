@@ -1,4 +1,7 @@
 import {createOldStreetDialogueGenerator} from './old-street-dialogue'
+import {OldStreetExpansionJobs} from './old-street-expansion-jobs'
+import {createOldStreetExpansionPlanner} from './old-street-expansion-planner'
+import {oldStreetExpansionOperation} from './old-street-http'
 import {originalPreflightModels} from './original-preflight-model'
 import {DatabaseSync} from 'node:sqlite'
 import {mkdirSync} from 'node:fs'
@@ -12,6 +15,7 @@ import {GAME_ID} from '../src/game-id'
 export function oldStreetDevPlugin(){
  const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0))
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
+ let expansions:OldStreetExpansionJobs|undefined
  const prefix='/'+GAME_ID+'/api/oldstreet-dev'
  function authority(){
   if(service)return service
@@ -20,7 +24,9 @@ export function oldStreetDevPlugin(){
   const db=raw
   db.exec('PRAGMA busy_timeout=5000')
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
-  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined);return service
+  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined)
+  if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
+  return service
  }
  async function handle(req:IncomingMessage,res:ServerResponse,next:()=>void){
   const url=new URL(req.url??'/', 'http://'+(req.headers.host??'localhost'))
@@ -46,9 +52,10 @@ export function oldStreetDevPlugin(){
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
     return send(200,s.create(owner,body.enrollment_id,body.locale))
    }
-   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position))?$/.exec(route)
+   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion))?$/.exec(route)
    if(!match)return send(404,{error:'NOT_FOUND'})
    const [,id,operation]=match
+   if(operation==='expansion')return send(200,oldStreetExpansionOperation(req.method!,owner,id,expansions,body,p=>{void p.catch(()=>{})}))
    if(req.method==='GET'&&!operation)return send(200,s.get(owner,id))
    if(req.method==='POST'&&operation==='actions')return send(200,await s.action(owner,id,body))
    if(req.method==='POST'&&operation==='position')return send(200,s.checkpoint(owner,id,body))
