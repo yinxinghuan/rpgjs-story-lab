@@ -19,12 +19,13 @@
     "preview:preflight": "vite preview --mode cloud-preflight --outDir dist-preflight --host 127.0.0.1 --port 5220 --strictPort",
     "build:local": "tsc --noEmit && vite build",
     "check:spatial": "node --import tsx scripts/check-spatial-cartridge.ts",
-    "check:spatial-story": "node --import tsx scripts/check-original-branches.ts --spatial"
+    "check:spatial-story": "node --import tsx scripts/check-original-branches.ts --spatial",
+    "dev:playtest": "vite --mode cloud-preflight --host 127.0.0.1 --port 5455 --strictPort"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "description": "Carriage 07 \u2014 RPG-JS spatial narrative experiment",
+  "description": "Carriage 07 — RPG-JS spatial narrative experiment",
   "devDependencies": {
     "@canvasengine/compiler": "2.2.0",
     "@resvg/resvg-js": "2.6.2",

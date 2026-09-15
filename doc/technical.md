@@ -1646,3 +1646,12 @@ OldStreetAuthority.directory 在原 owner 隔离目录上增加 complete；Worke
 ### 抽屉图形状态（2026-09-15）
 
 oldStreetDrawerPose读取drawer-open/lens-taken，oldStreetDrawerSheet三格纹理锚定台脚；独立RPG固定事件共享原drawer身份，恢复head后更新animationName，卸载释放blob。没有新增图形专属存档。prepare-oldstreet-drawer保存原图，以指定区域/纸片轮廓修复第三帧，再连通去底，所有操作可追溯。
+
+
+### 2026-09-15 默认入口调整：新版探索试玩
+
+同一个 UUID 默认进入旧街探索，并在场景标题旁标注「试玩」。旅程菜单底部「旧版参考」展开后进入 `?story=original`；旧版设置可返回新版。两版 Worker 命名空间及浏览器存储前缀继续隔离，不迁移或覆盖旧进度。默认页面不显示 renderer diagnostics，只有 `?debug=1` 显示。
+
+本次是公开试玩开放，`OLD_STREET_PREVIEW_RELEASED=true` 与正式验收 `OLD_STREET_RELEASED=false` 分开。候选素材与尚未完成的场景美术仍未正式准入，在线模型默认不因试玩开放而开启。主站使用原有私有 capability 会话；Pages 只提供前往主站的静态入口，不连接源游戏后台。
+
+用户随后决定优先本地验证玩法，线上同步、网络延迟和平台内测试延后。用户最终确认本轮发布一次新版试玩；此后停止频繁线上发版，在本地完成玩法、内容和画面打磨后统一发布大版本，再集中验收网络功能。`npm run dev:playtest` 在 5455 提供新版默认试玩和旧版参考，两个本机持久化服务共用页面入口并保留各自数据库。

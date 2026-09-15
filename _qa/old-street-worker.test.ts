@@ -1,3 +1,4 @@
+import {LabError} from '../src/journey-runtime'
 import type {OriginalActionInterpreter} from '../server/original-action-interpreter'
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -19,7 +20,7 @@ function harness(admitted=true,interpreter?:OriginalActionInterpreter){
  const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(id:unknown)=>({fetch:async(r:Request)=>{
   const key=String(id);names.add(key)
   let object=objects.get(key)
-  if(!object){object=new CarriageJourneyAuthority(storage.context(key),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,admitted?()=>true:undefined,interpreter);objects.set(key,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(key),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,admitted?()=>true:()=>{throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)},interpreter);objects.set(key,object)}
   return object.fetch(r)
  }})}}
  return {env,names,reopen:()=>{objects.clear();storage.close()},close:()=>{objects.clear();storage.close();rmSync(dir,{recursive:true,force:true})}}
@@ -28,7 +29,9 @@ test('oldstreet Worker stays release-gated and rejects untrusted identity and ru
  const h=harness(false),token=randomBytes(32).toString('base64url')
  try{
   const enroll={enrollment_id:randomUUID(),locale:'zh'}
-  assert.equal((await handleApi(request('/sessions',token,enroll),h.env)).status,404)
+  assert.equal((await createHandler(true,false,false,()=>false,()=>false,false,false,false,false)(request('/sessions',token,enroll),h.env)).status,404)
+  const health=await (await handleApi(request('/health',token),h.env)).json() as any
+  assert.equal(health.preview,true);assert.equal(health.production,false)
   assert.equal((await handler(request('/sessions','',enroll),h.env)).status,401)
   const outdated=request('/sessions',token,enroll);outdated.headers.delete(header)
   assert.equal((await handler(outdated,h.env)).status,409)

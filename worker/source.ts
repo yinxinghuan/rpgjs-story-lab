@@ -1,7 +1,7 @@
 import {createOldStreetDialogueGenerator,type OldStreetDialogueGenerator} from '../server/old-street-dialogue'
 import {OldStreetAuthority,type OldStreetGate} from '../server/old-street-runtime'
 import {handleOldStreetSession,oldStreetJson} from '../server/old-street-http'
-import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED} from '../src/old-street-runtime-contract'
+import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT,OLD_STREET_RELEASED,OLD_STREET_PREVIEW_RELEASED,OLD_STREET_PREVIEW_VERSION} from '../src/old-street-runtime-contract'
 import {ORIGINAL_STORY_RELEASED} from '../src/original-release'
 import {originalReleasedPresentation} from '../server/original-presentation'
 import {createOriginalActionInterpreter} from '../server/original-action-interpreter'
@@ -42,14 +42,14 @@ async function body(request:Request,limit=6000){
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value}catch{throw new LabError('INVALID_JSON')}
 }
 const failure=(e:unknown)=>json({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)
-export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false,originalProduction=false,illustrationsAvailable=ORIGINAL_ILLUSTRATION_RELEASED,oldStreetEnabled=OLD_STREET_RELEASED){return async(request:Request,env:Environment)=>{
+export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_RELEASED,originalEnabled=false,originalDialogueAvailable:()=>boolean=()=>false,originalActionAvailable:()=>boolean=()=>false,creatorEnabled=false,originalProduction=false,illustrationsAvailable=ORIGINAL_ILLUSTRATION_RELEASED,oldStreetEnabled=OLD_STREET_RELEASED||OLD_STREET_PREVIEW_RELEASED){return async(request:Request,env:Environment)=>{
  const path=new URL(request.url).pathname
  const creator=path===CREATOR_API_PATH||path.startsWith(CREATOR_API_PATH+'/')
  const creatorJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[CREATOR_RUNTIME_HEADER]:CREATOR_RUNTIME_CONTRACT}})
  const oldstreet=path===OLD_STREET_API_PATH||path.startsWith(OLD_STREET_API_PATH+'/')
  const original=path===ORIGINAL_API_PATH||path.startsWith(ORIGINAL_API_PATH+'/'),reply=oldstreet?oldStreetJson:creator?creatorJson:original?originalJson:json
  if(oldstreet&&!oldStreetEnabled)return reply({error:'NOT_FOUND'},404)
- if(oldstreet&&path===OLD_STREET_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:OLD_STREET_RELEASED,identityMode:'anonymous-capability-v1',runtimeContract:OLD_STREET_RUNTIME_CONTRACT})
+ if(oldstreet&&path===OLD_STREET_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,production:OLD_STREET_RELEASED,preview:OLD_STREET_PREVIEW_RELEASED,previewVersion:OLD_STREET_PREVIEW_VERSION,identityMode:'anonymous-capability-v1',runtimeContract:OLD_STREET_RUNTIME_CONTRACT})
  if(creator&&!creatorEnabled)return reply({error:'NOT_FOUND'},404)
  if(creator&&path===CREATOR_API_PATH+'/health'&&request.method==='GET')return reply({ok:true,runtimeContract:CREATOR_RUNTIME_CONTRACT,identityMode:'anonymous-capability-v1'})
  const published=path.match(/^\/api\/creator\/(?:releases|device-releases|actor-releases|hero-releases|layer-releases)\/([a-f0-9]{64}\.[a-f0-9-]{36})(\/(?:file|housing|rotor))?$/)
@@ -92,7 +92,7 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate?:OldStreetGate,private oldStreetInterpreter?:OriginalActionInterpreter,private oldStreetDialogue?:OldStreetDialogueGenerator){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate:OldStreetGate|undefined=OLD_STREET_PREVIEW_RELEASED?()=>true:undefined,private oldStreetInterpreter?:OriginalActionInterpreter,private oldStreetDialogue?:OldStreetDialogueGenerator){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}

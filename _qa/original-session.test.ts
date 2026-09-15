@@ -18,7 +18,7 @@ const world=originalTrainSpatialPlan()
 function storage(raw:DatabaseSync):AuthorityStorage{return {all:(sql,...b)=>raw.prepare(sql).all(...b) as any,run:(sql,...b)=>{raw.prepare(sql).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const result=work();raw.exec('COMMIT');return result}catch(e){raw.exec('ROLLBACK');throw e}}}}
 function request(h:OriginalHead,id:string,free=false){const entity=world.entities.find(e=>e.scene===h.sceneId&&e.actions.includes(id))!;return {action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,target:entity.id,position:entity.approach,mode:'local',...(free?{type:'free-input',text:originalCartridge(h.save.locale).domainRules!.rules.find(r=>r.id===id)!.match[0]}:{type:'action',action:id})}}
 function setup(gate=syntheticAdmission,generator?:StoryTurnGenerator){const raw=new DatabaseSync(':memory:'),db=storage(raw);return {raw,db,service:new OriginalTrainAuthority(db,gate,generator)}}
-test('vendored original v8 sources are exact recorded copies',()=>{
+test('vendored original v8 sources match recorded copies and documented spatial extensions',()=>{
  const base=new URL('../src/vendor/original-train/',import.meta.url),manifest=JSON.parse(readFileSync(new URL('SOURCE.json',base),'utf8'))
  assert.equal(manifest.sourceSchema,8);for(const [name,hash] of Object.entries(manifest.files))assert.equal(createHash('sha256').update(readFileSync(new URL(name,base))).digest('hex'),hash,name)
 })
