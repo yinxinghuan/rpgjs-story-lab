@@ -38,6 +38,9 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <defs><pattern id="os-yard-stone" x={floor.x} y={floor.y} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} patternUnits="userSpaceOnUse"><image href={art.yard} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} opacity={oldStreetStoneTile.opacity} style={{imageRendering:'pixelated'}}/></pattern></defs>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-yard-stone)" stroke="#81786c" strokeWidth="6"/>
   </g>
+  if(room==='roof'&&pixelShop)return <g>
+    <image href={art.roofFloor} x={floor.x} y={floor.y} width={floor.w} height={floor.h} preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/>
+  </g>
   if(room==='shed'&&pixelShop)return <g>
     <rect x={floor.x-4} y={floor.y-4} width={floor.w+8} height={floor.h+8} fill="#77715c"/>
     <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="0 272 360 640" preserveAspectRatio="none" overflow="hidden">

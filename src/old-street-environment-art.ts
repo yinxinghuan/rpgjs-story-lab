@@ -1,3 +1,4 @@
+import roofFloor from '../doc/oldstreet-roof-floor/candidate.png'
 import cellarFloor from '../doc/oldstreet-cellar-floor/candidate.png'
 import stoneStair from '../doc/oldstreet-stone-stair/correction/candidate.png'
 import photoFloor from '../doc/oldstreet-photo-floor/candidate.png'
@@ -9,7 +10,7 @@ import wood from '../doc/oldstreet-pixel-study/floor-narrow/candidate-actual.png
 import laundry from '../doc/oldstreet-laundry-candidate/correction/candidate.png'
 import shopWall from '../doc/oldstreet-pixel-study/workshop-wall/candidate.png'
 import shedWall from '../doc/oldstreet-shed-wall/candidate.png'
-export const oldStreetEnvironmentArt={wood,laundry,shopWall,shedWall,yard,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor}
+export const oldStreetEnvironmentArt={wood,laundry,shopWall,shedWall,yard,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor}
 export type OldStreetEnvironmentArt=typeof oldStreetEnvironmentArt
 export function oldStreetEnvironmentDownloads(pixel:boolean,composite=false){
  return Object.entries(oldStreetEnvironmentArt).filter(([id])=>id==='shopComposite'?composite:(pixel||id==='wood'||id==='laundry')).map(([id,url])=>({id:'environment-'+id,url}))
