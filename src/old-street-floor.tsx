@@ -34,9 +34,16 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-narrow-wood)"/>
     {pixelShop&&<OldStreetShopEnvironment image={art.shopWall}/>}
   </g>
-  if(room==='yard'&&pixelShop)return <g>
+  if((room==='yard'||room==='street')&&pixelShop)return <g>
     <defs><pattern id="os-yard-stone" x={floor.x} y={floor.y} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} patternUnits="userSpaceOnUse"><image href={art.yard} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} opacity={oldStreetStoneTile.opacity} style={{imageRendering:'pixelated'}}/></pattern></defs>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-yard-stone)" stroke="#81786c" strokeWidth="6"/>
+  </g>
+  if(room==='shed'&&pixelShop)return <g>
+    <rect x={floor.x-4} y={floor.y-4} width={floor.w+8} height={floor.h+8} fill="#77715c"/>
+    <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="0 272 360 640" preserveAspectRatio="none" overflow="hidden">
+      <image href={art.cellarFloor} width="512" height="1088" style={{imageRendering:'pixelated'}}/>
+    </svg>
+    <OldStreetShedEnvironment image={art.shedWall}/>
   </g>
   if(room==='cellar'&&pixelShop)return <g>
     <rect x={floor.x-4} y={floor.y-4} width={floor.w+8} height={floor.h+8} fill="#656452"/>
