@@ -13,7 +13,7 @@ const invalid=()=>{throw Error('DEVICE_MAP_CANDIDATE_INVALID')}
 export async function inspectDeviceMapCandidate(draft:SpriteDraft,id:string,decode:(png:SpritePng)=>Promise<PixelRaster>):Promise<DevicePreview>{
  if(draft.deviceStateSet!==undefined&&draft.deviceStateSet!=='repair')return invalid()
  const s=draft.spec,r=draft.result,states=draft.deviceStateSet==='repair'?REPAIR_STATES:DEVICE_STATES,columns=states.length
- if(draft.version!=='sprite-draft-1'||draft.id!==id||draft.state!=='candidate'||!s||!r||s.kind!=='states'||s.columns!==columns||s.rows!==1||r.algorithm!=='neutral-matte-unmix-1')return invalid()
+ if(draft.version!=='sprite-draft-1'||draft.id!==id||draft.state!=='candidate'||!s||!r||s.kind!=='states'||s.columns!==columns||s.rows!==1||r.algorithm!==(s.backgroundMode==='magenta'?'magenta-matte-unmix-1':'neutral-matte-unmix-1'))return invalid()
  if(!Number.isInteger(s.cellWidth)||!Number.isInteger(s.cellHeight)||s.cellWidth<8||s.cellHeight<8||r.png.width!==s.cellWidth*columns||r.png.height!==s.cellHeight||r.frames.length!==columns||s.sourceAnchors?.length!==columns)return invalid()
  if(!Number.isInteger(s.foot.x)||!Number.isInteger(s.foot.y)||s.foot.x<1||s.foot.x>=s.cellWidth-1||s.foot.y<4||s.foot.y>=s.cellHeight)return invalid()
  await verifySpritePng(draft.source);await verifySpriteComposition(draft,decode);await verifySpritePng(r.png)

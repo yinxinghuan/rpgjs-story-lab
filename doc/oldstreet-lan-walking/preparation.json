@@ -1,0 +1,245 @@
+{
+  "sourceRetained": true,
+  "sourceSha256": "647e87615a1db8f8b75e4e575fa3fd35ff1f3ae78b66026219d855195ce69019",
+  "sha256": "fce572ed0e0133f7e865d8da8d62f62c649965c022d52b30d6112c5783c9d2a6",
+  "spec": {
+    "columns": 3,
+    "rows": 4,
+    "cellWidth": 320,
+    "cellHeight": 352,
+    "foot": {
+      "x": 160,
+      "y": 328
+    },
+    "kind": "actor",
+    "backgroundMode": "magenta",
+    "neutralMin": 200,
+    "chromaMax": 20
+  },
+  "algorithm": "magenta-matte-unmix-1",
+  "metrics": {
+    "removed": 1061172,
+    "edgeCorrected": 9291,
+    "corePreserved": 268590
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        76,
+        46,
+        220,
+        326
+      ],
+      "sourceAnchor": {
+        "x": 148,
+        "y": 326
+      },
+      "offset": {
+        "x": 12,
+        "y": 2
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        400,
+        48,
+        548,
+        327
+      ],
+      "sourceAnchor": {
+        "x": 154,
+        "y": 327
+      },
+      "offset": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "row": 0,
+      "column": 2,
+      "sourceBox": [
+        726,
+        47,
+        880,
+        326
+      ],
+      "sourceAnchor": {
+        "x": 163,
+        "y": 326
+      },
+      "offset": {
+        "x": -3,
+        "y": 2
+      }
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "sourceBox": [
+        84,
+        401,
+        214,
+        669
+      ],
+      "sourceAnchor": {
+        "x": 149,
+        "y": 317
+      },
+      "offset": {
+        "x": 11,
+        "y": 11
+      }
+    },
+    {
+      "row": 1,
+      "column": 1,
+      "sourceBox": [
+        424,
+        405,
+        543,
+        670
+      ],
+      "sourceAnchor": {
+        "x": 163,
+        "y": 318
+      },
+      "offset": {
+        "x": -3,
+        "y": 10
+      }
+    },
+    {
+      "row": 1,
+      "column": 2,
+      "sourceBox": [
+        754,
+        399,
+        849,
+        671
+      ],
+      "sourceAnchor": {
+        "x": 161,
+        "y": 319
+      },
+      "offset": {
+        "x": -1,
+        "y": 9
+      }
+    },
+    {
+      "row": 2,
+      "column": 0,
+      "sourceBox": [
+        85,
+        765,
+        206,
+        1033
+      ],
+      "sourceAnchor": {
+        "x": 145,
+        "y": 329
+      },
+      "offset": {
+        "x": 15,
+        "y": -1
+      }
+    },
+    {
+      "row": 2,
+      "column": 1,
+      "sourceBox": [
+        429,
+        765,
+        527,
+        1031
+      ],
+      "sourceAnchor": {
+        "x": 158,
+        "y": 327
+      },
+      "offset": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "row": 2,
+      "column": 2,
+      "sourceBox": [
+        741,
+        763,
+        873,
+        1033
+      ],
+      "sourceAnchor": {
+        "x": 167,
+        "y": 329
+      },
+      "offset": {
+        "x": -7,
+        "y": -1
+      }
+    },
+    {
+      "row": 3,
+      "column": 0,
+      "sourceBox": [
+        81,
+        1107,
+        214,
+        1379
+      ],
+      "sourceAnchor": {
+        "x": 147,
+        "y": 323
+      },
+      "offset": {
+        "x": 13,
+        "y": 5
+      }
+    },
+    {
+      "row": 3,
+      "column": 1,
+      "sourceBox": [
+        403,
+        1113,
+        548,
+        1378
+      ],
+      "sourceAnchor": {
+        "x": 155,
+        "y": 322
+      },
+      "offset": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "row": 3,
+      "column": 2,
+      "sourceBox": [
+        737,
+        1109,
+        876,
+        1379
+      ],
+      "sourceAnchor": {
+        "x": 166,
+        "y": 323
+      },
+      "offset": {
+        "x": -6,
+        "y": 5
+      }
+    }
+  ],
+  "walkingAdmitted": false,
+  "productionAdmitted": false
+}

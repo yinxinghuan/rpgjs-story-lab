@@ -1,0 +1,13 @@
+{
+  "requestId": "2e643767-2978-4eef-9cd9-f6c9d6fbbb1d",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789421967259733.png"
+  ],
+  "size": {
+    "width": 960,
+    "height": 1408
+  },
+  "prompt": "Create a corrected 12-frame WALK CYCLE of the SAME woman shown in the reference. Preserve her exact short dark hair, moss-green rolled-sleeve blouse, cream waist apron with crossed straps behind, brown trousers and shoes, stocky proportions, dark pixel outlines, warm palette and steep overhead orthographic B camera. The visible crown of her head must be large; keep the compressed face and torso. Do not flatten to an eye-level view. Crisp coherent pixel clusters, no painted texture noise, no antialiasing, no gradients.\nOutput exactly THREE columns and FOUR rows on a 960x1408 canvas, cells 320x352. Each cell contains one whole figure about 145 pixels wide and 270 pixels tall, centered on x=160 with bottommost foot y=328 relative to its cell. Generous empty margins. NEVER draw grid lines, labels, lettering or cast shadows.\nRow 1: all three figures face SOUTH towards viewer. Row 2: all three face WEST left profile. Row 3: all three face EAST right profile. Row 4: all three face NORTH away; backs only, no face or cheek. Do NOT copy the erroneous directions in the reference outer columns.\nIn EVERY row column 1 is left anatomical leg forward and right arm forward; column 2 is a neutral STOP with both feet side-by-side together, knees straight and arms down; column 3 is right anatomical leg forward and left arm forward. The two stride frames are opposite phases, not duplicates. NORTH row: in column 1 left shoe reaches upward away from viewer while right shoe trails downward toward viewer; column 3 right shoe reaches upward while left shoe trails downward. Clearly swap which leg bears weight. Preserve head, waist and shoulders in the same position across phases; move arms and legs naturally. No extra limbs. The rear apron ties and garment identity remain identical. Entire background flat uniform bright magenta #ff00ff, including gaps between arms and torso and between legs. No magenta on the woman. Exactly twelve independent complete figures."
+}

@@ -9,7 +9,7 @@ export type ActorPreview={id:string;png:SpritePng;width:number;height:number;sca
 const invalid=()=>{throw Error('SPRITE_MAP_CANDIDATE_INVALID')}
 export async function inspectActorMapCandidate(draft:SpriteDraft,id:string,decode:(png:SpritePng)=>Promise<PixelRaster>):Promise<ActorPreview> {
  const s=draft.spec,r=draft.result
- if(draft.version!=='sprite-draft-1'||draft.id!==id||draft.state!=='candidate'||!s||!r||s.kind!=='actor'||s.columns!==3||s.rows!==4||r.algorithm!=='neutral-matte-unmix-1')return invalid()
+ if(draft.version!=='sprite-draft-1'||draft.id!==id||draft.state!=='candidate'||!s||!r||s.kind!=='actor'||s.columns!==3||s.rows!==4||r.algorithm!==(s.backgroundMode==='magenta'?'magenta-matte-unmix-1':'neutral-matte-unmix-1'))return invalid()
  if(!Number.isInteger(s.cellWidth)||!Number.isInteger(s.cellHeight)||s.cellWidth<1||s.cellHeight<1||r.png.width!==s.cellWidth*3||r.png.height!==s.cellHeight*4||r.frames.length!==12)return invalid()
  if(!Number.isInteger(s.foot.x)||!Number.isInteger(s.foot.y)||s.foot.x<0||s.foot.x>=s.cellWidth||s.foot.y<=0||s.foot.y>s.cellHeight)return invalid()
  await verifySpritePng(draft.source);await verifySpritePng(r.png)

@@ -1,5 +1,5 @@
 /** Deterministic, provider-independent sprite preparation. No I/O or image APIs.
- * Accepts only a declared pale neutral matte. This is not semantic segmentation.
+ * Accepts a declared pale neutral or magenta matte. This is not semantic segmentation.
  * Callers must retain the original and review the result before admission.
  */
 export type PixelRaster = {
@@ -17,7 +17,7 @@ export type SpritePreparationSpec = {
         y: number;
     };
     kind: 'actor' | 'states';
-    backgroundMode: 'pale-neutral' | 'alpha';
+    backgroundMode: 'pale-neutral' | 'magenta' | 'alpha';
     /** Explicitly reviewed background points, in source-image coordinates.
      * Never infer these from pale clothing or apply them to another source. */
     matteSeeds?: Array<{x: number; y: number}>;
@@ -53,7 +53,7 @@ export type PreparedSprite = {
         edgeCorrected: number;
         corePreserved: number;
     };
-    algorithm: 'neutral-matte-unmix-1';
+    algorithm: 'neutral-matte-unmix-1' | 'magenta-matte-unmix-1';
 };
 const LIMIT = 1572864;
 function reject(message: string): never { throw Error('SPRITE_PREPARATION_' + message); }
@@ -64,7 +64,7 @@ export function prepareSpritePixels(input: PixelRaster, spec: SpritePreparationS
         reject('SIZE');
     if (!integer(spec.columns, 1, 12) || !integer(spec.rows, 1, 12) || w % spec.columns || h % spec.rows || !integer(spec.cellWidth, 1, 1536) || !integer(spec.cellHeight, 1, 1536) || spec.columns * spec.cellWidth > 1536 || spec.rows * spec.cellHeight > 1536 || spec.columns * spec.cellWidth * spec.rows * spec.cellHeight > LIMIT)
         reject('GRID');
-    if (spec.backgroundMode !== 'pale-neutral' && spec.backgroundMode !== 'alpha') reject('BACKGROUND_MODE');
+    if (spec.backgroundMode !== 'pale-neutral' && spec.backgroundMode !== 'magenta' && spec.backgroundMode !== 'alpha') reject('BACKGROUND_MODE');
     if (!integer(spec.neutralMin, 180, 255) || !integer(spec.chromaMax, 0, 35))
         reject('MATTE');
     if (!integer(spec.foot.x, 0, spec.cellWidth - 1) || !integer(spec.foot.y, 1, spec.cellHeight))
@@ -78,13 +78,13 @@ export function prepareSpritePixels(input: PixelRaster, spec: SpritePreparationS
         reject('ANCHORS');
     const background = new Uint8Array(n), queue = new Int32Array(n);
     let head = 0, tail = 0;
-    function eligible(p: number) { const i = p * 4, min = Math.min(src[i], src[i + 1], src[i + 2]), max = Math.max(src[i], src[i + 1], src[i + 2]); return src[i + 3] === 0 || (spec.backgroundMode === 'pale-neutral' && src[i + 3] === 255 && min >= spec.neutralMin && max - min <= spec.chromaMax); }
+    function eligible(p: number) { const i = p * 4, min = Math.min(src[i], src[i + 1], src[i + 2]), max = Math.max(src[i], src[i + 1], src[i + 2]); return src[i + 3] === 0 || (spec.backgroundMode === 'pale-neutral' && src[i + 3] === 255 && min >= spec.neutralMin && max - min <= spec.chromaMax) || (spec.backgroundMode === 'magenta' && src[i+3] === 255 && Math.min(src[i],src[i+2]) >= 100 && Math.min(src[i],src[i+2])-src[i+1] >= 80);  }
     function visit(p: number) { if (!background[p] && eligible(p)) {
         background[p] = 1;
         queue[tail++] = p;
     } }
     if (spec.matteSeeds !== undefined) {
-        if (!Array.isArray(spec.matteSeeds) || spec.matteSeeds.length > 64 || spec.backgroundMode !== 'pale-neutral' || spec.matteSeeds.some(p => !p || !integer(p.x, 0, w - 1) || !integer(p.y, 0, h - 1) || !eligible(p.y * w + p.x)))
+        if (!Array.isArray(spec.matteSeeds) || spec.matteSeeds.length > 64 || spec.backgroundMode === 'alpha' || spec.matteSeeds.some(p => !p || !integer(p.x, 0, w - 1) || !integer(p.y, 0, h - 1) || !eligible(p.y * w + p.x)))
             reject('MATTE_SEEDS');
         for (const p of spec.matteSeeds) visit(p.y * w + p.x);
     }
@@ -167,7 +167,7 @@ export function prepareSpritePixels(input: PixelRaster, spec: SpritePreparationS
         // Small pale details without an interior reference remain unchanged for review.
         if (fg < 0)
             continue;
-        if (bg < 0 || max - min >= 65 || mean - (src[fg] + src[fg + 1] + src[fg + 2]) / 3 <= 18)
+        if (bg < 0 || (spec.backgroundMode === 'magenta' ? Math.min(src[i],src[i+2])-src[i+1] <= 12 : max - min >= 65 || mean - (src[fg] + src[fg + 1] + src[fg + 2]) / 3 <= 18))
             continue;
         let numerator = 0, denominator = 0;
         for (let c = 0; c < 3; c++) {
@@ -214,5 +214,5 @@ export function prepareSpritePixels(input: PixelRaster, spec: SpritePreparationS
                 }
             frames.push({ row, column, sourceBox: [originX + left, originY + top, originX + right, originY + bottom], sourceAnchor: anchor, offset: { x: dx, y: dy } });
         }
-    return { raster: { width: ow, height: oh, rgba: output }, frames, metrics: { removed: tail, edgeCorrected, corePreserved }, algorithm: 'neutral-matte-unmix-1' };
+    return { raster: { width: ow, height: oh, rgba: output }, frames, metrics: { removed: tail, edgeCorrected, corePreserved }, algorithm: spec.backgroundMode === 'magenta' ? 'magenta-matte-unmix-1' : 'neutral-matte-unmix-1' };
 }
