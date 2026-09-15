@@ -354,7 +354,7 @@ test('expansion intention persists through reopen without admitting a room or bl
   assert.deepEqual(await s.action('synthetic-owner',h.id,b),result)
   const next=(await s.action('synthetic-owner',h.id,request(h,oldStreetDoors().find(d=>d.room==='photo'&&d.destination.room==='street')!.actionId))).head
   assert.equal(next.sceneId,'street');assert.deepEqual(next.expansions,h.expansions)
-  assert.equal(oldStreetSpatialPlan(next.save).scenes.some(scene=>scene.id==='photo-darkroom'),false)
+  assert.notEqual(next.save.facts['darkroom-ready'],true)
  }finally{raw.close();rmSync(temp,{recursive:true,force:true})}
 })
 

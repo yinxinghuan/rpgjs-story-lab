@@ -1,0 +1,10 @@
+{
+  "taskId": "mt_7767f117ebb47f21993474bdc8a275b4",
+  "prompt": "PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a restrained palette of dusty ochre, muted teal, warm gray and faded cream. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject:  a quiet old street with continuous rows of low-rise buildings. The street is paved with cobblestones and lined with vintage lamp posts. The buildings have wooden shutters and tiled roofs, with visible wear and age. No people or vehicles are present, emphasizing the stillness and timeless atmosphere. One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.",
+  "asset": {
+    "sha256": "5ebbdef6d5c207f3727b7830a9c0af31653b9465e0be6267f9c565e2ec468505",
+    "bytes": 616217,
+    "width": 768,
+    "height": 576
+  }
+}

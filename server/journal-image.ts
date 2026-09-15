@@ -66,9 +66,10 @@ async function download(url:string,request:typeof fetch,signal:AbortSignal){
  const bytes=new Uint8Array(length);let offset=0;for(const c of chunks){bytes.set(c,offset);offset+=c.length}
  return bytes
 }
-export async function inspectJournalPng(bytes:Uint8Array){
+export async function inspectJournalPng(bytes:Uint8Array){return inspectSizedPng(bytes,IMAGE_SIZE)}
+export async function inspectSizedPng<S extends {width:number;height:number}>(bytes:Uint8Array,size:S){
  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength)
- if(bytes.length<45||!bytes.subarray(0,8).every((v,i)=>v===[137,80,78,71,13,10,26,10][i])||view.getUint32(8)!==13||String.fromCharCode(...bytes.subarray(12,16))!=='IHDR'||view.getUint32(16)!==768||view.getUint32(20)!==1024)throw Error('IMAGE_INVALID')
+ if(bytes.length<45||!bytes.subarray(0,8).every((v,i)=>v===[137,80,78,71,13,10,26,10][i])||view.getUint32(8)!==13||String.fromCharCode(...bytes.subarray(12,16))!=='IHDR'||view.getUint32(16)!==size.width||view.getUint32(20)!==size.height)throw Error('IMAGE_INVALID')
  let offset=8,sawData=false,sawEnd=false
  while(offset+12<=bytes.length){
   const size=view.getUint32(offset),end=offset+12+size
@@ -81,7 +82,7 @@ export async function inspectJournalPng(bytes:Uint8Array){
  if(offset!==bytes.length||!sawData||!sawEnd)throw Error('IMAGE_INVALID')
  // Actual decode remains a separate browser gate; metadata is not perceptual QA.
  const sha256=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes)))].map(b=>b.toString(16).padStart(2,'0')).join('')
- return {sha256,bytes:bytes.length,...IMAGE_SIZE}
+ return {sha256,bytes:bytes.length,...size}
 }
 export function createJournalImageProducer(request:typeof fetch=fetch):ImageProducer{
  return async(job,onTask)=>{

@@ -1,0 +1,10 @@
+{
+  "taskId": "mt_a6a78d14efe98e6854034618708c4fe4",
+  "prompt": "Create ONE seamless archival photograph of this subject: A black and white photograph showing a quiet old street with continuous rows of low-rise buildings. The street is paved with cobblestones and lined with vintage lamp posts. The buildings have wooden shutters and tiled roofs, with visible wear and age. The edges of the street and buildings form a smooth, continuous line from one side of the image to the other, suitable for a two-half puzzle. No people or vehicles are present, emphasizing the stillness and timeless atmosphere. Render a single continuous view, never a diptych or puzzle sheet. The application will divide the image later: DO NOT draw seams, divider lines, split panels, borders, gaps, tears, puzzle pieces, lettering, UI or hands. Fill a 4:3 rectangle. Use detailed pixel-art texture and restrained sepia tones, asymmetrical landmarks, varied building silhouettes; avoid perfect left-right symmetry. A road may recede naturally but no dark straight line may divide the canvas.",
+  "asset": {
+    "sha256": "4fbcdab43d51a58aa876db6e75d1ec5dd38b432065c926580ae8ce8b616fc4c9",
+    "bytes": 897658,
+    "width": 768,
+    "height": 576
+  }
+}

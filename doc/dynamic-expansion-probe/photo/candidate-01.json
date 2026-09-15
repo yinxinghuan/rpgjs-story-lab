@@ -1,0 +1,10 @@
+{
+  "taskId": "mt_c32466d8a1fbe46140d90395260e8cbb",
+  "prompt": "One complete aged photograph, flat rectangular 4:3 image filling the frame. Detailed restrained pixel art, sepia tones, clear silhouettes and distinct landmarks across both halves. No lettering, UI, borders, hands or loose pieces. Depict only this optional archival view: A black and white photograph showing a quiet old street with continuous rows of low-rise buildings. The street is paved with cobblestones and lined with vintage lamp posts. The buildings have wooden shutters and tiled roofs, with visible wear and age. The edges of the street and buildings form a smooth, continuous line from one side of the image to the other, suitable for a two-half puzzle. No people or vehicles are present, emphasizing the stillness and timeless atmosphere.",
+  "asset": {
+    "sha256": "d35ac86ecc04ef6212995ee441e74aba959c14b527752742b2b1c51923ddf507",
+    "bytes": 807557,
+    "width": 768,
+    "height": 576
+  }
+}

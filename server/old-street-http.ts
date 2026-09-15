@@ -3,6 +3,18 @@ import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
 import type {OldStreetAuthority} from './old-street-runtime'
 import type {OldStreetExpansionJobs} from './old-street-expansion-jobs'
+import type {OldStreetExpansionMedia,ExpansionPhotoProducer} from './old-street-expansion-media'
+
+export function oldStreetExpansionPhotoOperation(method:string,owner:string,id:string,media:OldStreetExpansionMedia|undefined,produce:ExpansionPhotoProducer,body:unknown,background:(p:Promise<unknown>)=>void){
+ if(!media)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
+ if(method==='GET')return {job:media.get(owner,id)}
+ if(method!=='POST')throw new LabError('METHOD_NOT_ALLOWED',405)
+ const b=body as {retry?:unknown}
+ if(!b||typeof b!=='object'||Array.isArray(b)||Object.keys(b).some(k=>k!=='retry')||b.retry!==undefined&&typeof b.retry!=='boolean')throw new LabError('INVALID_EXPANSION_REQUEST')
+ const job=media.start(owner,id,b.retry===true)
+ if(job?.recoverable)background(media.run(owner,id,produce))
+ return {job}
+}
 
 export function oldStreetExpansionOperation(method:string,owner:string,id:string,jobs:OldStreetExpansionJobs|undefined,body:unknown,background:(p:Promise<unknown>)=>void){
  if(!jobs)throw new LabError('EXPANSION_PLANNER_NOT_READY',503)

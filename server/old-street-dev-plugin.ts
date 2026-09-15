@@ -1,7 +1,8 @@
 import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {OldStreetExpansionJobs} from './old-street-expansion-jobs'
 import {createOldStreetExpansionPlanner} from './old-street-expansion-planner'
-import {oldStreetExpansionOperation} from './old-street-http'
+import {oldStreetExpansionOperation,oldStreetExpansionPhotoOperation} from './old-street-http'
+import {OldStreetExpansionMedia,expansionPhotoProducer} from './old-street-expansion-media'
 import {originalPreflightModels} from './original-preflight-model'
 import {DatabaseSync} from 'node:sqlite'
 import {mkdirSync} from 'node:fs'
@@ -16,6 +17,7 @@ export function oldStreetDevPlugin(){
  const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0))
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
  let expansions:OldStreetExpansionJobs|undefined
+ let expansionMedia:OldStreetExpansionMedia|undefined
  const prefix='/'+GAME_ID+'/api/oldstreet-dev'
  function authority(){
   if(service)return service
@@ -26,6 +28,7 @@ export function oldStreetDevPlugin(){
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
   service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h))
   if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
+  if(models)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
   return service
  }
  async function handle(req:IncomingMessage,res:ServerResponse,next:()=>void){
@@ -52,9 +55,14 @@ export function oldStreetDevPlugin(){
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
     return send(200,s.create(owner,body.enrollment_id,body.locale))
    }
-   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion))?$/.exec(route)
+   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file))?$/.exec(route)
    if(!match)return send(404,{error:'NOT_FOUND'})
    const [,id,operation]=match
+   if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
+   if(operation==='expansion-photo-file'&&req.method==='GET'){
+    if(!expansionMedia)return send(503,{error:'EXPANSION_MEDIA_NOT_READY'})
+    const bytes=await expansionMedia.file(owner,id);res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'private, no-store'});res.end(bytes);return
+   }
    if(operation==='expansion')return send(200,oldStreetExpansionOperation(req.method!,owner,id,expansions,body,p=>{void p.catch(()=>{})}))
    if(req.method==='GET'&&!operation)return send(200,s.get(owner,id))
    if(req.method==='POST'&&operation==='actions')return send(200,await s.action(owner,id,body))

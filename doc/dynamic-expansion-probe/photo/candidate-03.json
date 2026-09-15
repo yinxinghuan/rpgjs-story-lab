@@ -1,0 +1,10 @@
+{
+  "taskId": "mt_1e4c200f4e9649be2435463176ec9a8a",
+  "prompt": "A single archival street photograph, filling the entire landscape frame. A black and white photograph showing a quiet old street with continuous rows of low-rise buildings. The street is paved with cobblestones and lined with vintage lamp posts. The buildings have wooden shutters and tiled roofs, with visible wear and age. No people or vehicles are present, emphasizing the stillness and timeless atmosphere. Natural asymmetrical composition with varied building heights and weathered surfaces. Continuous uninterrupted photographic print. Detailed pixel art with visible crisp pixel clusters, restrained sepia palette. The image contains scenery only.",
+  "asset": {
+    "sha256": "7c757b95141909bc38b0788e2b473813adef34aa5d851b0881a1f9493bf64b51",
+    "bytes": 933774,
+    "width": 768,
+    "height": 576
+  }
+}
