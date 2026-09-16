@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "2b4b695be2081ba175f258e04272ed0da4226298",
+  "sourceDirectory": "doc/oldstreet-lan-video-walk",
+  "assetOnlyCommit": "dce4897af88392c542467ed2ed71d6e5d35b0b69",
+  "branch": "art-reference-lan-20260917",
+  "reason": "CDN GitHub package limit is 50 MB; publish existing reviewed art subtree without game/source/history",
+  "gameDeployment": false
+}

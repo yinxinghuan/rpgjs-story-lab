@@ -1,0 +1,17 @@
+{
+  "reviewedAt": "2026-09-17",
+  "taskId": "mt_88acf70c90195924ec634c7f8bf31fd5",
+  "requestId": "95fe8dab-8d1d-4d9e-aa07-8634b53d3937",
+  "sourceRetained": true,
+  "assetSha256": "adf55282e8e4e8876da4636d0cb9c0fdcff3e754a7c04074d1dc78204fe95796",
+  "inspectedSeconds": [
+    0,
+    1.5,
+    3
+  ],
+  "result": "needs-frame-review",
+  "reason": "首帧和3秒大致正向，1.5秒向侧前倾转；尚需全段检查与选帧，未准入。",
+  "walkingAdmitted": false,
+  "productionAdmitted": false,
+  "extraGeneration": false
+}

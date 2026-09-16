@@ -1,0 +1,18 @@
+{
+  "reviewedAt": "2026-09-17",
+  "taskId": "mt_86b58b6291b67c523d5907678e6d1e10",
+  "requestId": "a2f64d56-63cc-40d1-951a-ab08239d1d4e",
+  "sourceRetained": true,
+  "assetSha256": "c0e172bff6d5b380fa34b5819cf8aa082a23d6ecc42dd5ad8a6b95ab21c7380f",
+  "inspectedSeconds": [
+    0,
+    1.5,
+    3,
+    0.75
+  ],
+  "result": "rejected-direction",
+  "reason": "首帧背向正确，0.75秒转侧身，1.5秒出现正脸且发型/脸部改变，3秒又转侧身；固定背向和身份要求失败。",
+  "walkingAdmitted": false,
+  "productionAdmitted": false,
+  "extraGeneration": false
+}

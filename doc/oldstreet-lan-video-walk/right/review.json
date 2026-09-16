@@ -1,0 +1,18 @@
+{
+  "reviewedAt": "2026-09-17",
+  "taskId": "mt_fe0e4719a8fabab3fd022989de5fbe3e",
+  "requestId": "2eae91c9-4b2f-4b7b-a7bf-f7716fb35f2d",
+  "sourceRetained": true,
+  "assetSha256": "96c35d02e08270d6beca991395a533289fa5574bbbdafa17275674bcfba388fb",
+  "inspectedSeconds": [
+    0,
+    1.5,
+    3,
+    0.75
+  ],
+  "result": "rejected-direction",
+  "reason": "首帧向右正确，0.75秒向左，1.5秒转为侧后，3秒仍向左；固定右向要求失败。",
+  "walkingAdmitted": false,
+  "productionAdmitted": false,
+  "extraGeneration": false
+}
