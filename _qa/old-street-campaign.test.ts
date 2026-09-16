@@ -11,6 +11,10 @@ import {OldStreetAuthority,type OldStreetHead} from '../server/old-street-runtim
 import {oldStreetSpatialPlan,oldStreetDoors} from '../src/old-street-space'
 import type {AuthorityStorage} from '../server/session-authority'
 import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
+import {campaignInputActions,campaignInputKnowledge,campaignPropTitle} from '../src/old-street-campaign-interaction'
+import {createOldStreetAttemptGenerator,oldStreetAttemptContext,type OldStreetAttemptGenerator} from '../server/old-street-attempt'
+import {oldStreetTurn,oldStreetRecoveredTurn} from '../src/old-street-turn'
+import {oldStreetJournal} from '../src/old-street-journal'
 const trace={title:'The paper packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[
  {label:'Workshop repairs',mark:'two notches',wrapping:'folded flap'},
  {label:'Roof measurements',mark:'one notch',wrapping:'linen cord'},
@@ -135,5 +139,102 @@ test('failed generation commits neither a content instance nor story progress',a
   h=await steps(s,h,['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
   await assert.rejects(s.action('synthetic',h.id,body(h,'record-book',{type:'campaign-plan',stage:'trace'})),/OLD_STREET_MODEL_UNAVAILABLE/)
   assert.deepEqual(s.get('synthetic',h.id),h)
+ }finally{db.close()}
+})
+
+test('free input reads the same generated records, commits the chosen record and preserves packet consequences on replay',async()=>{
+ const db=new DatabaseSync(':memory:');let generations=0,understandings=0
+ const seen:Parameters<OldStreetAttemptGenerator>[1][]=[]
+ const understand:OldStreetAttemptGenerator=async(input,context)=>{
+  understandings++;seen.push(structuredClone(context))
+  const id=({
+   'Let me look through those filing records.':'campaign:read-trace',
+   'I choose the workshop repair entry.':'campaign:select-record-0',
+   'I select the street repairs entry with two notches and linen cord.':'campaign:select-record-2',
+   'Let me read what is in the packet.':'campaign:read-parcel',
+   'I will carry these original papers home.':'campaign:take-parcel',
+  } as Record<string,string>)[input]
+  assert.ok(context.actions.some(a=>a.id===id),'model can select only a currently offered action')
+  return {kind:'action',actionId:id}
+ }
+ const s=new class extends OldStreetAuthority{advanceMinute(){const time=this.now();this.now=()=>time+60001}}(storage(db),()=>true,undefined,undefined,undefined,undefined,understand,async c=>{generations++;return c.stage==='trace'?trace:parcel})
+ try{
+  let h=s.create('synthetic',randomUUID(),'en',{campaign:'letter-trail-v1'})
+  h=await steps(s,h,['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
+  const initial=structuredClone(h),version=h.version
+  const read=body(h,'record-book',{type:'free-input',text:'Let me look through those filing records.'})
+  const result=await s.action('synthetic',h.id,read);h=result.head
+  assert.equal(h.version,version+1,'admission and reading are one authoritative action')
+  assert.equal(h.campaign?.trace?.observed,true)
+  assert.equal(seen[0].actions.filter(a=>a.id.startsWith('campaign:select')).length,0)
+  assert.ok(!oldStreetJournal(initial.save,initial.campaign).purpose.includes('Go home'))
+  assert.ok(!JSON.stringify(oldStreetJournal(initial.save,initial.campaign).notes).includes('two notches'))
+  assert.ok(!JSON.stringify(seen[0]).includes('two notches'),'unseen generated contents are not model context')
+  assert.ok(result.text.includes('two notches'))
+  assert.ok(oldStreetTurn(initial,h,true).some(b=>b.text.includes('two notches')),'read results use persistent dialogue pages, not an expiring toast')
+  assert.ok(oldStreetRecoveredTurn({id:h.id,body:read},h,true).length)
+  assert.deepEqual(await s.action('synthetic',h.id,read),result)
+  assert.equal(generations,1);assert.equal(understandings,1)
+  const before=structuredClone(h)
+  await assert.rejects(s.action('synthetic',h.id,body(h,'record-book',{type:'free-input',text:'I choose the workshop repair entry.'})),/CAMPAIGN_RECORD_MISMATCH/)
+  assert.deepEqual(s.get('synthetic',h.id),before,'a wrong comparison does not alter the journey')
+  h=(await s.action('synthetic',h.id,body(h,'record-book',{type:'free-input',text:'I select the street repairs entry with two notches and linen cord.'}))).head
+  assert.equal(h.campaign?.trace?.selected,2)
+  assert.equal(seen[1].actions.filter(a=>a.id.startsWith('campaign:select')).length,3,'wrong records are genuine choices, not filtered from the model')
+  assert.ok(JSON.stringify(seen[1].knowledge).includes('two notches'))
+  const context=seen[1],proposal={kind:'action',actionId:'campaign:select-record-2'}
+  // Exercise the real resolver's veto/review path with scripted transport, not
+  // just a final interpreter result. One reference can contain two descriptors.
+  let requests=0
+  const generator=createOldStreetAttemptGenerator(async()=>++requests%2?proposal:{valid:true,issues:[]})
+  assert.equal((await generator('I select the street repairs entry with two notches and linen cord.',context)).kind,'action')
+  for(const input of ['Do not select the street repairs entry with two notches and linen cord.','I select the street repairs entry with two notches and linen cord and take the papers.']){
+   const vetoed=await createOldStreetAttemptGenerator(async()=>proposal)(input,context)
+   assert.equal(vetoed.kind,'attempt','negation and a second action outside the record description remain vetoed')
+  }
+  assert.equal(oldStreetJournal(h.save,h.campaign).notes.filter(n=>n.id.startsWith('campaign-record-')).length,3)
+  assert.ok(oldStreetJournal(h.save,h.campaign).purpose.includes('cellar'))
+  h=await steps(s,h,['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar','oldstreet:take-photos'])
+  s.advanceMinute() // Walking the real route takes time; no production quota changes.
+  assert.equal(campaignPropTitle(h,'photo-folder')?.[1],'Old paper shelf')
+  const unread=oldStreetAttemptContext(h,'photo-folder',campaignInputActions(h,'photo-folder'))
+  assert.ok(!JSON.stringify(unread).includes('Empty shelf'))
+  assert.ok(!JSON.stringify(unread).includes(parcel.fragment))
+  assert.ok(!unread.actions.some(a=>a.id==='campaign:take-parcel'))
+  h=(await s.action('synthetic',h.id,body(h,'photo-folder',{type:'free-input',text:'Let me read what is in the packet.'}))).head
+  const taking=body(h,'photo-folder',{type:'free-input',text:'I will carry these original papers home.'})
+  const taken=await s.action('synthetic',h.id,taking);h=taken.head
+  assert.deepEqual(await s.action('synthetic',h.id,taking),taken)
+  assert.equal(h.save.inventory.filter(i=>i.id==='letter-enclosure').length,1)
+  assert.ok(campaignComplete(h.campaign!));assert.equal(generations,2)
+  assert.ok(!campaignInputActions(h,'photo-folder').some(a=>a.id==='campaign:take-parcel'))
+  assert.ok(campaignInputKnowledge(h).some(k=>k.text.includes('no longer on the shelf')))
+  const journal=oldStreetJournal(h.save,h.campaign)
+  assert.ok(journal.notes.some(n=>n.text===parcel.fragment))
+  assert.ok(journal.notes.some(n=>n.id==='campaign-disposition'&&n.text.includes('in your bag')))
+  assert.ok(journal.purpose.includes('Go home'))
+ }finally{db.close()}
+})
+
+test('free-input questions can use examined papers without committing a choice; legacy journeys retain their own actions',async()=>{
+ const db=new DatabaseSync(':memory:')
+ const s=new OldStreetAuthority(storage(db),()=>true,undefined,undefined,undefined,undefined,async(_,context)=>{
+  assert.ok(context.knowledge.some(k=>k.id==='learned:campaign-records'))
+  return {kind:'attempt',outcome:'observed',discoveryIds:[],text:'The filing slip lists two notches and linen cord. You have not selected a record.'}
+ },async()=>trace)
+ try{
+  const old=s.create('synthetic',randomUUID(),'en')
+  assert.deepEqual(campaignInputActions(old,'record-book'),[])
+  assert.deepEqual(campaignInputKnowledge(old),[])
+  assert.equal(campaignPropTitle(old,'record-book'),undefined)
+  let h=s.create('synthetic',randomUUID(),'en',{campaign:'letter-trail-v1'})
+  h=await steps(s,h,['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
+  h=(await s.action('synthetic',h.id,body(h,'record-book',{type:'free-input',text:'Read the filing records',mode:'local'}))).head
+  assert.equal(h.campaign?.trace?.observed,true,'visible exact action remains available offline')
+  const campaign=structuredClone(h.campaign)
+  const response=await s.action('synthetic',h.id,body(h,'record-book',{type:'free-input',text:'What did the slip say again?'}))
+  assert.equal(response.kind,'attempt')
+  assert.deepEqual(response.head.campaign,campaign)
+  assert.equal(response.head.version,h.version+1,'only the short attempt history is committed')
  }finally{db.close()}
 })

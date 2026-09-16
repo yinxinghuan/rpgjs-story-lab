@@ -1,5 +1,6 @@
 import {OldStreetCampaignView} from './old-street-campaign-view'
 import {campaignAnchor,campaignComplete} from './old-street-campaign'
+import {campaignPropTitle} from './old-street-campaign-interaction'
 import {OldStreetToolIcon} from './old-street-tool-icon'
 import {OldStreetEndingView} from './old-street-ending-view'
 import {oldStreetDialogueBeats} from './old-street-dialogue-pages'
@@ -495,6 +496,8 @@ export default function OldStreetDev() {
     return door ? text(oldStreetRooms[door.destination.room]) : text(actionNames[id.replace('oldstreet:', '')] ?? [id, id])
   }
   function targetTitle(entity:typeof entities[number]){
+    const campaignTitle=serverHead.current&&campaignPropTitle(serverHead.current,entity.id)
+    if(campaignTitle)return text(campaignTitle)
     const door=oldStreetDoors().find(d=>d.id===entity.id)
     const known=head.save.characters.find(c=>c.id===oldStreetPerson(entity.id)?.id)
     const clockAvailable=entity.id==='drawer'&&oldStreetContextAction(head.save,entity).actions.includes('oldstreet:inspect-clock')
@@ -554,7 +557,7 @@ export default function OldStreetDev() {
     {journeysOpen&&<OldStreetJourneysView createCampaign={import.meta.env.DEV&&debug&&expansionCapabilities.campaign?()=>{void restart(true)}:undefined} soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} create={()=>{void restart()}} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
     {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView campaign={campaign} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} close={()=>{setCampaignOpen(null);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
-    {journalOpen&&<OldStreetJournalView save={head.save} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
+    {journalOpen&&<OldStreetJournalView save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p>{borrowedItems.length>0&&<p>{text(['还带着待归还的物品：','You still have items to return: '])}{borrowedItems.map(i=>i.label).join(' · ')}{text(['。可以再逛逛，先把它们送回去。','. You can stay and return them first.'])}</p>}<button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}

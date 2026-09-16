@@ -82,3 +82,7 @@
  .os-actions--composing .os-actions__body,.os-actions--composing .os-choices,.os-actions--composing .os-compose__toggle{display:none!important}
  .os-actions--composing .os-compose form{margin:0}
 }
+.os-journal[open]{display:flex;flex-direction:column;overflow:hidden}
+.os-journal>header,.os-journal>p,.os-journal>nav{flex-shrink:0}
+.os-journal nav button{min-width:0;padding-inline:8px}
+.os-journal__entries{min-height:0;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere}

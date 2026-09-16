@@ -1,6 +1,7 @@
 import {oldStreetAttemptContext,type OldStreetAttemptGenerator} from './old-street-attempt'
 import {prepareCampaignAction,type CampaignCandidate} from './old-street-campaign-actions'
 import {campaignComplete} from '../src/old-street-campaign'
+import {campaignInputActions,resolveCampaignInput} from '../src/old-street-campaign-interaction'
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import type {ExpansionPlan} from '../src/old-street-expansion-plan'
 import {oldStreetClockObserved} from '../src/old-street-clock-puzzle'
@@ -65,7 +66,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(!['action','free-input','dialogue','expansion-request','expansion-activate','expansion-photo-match','expansion-photo-decision','campaign-plan','campaign-observe','campaign-decide'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(!['action','free-input','dialogue','expansion-request','expansion-activate','expansion-photo-match','expansion-photo-decision','campaign-plan','campaign-read','campaign-observe','campaign-decide'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
@@ -164,10 +165,11 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         const entity=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
         if(!entity||!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
-        let action=resolveOldStreetInput(body.text,h.save.locale,entity.actions)
+        const campaignActions=campaignInputActions(h,entity.id)
+        let action=resolveCampaignInput(body.text,campaignActions)??resolveOldStreetInput(body.text,h.save.locale,entity.actions)
         if(!action&&attempt&&body.mode!=='local'){
           const cartridge=oldStreetCartridge(h.save.locale)
-          const actions=entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,cartridge,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
+          const actions=[...campaignActions.map(({id,label})=>({id,label})),...entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,cartridge,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))]
           const resolved=await resolveAttempt(actions)
           if(resolved.response)return resolved.response
           action=resolved.actionId
@@ -175,7 +177,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(!action&&(body.mode==='live'||body.mode===undefined&&!!interpreter)){
           if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
           const c=oldStreetCartridge(h.save.locale)
-          const actions=entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,c,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
+          const actions=[...campaignActions.map(({id,label})=>({id,label})),...entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,c,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))]
           if(!actions.length||originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
           check({...h,position:pos})
           if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
@@ -183,6 +185,12 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
           if(candidate&&actions.some(a=>a.id===candidate))action=candidate
         }
         if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
+        const campaignAction=campaignActions.find(a=>a.id===action)
+        if(campaignAction){
+          const result=await prepareCampaignAction(h,{...body,type:campaignAction.type,stage:campaignAction.stage,selection:campaignAction.selection},pos,campaignGenerator,reserveNarration,campaignCandidate)
+          check(result.head,h)
+          return {...result,interpretation:{input:body.text,actionId:action}}
+        }
         body={...body,action}
       }
       if(!binding.admits(body.action,body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')

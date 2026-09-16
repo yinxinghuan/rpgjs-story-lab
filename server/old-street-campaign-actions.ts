@@ -10,7 +10,7 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
  if(!anchor||!c||head.save.facts['letter-taken']!==true||head.sceneId!==anchor.scene||body.target!==anchor.target||!bindOldStreet(head.save.locale,head.save).canInteract(anchor.target,anchor.scene,position))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  const next=structuredClone(head),campaign=next.campaign!,save=next.save,t=(zh:string,en:string)=>save.locale==='zh'?zh:en
  let text=''
- if(body.type==='campaign-plan'){
+ if(body.type==='campaign-plan'||body.type==='campaign-read'&&!campaign[body.stage as 'trace'|'parcel']){
   if(campaign[body.stage as 'trace'|'parcel'])throw new LabError('CAMPAIGN_ALREADY_PREPARED',409)
   if(!generate&&!candidate)throw new LabError('CAMPAIGN_GENERATOR_UNAVAILABLE',409)
   let context:CampaignContext={stage:'trace',locale:save.locale}
@@ -30,7 +30,8 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
    else campaign.parcel={id:body.action_id,content:readParcelContent(raw),observed:false}
   }catch{throw new LabError('CAMPAIGN_PLAN_REJECTED',409)}
   text=t('材料已经展开，可以仔细看看。','The papers are laid out, ready to examine.')
- }else if(body.type==='campaign-observe'){
+ }
+ if(body.type==='campaign-observe'||body.type==='campaign-read'){
   if(body.stage==='trace'){
    if(!campaign.trace)throw new LabError('CAMPAIGN_NOT_PREPARED',409)
    campaign.trace.observed=true
@@ -55,8 +56,8 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
    text=body.selection==='take'?t('你把材料收好，准备和密封信一起带回去。架上不再留着这份原件。','You pack the papers to bring home with the sealed letter. The original is no longer on the shelf.'):t('你记住材料里的发现，把原件留在架上。回家时可以转述，但不会带走实物。','You remember what you read and leave the original on the shelf. You can tell your family about it, but will not bring the papers.')
    save.objective=t('从街口带信回家，或继续帮助街上的人。','Take the letter home from the street, or stay to help the neighbors.')
   }
- }else throw new LabError('INVALID_ACTION_TYPE')
+ }else if(body.type!=='campaign-plan')throw new LabError('INVALID_ACTION_TYPE')
  next.version++;next.position=position
- save.blocks.push({id:body.action_id+':campaign',kind:'narration',text})
+ save.blocks.push({id:body.action_id+':campaign',kind:'narration',text,data:{oldStreetCampaignStage:body.stage}})
  return {head:next,kind:body.type,accepted:true,text}
 }
