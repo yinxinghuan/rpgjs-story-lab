@@ -6,11 +6,16 @@ import {OldStreetAuthority} from '../server/old-street-runtime'
 import type {AuthorityStorage} from '../server/session-authority'
 import {oldStreetSession} from '../src/old-street-session'
 import {oldStreetSpatialPlan,oldStreetDoors} from '../src/old-street-space'
+import {oldStreetRecoveredTurn} from '../src/old-street-turn'
 
 test('local transport bounds a lost receipt and recovers the same committed action once',async t=>{
  const raw=new DatabaseSync(':memory:')
  const db:AuthorityStorage={all:(sql,...b)=>raw.prepare(sql).all(...b) as any,run:(sql,...b)=>{raw.prepare(sql).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const result=work();raw.exec('COMMIT');return result}catch(e){raw.exec('ROLLBACK');throw e}}}
- const server=new OldStreetAuthority(db,()=>true)
+ let attemptCalls=0
+ const server=new OldStreetAuthority(db,()=>true,undefined,undefined,undefined,undefined,async()=>{
+  attemptCalls++
+  return {kind:'attempt',outcome:'inconclusive',text:'你轻敲抽屉，里面的东西还无法确认。',discoveryIds:[]}
+ })
  const values=new Map<string,string>()
  const storage:Storage={get length(){return values.size},key:i=>[...values.keys()][i]??null,getItem:k=>values.get(k)??null,setItem:(k,v)=>{values.set(k,String(v))},removeItem:k=>{values.delete(k)},clear:()=>values.clear()}
  let controller:AbortController,loseReceipt=false
@@ -52,10 +57,30 @@ test('local transport bounds a lost receipt and recovers the same committed acti
   assert.equal(actionIds.at(-1),actionIds.at(-2))
   assert.equal(server.events('test-owner',start.id,0).length,3)
   assert.equal(connection.client.hasPending(),false)
+  // The page reloads after a free attempt commits but its response is lost.
+  // Enrollment already returns the new version: ordinary before/after rendering
+  // cannot recover this reply, so use the exact pending receipt identifier.
+  loseReceipt=true
+  await assert.rejects(connection.client.send(resumed.head,{type:'free-input',text:'轻敲抽屉听听',target:'drawer',position:drawer.approach}),{name:'TimeoutError'})
+  assert.equal(attemptCalls,1)
+  const reconnect=oldStreetSession(storage,async(_name,work)=>work(),request)
+  const initial=await reconnect.client.enroll('zh')
+  const pending=reconnect.client.pending().find(p=>p.id===initial.id)
+  const reply=await reconnect.client.recover()
+  assert.equal(initial.version,reply.head.version)
+  assert.equal(reply.accepted,true)
+  assert.equal(attemptCalls,1,'replaying a committed receipt must not regenerate the attempt')
+  assert.equal(actionIds.at(-1),actionIds.at(-2))
+  assert.equal(reconnect.client.hasPending(),false)
+  assert.deepEqual(reply.head.save.inventory,resumed.head.save.inventory)
+  const recoveredTurn=oldStreetRecoveredTurn(pending,reply.head,reply.accepted)
+  assert.equal(recoveredTurn.length,1)
+  assert.equal(recoveredTurn[0].text,'你轻敲抽屉，里面的东西还无法确认。')
+  assert.equal(server.events('test-owner',start.id,0).length,4)
   // The authority has acknowledged a door transfer before the destination art
   // decodes. Reload must read that head, not resubmit the completed transfer.
   const exit=oldStreetDoors().find(d=>d.room==='shop'&&d.destination.room==='street')!
-  const transferred=await connection.client.send(resumed.head,{type:'action',action:exit.actionId,target:exit.id,position:exit.approach})
+  const transferred=await reconnect.client.send(reply.head,{type:'action',action:exit.actionId,target:exit.id,position:exit.approach})
   await assert.rejects(decodeSpatialArt('blob:broken-room',{createImage:()=>({src:'',decode:async():Promise<void>=>{throw Error('corrupt image')}} as HTMLImageElement)}),/ART_IMAGE_DECODE_FAILED/)
   assert.equal(connection.client.hasPending(),false)
   const posts=actionIds.length
@@ -68,7 +93,7 @@ test('local transport bounds a lost receipt and recovers the same committed acti
   assert.equal(restored.version,transferred.head.version)
   assert.equal(restored.save.inventory.find((i:{id:string})=>i.id==='lens')?.count,1)
   assert.equal(actionIds.length,posts)
-  assert.equal(server.events('test-owner',start.id,0).length,4)
+  assert.equal(server.events('test-owner',start.id,0).length,5)
 
  }finally{raw.close()}
 })
