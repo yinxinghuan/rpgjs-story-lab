@@ -1,0 +1,10 @@
+{
+  "requestId": "6b75db1b-fb04-4998-b739-9a0338cd615b",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "startUrl": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@289fe2fc4dd9fc31b2a93e2e9f43aebca8bc0a73/doc/oldstreet-lan-video-walk/reference.png",
+  "endUrl": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@289fe2fc4dd9fc31b2a93e2e9f43aebca8bc0a73/doc/oldstreet-lan-video-walk/reference.png",
+  "ratio": "9:16",
+  "durationSeconds": 5,
+  "prompt": "Animate only the pixel-art laundry woman in the provided identical start/end images. She performs two full walking cycles IN PLACE facing screen LEFT, then returns to the exact starting standing pose. Clearly alternate the near and far leg: near foot forward while far foot back, passing pose, far foot forward while near foot back, passing pose. Arms swing opposite the legs. Both leg silhouettes must remain readable below the short apron. Keep the character centered at the same size, ground anchor and elevated orthographic B camera throughout. Preserve the exact visible top of head and shoulders, compact body proportions, short black hair, moss-green work shirt, cream apron, brown trousers, dark shoes, pixel clusters and dark outline. Locked camera: no orbit, pan, zoom, perspective shift, body rotation or horizontal travel. Solid magenta background remains unchanged. No other objects, no text, no extra limbs, no new accessories. Use clear discrete game-sprite poses instead of blurred movement.",
+  "soundPrompt": "Silence. No speech, music, ambience or sound effects. Audio is not used for this sprite animation experiment."
+}
