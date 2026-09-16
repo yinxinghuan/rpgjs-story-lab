@@ -1,0 +1,10 @@
+{
+  "requestId": "3d8553d7-a462-4c13-a732-4cdf89ab3a87",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "startUrl": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@dce4897af88392c542467ed2ed71d6e5d35b0b69/up/reference.png",
+  "endUrl": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@dce4897af88392c542467ed2ed71d6e5d35b0b69/up/reference.png",
+  "ratio": "9:16",
+  "durationSeconds": 5,
+  "prompt": "A locked elevated rear view of this exact pixel-art woman, marching gently on the spot for five seconds. Her BACK OF HEAD and BACK OF SHIRT stay facing the camera in every frame. She lifts her LEFT heel and puts it down, then lifts her RIGHT heel and puts it down, repeatedly and evenly. Her arms make small opposite swings. She remains at the same ground position and same size. Keep the exact reference outfit, body proportions, pixel texture, orthographic viewing angle and solid magenta background. No turning around. No sideways facing. No face visible at any time. No camera movement. No added objects. End in the original still pose.",
+  "soundPrompt": "Silence. Audio is not used for this sprite animation experiment."
+}

@@ -1,0 +1,13 @@
+{
+  "requestId": "4ffafb8f-21e1-49c8-965e-b6d23674ac64",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/1bfe1e7240994bb137cd7cadc88ad082098f7684/public/art/overhead/mechanic.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "prompt": "Create a FOUR VIEW standing sprite sheet for a 2D exploration game. Use the supplied sheet ONLY as the exact elevated orthographic camera, head-to-body proportions, crisp pixel texture and outline reference. NEW CHARACTER: a middle-aged woman who runs a small laundromat in a fictional American harbor town, short cropped copper-brown hair, lightly freckled warm tan face, faded teal short-sleeved collared work shirt ending at the waist, straight dark navy trousers, light brown practical work shoes. Simple clothing, no apron, no straps, no bag, no hat, no glasses, nothing held. Clear arms separated slightly from the torso; both legs separately visible. Preserve the reference overhead angle and visible crown of the head; never use eye-level view. The face is foreshortened, not a large portrait. SAME woman, SAME hairstyle, SAME shirt and SAME proportions in all FOUR frames. Layout TWO columns and TWO rows on 1024x1024. Top left faces SOUTH toward viewer. Top right faces WEST left. Bottom left faces EAST right. Bottom right faces NORTH away, only back of head and back of shirt, no face. Exactly ONE relaxed standing whole body in each 512x512 cell, both feet level and close together, arms at sides. Figure about 160 pixels wide and 290 pixels tall, feet baseline at local y=420. Match the source refined pixel-art texture with discrete color clusters and crisp dark outlines; no smooth vector cartoon or painted blur. Entire background perfectly flat bright magenta RGB255,0,255, no cast shadows, no checkerboard, no floor, no labels, no grid lines. Four complete independent figures only."
+}

@@ -1,0 +1,11 @@
+{
+  "purpose": "Simplified clothing four-view candidate; not controlled model comparison",
+  "previousRequest": "../standing/request.json",
+  "previousOutcome": "PROVIDER_REJECTED; no image",
+  "changes": [
+    "text mode without reference",
+    "shorter prompt",
+    "same four-view stance goal"
+  ],
+  "productionAdmitted": false
+}

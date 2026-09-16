@@ -46,3 +46,16 @@ node --import tsx scripts/prepare-lan-video-frames.ts
 当前方法限制从“尚未试过其他方向”变为“参考首帧可以生效，但中间动作朝向不能可靠保持”。下一次若继续视频试验，应先用一条背向固定镜头、原地踏步的简单动作描述验证，不再批量重复这套多周期提示词。左向实景证据不外推到整个人物。
 
 托管处理：主开发版本触发jsDelivr的50 MB GitHub包体积限制，HTTP403正文明确该原因。在同一公开仓库以已有素材子树创建无游戏代码、无部署工作流的小分支 `art-reference-lan-20260917`，固定提交见reference-host.json；三个媒体请求使用其固定commit公开PNG，SHA与原参考相同。此操作没有发布新的游戏或更新线上游戏版本。
+
+## 四向视频候选与实际地图（2026-09-17）
+
+固定背向和固定右向的新提示分别返回 up-fixed-back 与 right-fixed-side；原视频和任务来源保留。抽查背向0.75/1.5/3秒能保持背对镜头、两腿不同前后；右向抽查保持面朝右，手臂摆幅和躯干扭转偏大。与此前已明确拒绝的转身视频分开存放。
+
+prepare-lan-four-way-video.ts 对4条来源视频的03–12帧按已有授权去底/脚点对齐，无缩放、重绘或镜像，组成11列4行，仅本地 debug+oldstreet-dev+ npc_gait_trial=lan-four 加载。每行首格仍是原静态姿态。测试移动改为从当前位置继续，不再每次跳回出生点。
+
+实际CUA在390×844、同一洗衣店旅程验证右→上→下→左四次试走，每次24单位，截图出现相应朝向video-2/3姿态与位移；上向另取5.6/6.8/7.8单位连续截图，旧旅程与已认识人物保持。访客栏用自带Close关闭，主角先移开交谈范围。四向能在真实renderer播放，但视频纹理较静态基准软、躯干姿态不完全稳定、周期和停步衔接尚不自然，因此仍不准入正式行走，不作为iPhone实机验证。
+
+
+本轮完整 `npm run build` 通过（类型检查、既有空间绑定、Vite资源检查与Worker启动），secret audit通过。返回正常本地入口后，实际DOM没有试走按钮、诊断区域或动作计数，原洗衣店旅程可恢复。只做上述代表动作验证，没有重复全线路通关，也未部署线上。
+
+复现四向准备：对 cdn-retry、down、right-fixed-side、up-fixed-back 的 candidate.mp4 分别用 `ffmpeg -i <video> -vf 'crop=288:512:0:0,fps=4' -frames:v 20 <folder>/frames-roi/%02d.png` 提帧，再执行 `node --import tsx scripts/prepare-lan-four-way-video.ts`。后者校验原视频及站姿SHA，不调用任何生成服务。

@@ -1,0 +1,10 @@
+{
+  "requestId": "c6675bb5-9de7-4734-b92a-57baa522d828",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "startUrl": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@dce4897af88392c542467ed2ed71d6e5d35b0b69/right/reference.png",
+  "endUrl": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@dce4897af88392c542467ed2ed71d6e5d35b0b69/right/reference.png",
+  "ratio": "9:16",
+  "durationSeconds": 5,
+  "prompt": "A locked elevated RIGHT-FACING side view of this exact pixel-art woman, marching gently on the spot for five seconds. Her nose and both toes point to the RIGHT edge of the picture in every frame. She lifts her LEFT heel and puts it down, then lifts her RIGHT heel and puts it down, repeatedly and evenly. Her arms remain beside her torso with small opposite swings. She remains at the same ground position and same size. Keep the exact reference outfit, body proportions, pixel texture, visible top of head, orthographic viewing angle and solid magenta background. No turning around. No facing left. No facing the viewer. No camera movement. No added objects. End in the original still pose.",
+  "soundPrompt": "Silence. Audio is not used for this sprite animation experiment."
+}

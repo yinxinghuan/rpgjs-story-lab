@@ -1,0 +1,1158 @@
+{
+  "productionAdmitted": false,
+  "sourceRetained": true,
+  "resize": false,
+  "redraw": false,
+  "mirror": false,
+  "atlas": {
+    "width": 2816,
+    "height": 1408,
+    "columns": 11,
+    "rows": 4,
+    "sha256": "bc301259132786159c3fb5f1e4d636a752b447f3fce7a246392b87f170a84b2f"
+  },
+  "sources": [
+    [
+      "down",
+      "down",
+      "adf55282e8e4e8876da4636d0cb9c0fdcff3e754a7c04074d1dc78204fe95796"
+    ],
+    [
+      "left",
+      "cdn-retry",
+      "3765eecc9d16f07b50d9257a8b7c2d2da0c1cd28c44978abfa1c6b73d00a25be"
+    ],
+    [
+      "right",
+      "right-fixed-side",
+      "5ff58d8dba40d884cfecbea8067a0adea6468b96a54413eb9a40c8cb5e750931"
+    ],
+    [
+      "up",
+      "up-fixed-back",
+      "d617adce09ccaf373dabdd0a79658e793f747a02945abb224554639417ae19f9"
+    ]
+  ],
+  "frames": [
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/03.png",
+      "sha256": "885ab94b3c5afa65c886b4b5caacefd274b145000d2f1b9ac1f2f1c54c2e79c8",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          59,
+          108,
+          221,
+          399
+        ],
+        "sourceAnchor": {
+          "x": 140,
+          "y": 399
+        },
+        "offset": {
+          "x": -12,
+          "y": -71
+        }
+      },
+      "metrics": {
+        "removed": 112752,
+        "edgeCorrected": 1454,
+        "corePreserved": 27724
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/04.png",
+      "sha256": "f829df445e5866b41fd9b33a3388190feb4f7c6828b2fc901a1acbcb867066a3",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          48,
+          114,
+          210,
+          404
+        ],
+        "sourceAnchor": {
+          "x": 129,
+          "y": 404
+        },
+        "offset": {
+          "x": -1,
+          "y": -76
+        }
+      },
+      "metrics": {
+        "removed": 113654,
+        "edgeCorrected": 1531,
+        "corePreserved": 26605
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/05.png",
+      "sha256": "f65c47b4e644b745be8799c71a909e2a664c66f77f5a630a0e40d9c87dfc3539",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          33,
+          117,
+          168,
+          403
+        ],
+        "sourceAnchor": {
+          "x": 100,
+          "y": 403
+        },
+        "offset": {
+          "x": 28,
+          "y": -75
+        }
+      },
+      "metrics": {
+        "removed": 115937,
+        "edgeCorrected": 1349,
+        "corePreserved": 24754
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/06.png",
+      "sha256": "407cf4d2c6aefc1a919b0872aecc8abf5cb2e15eb530dce6074e9b3b3aca6856",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          22,
+          121,
+          149,
+          401
+        ],
+        "sourceAnchor": {
+          "x": 85,
+          "y": 401
+        },
+        "offset": {
+          "x": 43,
+          "y": -73
+        }
+      },
+      "metrics": {
+        "removed": 116713,
+        "edgeCorrected": 1193,
+        "corePreserved": 24003
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/07.png",
+      "sha256": "ffb1b74215e0c976eb5b5a1c458b140e93edec69b84c77f85d663c9f29a8157a",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          25,
+          121,
+          177,
+          401
+        ],
+        "sourceAnchor": {
+          "x": 101,
+          "y": 401
+        },
+        "offset": {
+          "x": 27,
+          "y": -73
+        }
+      },
+      "metrics": {
+        "removed": 114535,
+        "edgeCorrected": 1480,
+        "corePreserved": 25989
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/08.png",
+      "sha256": "75f2f71cad1e197c2d209c3eeaf083664939c2cfe7547280715fb10c0f50f416",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          41,
+          113,
+          209,
+          407
+        ],
+        "sourceAnchor": {
+          "x": 125,
+          "y": 407
+        },
+        "offset": {
+          "x": 3,
+          "y": -79
+        }
+      },
+      "metrics": {
+        "removed": 113720,
+        "edgeCorrected": 1527,
+        "corePreserved": 26623
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/09.png",
+      "sha256": "b4841c34ce670c74379436568abe31f6a7ca49a259846d1adcc6a64ff3635694",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          61,
+          119,
+          219,
+          406
+        ],
+        "sourceAnchor": {
+          "x": 140,
+          "y": 406
+        },
+        "offset": {
+          "x": -12,
+          "y": -78
+        }
+      },
+      "metrics": {
+        "removed": 114017,
+        "edgeCorrected": 1299,
+        "corePreserved": 26535
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/10.png",
+      "sha256": "c112edda4a731e48e469228768b6cb7543f5d03d7a78585a0c98232f5ff068ed",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          74,
+          133,
+          220,
+          407
+        ],
+        "sourceAnchor": {
+          "x": 147,
+          "y": 407
+        },
+        "offset": {
+          "x": -19,
+          "y": -79
+        }
+      },
+      "metrics": {
+        "removed": 115384,
+        "edgeCorrected": 1206,
+        "corePreserved": 25451
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/11.png",
+      "sha256": "84c516d2cad08374aef05ae426c11b7fc3a1a8d928cd8140599b76418f1283cf",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          83,
+          127,
+          217,
+          406
+        ],
+        "sourceAnchor": {
+          "x": 150,
+          "y": 406
+        },
+        "offset": {
+          "x": -22,
+          "y": -78
+        }
+      },
+      "metrics": {
+        "removed": 116313,
+        "edgeCorrected": 1197,
+        "corePreserved": 24436
+      }
+    },
+    {
+      "direction": "down",
+      "source": "doc/oldstreet-lan-video-walk/down/frames-roi/12.png",
+      "sha256": "49abde2f68c734f975937355db5edb7bebe638868eafebdf37ebf767cc691cf6",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          67,
+          124,
+          217,
+          405
+        ],
+        "sourceAnchor": {
+          "x": 142,
+          "y": 405
+        },
+        "offset": {
+          "x": -14,
+          "y": -77
+        }
+      },
+      "metrics": {
+        "removed": 114543,
+        "edgeCorrected": 1259,
+        "corePreserved": 26241
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/03.png",
+      "sha256": "00a53d90a2eff8f66d221a969343c84ec383349cd3053ef955e98696c3114422",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          42,
+          130,
+          180,
+          402
+        ],
+        "sourceAnchor": {
+          "x": 111,
+          "y": 402
+        },
+        "offset": {
+          "x": 17,
+          "y": -74
+        }
+      },
+      "metrics": {
+        "removed": 117991,
+        "edgeCorrected": 1268,
+        "corePreserved": 22648
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/04.png",
+      "sha256": "88379e569c752df6d2fe8058261ee002db7bb3e5046088095dfbebe456d5c0ad",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          29,
+          133,
+          173,
+          402
+        ],
+        "sourceAnchor": {
+          "x": 101,
+          "y": 402
+        },
+        "offset": {
+          "x": 27,
+          "y": -74
+        }
+      },
+      "metrics": {
+        "removed": 118463,
+        "edgeCorrected": 1142,
+        "corePreserved": 22166
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/05.png",
+      "sha256": "78b2c392123723b32eb7d37e4deec77170e5ccb3bc456f8cd3462377754c27c9",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          27,
+          135,
+          163,
+          400
+        ],
+        "sourceAnchor": {
+          "x": 95,
+          "y": 400
+        },
+        "offset": {
+          "x": 33,
+          "y": -72
+        }
+      },
+      "metrics": {
+        "removed": 118875,
+        "edgeCorrected": 1225,
+        "corePreserved": 21826
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/06.png",
+      "sha256": "4091db92f96671ada8188e70a32eed76f127a12bbcb15258b7c1546c3f8b5805",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          35,
+          131,
+          161,
+          399
+        ],
+        "sourceAnchor": {
+          "x": 98,
+          "y": 399
+        },
+        "offset": {
+          "x": 30,
+          "y": -71
+        }
+      },
+      "metrics": {
+        "removed": 119161,
+        "edgeCorrected": 1073,
+        "corePreserved": 21737
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/07.png",
+      "sha256": "2381151fd2a6f4539b7c76b088b8e15e8a6ff81cb1fda86f1695c5a3d2ec6e82",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          51,
+          128,
+          190,
+          393
+        ],
+        "sourceAnchor": {
+          "x": 120,
+          "y": 393
+        },
+        "offset": {
+          "x": 8,
+          "y": -65
+        }
+      },
+      "metrics": {
+        "removed": 118718,
+        "edgeCorrected": 1222,
+        "corePreserved": 22021
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/08.png",
+      "sha256": "a86dc6eed6f1ffa22e2475b5ff2bb078c09bd5c379f3e19f2f390ff9d7ac3ccf",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          65,
+          129,
+          217,
+          395
+        ],
+        "sourceAnchor": {
+          "x": 141,
+          "y": 395
+        },
+        "offset": {
+          "x": -13,
+          "y": -67
+        }
+      },
+      "metrics": {
+        "removed": 117897,
+        "edgeCorrected": 1301,
+        "corePreserved": 22735
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/09.png",
+      "sha256": "644fc6abaa8e0929852fe2ee8ce73c3db65af76a37cdde9ebca3cc6d1543b19d",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          92,
+          132,
+          227,
+          399
+        ],
+        "sourceAnchor": {
+          "x": 159,
+          "y": 399
+        },
+        "offset": {
+          "x": -31,
+          "y": -71
+        }
+      },
+      "metrics": {
+        "removed": 119003,
+        "edgeCorrected": 1271,
+        "corePreserved": 21733
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/10.png",
+      "sha256": "ec1c60a8ca4dd0272dd8a4fadcfaed649f05e21c8cf2b8c21178832aefa90514",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          104,
+          139,
+          229,
+          404
+        ],
+        "sourceAnchor": {
+          "x": 166,
+          "y": 404
+        },
+        "offset": {
+          "x": -38,
+          "y": -76
+        }
+      },
+      "metrics": {
+        "removed": 119750,
+        "edgeCorrected": 1184,
+        "corePreserved": 21193
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/11.png",
+      "sha256": "f8d1f56bffb3c6d8f888b610ce6afaff4a53e8dcd4ad687c8414afc9e59d5cc2",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          98,
+          143,
+          216,
+          405
+        ],
+        "sourceAnchor": {
+          "x": 157,
+          "y": 405
+        },
+        "offset": {
+          "x": -29,
+          "y": -77
+        }
+      },
+      "metrics": {
+        "removed": 121005,
+        "edgeCorrected": 1089,
+        "corePreserved": 19984
+      }
+    },
+    {
+      "direction": "left",
+      "source": "doc/oldstreet-lan-video-walk/cdn-retry/frames-roi/12.png",
+      "sha256": "770c0e160a758f781dd5a6934c34c57b9313f420b563152336801a05f14d956a",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          84,
+          143,
+          206,
+          405
+        ],
+        "sourceAnchor": {
+          "x": 145,
+          "y": 405
+        },
+        "offset": {
+          "x": -17,
+          "y": -77
+        }
+      },
+      "metrics": {
+        "removed": 120707,
+        "edgeCorrected": 1100,
+        "corePreserved": 20360
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/03.png",
+      "sha256": "eda9572913f59c821a9d8e70f10a883b73fdaf0c64351c6f3a04ee48ebbab8cc",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          15,
+          137,
+          251,
+          399
+        ],
+        "sourceAnchor": {
+          "x": 133,
+          "y": 399
+        },
+        "offset": {
+          "x": -5,
+          "y": -71
+        }
+      },
+      "metrics": {
+        "removed": 113847,
+        "edgeCorrected": 1619,
+        "corePreserved": 26090
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/04.png",
+      "sha256": "8dfb48810f7978b87e8c3043186205a6cb81d523698387f95ac4a483bdb0396d",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          75,
+          137,
+          181,
+          403
+        ],
+        "sourceAnchor": {
+          "x": 128,
+          "y": 403
+        },
+        "offset": {
+          "x": 0,
+          "y": -75
+        }
+      },
+      "metrics": {
+        "removed": 123275,
+        "edgeCorrected": 1117,
+        "corePreserved": 17764
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/05.png",
+      "sha256": "aaee0966250f8a0db06434d81d36c3bb9d5d5d16abbca388bdd937a2158425b8",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          75,
+          137,
+          189,
+          401
+        ],
+        "sourceAnchor": {
+          "x": 132,
+          "y": 401
+        },
+        "offset": {
+          "x": -4,
+          "y": -73
+        }
+      },
+      "metrics": {
+        "removed": 122077,
+        "edgeCorrected": 1009,
+        "corePreserved": 18927
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/06.png",
+      "sha256": "ab6d1e0f68c241ac1e5281ed5d886ce3a57c81e2631f139e23edfcf5bc9a6ff7",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          65,
+          137,
+          237,
+          401
+        ],
+        "sourceAnchor": {
+          "x": 151,
+          "y": 401
+        },
+        "offset": {
+          "x": -23,
+          "y": -73
+        }
+      },
+      "metrics": {
+        "removed": 117917,
+        "edgeCorrected": 1280,
+        "corePreserved": 22545
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/07.png",
+      "sha256": "3024cfcb6a1e348b33ac3247a8b9f3d45f3d06eaad4660e5e619531737e58174",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          59,
+          137,
+          237,
+          400
+        ],
+        "sourceAnchor": {
+          "x": 148,
+          "y": 400
+        },
+        "offset": {
+          "x": -20,
+          "y": -72
+        }
+      },
+      "metrics": {
+        "removed": 117278,
+        "edgeCorrected": 1417,
+        "corePreserved": 23062
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/08.png",
+      "sha256": "d02e0d3c932c8105ef245a6237f0011d55b838bcc49a14734e7932443cee2858",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          89,
+          141,
+          191,
+          405
+        ],
+        "sourceAnchor": {
+          "x": 140,
+          "y": 405
+        },
+        "offset": {
+          "x": -12,
+          "y": -77
+        }
+      },
+      "metrics": {
+        "removed": 123186,
+        "edgeCorrected": 868,
+        "corePreserved": 17898
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/09.png",
+      "sha256": "161305d33a124dfadc84241fd9c8e53351c54afca122d5a3e6d5733a59a126ea",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          89,
+          141,
+          191,
+          404
+        ],
+        "sourceAnchor": {
+          "x": 140,
+          "y": 404
+        },
+        "offset": {
+          "x": -12,
+          "y": -76
+        }
+      },
+      "metrics": {
+        "removed": 123131,
+        "edgeCorrected": 884,
+        "corePreserved": 17951
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/10.png",
+      "sha256": "43f61cbdbd216d7bf514a20d2f9214d551e0b8d8100f644486b66c17532825a8",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          73,
+          137,
+          219,
+          401
+        ],
+        "sourceAnchor": {
+          "x": 146,
+          "y": 401
+        },
+        "offset": {
+          "x": -18,
+          "y": -73
+        }
+      },
+      "metrics": {
+        "removed": 119570,
+        "edgeCorrected": 1056,
+        "corePreserved": 21240
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/11.png",
+      "sha256": "c9710dc857a065830878b3654fbb6bac8aa65ddc6c43cb8622d66228972e082e",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          15,
+          136,
+          249,
+          400
+        ],
+        "sourceAnchor": {
+          "x": 132,
+          "y": 400
+        },
+        "offset": {
+          "x": -4,
+          "y": -72
+        }
+      },
+      "metrics": {
+        "removed": 114029,
+        "edgeCorrected": 1530,
+        "corePreserved": 25927
+      }
+    },
+    {
+      "direction": "right",
+      "source": "doc/oldstreet-lan-video-walk/right-fixed-side/frames-roi/12.png",
+      "sha256": "960d925722346ddd578684ca22f4901e1001265336fcfa8e861db4202e88edc6",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          75,
+          137,
+          181,
+          405
+        ],
+        "sourceAnchor": {
+          "x": 128,
+          "y": 405
+        },
+        "offset": {
+          "x": 0,
+          "y": -77
+        }
+      },
+      "metrics": {
+        "removed": 123299,
+        "edgeCorrected": 989,
+        "corePreserved": 17732
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/03.png",
+      "sha256": "52d9339a831300253c17902af4686c527ebae08f603ce4d5eab620433bc49c66",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          31,
+          107,
+          253,
+          397
+        ],
+        "sourceAnchor": {
+          "x": 142,
+          "y": 397
+        },
+        "offset": {
+          "x": -14,
+          "y": -69
+        }
+      },
+      "metrics": {
+        "removed": 114579,
+        "edgeCorrected": 1640,
+        "corePreserved": 25547
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/04.png",
+      "sha256": "4e111c222d5cb79567e74279cdc466d668cf10f393f3b42a75a65866d8f4c6b8",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          59,
+          117,
+          245,
+          399
+        ],
+        "sourceAnchor": {
+          "x": 152,
+          "y": 399
+        },
+        "offset": {
+          "x": -24,
+          "y": -71
+        }
+      },
+      "metrics": {
+        "removed": 115310,
+        "edgeCorrected": 1504,
+        "corePreserved": 25005
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/05.png",
+      "sha256": "b923a85f51f1a5f8cd1baa7b2d6378fc5fe5028d7842025e366449235fadf9fb",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          65,
+          126,
+          215,
+          405
+        ],
+        "sourceAnchor": {
+          "x": 140,
+          "y": 405
+        },
+        "offset": {
+          "x": -12,
+          "y": -77
+        }
+      },
+      "metrics": {
+        "removed": 115356,
+        "edgeCorrected": 1482,
+        "corePreserved": 25123
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/06.png",
+      "sha256": "966120422a7a2b032210a48d7ea8891fcaf8112ed8a260b6e25ca456dfdd1682",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          57,
+          129,
+          227,
+          407
+        ],
+        "sourceAnchor": {
+          "x": 142,
+          "y": 407
+        },
+        "offset": {
+          "x": -14,
+          "y": -79
+        }
+      },
+      "metrics": {
+        "removed": 114859,
+        "edgeCorrected": 1506,
+        "corePreserved": 25491
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/07.png",
+      "sha256": "d86647392a46383aa2dc1ebd76bf0a896f0787041001b26188207ff01a9f3e98",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          29,
+          113,
+          240,
+          400
+        ],
+        "sourceAnchor": {
+          "x": 134,
+          "y": 400
+        },
+        "offset": {
+          "x": -6,
+          "y": -72
+        }
+      },
+      "metrics": {
+        "removed": 115596,
+        "edgeCorrected": 1522,
+        "corePreserved": 24643
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/08.png",
+      "sha256": "427a014a217301725376b6dc35d95af36d3980f935906837dcd89f871380edc0",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          61,
+          111,
+          237,
+          397
+        ],
+        "sourceAnchor": {
+          "x": 149,
+          "y": 397
+        },
+        "offset": {
+          "x": -21,
+          "y": -69
+        }
+      },
+      "metrics": {
+        "removed": 116494,
+        "edgeCorrected": 1304,
+        "corePreserved": 23971
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/09.png",
+      "sha256": "2285786a10062a829d589326406d86b4da2ce5a03a61857991b5e189034ace08",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          65,
+          133,
+          217,
+          404
+        ],
+        "sourceAnchor": {
+          "x": 141,
+          "y": 404
+        },
+        "offset": {
+          "x": -13,
+          "y": -76
+        }
+      },
+      "metrics": {
+        "removed": 115488,
+        "edgeCorrected": 1200,
+        "corePreserved": 25181
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/10.png",
+      "sha256": "3c2a1ea630b88438f14ad366c39870974f548e1f5e1bdb89eebc7cc41a7177d9",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          61,
+          119,
+          225,
+          399
+        ],
+        "sourceAnchor": {
+          "x": 143,
+          "y": 399
+        },
+        "offset": {
+          "x": -15,
+          "y": -71
+        }
+      },
+      "metrics": {
+        "removed": 115541,
+        "edgeCorrected": 1399,
+        "corePreserved": 24910
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/11.png",
+      "sha256": "dba551533586b33d3577a1c05aa2081cd796ed6739ed1ee3347d84c4fea31bb4",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          33,
+          127,
+          253,
+          409
+        ],
+        "sourceAnchor": {
+          "x": 143,
+          "y": 409
+        },
+        "offset": {
+          "x": -15,
+          "y": -81
+        }
+      },
+      "metrics": {
+        "removed": 114845,
+        "edgeCorrected": 1518,
+        "corePreserved": 25270
+      }
+    },
+    {
+      "direction": "up",
+      "source": "doc/oldstreet-lan-video-walk/up-fixed-back/frames-roi/12.png",
+      "sha256": "5782fc0891a506a2ec31a03a5bb2b3e23eec88e59473048ff6c0062afa8cacf1",
+      "alignment": {
+        "row": 0,
+        "column": 0,
+        "sourceBox": [
+          69,
+          122,
+          213,
+          401
+        ],
+        "sourceAnchor": {
+          "x": 141,
+          "y": 401
+        },
+        "offset": {
+          "x": -13,
+          "y": -73
+        }
+      },
+      "metrics": {
+        "removed": 115997,
+        "edgeCorrected": 1358,
+        "corePreserved": 24565
+      }
+    }
+  ]
+}

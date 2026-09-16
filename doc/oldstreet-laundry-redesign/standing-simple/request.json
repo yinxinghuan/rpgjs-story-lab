@@ -1,0 +1,10 @@
+{
+  "requestId": "d909a0ac-2cdf-4dcd-b21d-7296125de575",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "prompt": "Pixel art character turnaround for an overhead orthographic exploration game. Four full body STANDING views of the SAME middle-aged American laundromat owner woman. Short copper-brown hair, freckled face, faded teal short-sleeved work shirt, straight navy trousers, light brown work shoes. No apron or accessories. Two by two layout: top left front, top right left profile, bottom left right profile, bottom right back. Each view is from a fixed steep overhead camera: clearly visible crown of head, foreshortened face and torso, no perspective vanishing point. Both feet rest level together, hands relaxed at sides, legs and arms visibly separate. Consistent body proportions and hairstyle in all four views. Each figure is 160 pixels wide by 290 pixels high, centered in a 512x512 cell, feet baseline 420 pixels from cell top. Refined pixel art with small discrete color clusters, crisp one-pixel dark outlines, restrained warm shading. Flat magenta background RGB255,0,255. No grid, no labels, no environment, no shadows outside the body. Exactly four figures."
+}

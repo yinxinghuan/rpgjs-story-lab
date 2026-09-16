@@ -2138,3 +2138,8 @@ AlterU 实际主线通关后，重新进入停在恢复旅程页，尚未确认�
 `oldStreetProjectedProps` 现在对老周、阿岚、许青的显式居民坐标共享投射 body/position/approach；没有传入坐标的居民仍保持原站位。移动碰撞检查新增受限 `ignoreResident`，只在检查该NPC自身位移时排除自己的身体；玩家、服务端和现有存档调用不改变参数。居民8项和空间/会话/家具32项检查通过。
 
 `src/dev/lan-video-trial.ts` 仅由 oldstreet-dev + DEV + debug + npc_gait_trial=lan-left 共同开启，使用真实RPG-JS事件在洗衣店试走左向10帧。不能启用右向/前后行走，不持久化候选站位。生产构建成功并检查未包含候选图集与测试入口。390×844实景证据、局限与原素材保留见 `oldstreet-lan-video-walk/review.md`；正式NPC素材未替换，本轮未发布。
+
+
+### 本地四向视频动作候选（2026-09-17）
+
+`prepare-lan-four-way-video.ts` 校验四条原视频SHA及原站姿SHA，对已提取03–12帧做现有去底与脚点对齐，不缩放或重绘，输出11列4行候选图集。`src/dev/lan-video-trial.ts` 按实际碰撞后距离选帧；四向测试从当前位置起步，不传送回原点。入口为本地oldstreet-dev模式的 `debug=1&npc_gait_trial=lan-four`，兼容旧lan-left参数。正式构建条件裁除动态导入，正常入口没有试走按钮。候选尚未正式准入，当前NPC来源仍为主角/修表师GPT基准、洗衣店主/摄影师平台站姿。

@@ -1,0 +1,32 @@
+{
+  "requestSha256": "08b1b9bae1cc657d07a20879de8568464e190b84f5e76ad6cad69f9371dc89f2",
+  "requestId": "c6675bb5-9de7-4734-b92a-57baa522d828",
+  "startedAt": "2026-09-16T16:11:48.771Z",
+  "status": "downloaded",
+  "admission": "not-reviewed",
+  "task": {
+    "task_id": "mt_a6c32a00c42f8a5c7d8ad29c7dba0668",
+    "request_id": "c6675bb5-9de7-4734-b92a-57baa522d828",
+    "type": "video",
+    "status": "succeeded",
+    "created_at": 1789575110326,
+    "updated_at": 1789575123520,
+    "timing_ms": 11046,
+    "media": {
+      "type": "video",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/video/c6675bb5-9de7-4734-b92a-57baa522d828/1789575122226772.mp4",
+      "width": 576,
+      "height": 1024,
+      "duration_seconds": 5,
+      "has_audio": true
+    }
+  },
+  "asset": {
+    "file": "candidate.mp4",
+    "bytes": 354091,
+    "sha256": "5ff58d8dba40d884cfecbea8067a0adea6468b96a54413eb9a40c8cb5e750931"
+  },
+  "elapsedMs": 19110,
+  "cost": "not provided by public API",
+  "audioUse": "none: sprite experiment only"
+}

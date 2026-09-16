@@ -1,0 +1,13 @@
+{
+  "requestId": "a70475c5-c603-4a28-bac8-b43159421076",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@dce4897af88392c542467ed2ed71d6e5d35b0b69/up/reference.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 768
+  },
+  "prompt": "Edit this ONE overhead back-facing character. Preserve exactly her rear-facing direction, visible top of head, camera elevation, pixel-art shading, standing pose and short body proportions. Change her clothing to a simple faded TEAL SHORT-SLEEVED WORK SHIRT, straight NAVY trousers and LIGHT BROWN shoes. Remove the apron and all straps completely, leaving only the plain back of the shirt. Change hair to short cropped COPPER BROWN hair. Keep both feet level and close together, hands relaxed beside hips. Only ONE full body figure, back toward viewer, NO FACE visible. Do not turn the body. Do not make a sprite sheet. Center the complete character with generous margin on flat MAGENTA RGB255,0,255 background. Crisp discrete pixel clusters and dark outlines, no blur, no environment or cast shadows."
+}

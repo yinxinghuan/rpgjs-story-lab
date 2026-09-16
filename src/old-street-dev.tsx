@@ -92,7 +92,7 @@ export default function OldStreetDev() {
   const [cartridge] = useState(() => oldStreetCartridge(locale))
   const [head, setHead] = useState(() => ({save: createInitialSave(cartridge), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}))
   const debug = new URLSearchParams(location.search).get('debug') === '1'
-  const lanTrialEnabled=import.meta.env.DEV&&import.meta.env.MODE==='oldstreet-dev'&&debug&&new URLSearchParams(location.search).get('npc_gait_trial')==='lan-left'
+  const lanTrialEnabled=import.meta.env.DEV&&import.meta.env.MODE==='oldstreet-dev'&&debug&&['lan-left','lan-four'].includes(new URLSearchParams(location.search).get('npc_gait_trial')||'')
   const lanTrial=useRef<LanVideoTrial>()
   const workerPreview = import.meta.env.MODE !== 'oldstreet-dev' || new URLSearchParams(location.search).get('session') === 'worker'
   const [connection] = useState(() => (workerPreview?oldStreetSessionHttp:oldStreetSession)(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
@@ -250,7 +250,7 @@ export default function OldStreetDev() {
                 return oldStreetWalkable(room,body,current.current.save,{w:32,h:28},residentPositions(),true,'laundry-owner')&&!(body.x<hero.x+oldStreetBody.w&&body.x+body.w>hero.x&&body.y<hero.y+oldStreetBody.h&&body.y+body.h>hero.y)
               })
               if(before.x!==m.position.x||before.y!==m.position.y)void event.teleport({x:m.position.x-12,y:m.position.y-12})
-              event.direction.set(m.pose==='stand'&&Math.hypot(dx,dy)<96?(Math.abs(dx)>Math.abs(dy)?dx>0?Direction.Right:Direction.Left:dy>0?Direction.Down:Direction.Up):Direction.Left);event.animationName.set(m.pose);event.syncChanges()
+              event.direction.set(m.pose==='stand'&&Math.hypot(dx,dy)<96?(Math.abs(dx)>Math.abs(dy)?dx>0?Direction.Right:Direction.Left:dy>0?Direction.Down:Direction.Up):m.direction as Direction);event.animationName.set(m.pose);event.syncChanges()
               if(before.x!==m.position.x||before.y!==m.position.y)setResidentPosition({...resident.current.position})
             }else {const dx=hero.x-prop.position.x,dy=hero.y-prop.position.y;if(Math.hypot(dx,dy)>1&&Math.hypot(dx,dy)<96){event.direction.set(Math.abs(dx)>Math.abs(dy)?(dx>0?Direction.Right:Direction.Left):(dy>0?Direction.Down:Direction.Up));event.syncChanges()}}
           }
@@ -450,7 +450,7 @@ export default function OldStreetDev() {
       <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : nearbyAction?.primary.kind==='action'?label(nearbyAction.primary.id):nearbyAction?.primary.kind==='talk'?text(['交谈','Talk']):nearbyAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
-    {lanTrialEnabled&&ready&&head.scene==='laundry'&&<div style={{position:'fixed',right:8,top:110,zIndex:40,background:'#202624',padding:8}}><button style={{minHeight:44}} disabled={busy||!!error||lanTrial.current?.running} onClick={()=>{lanTrial.current?.start();setResidentPosition({...resident.current.position})}}>{text(['测试：阿岚向左走','Test: Lan walks left'])}</button><output style={{display:'block'}}>{lanTrial.current?.pose} · {lanTrial.current?.distance.toFixed(1)}/24</output></div>}
+    {lanTrialEnabled&&ready&&head.scene==='laundry'&&<div style={{position:'fixed',right:8,top:410,zIndex:40,background:'#202624',padding:8}}>{(['left','right','up','down'] as const).map((direction,i)=><button key={direction} style={{minHeight:44,minWidth:44}} disabled={busy||!!error||lanTrial.current?.running} onClick={()=>{lanTrial.current?.start(direction);setResidentPosition({...resident.current.position})}}>{text(['试走：'+['左','右','上','下'][i],'Test: '+direction])}</button>)}<output style={{display:'block'}}>{lanTrial.current?.pose} · {lanTrial.current?.distance.toFixed(1)}/24</output></div>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{error?JSON.stringify({error,renderer:diagnostic}):diagnostic}</pre></details>}
     {journeysOpen&&<OldStreetJourneysView soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}

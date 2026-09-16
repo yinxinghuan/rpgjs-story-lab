@@ -1,0 +1,5 @@
+{
+  "reason": "The previous back-view request started correctly but turned through a front view. Replace the multi-cycle walking description with a simple locked-rear alternating-heel action. One candidate only; no automatic retry.",
+  "previousTask": "mt_86b58b6291b67c523d5907678e6d1e10",
+  "sourceReferenceSha256": "17156a3d12858d1c0eca6c996f5bdae46a4742f5727d7f077a65093035cb9134"
+}

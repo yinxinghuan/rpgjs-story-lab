@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "requestSha256": "eb71586699dd3b6c98cc8458f79bf5462d02daf38e330fc288783a2ddb586b55",
+  "requestId": "4ffafb8f-21e1-49c8-965e-b6d23674ac64",
+  "status": "failed",
+  "startedAt": "2026-09-16T16:31:07.354Z",
+  "attempts": 1,
+  "error": "PROVIDER_REJECTED",
+  "retryable": false,
+  "elapsedMs": 57876
+}
