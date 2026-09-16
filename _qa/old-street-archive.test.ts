@@ -2,8 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
 import {randomUUID} from 'node:crypto'
-import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent} from '../src/old-street-archive'
-import {assertOldStreetCampaign,campaignComplete} from '../src/old-street-campaign'
+import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent,compileInquiryArchive} from '../src/old-street-archive'
+import {assertOldStreetCampaign,campaignComplete,compileLinkedParcel} from '../src/old-street-campaign'
 import {oldStreetSpatialPlan,oldStreetDoors,oldStreetPath,oldStreetWalkable} from '../src/old-street-space'
 import {OldStreetAuthority,type OldStreetHead} from '../server/old-street-runtime'
 import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
@@ -40,14 +40,17 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
 })
 
 test('new campaign enters its generated archive through the real door, gathers evidence and persists the reconstructed ending',async()=>{
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',otherEvent:'The footbridge reopened'}
+ const parcel=compileLinkedParcel(parcelDraft,trace.records[0],'en'),archiveDraft={title:'The footbridge work',layout:'west-index',middleEvents:['Replacement boards were cut','The new boards were fitted'],earlier:'first'}
+ const archive=compileInquiryArchive(archiveDraft,parcel.inquiry!,'en')
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0
  const planner=createOldStreetCampaignPlanner(async(_system,user)=>{
   calls++;const context=JSON.parse(user)
   if(context.stage==='trace')return trace
-  if(context.stage==='parcel')return parcel
+  if(context.stage==='parcel')return parcelDraft
   assert.deepEqual(context.previous,trace.records[0]);assert.deepEqual(context.papers,parcel)
-  return archive
+  return archiveDraft
  })
  const authority=()=>new OldStreetAuthority(db,()=>true,undefined,undefined,undefined,undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
@@ -72,14 +75,14 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.equal(h.sceneId,'cellar','admission never teleports the player')
   s=authority();assert.deepEqual(await s.action('synthetic',h.id,admitted.b),admitted.r)
   await steps(['archive'])
-  await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['d','b','a','c']})),/EVIDENCE_REQUIRED/)
+  await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)
   assert.ok(!JSON.stringify(campaignInputKnowledge(h)).includes(archive.discovery))
   await send('archive-index',{type:'free-input',text:'Examine the work index',mode:'local'})
   assert.equal(campaignInputKnowledge(h).filter(k=>k.id.startsWith('learned:archive-')).length,1)
   await steps(['cellar','archive'])
   await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','b','c','d']})),/ORDER_MISMATCH/)
-  const completed=await send('archive-desk',{type:'campaign-decide',stage:'archive',order:['d','b','a','c']})
+  const completed=await send('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})
   assert.deepEqual(await s.action('synthetic',h.id,completed.b),completed.r)
   assert.equal(campaignComplete(h.campaign!),true);assertOldStreetCampaign(h.campaign)
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.text===archive.discovery))

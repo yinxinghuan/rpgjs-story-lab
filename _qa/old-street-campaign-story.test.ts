@@ -5,7 +5,7 @@ import {oldStreetRuntime} from '../server/old-street-runtime'
 import {campaignOpening} from '../src/old-street-campaign-story'
 import {campaignInputKnowledge} from '../src/old-street-campaign-interaction'
 import {oldStreetJournal} from '../src/old-street-journal'
-import {readParcelContent} from '../src/old-street-campaign'
+import {readParcelContent,compileLinkedParcel} from '../src/old-street-campaign'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 
 for(const locale of ['zh','en'] as const)test(`new ${locale} commission is visible before input; legacy opening is never retroactively rewritten`,()=>{
@@ -33,8 +33,9 @@ test('new investigation asks a concrete question; older complete paper instances
  const planner=createOldStreetCampaignPlanner(async system=>{prompt=system;return old})
  const signal=new AbortController().signal
  assert.deepEqual(await planner({stage:'parcel',locale:'en',previous},signal),old)
- await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/QUESTION_REQUIRED/)
- assert.match(prompt,/unresolved before\/after question/)
- const accepted=createOldStreetCampaignPlanner(async()=>papers)
- assert.deepEqual(await accepted({stage:'parcel',locale:'en',previous,investigation:true},signal),papers)
+ await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/CONTENT_INVALID/)
+ assert.match(prompt,/timing relative to that subject/)
+ const draft={...old,otherEvent:'The delivery arrived'}
+ const accepted=createOldStreetCampaignPlanner(async()=>draft)
+ assert.deepEqual(await accepted({stage:'parcel',locale:'en',previous,investigation:true},signal),compileLinkedParcel(draft,previous,'en'))
 })

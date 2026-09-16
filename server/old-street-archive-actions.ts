@@ -1,4 +1,4 @@
-import {archiveEvidence,archiveOrderMatches,readArchiveContent,type ArchiveSource} from '../src/old-street-archive'
+import {archiveEvidence,archiveOrderMatches,readArchiveContent,assertArchiveInquiry,type ArchiveSource} from '../src/old-street-archive'
 import {bindOldStreet} from '../src/old-street-space'
 import type {OldStreetHead} from '../src/old-street-head'
 import type {CampaignCandidate} from './old-street-campaign-actions'
@@ -14,7 +14,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
  if(body.type==='campaign-plan'){
   if(c.archive)throw new LabError('CAMPAIGN_ALREADY_PREPARED',409)
   const raw=candidate?.(head,'archive');if(raw===undefined)throw new LabError('CAMPAIGN_NOT_PREPARED',409)
-  try{c.archive={id:body.action_id,content:readArchiveContent(raw),examined:[]}}catch{throw new LabError('CAMPAIGN_PLAN_REJECTED',409)}
+  try{const content=readArchiveContent(raw);if(c.parcel?.content.inquiry)assertArchiveInquiry(content,c.parcel.content.inquiry);c.archive={id:body.action_id,content,examined:[]}}catch{throw new LabError('CAMPAIGN_PLAN_REJECTED',409)}
   save.facts['archive-ready']=true;save.facts['archive-layout']=c.archive.content.layout
   if(!save.map.some(n=>n.id==='archive'))save.map.push({id:'archive',label:t('档案工作间','Archive workroom'),current:false,visited:false})
   text=t('这些材料来自隔壁档案工作间。地下室东侧的门已可通行，里面有两处原始记录和一张整理桌。','These papers came from the adjoining archive workroom. The cellar’s east doorway is accessible; inside are two sets of source records and a sorting table.')

@@ -1,5 +1,6 @@
 /** A generated investigation uses existing furniture and explicit ordering
  * evidence. The model never supplies executable rules or a trusted answer. */
+import {readInquiryFocus,inquiryConclusion,type InquiryFocus} from './old-street-inquiry'
 export const archiveCardIds=['a','b','c','d'] as const
 export type ArchiveCardId=typeof archiveCardIds[number]
 export type ArchiveRelation={before:ArchiveCardId;after:ArchiveCardId}
@@ -36,6 +37,30 @@ export function readArchiveContent(raw:unknown):ArchiveContent{
 }
 export function archiveOrderMatches(content:ArchiveContent,value:unknown):value is ArchiveCardId[]{
  return Array.isArray(value)&&value.length===4&&value.every(card)&&new Set(value).size===4&&[...content.sources.index,...content.sources.ledger].every(r=>value.indexOf(r.before)<value.indexOf(r.after))
+}
+/** The two question events are immutable endpoints. The model authors only the
+ * intermediate events and which endpoint occurred earlier; the game authors
+ * the written evidence and derives the conclusion from that same evidence. */
+export function compileInquiryArchive(raw:unknown,focus:InquiryFocus,locale:'zh'|'en',variant=Math.floor(Math.random()*24)):ArchiveContent{
+ const r=object(raw,['title','layout','middleEvents','earlier']),inquiry=readInquiryFocus(focus)
+ if(!Array.isArray(r.middleEvents)||r.middleEvents.length!==2||!['first','second'].includes(String(r.earlier))||!Number.isInteger(variant)||variant<0||variant>=24)throw Error('ARCHIVE_CONTENT_INVALID')
+ const middle=r.middleEvents.map(v=>line(v,90))
+ const order:ArchiveCardId[]=r.earlier==='first'?['a','c','d','b']:['b','c','d','a']
+ const byId={a:inquiry.first,b:inquiry.second,c:middle[0],d:middle[1]}
+ const content=readArchiveContent({title:r.title,layout:r.layout,cards:permutations(archiveCardIds)[variant].map(id=>({id,label:byId[id]})),sources:{index:[{before:order[0],after:order[1]}],ledger:[{before:order[1],after:order[2]},{before:order[2],after:order[3]}]},discovery:inquiryConclusion(inquiry,r.earlier==='first',locale)})
+ assertArchiveInquiry(content,inquiry)
+ return content
+}
+export function assertArchiveInquiry(content:ArchiveContent,focus:InquiryFocus){
+ if(content.cards.find(c=>c.id==='a')?.label!==focus.first||content.cards.find(c=>c.id==='b')?.label!==focus.second)throw Error('ARCHIVE_QUESTION_EVENTS_MISSING')
+ // Also check cached candidates at admission; checking only fresh compilation
+ // would let a previously prepared leaking card bypass the updated contract.
+ if(content.cards.filter(c=>c.id==='c'||c.id==='d').some(c=>/\b(?:before|after|prior to|earlier than|later than|preceded|followed)\b|之前|之后|早于|晚于|先于|随后|然后/i.test(c.label)))throw Error('ARCHIVE_EVENT_LEAKS_ORDER')
+ const direction=(order:ArchiveCardId[])=>order.indexOf('a')<order.indexOf('b')
+ const all=archiveOrders([...content.sources.index,...content.sources.ledger])
+ if(all.length!==1)throw Error('ARCHIVE_ORDER_AMBIGUOUS')
+ for(const relations of Object.values(content.sources))if(new Set(archiveOrders(relations).map(direction)).size!==2)throw Error('ARCHIVE_QUESTION_EVIDENCE_REDUNDANT')
+ if(![inquiryConclusion(focus,direction(all[0]),'zh'),inquiryConclusion(focus,direction(all[0]),'en')].includes(content.discovery))throw Error('ARCHIVE_CONCLUSION_UNSUPPORTED')
 }
 export function archiveEvidence(content:ArchiveContent,source:ArchiveSource,locale:'zh'|'en'){
  const label=(id:ArchiveCardId)=>content.cards.find(c=>c.id===id)!.label

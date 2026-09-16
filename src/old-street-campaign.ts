@@ -1,8 +1,9 @@
-import {readArchiveContent,archiveOrderMatches,type ArchiveProgress} from './old-street-archive'
+import {readArchiveContent,archiveOrderMatches,assertArchiveInquiry,type ArchiveProgress} from './old-street-archive'
+import {readInquiryFocus,inquiryQuestion,type InquiryFocus} from './old-street-inquiry'
 /** Journey-local generated content. No executable model rules or media promises. */
 export type TraceRecord={label:string;mark:string;wrapping:string}
 export type TraceContent={title:string;clue:{mark:string;wrapping:string};records:TraceRecord[]}
-export type ParcelContent={title:string;fragment:string;question?:string}
+export type ParcelContent={title:string;fragment:string;question?:string;inquiry?:InquiryFocus}
 export type CampaignContext={locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
@@ -48,7 +49,18 @@ export function compileTraceDraft(raw:unknown,variant=Math.floor(Math.random()*6
  return readTraceContent({title:line(r.title,60),clue:{mark:marks[0],wrapping:wrappings[0]},records:order.map(i=>records[i])})
 }
 export function readParcelContent(raw:unknown):ParcelContent{
- const r=object(raw,['title','fragment','question']);return {title:line(r.title,60),fragment:line(r.fragment,420),...(r.question===undefined?{}:{question:line(r.question,140)})}
+ const r=object(raw,['title','fragment','question','inquiry']),inquiry=r.inquiry===undefined?undefined:readInquiryFocus(r.inquiry)
+ if(inquiry&&![inquiryQuestion(inquiry,'zh'),inquiryQuestion(inquiry,'en')].includes(String(r.question)))throw Error('CAMPAIGN_INQUIRY_QUESTION_MISMATCH')
+ return {title:line(r.title,60),fragment:line(r.fragment,420),...(r.question===undefined?{}:{question:line(r.question,inquiry?180:140)}),...(inquiry?{inquiry}:{})}
+}
+export function compileInquiryParcel(raw:unknown,locale:'zh'|'en'):ParcelContent{
+ const r=object(raw,['title','fragment','inquiry']),inquiry=readInquiryFocus(r.inquiry)
+ return readParcelContent({title:r.title,fragment:line(r.fragment,240),inquiry,question:inquiryQuestion(inquiry,locale)})
+}
+/** The selected record is always one endpoint, not a suggestion to the model. */
+export function compileLinkedParcel(raw:unknown,record:TraceRecord,locale:'zh'|'en'):ParcelContent{
+ const r=object(raw,['title','fragment','otherEvent'])
+ return compileInquiryParcel({title:r.title,fragment:r.fragment,inquiry:{first:record.label,second:line(r.otherEvent,50)}},locale)
 }
 export function campaignRecordMatches(content:TraceContent,index:number){return Number.isInteger(index)&&!!content.records[index]&&signature(content.records[index])===signature(content.clue)}
 export function campaignComplete(c:OldStreetCampaign){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)}
@@ -68,6 +80,8 @@ export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCam
   if(c.version!==2||!(c.parcel as OldStreetCampaign['parcel'])?.observed)throw Error('CAMPAIGN_SAVE_INVALID')
   const a=object(c.archive,['id','content','examined','order']);instance({id:a.id,observed:true})
   const content=readArchiveContent(a.content)
+  const inquiry=(c.parcel as OldStreetCampaign['parcel'])?.content.inquiry
+  if(inquiry)assertArchiveInquiry(content,inquiry)
   if(!Array.isArray(a.examined)||new Set(a.examined).size!==a.examined.length||a.examined.some(v=>v!=='index'&&v!=='ledger'))throw Error('CAMPAIGN_SAVE_INVALID')
   if(a.order!==undefined&&(a.examined.length!==2||!archiveOrderMatches(content,a.order)))throw Error('CAMPAIGN_SAVE_INVALID')
  }
