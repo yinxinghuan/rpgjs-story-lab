@@ -1,4 +1,5 @@
 import {useEffect,useState} from 'react'
+import {readExpansionJob} from './old-street-expansion-recovery'
 import type {ExpansionJob} from '../server/old-street-expansion-jobs'
 export function OldStreetExpansionView({locale,sessionId,requested,disabled,api,submit,activate}:{locale:'zh'|'en';sessionId:string;requested:boolean;disabled:boolean;api:(path:string,body?:unknown)=>Promise<any>;submit:(text:string)=>Promise<void>;activate:()=>Promise<void>}){
  const [input,setInput]=useState(''),[job,setJob]=useState<ExpansionJob|null>(null),[sending,setSending]=useState(false),[failed,setFailed]=useState(false),[refresh,setRefresh]=useState(0)
@@ -6,7 +7,7 @@ export function OldStreetExpansionView({locale,sessionId,requested,disabled,api,
  useEffect(()=>{
   if(!requested)return
   let active=true,timer:ReturnType<typeof setTimeout>|undefined
-  const poll=async()=>{try{const r=await api('/sessions/'+sessionId+'/expansion');if(!active)return;setJob(r.job);setFailed(false);if(r.job?.state==='planning'||r.job?.state==='queued')timer=setTimeout(poll,8000)}catch{if(active)setFailed(true)}}
+  const poll=async()=>{try{const r=await readExpansionJob(api,'/sessions/'+sessionId+'/expansion','queued',()=>active);if(!active)return;setJob(r.job);setFailed(false);if(r.job?.state==='planning'||r.job?.state==='queued')timer=setTimeout(poll,8000)}catch{if(active)setFailed(true)}}
   void poll();return()=>{active=false;if(timer)clearTimeout(timer)}
  },[api,sessionId,requested,refresh])
  async function start(){

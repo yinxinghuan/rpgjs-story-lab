@@ -2205,3 +2205,8 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 `old-street-record-book.ts` 将权威 facts 的 consent + recorded 转成 stand/photo/clock/both。同一个记录册事件叠加册体、旧照、旧钟插图，四种状态显式设定两插图的 opacity，以支持撤下再收录。沿用现有照片谜题和旧钟图片，不生成或改写像素；加载经统一下载器及 nearest 纹理流程，卸载释放 blob。`old-street-prop-state.ts` 共享对应中英文标签。事件脚点、碰撞和任务规则不变，旧存档无需迁移。
 
 实际浏览器验证照片的收录/撤下/重新收录及390×844、320×568显示，照片支线与取信主线至结局、刷新恢复一致。旧钟和双条目图层本轮只有组合/边界测试，不能称其视觉复验已完成。3项针对状态投射测试及生产 build（空间检查、9场景27资源SHA验证、Worker启动）通过。首次构建发现新增测试的数组联合类型未保留图层 opacity，改为明确元组后完整重建通过。详见 `oldstreet-integrated-playtest-20260917.md`。
+
+
+## 动态扩展恢复入口（2026-09-17）
+
+`old-street-expansion-recovery.ts` 将查询与恢复既有任务组合：计划 queued、照片 preparing 时提交空对象，沿用服务的任务ID及租约；candidate/failed/null只读。照片组件在每次轮询调用而非仅挂载时一次，因此旧服务租约过期后能够接续。状态请求与图片下载分别记录失败；重连重新查询，重载图片只触发文件下载/校验，不发 retry 或创建新任务。原剧情动作/拼图proof仍由Story Session裁决。5项针对测试与实际组件320/390宽恢复操作通过，详见 `oldstreet-expansion-recovery-20260917.md`。本轮未调用真实模型/媒体服务。

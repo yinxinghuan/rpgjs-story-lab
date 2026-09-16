@@ -9,10 +9,33 @@ import type {AuthorityStorage} from '../server/session-authority'
 import {OldStreetAuthority} from '../server/old-street-runtime'
 import {OldStreetExpansionMedia,expansionPhotoProducer} from '../server/old-street-expansion-media'
 import {compileExpansionPlan} from '../src/old-street-expansion-plan'
+import {oldStreetExpansionPhotoOperation} from '../server/old-street-http'
+import {readExpansionJob} from '../src/old-street-expansion-recovery'
 
 const require=createRequire(import.meta.url),{PNG}=require(join(dirname(require.resolve('playwright-core/package.json')),'lib/utilsBundle.js'))
 const png=new Uint8Array(PNG.sync.write({width:768,height:576,data:Buffer.alloc(768*576*4,90)}))
 function storage(raw:DatabaseSync):AuthorityStorage{return {all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}}
+test('a returning photo view resumes after an expired worker lease with the original task',async()=>{
+ const raw=new DatabaseSync(':memory:'),db=storage(raw);let now=10000
+ const h=new OldStreetAuthority(db,()=>true).create('synthetic',crypto.randomUUID(),'zh')
+ h.expansions=[{version:1,id:crypto.randomUUID(),template:'photo-darkroom-v1',sourceScene:'photo',input:'旧街照片',status:'requested',requestedAtVersion:1}];h.save.facts['darkroom-ready']=true
+ const plan=compileExpansionPlan(h.expansions[0],{title:'暗房',discovery:'旧街的照片。',photograph:'An empty old street.'})
+ const media=new OldStreetExpansionMedia(db,()=>structuredClone(h),()=>plan,()=>now)
+ let finish!:(bytes:Uint8Array)=>void,originalRequest='',calls=0
+ media.start('synthetic',h.id)
+ const interrupted=media.run('synthetic',h.id,async(job,onTask)=>{originalRequest=job.requestId;onTask('existing-platform-task');return new Promise(resolve=>{finish=resolve})})
+ const work:Promise<unknown>[]=[]
+ const api=async(_path:string,body?:unknown)=>oldStreetExpansionPhotoOperation(body===undefined?'GET':'POST','synthetic',h.id,media,async job=>{calls++;assert.equal(job.taskId,'existing-platform-task');assert.equal(job.requestId,originalRequest);return png},body,p=>work.push(p))
+ try{
+  await readExpansionJob(api,'/photo','preparing');await Promise.all(work);assert.equal(calls,0)
+  now+=120001
+  await readExpansionJob(api,'/photo','preparing');await Promise.all(work)
+  assert.equal(calls,1);assert.equal(media.get('synthetic',h.id)?.state,'candidate');assert.equal(media.get('synthetic',h.id)?.attempt,1)
+  finish(png);await interrupted
+  assert.deepEqual(await media.file('synthetic',h.id),png)
+  await readExpansionJob(api,'/photo','preparing');assert.equal(calls,1)
+ }finally{finish(png);await interrupted;raw.close()}
+})
 test('expansion photo resumes the same platform task after disk reopen while the story remains independent',async()=>{
  const dir=mkdtempSync(join(tmpdir(),'expansion-photo-')),path=join(dir,'test.sqlite');let raw=new DatabaseSync(path),db=storage(raw),now=10000
  const h=new OldStreetAuthority(db,()=>true).create('synthetic',crypto.randomUUID(),'zh')
