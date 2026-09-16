@@ -1,0 +1,7 @@
+{
+  "purpose": "Check minimal edit with an existing platform-generated CDN image instead of a GitHub-backed reference",
+  "notControlledArtQualityComparison": true,
+  "source": "../../oldstreet-lan-candidate/correction/state.json",
+  "sourceSha256": "297a8e0a6b3e4f5f005d731c6392b2001a8476c1ec8a05045fc349008abe93d9",
+  "productionAdmitted": false
+}

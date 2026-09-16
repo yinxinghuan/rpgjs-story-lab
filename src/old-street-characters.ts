@@ -6,19 +6,27 @@ const cast = [
  {id:'xu-photographer',entity:'photographer',room:'photo',name:['许青','Xu Qing'],appearance:['戴眼镜的女人','Woman with glasses'],role:['摄影师','Photographer'],intro:['穿蓝色衬衫、戴眼镜的女人说：“我叫许青，在这里洗照片。你可以先看看。”','A woman in a blue shirt and glasses says, “I’m Xu Qing. I develop photos here. Feel free to look around.”']},
 ] as const
 const choose=(pair:readonly [string,string],locale:Locale)=>pair[locale==='zh'?0:1]
-export function oldStreetCharacterDefinitions(locale:Locale):CharacterDefinition[]{return cast.map(p=>({id:p.id,name:choose(p.name,locale),role:choose(p.role,locale),vitality:100,stress:0,skills:[],hiddenUntilIntroduced:true}))}
+export const laundryCastVersionFact='laundry-cast-v2'
+export function usesCurrentLaundryCast(save:Pick<StorySave,'facts'>){return save.facts[laundryCastVersionFact]===true}
+export function oldStreetCharacterDefinitions(locale:Locale,save?:Pick<StorySave,'facts'>):CharacterDefinition[]{return cast.map(entry=>{const p=oldStreetPerson(entry.entity,save)!;return {id:p.id,name:choose(p.name,locale),role:choose(p.role,locale),vitality:100,stress:0,skills:[],hiddenUntilIntroduced:true}})}
 export const oldStreetCharacterBindings = cast.map(p=>({id:p.id,kind:'physical' as const,entities:[p.entity]}))
-export function oldStreetPerson(entity:string){return cast.find(p=>p.entity===entity)}
+export function oldStreetPerson(entity:string,save?:Pick<StorySave,'facts'>){
+ const p=cast.find(p=>p.entity===entity)
+ if(p?.entity==='laundry-owner'&&save&&usesCurrentLaundryCast(save))return {...p,
+  name:['玛拉','Mara'] as const,appearance:['穿青绿工作衫的女人','Woman in a teal work shirt'] as const,
+  intro:['铜棕短发的女人停下脚步，抚平青绿色工作衫：“我是玛拉，这家洗衣店的店主。有事就叫我。”','The woman with short copper-brown hair stops and smooths her teal work shirt. “I’m Mara, the owner. Let me know if you need anything.”'] as const}
+ return p
+}
 /** Authored visible introduction and its persisted roster entry share one Session commit.
  * This function is never run for movement or inferred from future script names. */
 export function recordOldStreetInteraction(save:StorySave,entity:string,action:string,text:string,receipt:string):StoryBlock[]{
- const p=oldStreetPerson(entity),blocks:StoryBlock[]=[]
+ const p=oldStreetPerson(entity,save),blocks:StoryBlock[]=[]
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en
  if(action==='oldstreet:greet-laundry')text=(save.facts['trolley-borrowed']?t('推车用完放回来就行。','Return the trolley when you finish.'):t('推车就在旁边，需要可以借。','The trolley is beside you; you may borrow it.'))+' '+(save.facts['crates-cleared']?t('院里的台阶已经通了，谢谢你。','The courtyard steps are clear now. Thank you.'):t('院里的旧箱挡着台阶。','Crates block the courtyard steps.'))
  if(action==='oldstreet:greet-watchmaker')text=oldStreetLetterGuidance(save)+(save.facts['yard-unlatched']?'':t(' 院门的插销能从这边打开。',' The courtyard gate can be unbolted from this side.'))
  if(action==='oldstreet:greet-photographer'&&save.facts['photos-returned'])text=t('你找回的照片已经收好了，谢谢。楼梯仍然通向屋顶。','The photographs you found are safely put away. Thank you. The stairs still lead to the roof.')
  if(p&&!save.characters.some(c=>c.id===p.id)){
-  const definition=oldStreetCharacterDefinitions(save.locale).find(c=>c.id===p.id)!
+  const definition=oldStreetCharacterDefinitions(save.locale,save).find(c=>c.id===p.id)!
   blocks.push({id:receipt+':introduction',kind:'narration',text:choose(p.intro,save.locale),data:{characterId:p.id}})
   save.characters.push({...definition,status:'known',origin:'cartridge',lastKnownLocation:save.location,updatedAtScene:save.scene})
  }

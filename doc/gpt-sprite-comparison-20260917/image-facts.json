@@ -1,0 +1,68 @@
+[
+  {
+    "file": "gpt-01.png",
+    "width": 1086,
+    "height": 1448,
+    "sha256": "c5b7ce85d1df032bf262a7e4dc03ccfb71737ad3536343eaae84eae1809965a5",
+    "alpha": {
+      "zero": 1191317,
+      "partial": 380305,
+      "opaque": 906
+    },
+    "grid": {
+      "columns": 3,
+      "rows": 4
+    },
+    "alphaBands": {
+      "zero": 1191317,
+      "1-127": 74865,
+      "128-239": 11196,
+      "240-254": 294244,
+      "255": 906
+    }
+  },
+  {
+    "file": "gpt-02.png",
+    "width": 1086,
+    "height": 1448,
+    "sha256": "97969251a58a2c86e8b0509505a97b06381dc42800834f9032378ad1bb3bdce0",
+    "alpha": {
+      "zero": 1185773,
+      "partial": 385848,
+      "opaque": 907
+    },
+    "grid": {
+      "columns": 3,
+      "rows": 4
+    },
+    "alphaBands": {
+      "zero": 1185773,
+      "1-127": 71293,
+      "128-239": 11586,
+      "240-254": 302969,
+      "255": 907
+    }
+  },
+  {
+    "file": "gpt-03.png",
+    "width": 1086,
+    "height": 1448,
+    "sha256": "f1a18511408a1f2b35e0a96ab31a16c2c3e0404378588153875acb7bfa0de0be",
+    "alpha": {
+      "zero": 1193967,
+      "partial": 377492,
+      "opaque": 1069
+    },
+    "grid": {
+      "columns": 3,
+      "rows": 4
+    },
+    "alphaBands": {
+      "zero": 1193967,
+      "1-127": 70881,
+      "128-239": 11160,
+      "240-254": 295451,
+      "255": 1069
+    }
+  }
+]

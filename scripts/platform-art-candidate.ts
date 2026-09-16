@@ -49,5 +49,6 @@ try{
  console.log(JSON.stringify({status:state.status,taskId:task.task_id,elapsedMs:state.elapsedMs,asset:state.asset}))
 }catch(error){
  state.status='failed';state.error=error instanceof MediaServiceError?error.code:error instanceof Error?error.message:'UNKNOWN';state.retryable=error instanceof MediaServiceError?error.retryable:true;state.elapsedMs=Date.now()-started;persist()
+ if(error instanceof MediaServiceError){state.httpStatus=error.status;state.errorMessage=error.message;persist()}
  console.log(JSON.stringify({status:state.status,error:state.error,retryable:state.retryable,elapsedMs:state.elapsedMs,taskId:state.task?.task_id??null}));process.exitCode=1
 }

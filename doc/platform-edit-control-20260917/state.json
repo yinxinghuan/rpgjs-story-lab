@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "requestSha256": "83e94e6346f1e3353e595b6e7b5cd596c0489359f6f187b7b860045757077cd8",
+  "requestId": "9a8f8b62-e74a-433e-b284-7c273cf53308",
+  "status": "failed",
+  "startedAt": "2026-09-16T16:46:26.425Z",
+  "attempts": 1,
+  "error": "PROVIDER_REJECTED",
+  "retryable": false,
+  "elapsedMs": 55201,
+  "httpStatus": 502,
+  "errorMessage": "ConnectionError: HTTPSConnectionPool(host='raw.githubusercontent.com', port=443): Read timed out."
+}

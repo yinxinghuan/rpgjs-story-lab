@@ -1,0 +1,13 @@
+{
+  "requestId": "0c557839-7946-4de6-a8ed-d550393799ae",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789421967259733.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 768
+  },
+  "prompt": "Use ONLY the BACK-FACING STANDING woman in the BOTTOM ROW, MIDDLE COLUMN of the reference. Output ONE complete character, NOT a sheet. Preserve that rear direction, visible top of head, steep overhead camera, short proportions and crisp pixel-art texture. Change the clothes to a simple faded TEAL SHORT-SLEEVED WORK SHIRT, straight NAVY trousers and LIGHT BROWN shoes. Remove the apron and straps completely; only a plain shirt back. Change the hair to short cropped COPPER-BROWN hair. Stand with both feet level and close together, hands relaxed beside hips. Back toward viewer, no face. Do not turn the body. Center one complete figure about 180 pixels wide and 320 pixels tall with generous empty margins on flat bright MAGENTA RGB255,0,255. No grid, no other figures, no objects, no cast shadows."
+}

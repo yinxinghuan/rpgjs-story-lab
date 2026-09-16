@@ -1,0 +1,13 @@
+{
+  "requestId": "59f36525-f52d-467e-9f85-94ca8af23db9",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789421967259733.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "Keep this pixel-art sprite sheet exactly as shown: same character, same clothes, same poses, same layout. Change only the solid background to bright green. Do not add objects or text."
+}

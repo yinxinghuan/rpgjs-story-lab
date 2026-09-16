@@ -1,0 +1,25 @@
+{
+  "date": "2026-09-17",
+  "intent": "User requested three repeated GPT image-tool samples to assess authored-character fallback versus platform dynamic media",
+  "tool": "built-in image_gen; backend model id not exposed",
+  "reference": "public/art/overhead/mechanic.png",
+  "referenceSha256": "528735d4e01625854f42a82afbe79468edd8502b6c7def1bdfe7f947d0ba0c9b",
+  "prompt": "prompt.txt",
+  "samplesRequested": 3,
+  "samePromptAndReference": true,
+  "platformReferenceCandidate": "../oldstreet-laundry-redesign/pose-preserving/candidate.png",
+  "limits": [
+    "small-sample workflow screen, not population quality or model benchmark",
+    "platform exact pixel size differs from built-in tool output controls",
+    "reference side-walk poses themselves require inspection",
+    "no candidate silently admitted to runtime"
+  ],
+  "rubric": [
+    "12 direction slots",
+    "within-sheet identity and outfit",
+    "B overhead projection and proportions",
+    "front/back alternating leading foot",
+    "left/right alternating near/far leg and arm swing",
+    "matte / alpha and pixel-style consistency"
+  ]
+}

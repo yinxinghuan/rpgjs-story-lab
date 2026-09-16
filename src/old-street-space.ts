@@ -1,5 +1,5 @@
 import {oldStreetFurniture} from './old-street-furniture'
-import {oldStreetCharacterBindings} from './old-street-characters'
+import {oldStreetCharacterBindings,usesCurrentLaundryCast} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
 import {oldStreetCartridge, oldStreetConnections, oldStreetTravelId, oldStreetActionId, type OldStreetRoom} from './old-street-cartridge'
 import {compileSpatialBinding, type SpatialBindingDefinition, type SpatialPoint} from './spatial-binding'
@@ -91,6 +91,7 @@ export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySav
   // and the bounded authored interaction area, never a stale NPC home hitbox.
   // The live client supplies the actual resident positions for solid collision.
   return [...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
+    && (p.id!=='laundry-owner'||!usesCurrentLaundryCast(save)||!!residents?.['laundry-owner'])
     && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))]
 }
 export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer') {

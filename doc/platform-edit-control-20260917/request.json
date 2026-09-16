@@ -1,0 +1,13 @@
+{
+  "requestId": "9a8f8b62-e74a-433e-b284-7c273cf53308",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@dce4897af88392c542467ed2ed71d6e5d35b0b69/up/reference.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 768
+  },
+  "prompt": "Keep this single pixel-art character exactly as shown, facing away from the viewer, same pose and clothes. Change only the solid background to bright green. One complete character, no other objects."
+}

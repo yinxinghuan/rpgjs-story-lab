@@ -1,0 +1,250 @@
+{
+  "sourceSha256": "10035a21b51874a271c776716e6e9e1aa785c748bdc327e0a9cf374717e5b7dc",
+  "sha256": "ef62d57b07de415effc024a0d2c17d166920c4743eca57396a603e0edad221cf",
+  "sourceRetained": true,
+  "padding": {
+    "right": 2
+  },
+  "spec": {
+    "columns": 3,
+    "rows": 4,
+    "cellWidth": 320,
+    "cellHeight": 352,
+    "foot": {
+      "x": 160,
+      "y": 328
+    },
+    "kind": "actor",
+    "backgroundMode": "magenta",
+    "neutralMin": 200,
+    "chromaMax": 20
+  },
+  "algorithm": "magenta-matte-unmix-1",
+  "metrics": {
+    "removed": 1155668,
+    "edgeCorrected": 6050,
+    "corePreserved": 267574
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        93,
+        47,
+        240,
+        320
+      ],
+      "sourceAnchor": {
+        "x": 166,
+        "y": 320
+      },
+      "offset": {
+        "x": -6,
+        "y": 8
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        439,
+        58,
+        586,
+        321
+      ],
+      "sourceAnchor": {
+        "x": 170,
+        "y": 321
+      },
+      "offset": {
+        "x": -10,
+        "y": 7
+      }
+    },
+    {
+      "row": 0,
+      "column": 2,
+      "sourceBox": [
+        783,
+        49,
+        932,
+        320
+      ],
+      "sourceAnchor": {
+        "x": 173,
+        "y": 320
+      },
+      "offset": {
+        "x": -13,
+        "y": 8
+      }
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "sourceBox": [
+        99,
+        409,
+        234,
+        674
+      ],
+      "sourceAnchor": {
+        "x": 166,
+        "y": 322
+      },
+      "offset": {
+        "x": -6,
+        "y": 6
+      }
+    },
+    {
+      "row": 1,
+      "column": 1,
+      "sourceBox": [
+        457,
+        413,
+        565,
+        675
+      ],
+      "sourceAnchor": {
+        "x": 169,
+        "y": 323
+      },
+      "offset": {
+        "x": -9,
+        "y": 5
+      }
+    },
+    {
+      "row": 1,
+      "column": 2,
+      "sourceBox": [
+        790,
+        411,
+        922,
+        675
+      ],
+      "sourceAnchor": {
+        "x": 172,
+        "y": 323
+      },
+      "offset": {
+        "x": -12,
+        "y": 5
+      }
+    },
+    {
+      "row": 2,
+      "column": 0,
+      "sourceBox": [
+        101,
+        761,
+        234,
+        1029
+      ],
+      "sourceAnchor": {
+        "x": 167,
+        "y": 325
+      },
+      "offset": {
+        "x": -7,
+        "y": 3
+      }
+    },
+    {
+      "row": 2,
+      "column": 1,
+      "sourceBox": [
+        459,
+        765,
+        566,
+        1029
+      ],
+      "sourceAnchor": {
+        "x": 170,
+        "y": 325
+      },
+      "offset": {
+        "x": -10,
+        "y": 3
+      }
+    },
+    {
+      "row": 2,
+      "column": 2,
+      "sourceBox": [
+        792,
+        763,
+        922,
+        1030
+      ],
+      "sourceAnchor": {
+        "x": 173,
+        "y": 326
+      },
+      "offset": {
+        "x": -13,
+        "y": 2
+      }
+    },
+    {
+      "row": 3,
+      "column": 0,
+      "sourceBox": [
+        97,
+        1111,
+        236,
+        1381
+      ],
+      "sourceAnchor": {
+        "x": 166,
+        "y": 325
+      },
+      "offset": {
+        "x": -6,
+        "y": 3
+      }
+    },
+    {
+      "row": 3,
+      "column": 1,
+      "sourceBox": [
+        440,
+        1121,
+        583,
+        1381
+      ],
+      "sourceAnchor": {
+        "x": 169,
+        "y": 325
+      },
+      "offset": {
+        "x": -9,
+        "y": 3
+      }
+    },
+    {
+      "row": 3,
+      "column": 2,
+      "sourceBox": [
+        785,
+        1115,
+        928,
+        1383
+      ],
+      "sourceAnchor": {
+        "x": 172,
+        "y": 327
+      },
+      "offset": {
+        "x": -12,
+        "y": 1
+      }
+    }
+  ],
+  "redraw": false,
+  "resize": false,
+  "walkingAdmitted": false,
+  "productionAdmitted": false
+}

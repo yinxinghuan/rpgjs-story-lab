@@ -1,0 +1,12 @@
+{
+  "url": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/overhead/mechanic.png",
+  "status": 200,
+  "bytes": 705093,
+  "sha256": "528735d4e01625854f42a82afbe79468edd8502b6c7def1bdfe7f947d0ba0c9b",
+  "sameBytesAsEarlierGithubReference": true,
+  "changes": [
+    "use same baseline bytes from deployed game host",
+    "preserve full original 3x4 layout rather than requesting 2x2 or single frame"
+  ],
+  "notControlledModelComparison": true
+}

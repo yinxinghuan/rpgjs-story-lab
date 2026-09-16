@@ -1,0 +1,13 @@
+{
+  "requestId": "c9aa9659-e16e-4276-adef-dcfba7bfb684",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/art/overhead/mechanic.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "Edit the supplied sprite sheet IN PLACE. Keep the EXACT 3 columns, 4 rows, camera angle, silhouettes, compressed proportions, all 12 limb poses, positions, and crisp textured pixel shading. Change only the identity and clothing: the same middle-aged woman in every cell, cropped copper-brown hair, lightly freckled face, teal short-sleeved work shirt, navy trousers, light brown work shoes. No beard, apron, straps, hat, bag or glasses. Do not make the figures taller or their faces larger. Preserve each original direction: row 1 front, row 2 LEFT, row 3 RIGHT, row 4 BACK. Preserve the opposite leading foot in the first and third columns, idle in the middle. Do not turn any individual frame to another direction. The top of the head remains prominently visible, shoulders and face foreshortened exactly like the source. Change the background to uniform bright magenta RGB255,0,255, no grid lines, text or floor. Twelve figures only. This is a costume-and-identity repaint of the source, not a redesign of its poses or anatomy."
+}

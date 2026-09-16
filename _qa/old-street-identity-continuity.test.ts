@@ -13,7 +13,7 @@ for(const locale of ['zh','en'] as const)test(`restored journey names agree acro
  // labels intentionally differ, reproducing a content-update continuity bug.
  const residents=[
   {entity:'watchmaker',id:'zhou-watchmaker',name:locale==='zh'?'弗兰克':'Frank',action:'return-key'},
-  {entity:'laundry-owner',id:'lan-laundry',name:locale==='zh'?'玛拉':'Mara',action:'return-clock'},
+  {entity:'laundry-owner',id:'lan-laundry',name:locale==='zh'?'伊芙琳':'Evelyn',action:'return-clock'},
  ]
  for(const p of residents){
   save.characters.push({id:p.id,name:p.name,role:'resident',vitality:100,stress:0,skills:[],status:'known',origin:'cartridge',updatedAtScene:save.scene})

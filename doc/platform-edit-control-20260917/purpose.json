@@ -1,0 +1,18 @@
+{
+  "purpose": "Minimal edit service availability control after two terminal rejections, not art admission or model quality comparison",
+  "referencesChecked": [
+    {
+      "host": "cdn.jsdelivr.net",
+      "status": 200,
+      "bytes": 51076,
+      "sha256": "17156a3d12858d1c0eca6c996f5bdae46a4742f5727d7f077a65093035cb9134"
+    },
+    {
+      "host": "raw.githubusercontent.com",
+      "status": 200,
+      "bytes": 705093,
+      "sha256": "528735d4e01625854f42a82afbe79468edd8502b6c7def1bdfe7f947d0ba0c9b"
+    }
+  ],
+  "scope": "one new control request, no production replacement; local fetch success does not prove provider fetch"
+}
