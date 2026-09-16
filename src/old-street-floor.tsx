@@ -48,9 +48,7 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
   </g>
   if(room==='shed'&&pixelShop)return <g>
     <rect x={floor.x-4} y={floor.y-4} width={floor.w+8} height={floor.h+8} fill="#77715c"/>
-    <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="0 272 360 640" preserveAspectRatio="none" overflow="hidden">
-      <image href={art.cellarFloor} width="512" height="1088" style={{imageRendering:'pixelated'}}/>
-    </svg>
+    <image href={art.shedFloor} x={floor.x} y={floor.y} width={floor.w} height={floor.h} preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/>
     <OldStreetShedEnvironment image={art.shedWall}/>
   </g>
   if(room==='cellar'&&pixelShop)return <g>

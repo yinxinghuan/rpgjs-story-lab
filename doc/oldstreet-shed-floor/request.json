@@ -1,0 +1,10 @@
+{
+  "requestId": "457bc143-da9b-40c5-8347-de74ac781b61",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 576,
+    "height": 1024
+  },
+  "prompt": "Create a production background FLOOR TEXTURE for a weathered riverside watchmaker workshop in an orthographic overhead 2D pixel RPG. Exact 576x1024 image, entire canvas is flat walkable floor seen straight down, no vanishing point, no perspective convergence, no walls or room illustration. Warm gray-green worn concrete with small irregular repairs and fine hairline cracks; muted brown dusty edges. Refined 16-bit hand placed pixel clusters, medium-fine pixels around 2-3 image pixels, thin stepped edges, limited earthy palette. Not photographic, no realistic noise or smooth painted gradients. Rich but restrained environmental storytelling: irregular damp tide stains along rightmost edge, tiny dry leaves and wood dust accumulated at outermost 8 percent of left and right edges, worn lighter irregular walking paths through middle, small old oil marks near top left, a restrained soft warm daylight patch across upper left third. Keep center broad and clear, no repeated grid, no huge cracks or coarse blocks. Every detail flat and safe to walk over. No furniture, tools, crates, rugs, holes, steps, raised objects, doors, stairs, letters, clocks, characters, text, symbols, UI, borders or shadows of people. Consistent fixed overhead game camera. Preserve readable subdued floor so separately rendered mustard yellow traveler and gray clothed watchmaker stand out. Fill edge to edge with the same floor plane."
+}

@@ -1,0 +1,13 @@
+{
+  "requestId": "18f50296-3e91-4da9-8404-7676ac1d688a",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789534032734363.png"
+  ],
+  "size": {
+    "width": 576,
+    "height": 1024
+  },
+  "prompt": "Edit this FLOOR TEXTURE. Remove both tiny human figures entirely, including every cast shadow of each figure. Fill their exact areas with continuous matching concrete. This is an EMPTY WALKABLE FLOOR BACKGROUND, not a game screenshot. Zero people, zero creatures, zero silhouettes or human-shaped shadows anywhere. Keep the fixed straight-down orthographic floor plane, warm upper-left light, green-gray concrete, fine stepped pixel art texture and edge dust. Reduce the prominent large black cracks: most should become faint thin subtle hairlines, avoid large broken slabs. Keep damp marks and leaf/wood dust accumulation at edges restrained and flat. Keep broad empty middle clear for runtime gameplay. No objects, tools, furniture, lettering, doors, rugs, holes, stairs or UI. Same exact 576x1024 canvas."
+}
