@@ -1,12 +1,29 @@
 import {oldStreetBuildingEdges} from './old-street-boundary-layout'
-/** Cutaway masonry frames real entrances; never supplies a collision map. */
-export function OldStreetBuildingEdges(){
- return <g>{oldStreetBuildingEdges().map((r,i)=><g key={i}>
-  <rect x={r.x} y={r.y} width={r.width} height={r.height} fill={r.side==='W'?'#6e6956':'#73715e'}/>
-  <rect x={r.x+(r.side==='W'?20:0)} y={r.y} width="8" height={r.height} fill="#9c9479"/>
-  {Array.from({length:Math.floor(r.height/16)},(_,row)=><path key={row} d={`M${r.x} ${r.y+(row+1)*16}h28m-${row%2?9:18} 0v-16`} fill="none" stroke="#4f5147" strokeWidth=".8" opacity=".65"/>)}
-  <path d={`M${r.x} ${r.y}h28M${r.x} ${r.y+r.height}h28`} stroke="#c0b294" strokeWidth="3"/>
-  <path d={`M${r.x+(r.side==='W'?27:1)} ${r.y}v${r.height}`} stroke="#4a493b" strokeWidth="2"/>
-  {r.height>100&&<g><rect x={r.x+5} y={r.y+r.height*.44} width="17" height="36" fill="#454d45" stroke="#a28a60" strokeWidth="2"/><path d={`M${r.x+13.5} ${r.y+r.height*.44}v36M${r.x+5} ${r.y+r.height*.44+18}h17`} stroke="#796e53" strokeWidth="1.5"/></g>}
- </g>)}</g>
+import {oldStreetDoors,oldStreetFloors} from './old-street-space'
+/** Reviewed top-down eaves only. The generated white seam never enters a crop.
+ * Equal x/y scale preserves tile sizes; whole strips repeat instead of stretching
+ * to fit each building span. Door gaps come from the authoritative map. */
+export function OldStreetBuildingEdges({image}:{image?:string}){
+ const floor=oldStreetFloors.street
+ return <g>
+  {image&&<defs>{(['W','E'] as const).map(side=>{
+   const sourceWidth=side==='W'?234:230,tileHeight=1008/sourceWidth*56
+   return <pattern key={side} id={`os-street-eaves-${side}`} x={side==='W'?0:floor.x+floor.w} y={floor.y} width="56" height={tileHeight} patternUnits="userSpaceOnUse">
+    <svg width="56" height={tileHeight} viewBox={`${side==='W'?0:282} 8 ${sourceWidth} 1008`} overflow="hidden">
+     <image href={image} width="512" height="1024" style={{imageRendering:'pixelated'}}/>
+    </svg>
+   </pattern>
+  })}</defs>}
+  {oldStreetBuildingEdges().map((r,i)=><g key={i}>
+   <rect x={r.x} y={r.y} width={r.width} height={r.height} fill={r.side==='W'?'#555d3d':'#394752'}/>
+   {image&&<rect x={r.x} y={r.y} width={r.width} height={r.height} fill={`url(#os-street-eaves-${r.side})`}/>}
+   <path d={`M${r.x} ${r.y}h${r.width}M${r.x} ${r.y+r.height}h${r.width}`} stroke={r.side==='W'?'#9b7e50':'#7e8b88'} strokeWidth="2"/>
+   <path d={`M${r.x+(r.side==='W'?r.width-1:1)} ${r.y}v${r.height}`} stroke="#343d36" strokeWidth="1.5"/>
+  </g>)}
+  {oldStreetDoors().filter(d=>d.room==='street'&&(d.side==='W'||d.side==='E')).map(d=><g key={d.id}>
+   {/* A shallow inset behind the real threshold, not an additional entrance. */}
+   <rect x={d.side==='W'?0:d.position.x} y={d.position.y-27} width="56" height="54" fill={d.side==='W'?'#3a392b':'#29343b'}/>
+   <path d={`M${d.side==='W'?0:d.position.x} ${d.position.y-27}h56M${d.side==='W'?0:d.position.x} ${d.position.y+27}h56`} stroke={d.side==='W'?'#a58b5c':'#93a196'} strokeWidth="2"/>
+  </g>)}
+ </g>
 }

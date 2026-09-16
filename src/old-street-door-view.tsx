@@ -8,11 +8,16 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
  return <g>{oldStreetDoors().filter(d=>d.room===room&&(d.gate!=='darkroom-ready'||facts['darkroom-ready'])).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
   const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
+  const studio=d.id.includes('studio-front'),watchshop=d.id.includes('shop-front')
+  const frame=studio?'#354958':watchshop?'#4d5940':'#584731'
+  const trim=studio?'#aeb3a0':watchshop?'#b1975f':'#a88b57'
   return <g key={d.id} transform={`translate(${d.position.x} ${d.position.y}) rotate(${angle})`}>
    {d.kind==='alley'?<g>
-    <path d="M-25 18V-22H25V18" fill="#b0a58d"/>
+    <path d="M-25 18V-22H25V18" fill="#8e9279"/>
     <path d="M-24-22V-9M24-22V-9" stroke="#625e4f" strokeWidth="6"/>
+    <path d="M-28-22H-20M20-22H28M-28-11H-21M21-11H28" stroke="#b8b396" strokeWidth="2"/>
     <path d="M-22-12H22M-22-2H22M-22 8H22M-10-22V-12M9-12V-2M-6-2V8M12 8V18" stroke="#817966" strokeWidth="1" fill="none"/>
+    <path d="M-20 15L-16 11M19 17L16 13M-22 1L-19-2" stroke="#53684a" strokeWidth="2"/>
    </g>:d.kind==='stairs'?<g>
     <rect x="-24" y="-16" width="48" height="38" fill={outdoor?'#353f40':'#514e43'}/>
     {[0,1,2,3,4].map(i=><g key={i}><rect x="-20" y={-14+i*7} width="40" height="6" fill={outdoor?(up?'#818d89':'#626f6c'):(up?'#b5ac93':'#928971')} opacity={up?.72+i*.055:1-i*.07}/><path d={`M-19 ${-14+i*7}H19`} stroke={outdoor?'#b1b9af':'#d7ceb5'} strokeWidth="1"/></g>)}
@@ -27,8 +32,13 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
    </g>:d.id.includes('laundry-back')?<OldStreetCurtain side={d.side}/>:<g>
     <rect x="-23" y="-10" width="46" height="29" fill="#8f846e"/>
     <path d="M-19 11H19M-19 16H19" stroke="#cabca0" strokeWidth="2"/>
-    <rect x="-26" y="-13" width="6" height="33" fill="#584731"/><rect x="20" y="-13" width="6" height="33" fill="#584731"/>
-    <path d="M-24-12V17M22-12V17" stroke="#a88b57" strokeWidth="1"/>
+    <rect x="-26" y="-13" width="6" height="33" fill={frame}/><rect x="20" y="-13" width="6" height="33" fill={frame}/>
+    <path d="M-24-12V17M22-12V17" stroke={trim} strokeWidth="1"/>
+    {(studio||watchshop)&&<g>
+     <path d="M-28-14H-20V20H-28M28-14H20V20H28" fill="none" stroke={frame} strokeWidth="2"/>
+     <path d="M-27-8H-23M23 4H27M-27 14H-23" stroke={trim} strokeWidth=".8"/>
+     <rect x="-25" y="-9" width="3" height="4" fill={studio?'#cbd5c6':'#d7b570'}/>
+    </g>}
     {closed?<g>
       <rect x="-20" y="-10" width="40" height="21" fill="#776145"/>
       {woodImage?<image href={woodImage} x="-20" y="-10" width="40" height="21" preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/>:<path d="M-12-9V10M-4-9V10M4-9V10M12-9V10" stroke="#9e8156"/>}

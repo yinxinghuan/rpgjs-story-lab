@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "status": "admitted-local",
+  "scope": "street-static-cutaway-eaves",
+  "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
+  "taskId": "mt_4c0ebac01c5a18f49e2dc0c566ae534e",
+  "source": "AlterU public media API; text mode",
+  "crop": {
+    "W": {
+      "x": 0,
+      "y": 8,
+      "width": 234,
+      "height": 1008
+    },
+    "E": {
+      "x": 282,
+      "y": 8,
+      "width": 230,
+      "height": 1008
+    }
+  },
+  "render": {
+    "width": 56,
+    "scale": "uniform per strip, repeat vertically",
+    "regions": "oldStreetBuildingEdges; excludes authoritative door gaps"
+  },
+  "checks": [
+    "top-down parallel geometry visually inspected",
+    "white center and top/bottom margins excluded",
+    "same journey street-shop-street-photo-street through visible UI",
+    "actual CSS viewport 390x844 and 320x567.7 inspected"
+  ],
+  "limits": [
+    "shallow roof strips, not full shop facades",
+    "minor material/pixel-grain differences accepted for local composition",
+    "not production deployed",
+    "not whole-game or account recovery acceptance"
+  ]
+}

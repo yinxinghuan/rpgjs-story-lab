@@ -7,6 +7,8 @@ export function oldStreetBuildingEdges(){
   const spans:Array<{start:number;end:number}>=[];let cursor=f.y
   for(const gap of gaps){if(gap.start>cursor)spans.push({start:cursor,end:gap.start});cursor=Math.max(cursor,gap.end)}
   if(cursor<f.y+f.h)spans.push({start:cursor,end:f.y+f.h})
-  return spans.map(s=>({side,x:side==='W'?f.x-28:f.x+f.w,y:s.start,width:28,height:s.end-s.start}))
+  // Use the existing non-walkable border for shallow cutaway roofs. No floor,
+  // doorway slot, approach point or collision is moved by this wider artwork.
+  return spans.map(s=>({side,x:side==='W'?0:f.x+f.w,y:s.start,width:56,height:s.end-s.start}))
  })
 }

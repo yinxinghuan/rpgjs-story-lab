@@ -1,0 +1,10 @@
+{
+  "requestId": "70f3b379-7543-4701-ad7c-6dc59d595f11",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 512,
+    "height": 1024
+  },
+  "prompt": "STRICT 90 DEGREE VERTICAL OVERHEAD MAP TEXTURE. Camera pointing vertically down, no visible vertical walls, no elevation, no front view, no vanishing point. Detailed hand-crafted pixel art game roof borders. 512x1024 image, exactly TWO full-bleed rectangular columns, LEFT x0..255 and RIGHT x256..511, each256wide1024tall. Continuous seamless strip texture down each column, no margin or white background anywhere.\nLEFT column: the east-facing outer edge of a weathered little shop ROOF viewed directly from ABOVE: tiny moss-green zinc rectangular panels and patinated copper patches covering most of the strip; a straight north-south battered bronze gutter at the RIGHT EDGE x244..255. Small crumpled brown leaves caught in the gutter, a few rusty screws, slight moss seams. RIGHT column: the west-facing outer edge of a different little shop ROOF viewed directly from ABOVE: small faded blue-grey slate shingles and a few dark repairs; a straight north-south old iron gutter at its LEFT EDGE x256..268, tiny leaves collected within. Rooftop surfaces are flat parallel rectangles. All scale constant. Fine crisp pixel clusters, 2-3px details, restrained lived-in late-afternoon colors. Entire canvas covered in roof materials. Not illustration of entire buildings, not complete roofs, just narrow cropped pieces from their outer eaves. No tall structures, no walls, no doors, NO WINDOWS (especially no vertical windows), no glass, no whole buildings, no streets, no ground, no people, no text, no labels, no perspective. Smooth ambient light upper left, cool shade on right. Subtle rich wear, not noisy, no huge slabs. Every line remains parallel to the canvas edges. This is a usable game tileset sheet, not a scenic drawing."
+}
