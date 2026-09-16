@@ -1,4 +1,13 @@
 /** Player guidance never echoes transport bodies, URLs or implementation codes. */
+export function oldStreetRecoveryCode(error:string){
+ const known=['SESSION_NOT_FOUND','SESSION_RESPONSE_MISMATCH','SESSION_RESPONSE_REGRESSED','INVALID_CLOUD_IDENTITY','OLD_STREET_SAVE_UNSUPPORTED','RUNTIME_VERSION_MISMATCH','STARTUP_TIMEOUT','ART_IMAGE_TIMEOUT','ART_IMAGE_DECODE_FAILED','SESSION_SELECTION_CHANGED','VERSION_CONFLICT','INVALID_PENDING','NETWORK_ERROR','UNAUTHORIZED','FORBIDDEN']
+ const token=error.replace(/^Error:\s*/,'').trim()
+ if(known.includes(token))return token
+ if(/^(TimeoutError|AbortError)(:|$)/.test(token))return 'REQUEST_TIMEOUT'
+ if(/^(TypeError: (Failed to fetch|Load failed|NetworkError)|NetworkError:)/.test(token))return 'NETWORK_UNAVAILABLE'
+ // Never echo unknown server bodies, exception messages, URLs or credentials.
+ return 'RECOVERY_UNCLASSIFIED'
+}
 export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
  const text=(zh:string,en:string)=>locale==='zh'?zh:en
  if(/SAVE_UNSUPPORTED|SAVE_INVALID|INVALID_PENDING|INVALID_CLOUD_IDENTITY/.test(error))return text('这段旅程暂时无法读取。请保留当前数据，稍后重新连接。','This journey cannot be read right now. Keep the current data and try reconnecting later.')

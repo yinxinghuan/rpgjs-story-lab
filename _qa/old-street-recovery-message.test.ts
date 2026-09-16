@@ -1,6 +1,16 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {oldStreetRecoveryMessage} from '../src/old-street-recovery-message'
+import {oldStreetRecoveryMessage,oldStreetRecoveryCode} from '../src/old-street-recovery-message'
+
+test('recovery diagnostics distinguish transport failures without exposing exception contents',()=>{
+ assert.equal(oldStreetRecoveryCode('Error: SESSION_NOT_FOUND'),'SESSION_NOT_FOUND')
+ assert.equal(oldStreetRecoveryCode('Error: RUNTIME_VERSION_MISMATCH'),'RUNTIME_VERSION_MISMATCH')
+ assert.equal(oldStreetRecoveryCode('TimeoutError: The operation timed out.'),'REQUEST_TIMEOUT')
+ assert.equal(oldStreetRecoveryCode('TypeError: Load failed'),'NETWORK_UNAVAILABLE')
+ for(const raw of ['Error: request https://example.invalid/?token=SYNTHETIC_PRIVATE_DETAIL failed','Error: SESSION_NOT_FOUND private body','SyntaxError: unexpected private response']){
+  assert.equal(oldStreetRecoveryCode(raw),'RECOVERY_UNCLASSIFIED')
+ }
+})
 
 test('player recovery copy never echoes an unknown transport body or private URL',()=>{
  const payload='Error: request https://example.invalid/?token=SYNTHETIC_PRIVATE_DETAIL failed'

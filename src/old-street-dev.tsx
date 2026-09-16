@@ -7,7 +7,7 @@ import {OldStreetExpansionView} from './old-street-expansion-view'
 import {OldStreetExpansionPhotoView} from './old-street-expansion-photo-view'
 import {OldStreetBuildingEdges} from './old-street-boundaries'
 import {OldStreetGroundDetail} from './old-street-ground-detail'
-import {oldStreetRecoveryMessage,oldStreetActionFailureMessage} from './old-street-recovery-message'
+import {oldStreetRecoveryMessage,oldStreetActionFailureMessage,oldStreetRecoveryCode} from './old-street-recovery-message'
 import cratesUrl from '../doc/oldstreet-crates/cutout.png'
 import {oldStreetCratesSheet} from './old-street-crates'
 import mantelClockUrl from '../doc/oldstreet-mantel-clock/cutout.png'
@@ -432,7 +432,7 @@ export default function OldStreetDev() {
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen} move={(x,y)=>runtime.current?.move(x,y)}/>
       <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : nearbyAction?.primary.kind==='action'?label(nearbyAction.primary.id):nearbyAction?.primary.kind==='talk'?text(['交谈','Talk']):nearbyAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
-    {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} onRetry={()=>location.reload()}/>}
+    {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
     {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{error?JSON.stringify({error,renderer:diagnostic}):diagnostic}</pre></details>}
     {journeysOpen&&<OldStreetJourneysView soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
