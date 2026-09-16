@@ -41,7 +41,7 @@ export function oldStreetJournal(save:StorySave){
  note('crates-cleared',['露出的台阶','Steps uncovered'],['旧箱已移到墙边，可以从院子下到地下室。','The crates are beside the wall. The courtyard steps lead down to the cellar.'])
  note('yard-unlatched',['院门捷径','Courtyard shortcut'],['棚侧插销已打开，院子和工作棚可以直接往返。','The bolt is open. The workshop and courtyard now connect directly.'])
  for(const subject of ['clock','photo'])if(f[`${subject}-consent`]===true){
-  notes.push({id:`${subject}-record`,title:subject==='clock'?t('旧钟记录','Clock record'):t('旧照记录','Photograph record'),text:f[`${subject}-recorded`]===true?t('获准留下的这一条已放进修表铺记录册。','The approved entry is in the watch shop’s record book.'):t('主人已同意留下这一条，目前未放在记录册中。','The owner approved this entry; it is not currently in the record book.')})
+  notes.push({id:`${subject}-record`,title:subject==='clock'?t('旧钟记录','Clock record'):t('旧照记录','Photograph record'),text:f[`${subject}-recorded`]===true?t('获准留下的这一条已放进修表铺记录册。','The approved entry is in the watch shop’s record book.'):t('主人已同意留下这一条；可到修表铺记录册前决定是否收录。','The owner approved this entry. Visit the watch shop’s record book to decide whether to include it.')})
  }
  const observations=new Map<string,{id:string;text:string}>()
  for(const block of save.blocks){

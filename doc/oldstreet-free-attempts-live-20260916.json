@@ -1,0 +1,110 @@
+{
+  "mode": "live",
+  "results": [
+    {
+      "id": "crouch",
+      "input": "我蹲下来看看抽屉。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "observed",
+        "text": "你蹲下来仔细查看被空盒挡住的抽屉。抽屉似乎被空盒挡住，无法直接打开。你可以尝试先移开空盒。",
+        "discoveryIds": []
+      },
+      "requests": 2,
+      "elapsedMs": 4257
+    },
+    {
+      "id": "knock",
+      "input": "我轻敲抽屉，听听里面有什么。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "observed",
+        "text": "你轻敲了被空盒挡住的抽屉，能听到里面似乎有空盒和一些杂物的声音。",
+        "discoveryIds": []
+      },
+      "requests": 2,
+      "elapsedMs": 2214
+    },
+    {
+      "id": "move-box",
+      "input": "我把挡住抽屉的空盒挪开。",
+      "result": {
+        "kind": "action",
+        "actionId": "oldstreet:move-box"
+      },
+      "requests": 2,
+      "elapsedMs": 1943
+    },
+    {
+      "id": "empty-drawer",
+      "input": "我再看看已经拿走放大镜的抽屉。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "observed",
+        "text": "你已经拿走了放大镜，现在抽屉里没有其他新的物品。可以尝试查看锁着的小格。",
+        "discoveryIds": []
+      },
+      "requests": 2,
+      "elapsedMs": 2874
+    },
+    {
+      "id": "dismantle",
+      "input": "我把锁着的小格直接拆掉。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "inconclusive",
+        "text": "你尝试拆掉锁着的小格，但没有明确的工具或方法说明。你可以尝试使用合适的工具或寻找其他途径打开小格。",
+        "discoveryIds": []
+      },
+      "requests": 2,
+      "elapsedMs": 3490
+    },
+    {
+      "id": "darkroom",
+      "input": "我凑近看看这张照片还需要做什么。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "observed",
+        "text": "你凑近显影台上的照片，注意到照片边缘还未对齐，需要继续手动拼合才能完成。",
+        "discoveryIds": [
+          "visible:developing-bench"
+        ]
+      },
+      "requests": 2,
+      "elapsedMs": 1610
+    },
+    {
+      "id": "knock",
+      "input": "我轻敲抽屉，听听里面有什么。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "observed",
+        "text": "你轻敲了抽屉，但抽屉被空盒挡住，内容无法确认。",
+        "discoveryIds": []
+      },
+      "requests": 2,
+      "elapsedMs": 4123
+    },
+    {
+      "id": "empty-drawer",
+      "input": "我再看看已经拿走放大镜的抽屉。",
+      "result": {
+        "kind": "attempt",
+        "outcome": "observed",
+        "text": "你查看了已取走放大镜的抽屉，里面还有收据。",
+        "discoveryIds": [
+          "visible:drawer"
+        ]
+      },
+      "requests": 2,
+      "elapsedMs": 1865
+    },
+    {
+      "id": "dismantle",
+      "input": "我把锁着的小格直接拆掉。",
+      "error": "APPROVED_CASE_REQUEST_LIMIT",
+      "requests": 2,
+      "elapsedMs": 1956
+    }
+  ]
+}
