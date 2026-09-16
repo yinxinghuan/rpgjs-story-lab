@@ -87,7 +87,8 @@ test('expanded darkroom uses hybrid attempts without bypassing the photo puzzle 
   assert.match(result.text,/不再留有/)
   const beforeReplay=calls
   assert.deepEqual(await service.action('test',h.id,observation),result);assert.equal(calls,beforeReplay)
-  assert.ok(oldStreetJournal(h.save).notes.some(n=>n.text.includes('不再留有')))
+  assert.ok(oldStreetJournal(h.save).notes.some(n=>n.id==='darkroom-photo'&&n.text.includes('身上')))
+  assert.ok(h.save.blocks.some(b=>b.text.includes('不再留有')))
  }finally{raw.close()}
 })
 

@@ -64,3 +64,30 @@ for(const locale of ['zh','en'] as const)test(`current purpose follows learned p
  s.facts.departed=true
  assert.match(purpose(),locale==='zh'?/已经交给/:/has been delivered/)
 })
+
+for(const locale of ['zh','en'] as const)test(`observation notes track changed props without rewriting history (${locale})`,()=>{
+ const save=createInitialSave(oldStreetCartridge(locale))
+ const add=(id:string,key:string,text:string)=>save.blocks.push({id,kind:'narration',text:'attempt',data:{oldStreetDiscoveries:JSON.stringify([{id:key,text}])}})
+ add('first','visible:letter-compartment','LOCKED_OLD_SNAPSHOT')
+ add('repeat','visible:letter-compartment','LOCKED_NEWER_SNAPSHOT')
+ add('unknown','some-knowledge','A previous remark.')
+ add('duplicate','learned:clock-mark-known','Already recorded clue')
+ let notes=oldStreetJournal(save).notes
+ assert.equal(notes.length,2)
+ assert.match(notes[0].text,locale==='zh'?/锁着/:/Locked/)
+ save.facts['letter-unlocked']=true
+ const before=JSON.stringify(save)
+ notes=oldStreetJournal(save).notes
+ assert.match(notes[0].text,locale==='zh'?/密封信/:/letter/)
+ assert.equal(notes[1].title,locale==='zh'?'先前的观察':'Earlier observation')
+ save.facts['letter-taken']=true
+ assert.match(oldStreetJournal(save).notes[0].text,locale==='zh'?/空/:/empty/)
+ assert.deepEqual(JSON.parse(before).blocks,save.blocks)
+ assert.deepEqual(oldStreetJournal(JSON.parse(JSON.stringify(save))),oldStreetJournal(save))
+ add('photo','visible:developing-bench','Still preparing')
+ save.facts['darkroom-photo-matched']='a'.repeat(64)
+ save.facts['darkroom-photo-choice']='keep'
+ notes=oldStreetJournal(save).notes
+ assert.ok(notes.some(n=>n.id==='darkroom-photo'))
+ assert.ok(!notes.some(n=>n.text==='Still preparing'))
+})

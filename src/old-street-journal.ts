@@ -1,3 +1,4 @@
+import {oldStreetPropState} from './old-street-prop-state'
 import type {StorySave} from './vendor/original-train/types'
 export function oldStreetCurrentPurpose(save:StorySave){
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
@@ -42,16 +43,22 @@ export function oldStreetJournal(save:StorySave){
  for(const subject of ['clock','photo'])if(f[`${subject}-consent`]===true){
   notes.push({id:`${subject}-record`,title:subject==='clock'?t('旧钟记录','Clock record'):t('旧照记录','Photograph record'),text:f[`${subject}-recorded`]===true?t('获准留下的这一条已放进修表铺记录册。','The approved entry is in the watch shop’s record book.'):t('主人已同意留下这一条，目前未放在记录册中。','The owner approved this entry; it is not currently in the record book.')})
  }
- const seen=new Set<string>()
+ const observations=new Map<string,{id:string;text:string}>()
  for(const block of save.blocks){
   let discoveries:unknown
   try{discoveries=JSON.parse(String(block.data?.oldStreetDiscoveries??'null'))}catch{continue}
   if(!Array.isArray(discoveries))continue
   for(const discovery of discoveries){
    if(!discovery||typeof discovery.id!=='string'||typeof discovery.text!=='string')continue
-   const key=discovery.id+':'+discovery.text;if(seen.has(key))continue;seen.add(key)
-   notes.push({id:'observation:'+block.id+':'+discovery.id,title:t('观察记录','Observation'),text:discovery.text})
+   if(discovery.id.startsWith('learned:'))continue
+   observations.set(discovery.id,{id:'observation:'+block.id+':'+discovery.id,text:discovery.text})
   }
+ }
+ for(const [key,entry] of observations){
+  // Completed photographs already have one authoritative note above.
+  if(key==='visible:developing-bench'&&typeof f['darkroom-photo-matched']==='string')continue
+  const state=key.startsWith('visible:')?oldStreetPropState(key.slice(8),save):undefined
+  notes.push({...entry,title:state?t('观察记录','Observation'):t('先前的观察','Earlier observation'),text:state?t(...state):entry.text.replace(/^当前房间的物件状态：/,'').replace(/^Object state in the current room: /,'')})
  }
  return {purpose:oldStreetCurrentPurpose(save),items:save.inventory.filter(i=>i.count>0).map(i=>({id:i.id,title:i.label,count:i.count,text:details[i.id]??i.detail??''})),notes,people}
 }
