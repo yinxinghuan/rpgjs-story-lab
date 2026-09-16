@@ -129,3 +129,24 @@ test('one rejected answer can repair into a textual gesture without animation or
  await createOldStreetAttemptGenerator(async()=>{rejectedCalls++;return {kind:'action',actionId:'invented'}})('轻敲抽屉',context)
  assert.equal(rejectedCalls,2,'malformed answers get only one repair, never an unbounded loop')
 })
+
+test('repair receives concrete review issues and malformed JSON can recover within the same attempt',async()=>{
+ const context={locale:'zh' as const,scene:'shop',target:'drawer',inventory:[],knowledge:[{id:'visible:drawer',text:'抽屉中还有收据。'}],recentAttempts:[],recentTurns:[],introducedPerson:null,actions:[]}
+ let calls=0
+ const generate=createOldStreetAttemptGenerator(async(_system,user)=>{
+  calls++
+  if(calls===1)return {kind:'attempt',outcome:'observed',text:'抽屉空了。',discoveryIds:[]}
+  if(calls===2)return {valid:false,issues:['A receipt remains; do not claim the drawer is empty.']}
+  if(calls===3){assert.deepEqual(JSON.parse(user).repairIssues,['A receipt remains; do not claim the drawer is empty.']);return {kind:'attempt',outcome:'observed',text:'抽屉中还有收据。',discoveryIds:['visible:drawer']}}
+  return {valid:true,issues:[]}
+ })
+ const result=await generate('再看看抽屉',context)
+ assert.equal(result.kind,'attempt');if(result.kind==='attempt')assert.equal(result.text,'抽屉中还有收据。')
+ assert.equal(calls,4)
+ let malformedCalls=0
+ const repaired=await createOldStreetAttemptGenerator(async()=>{
+  if(++malformedCalls===1)throw new SyntaxError('Malformed provider JSON')
+  return malformedCalls===2?{kind:'attempt',outcome:'observed',text:'抽屉中还有收据。',discoveryIds:[]}:{valid:true,issues:[]}
+ })('查看抽屉',context)
+ assert.equal(repaired.kind,'attempt');assert.equal(malformedCalls,3)
+})
