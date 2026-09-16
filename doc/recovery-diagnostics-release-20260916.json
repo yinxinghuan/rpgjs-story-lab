@@ -1,0 +1,76 @@
+{
+  "sourceCommit": "069f2ec768ee3d7c614d3110bfc9b82fa2dab2c5",
+  "checkedAt": "2026-09-16T13:56:14.561Z",
+  "results": [
+    {
+      "root": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "index.html",
+      "status": 200,
+      "bytes": 1696,
+      "sha256": "946c041fb4ef4bd5a2b76d44cdd25b0288997099ffc46b666a87d72a921a7c35"
+    },
+    {
+      "root": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "assets/old-street-dev-2cNrthWA.js",
+      "status": 200,
+      "bytes": 121076,
+      "sha256": "f16b1dfa00e5358cd629847decb9b76a9c9abdd72204ca590bcc5dd8c2f084bf"
+    },
+    {
+      "root": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "assets/cutout-CcmnNgqq.png",
+      "status": 200,
+      "bytes": 124172,
+      "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f"
+    },
+    {
+      "root": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "index.html",
+      "status": 200,
+      "bytes": 1696,
+      "sha256": "946c041fb4ef4bd5a2b76d44cdd25b0288997099ffc46b666a87d72a921a7c35"
+    },
+    {
+      "root": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/old-street-dev-2cNrthWA.js",
+      "status": 200,
+      "bytes": 121076,
+      "sha256": "f16b1dfa00e5358cd629847decb9b76a9c9abdd72204ca590bcc5dd8c2f084bf"
+    },
+    {
+      "root": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/cutout-CcmnNgqq.png",
+      "status": 200,
+      "bytes": 124172,
+      "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f"
+    }
+  ],
+  "platform": {
+    "resumePassed": false,
+    "error": "REQUEST_TIMEOUT",
+    "stage": "journey",
+    "dataReset": false
+  },
+  "syntheticCanary": [
+    {
+      "step": "health",
+      "status": 200,
+      "elapsedMs": 1824,
+      "validHead": false
+    },
+    {
+      "step": "create",
+      "status": 200,
+      "elapsedMs": 1569,
+      "validHead": true,
+      "version": 0
+    },
+    {
+      "step": "restore",
+      "status": 200,
+      "elapsedMs": 626,
+      "validHead": true,
+      "version": 0
+    }
+  ]
+}
