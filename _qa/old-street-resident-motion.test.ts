@@ -7,6 +7,21 @@ import {oldStreetCartridge} from '../src/old-street-cartridge'
 const save=createInitialSave(oldStreetCartridge('zh'))
 const home=oldStreetProjectedProps(save).find(p=>p.id==='watchmaker')!.position
 const far={x:100,y:420}
+test('laundry owner and photographer share moving body and interaction projection',()=>{
+ for(const id of ['laundry-owner','photographer'] as const){
+  const original=oldStreetProjectedProps(save).find(p=>p.id===id)!
+  const residents={[id]:{x:original.position.x-24,y:original.position.y}}
+  const moved=oldStreetProjectedProps(save,residents).find(p=>p.id===id)!
+  assert.equal(moved.body.x,original.body.x-24)
+  assert.equal(moved.approach.x,original.approach.x-24)
+  assert.deepEqual(moved.actions,original.actions)
+  assert.equal(oldStreetWalkable(moved.room,moved.body,save,{w:32,h:28},residents),false)
+  assert.equal(oldStreetWalkable(moved.room,moved.body,save,{w:32,h:28},residents,true,id),true)
+  const other=oldStreetProjectedProps(save).find(p=>p.room===moved.room&&p.id!==id)!
+  assert.equal(oldStreetWalkable(other.room,other.body,save,{w:32,h:28},residents,true,id),false)
+  assert.deepEqual(oldStreetProjectedProps(save).find(p=>p.id===id),original)
+ }
+})
 test('resident gait follows displacement across frame rates and stays within the work area',()=>{
  const results=[]
  for(const fps of [30,60,120]){const m=new OldStreetResidentMotion(home),poses=new Set<string>();let min=home.x,max=home.x

@@ -2132,3 +2132,9 @@ oldStreetEnvironmentKeys 提供各房间实际环境依赖，oldStreetEnvironmen
 AlterU 实际主线通关后，重新进入停在恢复旅程页，尚未确认根因。失败页增加默认折叠的连接详情，只输出固定错误分类与启动阶段，不输出原始异常、请求 URL、身份或存档内容。不会清除身份、重置旅程或改变服务端存档。正常游戏界面不显示诊断信息。
 
 验证：恢复文案与分类测试 3/3，旧街 session/恢复测试 26/26，生产构建（含素材哈希与 Worker 启动）通过。平台故障仍需以部署后实际错误码和续玩结果为准，不能凭这些测试宣称已修复。
+
+### 居民视频候选与动态投射（2026-09-16）
+
+`oldStreetProjectedProps` 现在对老周、阿岚、许青的显式居民坐标共享投射 body/position/approach；没有传入坐标的居民仍保持原站位。移动碰撞检查新增受限 `ignoreResident`，只在检查该NPC自身位移时排除自己的身体；玩家、服务端和现有存档调用不改变参数。居民8项和空间/会话/家具32项检查通过。
+
+`src/dev/lan-video-trial.ts` 仅由 oldstreet-dev + DEV + debug + npc_gait_trial=lan-left 共同开启，使用真实RPG-JS事件在洗衣店试走左向10帧。不能启用右向/前后行走，不持久化候选站位。生产构建成功并检查未包含候选图集与测试入口。390×844实景证据、局限与原素材保留见 `oldstreet-lan-video-walk/review.md`；正式NPC素材未替换，本轮未发布。

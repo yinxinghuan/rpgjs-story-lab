@@ -1,0 +1,24 @@
+{
+  "source": "doc/oldstreet-lan-candidate/standing.png",
+  "sourceSha256": "004dc0d9959da5cb124348ab5e7c503492849bf8c24a505ffbe10221320ee3d9",
+  "sourceRetained": true,
+  "direction": "down",
+  "sourceRect": {
+    "x": 0,
+    "y": 0,
+    "width": 256,
+    "height": 352
+  },
+  "canvas": {
+    "width": 288,
+    "height": 512
+  },
+  "offset": {
+    "x": 16,
+    "y": 80
+  },
+  "resize": false,
+  "redraw": false,
+  "referenceSha256": "a9dd0bc2f0c827202b49d23fce9b1c3cb202fd9ff753a03f0f2406c02ae6a27c",
+  "purpose": "experimental video keyframe, not a game asset"
+}

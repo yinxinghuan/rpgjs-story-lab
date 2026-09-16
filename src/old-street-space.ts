@@ -79,26 +79,26 @@ const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a
 export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {}) {
   return oldStreetProps.map(p => {
     const resident=residents[p.id]
-    if(resident&&p.id==='watchmaker'){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
+    if(resident&&['watchmaker','laundry-owner','photographer'].includes(p.id)){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
     if (p.id !== 'crates' || save.facts['crates-cleared'] !== true) return p
     const body = {...p.body, x: oldStreetFloors.yard.x + 32, y: oldStreetFloors.yard.y + 220}
     const position = {x: body.x + 12, y: body.y + 12}
     return {...p, body, position, approach: {x: position.x, y: position.y + 28}}
   })
 }
-export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true): Rect[] {
+export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer'): Rect[] {
   // Resident choreography is local. The authority validates permanent geometry
   // and the bounded authored interaction area, never a stale NPC home hitbox.
   // The live client supplies the actual resident positions for solid collision.
-  return [...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents).filter(p => p.room === room && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
+  return [...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
     && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))]
 }
-export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true) {
+export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer') {
   const r = oldStreetFloors[room as OldStreetRoom]
   if (!r || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return false
   const feet = {...p, ...body}
   return p.x >= r.x && p.y >= r.y && p.x + feet.w <= r.x + r.w && p.y + feet.h <= r.y + r.h
-    && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents,includeFurniture).some(body => intersects(feet, body))
+    && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents,includeFurniture,ignoreResident).some(body => intersects(feet, body))
 }
 export function oldStreetSafePosition(room:string,p:SpatialPoint,save:Pick<StorySave,'facts'>):SpatialPoint {
   if(oldStreetWalkable(room,p,save))return {...p}
