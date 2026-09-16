@@ -2210,3 +2210,7 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 ## 动态扩展恢复入口（2026-09-17）
 
 `old-street-expansion-recovery.ts` 将查询与恢复既有任务组合：计划 queued、照片 preparing 时提交空对象，沿用服务的任务ID及租约；candidate/failed/null只读。照片组件在每次轮询调用而非仅挂载时一次，因此旧服务租约过期后能够接续。状态请求与图片下载分别记录失败；重连重新查询，重载图片只触发文件下载/校验，不发 retry 或创建新任务。原剧情动作/拼图proof仍由Story Session裁决。5项针对测试与实际组件320/390宽恢复操作通过，详见 `oldstreet-expansion-recovery-20260917.md`。本轮未调用真实模型/媒体服务。
+
+## DOM/SVG图片准备（2026-09-17）
+
+`decodeSpatialArt` 不再只依赖decode Promise：成功load或complete缓存且natural尺寸非零也可完成准备，取消/损坏/真实停滞仍保持明确失败。适用于环境图和主角预览尺寸，不替代`loadSpatialArtTexture`或renderer握手。真实PNG+模拟停滞已复现旧误判并验证修复，主游戏刷新及切换现有旅程通过；见 `oldstreet-image-ready-20260917.md`。自然发生的旧超时原因仍未完全确认。
