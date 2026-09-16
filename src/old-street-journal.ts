@@ -42,5 +42,16 @@ export function oldStreetJournal(save:StorySave){
  for(const subject of ['clock','photo'])if(f[`${subject}-consent`]===true){
   notes.push({id:`${subject}-record`,title:subject==='clock'?t('旧钟记录','Clock record'):t('旧照记录','Photograph record'),text:f[`${subject}-recorded`]===true?t('获准留下的这一条已放进修表铺记录册。','The approved entry is in the watch shop’s record book.'):t('主人已同意留下这一条，目前未放在记录册中。','The owner approved this entry; it is not currently in the record book.')})
  }
+ const seen=new Set<string>()
+ for(const block of save.blocks){
+  let discoveries:unknown
+  try{discoveries=JSON.parse(String(block.data?.oldStreetDiscoveries??'null'))}catch{continue}
+  if(!Array.isArray(discoveries))continue
+  for(const discovery of discoveries){
+   if(!discovery||typeof discovery.id!=='string'||typeof discovery.text!=='string')continue
+   const key=discovery.id+':'+discovery.text;if(seen.has(key))continue;seen.add(key)
+   notes.push({id:'observation:'+block.id+':'+discovery.id,title:t('观察记录','Observation'),text:discovery.text})
+  }
+ }
  return {purpose:oldStreetCurrentPurpose(save),items:save.inventory.filter(i=>i.count>0).map(i=>({id:i.id,title:i.label,count:i.count,text:details[i.id]??i.detail??''})),notes,people}
 }

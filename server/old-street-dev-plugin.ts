@@ -1,3 +1,4 @@
+import {createOldStreetAttemptGenerator} from './old-street-attempt'
 import {chatModel} from './model'
 import {createOriginalActionInterpreter} from './original-action-interpreter'
 import {createOldStreetDialogueGenerator} from './old-street-dialogue'
@@ -28,7 +29,7 @@ export function oldStreetDevPlugin(){
   const db=raw
   db.exec('PRAGMA busy_timeout=5000')
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
-  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h),h=>expansionMedia?.candidateFor(h))
+  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h),h=>expansionMedia?.candidateFor(h),models?createOldStreetAttemptGenerator(models.request):undefined)
   if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
   if(models)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
   return service

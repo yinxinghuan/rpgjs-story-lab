@@ -1,3 +1,4 @@
+import {createOldStreetAttemptGenerator} from './old-street-attempt'
 import {chatModel} from './model'
 import {createOriginalActionInterpreter} from './original-action-interpreter'
 import {expansionPhotoProducer} from './old-street-expansion-media'
@@ -18,7 +19,7 @@ export function oldStreetWorkerPreviewPlugin(){
   const name=String(key)
   let object=objects.get(name)
   // Local art admission only. Production OLD_STREET_RELEASED and gate remain closed.
-  if(!object){object=new CarriageJourneyAuthority(storage.context(name),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,models?{model:models.request,photo:expansionPhotoProducer()}:undefined);objects.set(name,object)}
+  if(!object){object=new CarriageJourneyAuthority(storage.context(name),undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,models?{model:models.request,photo:expansionPhotoProducer()}:undefined,models?createOldStreetAttemptGenerator(models.request):undefined);objects.set(name,object)}
   return object.fetch(request)
  }})}}
  const handler=createHandler(true,false,false,()=>false,()=>false,false,false,false,true)

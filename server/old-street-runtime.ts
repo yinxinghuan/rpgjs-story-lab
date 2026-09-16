@@ -1,3 +1,4 @@
+import {oldStreetAttemptContext,type OldStreetAttemptGenerator} from './old-street-attempt'
 import type {ExpansionPlan} from '../src/old-street-expansion-plan'
 import {oldStreetClockObserved} from '../src/old-street-clock-puzzle'
 import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
@@ -34,7 +35,7 @@ async function oldStreetModelCall<T>(work:()=>Promise<T>):Promise<T>{
   throw new LabError('OLD_STREET_MODEL_UNAVAILABLE',409)
  }
 }
-export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined):SessionRuntime<OldStreetHead> {
+export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined,attempt?:OldStreetAttemptGenerator):SessionRuntime<OldStreetHead> {
   const check=(h:OldStreetHead,previous?:OldStreetHead,id?:string)=>{
     assertOldStreetHead(h)
     if(admit(structuredClone(h),previous?structuredClone(previous):undefined,id)!==true)throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)
@@ -131,6 +132,21 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const entity=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===body.target&&e.scene===h.sceneId)
         if(!entity||!binding.canInteract(entity.id,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
         let action=resolveOldStreetInput(body.text,h.save.locale,entity.actions)
+        if(!action&&attempt&&body.mode!=='local'){
+          const cartridge=oldStreetCartridge(h.save.locale)
+          const actions=entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,cartridge,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
+          check({...h,position:pos})
+          if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+          const context=oldStreetAttemptContext(h,entity.id,actions),result=await oldStreetModelCall(()=>attempt(body.text,context))
+          if(result.kind==='action')action=result.actionId
+          else {
+            const save=structuredClone(h.save)
+            const discoveries=context.knowledge.filter(k=>result.discoveryIds.includes(k.id))
+            save.blocks.push({id:body.action_id+':attempt',kind:'narration',text:result.text,data:{oldStreetAttemptTarget:entity.id,oldStreetAttemptScene:h.sceneId,input:body.text,outcome:result.outcome,oldStreetDiscoveries:JSON.stringify(discoveries)}})
+            const next={...h,version:h.version+1,position:pos,save};check(next,h)
+            return {head:next,kind:'attempt',accepted:true,source:'model',text:result.text,outcome:result.outcome}
+          }
+        }
         if(!action&&(body.mode==='live'||body.mode===undefined&&!!interpreter)){
           if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
           const c=oldStreetCartridge(h.save.locale)
@@ -169,5 +185,5 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
 }
 export class OldStreetAuthority extends SessionAuthority<OldStreetHead> {
   override directory(owner:string){return super.directory(owner).map(row=>({...row,complete:this.get(owner,row.id).save.finale.status==='complete'}))}
-  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined){super(db,oldStreetRuntime(admit,interpreter,dialogue,expansionPlan,expansionPhoto))}
+  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined,attempt?:OldStreetAttemptGenerator){super(db,oldStreetRuntime(admit,interpreter,dialogue,expansionPlan,expansionPhoto,attempt))}
 }
