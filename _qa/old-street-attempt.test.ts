@@ -90,3 +90,28 @@ test('expanded darkroom uses hybrid attempts without bypassing the photo puzzle 
   assert.ok(oldStreetJournal(h.save).notes.some(n=>n.text.includes('不再留有')))
  }finally{raw.close()}
 })
+
+test('attempts recall confirmed puzzle discoveries without exposing unseen answers or teaching every NPC',async()=>{
+ const {createInitialSave}=await import('../src/vendor/original-train/engine/reducer')
+ const {oldStreetCartridge}=await import('../src/old-street-cartridge')
+ const {oldStreetDialogueContext}=await import('../server/old-street-dialogue')
+ const {recordOldStreetInteraction}=await import('../src/old-street-characters')
+ const h={id:'knowledge-test',version:0,mapVersion:'oldstreet-blockout-2',sceneId:'shop',position:{x:192,y:244},save:createInitialSave(oldStreetCartridge('zh'))}
+ const before=oldStreetAttemptContext(h,'drawer',[])
+ assert.ok(!before.knowledge.some(k=>k.id==='learned:clock-mark-known'||k.id==='learned:photos-matched'))
+ assert.ok(!JSON.stringify(before).includes('燕子'))
+ h.save.facts['clock-mark-known']=true
+ h.save.facts['photos-matched']=true
+ h.save.inventory.push({id:'lens',label:'放大镜',count:1,rarity:'common'})
+ h.save.blocks.push({id:'old-observation',kind:'narration',text:'old',data:{oldStreetDiscoveries:JSON.stringify([{id:'visible:letter-compartment',text:'STALE_COMPARTMENT'}])}})
+ const after=oldStreetAttemptContext(h,'drawer',[])
+ assert.match(after.knowledge.find(k=>k.id==='learned:clock-mark-known')!.text,/燕子/)
+ assert.match(after.knowledge.find(k=>k.id==='learned:photos-matched')!.text,/洗衣店/)
+ assert.match(after.inventory[0].detail,/刻记/)
+ assert.ok(!JSON.stringify(after.knowledge).includes('STALE_COMPARTMENT'))
+ recordOldStreetInteraction(h.save,'photographer','oldstreet:greet-photographer','你好','intro')
+ h.sceneId='photo'
+ assert.ok(!oldStreetDialogueContext(h,'photographer').knowledge.some(k=>k.id==='learned:clock-mark-known'))
+ const restored=JSON.parse(JSON.stringify(h))
+ assert.deepEqual(oldStreetAttemptContext(restored,'viewing-table',[]),oldStreetAttemptContext(h,'viewing-table',[]))
+})

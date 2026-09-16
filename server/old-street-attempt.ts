@@ -1,3 +1,4 @@
+import {oldStreetJournal} from '../src/old-street-journal'
 import {oldStreetAttemptHistory,oldStreetConversation} from '../src/old-street-conversation'
 import type {ModelRequest} from './model'
 import type {OldStreetHead} from '../src/old-street-head'
@@ -8,6 +9,7 @@ import {originalActionIntentIssues} from '../src/original-action-intent'
 import {LabError} from '../src/journey-runtime'
 export function oldStreetAttemptContext(h:OldStreetHead,target:string,actions:Array<{id:string;label:string}>){
  const person=oldStreetPerson(target),known=person&&h.save.characters.some(c=>c.id===person.id)
+ const journal=oldStreetJournal(h.save)
  const knowledge=known?oldStreetDialogueContext(h,target).knowledge:oldStreetSceneKnowledge(h.save,h.sceneId)
  if(h.sceneId==='darkroom'&&target==='developing-bench'){
   const choice=h.save.facts['darkroom-photo-choice'],matched=!!h.save.facts['darkroom-photo-matched'],ready=actions.some(a=>a.id==='oldstreet:match-darkroom-photo')
@@ -16,8 +18,11 @@ export function oldStreetAttemptContext(h:OldStreetHead,target:string,actions:Ar
    :choice==='keep'?'The completed street photograph is in your bag, no longer on the bench.':matched?'The completed street photograph lies on the developing bench.':ready?'The street photograph on the bench still needs to be assembled by hand.':'The street photograph is not ready yet; you can examine the developing bench.'
   knowledge.push({id:'visible:developing-bench',text})
  }
+ // Player-facing narration can recall confirmed discoveries; an NPC's own
+ // dialogue context remains separate and does not acquire the player's knowledge.
+ knowledge.push(...journal.notes.filter(n=>!n.id.startsWith('observation:')).map(n=>({id:'learned:'+n.id,text:n.text})))
  return {locale:h.save.locale,scene:h.sceneId,target,actions,
-  inventory:h.save.inventory.filter(i=>i.count>0).map(i=>({name:i.label,count:i.count})),
+  inventory:journal.items.map(i=>({name:i.title,count:i.count,detail:i.text})),
   knowledge,
   recentAttempts:oldStreetAttemptHistory(h.save,target),
   recentTurns:known?oldStreetConversation(h.save,person.id):[],
@@ -40,7 +45,7 @@ export function createOldStreetAttemptGenerator(request:ModelRequest,budgetMs=20
 If they commit NOW to one available action, return exactly {"kind":"action","actionId":"supplied id"}. Questions, hypothetical statements and multiple steps are NOT commitments.
 Otherwise return exactly {"kind":"attempt","outcome":"observed|inconclusive|needs-support","text":"1-3 short sentences in context.locale, <=300 characters","discoveryIds":[]}.
 Text can depict transient actions such as crouching, looking, listening, knocking, touching or asking without an animation. Give a relevant concrete response using authoritative knowledge. Do not say 'unrecognized'. Lack of knowledge is not proof of silence, emptiness, unbreakable material, refusal, danger or an invented obstacle. Do not invent hidden contents, clues, history, people, promises, possessions or appearance. Never narrate a persistent physical change, award/remove items, unlock paths, solve a puzzle, gain consent or change relationships outside an action result. For unsupported persistent changes use needs-support and plainly state that change has not happened; suggest an available next approach if relevant, without making up a world reason. Do not claim to have performed a violent/destructive action just because it was requested. Unknown people remain unnamed. Recent attempts and recentTurns are history of speech and intent, not current world authority. Acknowledge earlier player statements when relevant without claiming unconfirmed effects occurred.
-An observed result may cite at most 2 knowledge IDs actually discovered through this attempt; only those canonical facts will be saved as observation notes. Do not reveal unrelated room facts or NPC private knowledge merely to fill a reply. Other outcomes must have empty discoveryIds. Prefer no discovery over an invented one.`,{input,context})
+An observed result may cite at most 2 knowledge IDs actually discovered through this attempt; only those canonical facts will be saved as observation notes. IDs starting learned: are already in the journal; recall them when relevant but do not record them as new discoveries. Do not reveal unrelated room facts or NPC private knowledge merely to fill a reply. Other outcomes must have empty discoveryIds. Prefer no discovery over an invented one.`,{input,context})
    if(result?.kind==='action'){
     if(Object.keys(result).sort().join(',')!=='actionId,kind'||!context.actions.some(a=>a.id===result.actionId)||originalActionIntentIssues(input,context.actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
    }else if(result?.kind!=='attempt'||Object.keys(result).sort().join(',')!=='discoveryIds,kind,outcome,text'||!['observed','inconclusive','needs-support'].includes(result.outcome)||typeof result.text!=='string'||!result.text.trim()||result.text.length>300||/[<>]/.test(result.text)||!Array.isArray(result.discoveryIds)||result.discoveryIds.length>2||result.discoveryIds.some((id:unknown)=>!context.knowledge.some(k=>k.id===id))||result.outcome!=='observed'&&result.discoveryIds.length)throw new LabError('OLD_STREET_DIALOGUE_REJECTED',409)

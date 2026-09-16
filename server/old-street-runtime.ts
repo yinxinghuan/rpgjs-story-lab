@@ -66,7 +66,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(result.kind==='action')return {actionId:result.actionId}
         else {
           const save=structuredClone(h.save)
-          const discoveries=context.knowledge.filter(k=>result.discoveryIds.includes(k.id))
+          const discoveries=context.knowledge.filter(k=>!k.id.startsWith('learned:')&&result.discoveryIds.includes(k.id))
           save.blocks.push({id:body.action_id+':attempt',kind:'narration',text:result.text,data:{oldStreetAttemptTarget:body.target,oldStreetAttemptScene:h.sceneId,input:body.text,outcome:result.outcome,oldStreetDiscoveries:JSON.stringify(discoveries)}})
           const next={...h,version:h.version+1,position:pos,save};check(next,h)
           return {response:{head:next,kind:'attempt',accepted:true,source:'model',text:result.text,outcome:result.outcome}}
