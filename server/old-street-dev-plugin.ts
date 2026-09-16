@@ -1,3 +1,5 @@
+import {OldStreetCampaignJobs} from './old-street-campaign-jobs'
+import {createOldStreetCampaignPlanner} from './old-street-campaign-planner'
 import {createOldStreetAttemptGenerator} from './old-street-attempt'
 import {chatModel} from './model'
 import {createOriginalActionInterpreter} from './original-action-interpreter'
@@ -21,6 +23,8 @@ export function oldStreetDevPlugin(){
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
  let expansions:OldStreetExpansionJobs|undefined
  let expansionMedia:OldStreetExpansionMedia|undefined
+ let campaignJobs:OldStreetCampaignJobs|undefined
+ const campaignEnabled=process.env.OLDSTREET_CAMPAIGN_TRIAL==='1'&&!!models
  const prefix='/'+GAME_ID+'/api/oldstreet-dev'
  function authority(){
   if(service)return service
@@ -29,7 +33,8 @@ export function oldStreetDevPlugin(){
   const db=raw
   db.exec('PRAGMA busy_timeout=5000')
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
-  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h),h=>expansionMedia?.candidateFor(h),models?createOldStreetAttemptGenerator(models.request):undefined)
+  service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h),h=>expansionMedia?.candidateFor(h),models?createOldStreetAttemptGenerator(models.request):undefined,undefined,campaignEnabled?(h,stage)=>campaignJobs?.candidateFor(h,stage):undefined)
+  if(campaignEnabled&&models)campaignJobs=new OldStreetCampaignJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetCampaignPlanner(models.request))
   if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
   if(models)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
   return service
@@ -56,12 +61,20 @@ export function oldStreetDevPlugin(){
    if(route==='/sessions'&&req.method==='GET')return send(200,{sessions:s.directory(owner)})
    if(route==='/sessions'&&req.method==='POST'){
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
-    return send(200,s.create(owner,body.enrollment_id,body.locale))
+    return send(200,s.create(owner,body.enrollment_id,body.locale,body.options))
    }
-   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities))?$/.exec(route)
+   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel))?$/.exec(route)
    if(!match)return send(404,{error:'NOT_FOUND'})
    const [,id,operation]=match
-   if(operation==='expansion-capabilities'&&req.method==='GET'){s.get(owner,id);return send(200,{planning:!!expansions,media:!!expansionMedia})}
+   if(operation==='expansion-capabilities'&&req.method==='GET'){s.get(owner,id);return send(200,{planning:!!expansions,media:!!expansionMedia,campaign:!!campaignJobs})}
+   if(operation==='campaign-trace'||operation==='campaign-parcel'){
+    if(!campaignJobs)return send(503,{error:'CAMPAIGN_NOT_AVAILABLE'})
+    const stage=operation==='campaign-trace'?'trace':'parcel'
+    if(req.method==='GET')return send(200,{job:campaignJobs.get(owner,id,stage)})
+    const job=campaignJobs.enqueue(owner,id,stage,body?.retry===true)
+    void campaignJobs.run(owner,id,stage).catch(()=>{})
+    return send(200,{job})
+   }
    if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
    if(operation==='expansion-photo-file'&&req.method==='GET'){
     if(!expansionMedia)return send(503,{error:'EXPANSION_MEDIA_NOT_READY'})

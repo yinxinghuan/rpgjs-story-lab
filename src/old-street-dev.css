@@ -16,6 +16,7 @@
 .os-actions{flex:none;height:clamp(120px,29dvh,244px);min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 0}.os-turn{max-height:none;overflow:visible}
 .os-dev>footer{flex:none;min-height:64px}.os-dev .os-stick{width:64px;height:64px;flex:none}.os-dev>details{flex:none;width:min(100%,520px);font-size:12px;max-height:20dvh;overflow:auto}.os-dev>details>summary{min-height:20px}
 .os-journeys ul{list-style:none;padding:0;display:grid;gap:8px}.os-journeys li button{width:100%;text-align:left;display:grid;gap:4px}.os-journeys li span{font-size:14px}.os-journeys li small{font-size:12px}
+.os-journeys[open]{display:flex;flex-direction:column;overflow:hidden}.os-journeys>header{flex:none;margin-bottom:8px}.os-journeys__body{min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y pinch-zoom}
 
 .os-preview-label{display:block;font-size:11px;line-height:1.3;font-weight:400;color:#756d60}.os-journeys details{margin-top:24px;border-top:1px solid #c9bfad;padding-top:16px}.os-journeys summary{min-height:44px;cursor:pointer}.os-journeys a{display:block;min-height:44px;color:inherit}
 

@@ -1,5 +1,5 @@
 import {oldStreetAttemptContext,type OldStreetAttemptGenerator} from './old-street-attempt'
-import {prepareCampaignAction} from './old-street-campaign-actions'
+import {prepareCampaignAction,type CampaignCandidate} from './old-street-campaign-actions'
 import {campaignComplete} from '../src/old-street-campaign'
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import type {ExpansionPlan} from '../src/old-street-expansion-plan'
@@ -38,7 +38,7 @@ async function oldStreetModelCall<T>(work:()=>Promise<T>):Promise<T>{
   throw new LabError('OLD_STREET_MODEL_UNAVAILABLE',409)
  }
 }
-export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined,attempt?:OldStreetAttemptGenerator,campaignGenerator?:OldStreetCampaignGenerator):SessionRuntime<OldStreetHead> {
+export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined,attempt?:OldStreetAttemptGenerator,campaignGenerator?:OldStreetCampaignGenerator,campaignCandidate?:CampaignCandidate):SessionRuntime<OldStreetHead> {
   const check=(h:OldStreetHead,previous?:OldStreetHead,id?:string)=>{
     assertOldStreetHead(h)
     if(admit(structuredClone(h),previous?structuredClone(previous):undefined,id)!==true)throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)
@@ -52,7 +52,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
     initial:(locale,id,options)=>{
       const h:OldStreetHead={id,version:0,mapVersion:plan.mapVersion,sceneId:'street',position:{...plan.scenes.find(s=>s.id==='street')!.spawn},save:createInitialSave(oldStreetCartridge(locale))}
       if(options!==undefined){
-        if(!campaignGenerator||JSON.stringify(options)!==JSON.stringify({campaign:'letter-trail-v1'}))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
+        if((!campaignGenerator&&!campaignCandidate)||JSON.stringify(options)!==JSON.stringify({campaign:'letter-trail-v1'}))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         h.campaign={version:1}
       }
       check(h);return h
@@ -70,7 +70,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
       if(body.type.startsWith('campaign-')){
-        const result=await prepareCampaignAction(h,body,pos,campaignGenerator,reserveNarration)
+        const result=await prepareCampaignAction(h,body,pos,campaignGenerator,reserveNarration,campaignCandidate)
         check(result.head,h);return result
       }
       const resolveAttempt=async(actions:Array<{id:string;label:string}>)=>{
@@ -213,5 +213,5 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
 }
 export class OldStreetAuthority extends SessionAuthority<OldStreetHead> {
   override directory(owner:string){return super.directory(owner).map(row=>({...row,complete:this.get(owner,row.id).save.finale.status==='complete'}))}
-  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined,attempt?:OldStreetAttemptGenerator,campaignGenerator?:OldStreetCampaignGenerator){super(db,oldStreetRuntime(admit,interpreter,dialogue,expansionPlan,expansionPhoto,attempt,campaignGenerator))}
+  constructor(db:AuthorityStorage,admit:OldStreetGate=unavailable,interpreter?:OriginalActionInterpreter,dialogue?:OldStreetDialogueGenerator,expansionPlan?:(h:OldStreetHead)=>ExpansionPlan|undefined,expansionPhoto?:(h:OldStreetHead)=>string|undefined,attempt?:OldStreetAttemptGenerator,campaignGenerator?:OldStreetCampaignGenerator,campaignCandidate?:CampaignCandidate){super(db,oldStreetRuntime(admit,interpreter,dialogue,expansionPlan,expansionPhoto,attempt,campaignGenerator,campaignCandidate))}
 }

@@ -8,6 +8,37 @@ import {oldStreetSession} from '../src/old-street-session'
 import {oldStreetSpatialPlan,oldStreetDoors} from '../src/old-street-space'
 import {oldStreetRecoveredTurn} from '../src/old-street-turn'
 
+test('a lost campaign enrollment keeps its chosen story and language; unavailable trials preserve the current journey',async()=>{
+ const raw=new DatabaseSync(':memory:')
+ const db:AuthorityStorage={all:(sql,...b)=>raw.prepare(sql).all(...b) as any,run:(sql,...b)=>{raw.prepare(sql).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const value=work();raw.exec('COMMIT');return value}catch(e){raw.exec('ROLLBACK');throw e}}}
+ const s=new OldStreetAuthority(db,()=>true,undefined,undefined,undefined,undefined,undefined,async()=>{throw Error('NO_GENERATION_DURING_ENROLLMENT')})
+ const values=new Map<string,string>(),storage:Storage={get length(){return values.size},key:i=>[...values.keys()][i]??null,getItem:k=>values.get(k)??null,setItem:(k,v)=>{values.set(k,String(v))},removeItem:k=>{values.delete(k)},clear:()=>values.clear()}
+ let lose=false,refuse=false;const requests:any[]=[]
+ const request:typeof fetch=async(url,init)=>{
+  const path=String(url).split('/api/oldstreet-dev')[1]
+  if(path==='/sessions'){
+   const body=JSON.parse(String(init?.body));requests.push(body)
+   if(refuse)return Response.json({error:'CAMPAIGN_NOT_AVAILABLE'},{status:503})
+   const h=s.create('synthetic',body.enrollment_id,body.locale,body.options)
+   if(lose){lose=false;throw Error('LOST_ENROLLMENT')}
+   return Response.json(h)
+  }
+  return Response.json(s.get('synthetic',path.split('/')[2]))
+ }
+ const client=()=>oldStreetSession(storage,async(_name,work)=>work(),request).client
+ try{
+  const previous=await client().enroll('en');lose=true
+  await assert.rejects(client().enroll('zh',true,{campaign:'letter-trail-v1'}),/LOST_ENROLLMENT/)
+  const restored=await client().enroll('en')
+  assert.deepEqual(requests[1],requests[2]);assert.equal(restored.save.locale,'zh')
+  assert.deepEqual(restored.campaign,{version:1});assert.notEqual(restored.id,previous.id)
+  assert.equal(s.get('synthetic',previous.id).campaign,undefined)
+  refuse=true
+  await assert.rejects(client().enroll('en',true,{campaign:'letter-trail-v1'}),/CAMPAIGN_NOT_AVAILABLE/)
+  assert.equal((await client().enroll('en')).id,restored.id)
+ }finally{raw.close()}
+})
+
 test('local transport bounds a lost receipt and recovers the same committed action once',async t=>{
  const raw=new DatabaseSync(':memory:')
  const db:AuthorityStorage={all:(sql,...b)=>raw.prepare(sql).all(...b) as any,run:(sql,...b)=>{raw.prepare(sql).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const result=work();raw.exec('COMMIT');return result}catch(e){raw.exec('ROLLBACK');throw e}}}

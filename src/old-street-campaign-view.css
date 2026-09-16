@@ -1,0 +1,8 @@
+.os-campaign[open]{display:flex;flex-direction:column;overflow:hidden;width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px)}
+.os-campaign header{flex:none;gap:12px;margin-bottom:8px}.os-campaign h2{font-size:20px;line-height:1.35;overflow-wrap:anywhere}
+.os-campaign__body{overflow:auto;min-height:0;overscroll-behavior:contain;touch-action:pan-y;font:16px/1.5 system-ui}
+.os-campaign__clue{padding:12px;border:1px solid #a69c88;background:#dcd4c2}.os-campaign__clue p{margin:6px 0 0}
+.os-campaign__records{display:grid;gap:8px}.os-campaign__records button{display:grid;gap:4px;text-align:left;width:100%;white-space:normal;font:16px/1.4 system-ui}.os-campaign__records button[aria-pressed=true]{outline:2px solid #52736a;background:#d2decd}
+.os-campaign footer{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid #a69c88;margin-top:12px}.os-campaign footer p{width:100%;margin:0}.os-campaign footer button{flex:1;min-height:44px;font:16px/1.4 system-ui}.os-campaign header button{min-width:60px;flex:none}
+.os-campaign__body,.os-campaign footer{overflow-wrap:anywhere}.os-dev .os-campaign footer button{min-width:0;max-width:none}.os-campaign h2{min-width:0}
+.os-dev .os-campaign footer{align-items:stretch;gap:8px}

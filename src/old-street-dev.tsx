@@ -1,3 +1,5 @@
+import {OldStreetCampaignView} from './old-street-campaign-view'
+import {campaignAnchor,campaignComplete} from './old-street-campaign'
 import {OldStreetToolIcon} from './old-street-tool-icon'
 import {OldStreetEndingView} from './old-street-ending-view'
 import {oldStreetDialogueBeats} from './old-street-dialogue-pages'
@@ -105,11 +107,11 @@ export default function OldStreetDev() {
   const workerPreview = import.meta.env.MODE !== 'oldstreet-dev' || new URLSearchParams(location.search).get('session') === 'worker'
   const [connection] = useState(() => (workerPreview?oldStreetSessionHttp:oldStreetSession)(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
   const serverHead = useRef<OldStreetHead>()
-  const [expansionCapabilities,setExpansionCapabilities]=useState({planning:false,media:false})
+  const [expansionCapabilities,setExpansionCapabilities]=useState({planning:false,media:false,campaign:false})
   const expansionJourney=serverHead.current?.id
   useEffect(()=>{
-    let active=true;setExpansionCapabilities({planning:false,media:false})
-    if(expansionJourney)void connection.api('/sessions/'+expansionJourney+'/expansion-capabilities').then(c=>{if(active)setExpansionCapabilities({planning:c.planning===true,media:c.media===true})}).catch(()=>{})
+    let active=true;setExpansionCapabilities({planning:false,media:false,campaign:false})
+    if(expansionJourney)void connection.api('/sessions/'+expansionJourney+'/expansion-capabilities').then(c=>{if(active)setExpansionCapabilities({planning:c.planning===true,media:c.media===true,campaign:c.campaign===true})}).catch(()=>{})
     return()=>{active=false}
   },[connection,expansionJourney])
   const current = useRef(head); current.current = head
@@ -143,12 +145,13 @@ export default function OldStreetDev() {
   useEffect(()=>{if(actionPanel.current)actionPanel.current.scrollTop=0},[turn,notice,error])
   const setNotice=(value:string)=>{updateNotice(value);setTurn([])}
   const [journeysOpen,setJourneysOpen]=useState(false)
+  const [campaignOpen,setCampaignOpen]=useState<'trace'|'parcel'|null>(null),[campaignMessage,setCampaignMessage]=useState('')
   const [journalOpen,setJournalOpen]=useState(false),journalButton=useRef<HTMLButtonElement>(null)
   const [mapOpen,setMapOpen]=useState(false),mapButton=useRef<HTMLButtonElement>(null)
   const [clockOpen,setClockOpen]=useState(false),[clockMessage,setClockMessage]=useState('')
   const [expansionPhotoRequest,setExpansionPhotoRequest]=useState(0)
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
-  useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);runtime.current?.pause(true)}},[error])
+  useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);setCampaignOpen(null);runtime.current?.pause(true)}},[error])
   const [typed, setTyped] = useState('')
   const [inputOpen,setInputOpen]=useState(false)
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
@@ -158,7 +161,7 @@ export default function OldStreetDev() {
   const overview=debug&&new URLSearchParams(location.search).get('camera')==='overview'
   const camera=oldStreetCamera(viewport,feet,overview)
   useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
-  residentControls.current={paused:busy||!!error||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||leaving||!!head.save.facts.departed,selected:selected==='watchmaker',laundrySelected:selected==='laundry-owner',photographerSelected:selected==='photographer'}
+  residentControls.current={paused:busy||!!error||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||!!campaignOpen||leaving||!!head.save.facts.departed,selected:selected==='watchmaker',laundrySelected:selected==='laundry-owner',photographerSelected:selected==='photographer'}
   const [diagnostic, setDiagnostic] = useState('')
   useEffect(() => {if(!debug)return;const timer = setInterval(() => setDiagnostic(JSON.stringify({sheets:engine.current?.getCurrentPlayer()?.graphicsSignals().map((g:any)=>({keys:Object.keys(g),width:g.width,height:g.height,textures:Object.keys(g.textures??{})})),players:Object.keys(engine.current?.sceneMap.players() ?? {}).length,motion:runtime.current?.motion?.(),render:runtime.current?.diagnostics?.()})), 2000); return () => clearInterval(timer)}, [])
   useEffect(() => {
@@ -322,11 +325,11 @@ export default function OldStreetDev() {
       runtime.current!.pause(Boolean(h.save.facts.departed))
     }catch(e){setJourneysOpen(false);setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
-  async function restart(){
+  async function restart(campaign=false){
     if(busyRef.current||!ready)return
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
-      const h=await connection.client.enroll(locale,true)
+      const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v1'}:undefined)
       if(oldStreetCastArtVersion(h.save)!==oldStreetCastArtVersion(current.current.save)){location.reload();return}
       serverHead.current=h
       const next={save:h.save,scene:h.sceneId,position:h.position}
@@ -404,10 +407,31 @@ export default function OldStreetDev() {
     const binding = bindOldStreet(locale, current.current.save), target = binding.targetFor(id, current.current.scene)
     const entity = liveEntities().find(e => e.id === target)
     if (!entity || !runtime.current) return
+    if(id==='oldstreet:leave'&&serverHead.current?.campaign&&!campaignComplete(serverHead.current.campaign)){setNotice(oldStreetActionFailureMessage('CAMPAIGN_UNFINISHED',locale));return}
     if (id === 'oldstreet:leave' && !confirmed) {setLeaving(true); return}
     busyRef.current = true; setBusy(true)
     const started = runtime.current.walkTo(entity.approach, () => {if(id==='oldstreet:inspect-clock'){setClockOpen(true);setClockMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
     if (!started) {busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
+  }
+  function openCampaign(stage:'trace'|'parcel'){
+    if(!ready||busyRef.current||error||!serverHead.current?.campaign)return
+    const entity=liveEntities().find(e=>e.id===campaignAnchor[stage].target&&e.scene===current.current.scene)
+    if(!entity)return
+    busyRef.current=true;setBusy(true)
+    if(!runtime.current!.walkTo(entity.approach,()=>{setCampaignOpen(stage);setCampaignMessage('');setNotice('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)})){busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
+  }
+  async function campaignAct(type:'plan'|'observe'|'decide',selection?:number|string){
+    const h=serverHead.current,stage=campaignOpen
+    if(!h||!stage||busyRef.current)return
+    busyRef.current=true;setBusy(true);setCampaignMessage('')
+    try{
+      const result=await connection.client.send(h,{type:'campaign-'+type,stage,target:campaignAnchor[stage].target,selection,position:{...position.current}})
+      const updated=result.head as OldStreetHead;serverHead.current=updated
+      const next={save:updated.save,scene:updated.sceneId,position:updated.position};current.current=next;setHead(next)
+      if(result.accepted){if(selection==='take')audio.current?.play('pickup');else if(type==='decide')audio.current?.play('handle')}
+      else setCampaignMessage(oldStreetActionFailureMessage(result.rejectionCode??'',locale))
+    }catch(e){if(connection.client.hasPending())setError(String(e));else setCampaignMessage(text(['暂时没能展开，可以稍后再试。','The papers could not open. Try again later.']))}
+    finally{busyRef.current=false;setBusy(false)}
   }
   function sendInput(dialogue=false,provided?:string){
     if(!chosen||!(provided??typed).trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
@@ -423,6 +447,8 @@ export default function OldStreetDev() {
   const chosen = entities.find(e => e.id === selected) ?? nearest
   const knownSpeaker=chosen&&oldStreetPerson(chosen.id)&&head.save.characters.some(c=>c.id===oldStreetPerson(chosen.id)?.id)
   const talkTopics=chosen?oldStreetTalkTopics(head.save,chosen.id):[]
+  const campaign=serverHead.current?.campaign
+  const campaignTarget=campaign&&head.save.facts['letter-taken']&&chosen?(chosen.id==='record-book'?'trace':chosen.id==='photo-folder'&&campaign.trace?.selected!==undefined?'parcel':null):null
   const chosenAction = chosen?oldStreetContextAction(head.save,chosen):undefined
   const actions = chosenAction?.actions??[]
   const pages=oldStreetDialogueBeats(turn,locale)
@@ -430,12 +456,13 @@ export default function OldStreetDev() {
   const morePages=turnPage<pages.length-1
   const inspectionOpen=Boolean(selected&&!oldStreetDoors().some(d=>d.id===selected))
   const conversationOpen=Boolean(knownSpeaker&&(inspectionOpen||turn.length||pendingSpeech))
-  const secondaryActions=conversationOpen?actions:actions.filter(id=>chosenAction?.primary.kind!=='action'||id!==chosenAction.primary.id)
+  const secondaryActions=conversationOpen||campaignTarget?actions:actions.filter(id=>chosenAction?.primary.kind!=='action'||id!==chosenAction.primary.id)
   useEffect(()=>setInputOpen(false),[chosen?.id])
   function closeInteraction(){setSelected(null);setNotice('');setInputOpen(false)}
   function useNearby(){
     if(!chosen||!chosenAction)return
     setSelected(chosen.id)
+    if(campaignTarget){openCampaign(campaignTarget);return}
     if(chosenAction.primary.kind==='action')request(chosenAction.primary.id)
     else if(chosenAction.primary.kind==='inspect')setNotice(chosenAction.reason)
     else requestAnimationFrame(()=>actionPanel.current?.querySelector<HTMLButtonElement>('.os-choices button')?.focus({preventScroll:true}))
@@ -449,7 +476,7 @@ export default function OldStreetDev() {
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
     <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button aria-label={text(['街区','Neighbourhood'])} ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}><OldStreetToolIcon kind="map"/><span>{text(['街区','Map'])}</span></button><button aria-label={text(['随身与发现','Items & discoveries'])} ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setJournalOpen(true)}}><OldStreetToolIcon kind="items"/><span>{text(['随身','Items'])}</span></button><button aria-label={text(['旅程','Journeys'])} disabled={!ready||busy||!!error} onClick={()=>{runtime.current?.pause(true);setJourneysOpen(true)}}><OldStreetToolIcon kind="journeys"/><span>{text(['旅程','Journeys'])}</span></button></nav></header>
     <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
-      if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || journalOpen || mapOpen || journeysOpen || clockOpen || photoOpen) return
+      if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || journalOpen || mapOpen || journeysOpen || clockOpen || photoOpen || campaignOpen) return
       const r = e.currentTarget.getBoundingClientRect()
       runtime.current?.walkTo({x: (e.clientX - r.left) * 384 / r.width, y: (e.clientY - r.top) * 576 / r.height})
       setSelected(null)
@@ -490,13 +517,14 @@ export default function OldStreetDev() {
       {expansionCapabilities.media&&head.scene==='darkroom'&&serverHead.current&&<OldStreetExpansionPhotoView requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
     </section>
     <footer>
-      <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen} move={(x,y)=>runtime.current?.move(x,y)}/>
-      <button hidden={conversationOpen} disabled={!ready || busy || !chosen || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
+      <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||!!campaignOpen} move={(x,y)=>runtime.current?.move(x,y)}/>
+      <button hidden={conversationOpen} disabled={!ready || busy || !chosen || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : campaignTarget?text(['查阅材料','Examine papers']):chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
     {lanTrialEnabled&&ready&&head.scene==='laundry'&&<div style={{position:'fixed',right:8,top:410,zIndex:40,background:'#202624',padding:8}}>{(['left','right','up','down'] as const).map((direction,i)=><button key={direction} style={{minHeight:44,minWidth:44}} disabled={busy||!!error||lanTrial.current?.running} onClick={()=>{lanTrial.current?.start(direction);setResidentPosition({...resident.current.position})}}>{text(['试走：'+['左','右','上','下'][i],'Test: '+direction])}</button>)}<output style={{display:'block'}}>{lanTrial.current?.pose} · {lanTrial.current?.distance.toFixed(1)}/24</output></div>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{error?JSON.stringify({error,renderer:diagnostic}):diagnostic}</pre></details>}
-    {journeysOpen&&<OldStreetJourneysView soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} create={()=>{void restart()}} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
+    {journeysOpen&&<OldStreetJourneysView createCampaign={import.meta.env.DEV&&debug&&expansionCapabilities.campaign?()=>{void restart(true)}:undefined} soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} create={()=>{void restart()}} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
+    {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView campaign={campaign} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} close={()=>{setCampaignOpen(null);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {journalOpen&&<OldStreetJournalView save={head.save} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}

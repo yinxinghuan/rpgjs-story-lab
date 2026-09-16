@@ -3,24 +3,28 @@ import type {OldStreetHead} from '../src/old-street-head'
 import {bindOldStreet} from '../src/old-street-space'
 import {LabError} from '../src/journey-runtime'
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
+export type CampaignCandidate=(head:OldStreetHead,stage:'trace'|'parcel')=>unknown|undefined
 
-export async function prepareCampaignAction(head:OldStreetHead,body:any,position:OldStreetHead['position'],generate:OldStreetCampaignGenerator|undefined,reserve:()=>boolean){
+export async function prepareCampaignAction(head:OldStreetHead,body:any,position:OldStreetHead['position'],generate:OldStreetCampaignGenerator|undefined,reserve:()=>boolean,candidate?:CampaignCandidate){
  const anchor=campaignAnchor[body.stage as keyof typeof campaignAnchor],c=head.campaign
  if(!anchor||!c||head.save.facts['letter-taken']!==true||head.sceneId!==anchor.scene||body.target!==anchor.target||!bindOldStreet(head.save.locale,head.save).canInteract(anchor.target,anchor.scene,position))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  const next=structuredClone(head),campaign=next.campaign!,save=next.save,t=(zh:string,en:string)=>save.locale==='zh'?zh:en
  let text=''
  if(body.type==='campaign-plan'){
   if(campaign[body.stage as 'trace'|'parcel'])throw new LabError('CAMPAIGN_ALREADY_PREPARED',409)
-  if(!generate)throw new LabError('CAMPAIGN_GENERATOR_UNAVAILABLE',409)
+  if(!generate&&!candidate)throw new LabError('CAMPAIGN_GENERATOR_UNAVAILABLE',409)
   let context:CampaignContext={stage:'trace',locale:save.locale}
   if(body.stage==='parcel'){
    if(campaign.trace?.selected===undefined)throw new LabError('CAMPAIGN_TRACE_REQUIRED',409)
    context={stage:'parcel',locale:save.locale,previous:structuredClone(campaign.trace.content.records[campaign.trace.selected])}
   }
-  if(!reserve())throw new LabError('NARRATION_RATE_LIMIT',429)
-  const signal=AbortSignal.timeout(22000)
   let raw:unknown
-  try{raw=await generate(context,signal);signal.throwIfAborted()}catch{throw new LabError('OLD_STREET_MODEL_UNAVAILABLE',409)}
+  if(candidate){raw=candidate(head,body.stage);if(raw===undefined)throw new LabError('CAMPAIGN_NOT_PREPARED',409)}
+  else{
+   if(!reserve())throw new LabError('NARRATION_RATE_LIMIT',429)
+   const signal=AbortSignal.timeout(22000)
+   try{raw=await generate!(context,signal);signal.throwIfAborted()}catch{throw new LabError('OLD_STREET_MODEL_UNAVAILABLE',409)}
+  }
   try{
    if(body.stage==='trace')campaign.trace={id:body.action_id,content:readTraceContent(raw),observed:false}
    else campaign.parcel={id:body.action_id,content:readParcelContent(raw),observed:false}

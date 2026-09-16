@@ -36,22 +36,22 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
  }
  private ack(p:Pending){const key=this.key('pending-v2:'+pendingId(p));if(this.storage.getItem(key)===JSON.stringify(p))this.storage.removeItem(key)}
  hasPending(){const session=this.read('session','');return this.pending().some(p=>p.id===session)}
- async enroll(locale:Locale,restart=false):Promise<H>{return this.lock(this.key('bootstrap'),async()=>{
+ async enroll(locale:Locale,restart=false,options?:unknown):Promise<H>{return this.lock(this.key('bootstrap'),async()=>{
   const current=this.read('session','')
   const work=async()=>{
   if(restart&&this.pending().length)throw Error('PENDING_ACTION')
-  let pending=this.read<{enrollment_id:string;locale:Locale}|null>('enrollment-pending',null)
+  let pending=this.read<{enrollment_id:string;locale:Locale;options?:unknown}|null>('enrollment-pending',null)
   if(current&&!restart&&!pending)return this.get(current)
   // A lost restart response must finish that enrollment before resuming the old session.
   if(!pending){
-   pending=!current&&!restart?this.read<{enrollment_id:string;locale:Locale}|null>('enrollment-request',null):null
-   pending??={enrollment_id:restart?randomId():this.read('enrollment','')||randomId(),locale}
+   pending=!current&&!restart?this.read<{enrollment_id:string;locale:Locale;options?:unknown}|null>('enrollment-request',null):null
+   pending??={enrollment_id:restart?randomId():this.read('enrollment','')||randomId(),locale,...(options===undefined?{}:{options})}
    this.write('enrollment-pending',pending);this.write('enrollment-request',pending);this.write('enrollment',pending.enrollment_id)
   }
   let response:unknown
   try{response=await this.transport('/sessions',pending)}catch(e){
    // A definite quota refusal creates no journey. Do not strand selection behind it.
-   if(restart&&e instanceof Error&&e.message==='SESSION_LIMIT'){this.write('enrollment-pending',null);this.write('enrollment-request',null)}
+   if(restart&&e instanceof Error&&['SESSION_LIMIT','CAMPAIGN_NOT_AVAILABLE'].includes(e.message)){this.write('enrollment-pending',null);this.write('enrollment-request',null)}
    throw e
   }
   const head=this.head(response);this.write('session',head.id);this.write('enrollment-pending',null);return head
