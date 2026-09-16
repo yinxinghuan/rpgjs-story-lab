@@ -1,0 +1,13 @@
+{
+  "source": "public/art/overhead/hero-gait-v2.png",
+  "sourceSha256": "7e70f17d07eb2384e253635fd32be641c5986b260828ac0167659b61b9db3842",
+  "operation": "exact frame extraction, no redraw or resizing",
+  "sourceRect": {
+    "x": 0,
+    "y": 362,
+    "width": 362,
+    "height": 362
+  },
+  "referenceSha256": "225eecd17bbbcbaa04d1ba8a64df2f759cb1c5efa0cd3d637edf0a1c40109c8a",
+  "sourceRetained": true
+}
