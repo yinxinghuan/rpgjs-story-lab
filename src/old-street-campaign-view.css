@@ -6,3 +6,4 @@
 .os-campaign footer{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid #a69c88;margin-top:12px}.os-campaign footer p{width:100%;margin:0}.os-campaign footer button{flex:1;min-height:44px;font:16px/1.4 system-ui}.os-campaign header button{min-width:60px;flex:none}
 .os-campaign__body,.os-campaign footer{overflow-wrap:anywhere}.os-dev .os-campaign footer button{min-width:0;max-width:none}.os-campaign h2{min-width:0}
 .os-dev .os-campaign footer{align-items:stretch;gap:8px}
+.os-campaign .os-campaign__document-title{font:600 18px/1.35 "Songti SC",Georgia,serif;margin:8px 0 12px;overflow-wrap:anywhere}

@@ -18,8 +18,9 @@ export function OldStreetArchiveView({archive,target,question,locale,sessionId,a
  const prepare=async()=>{setWaiting(true);try{const r=await api(path,{retry:job?.state==='failed'});setJob(r.job);setRefresh(n=>n+1)}catch{setError(true)}finally{setWaiting(false)}}
  const label=(id:ArchiveCardId)=>archive!.content.cards.find(c=>c.id===id)!.label
  return <dialog ref={root} className="os-map os-campaign" aria-labelledby="os-archive-title" onCancel={e=>{e.preventDefault();if(!busy)close()}}>
-  <header><h2 id="os-archive-title">{archive?.content.title??t('追查原始记录','Follow the source records')}</h2><button disabled={busy} onClick={close}>{t('收起','Close')}</button></header>
+  <header><h2 id="os-archive-title">{t('原始记录','Source records')}</h2><button disabled={busy} onClick={close}>{t('收起','Close')}</button></header>
   <div className="os-campaign__body">
+   {archive&&<h3 className="os-campaign__document-title">{archive.content.title}</h3>}
    {question&&!archive?.order&&<p className="os-campaign__clue">{question}</p>}
    {!archive?<><p>{t('材料指向隔壁档案工作间。那里的记录能补全这件事的经过。','The papers point to the adjoining archive workroom, where source records can fill in what happened.')}</p><p role="status">{error?t('暂时连接不上，可以重新连接。','Connection interrupted. You can reconnect.'):reading?t('正在查看准备进度…','Checking progress…'):job?.state==='ready'?t('工作间已经可以进入。','The workroom is ready to enter.'):job?.state==='failed'?t('暂时没能备齐记录，可以重试。','The records could not be prepared. You can retry.'):['queued','planning'].includes(job?.state??'')?t('正在准备记录。可以收起，先去别处探索。','Preparing the records. You can close this and explore elsewhere.'):t('先备齐这里的原始记录，再沿地下室侧门进去调查。','Prepare the source records, then enter through the cellar side door.')}</p></>
    :target==='photo-folder'?<p>{t('从地下室东侧的门进入档案工作间。两处资料架和整理桌都在里面。','Enter through the cellar’s east door. Both source shelves and the sorting table are inside.')}</p>

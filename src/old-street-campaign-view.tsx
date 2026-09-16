@@ -24,10 +24,12 @@ export function OldStreetCampaignView({campaign,stage,locale,sessionId,api,busy,
  const prepare=async()=>{if(waiting)return;setWaiting(true);setFailed(false);try{const r=await api(path,{retry:job?.state==='failed'});setJob(r.job);setRefresh(n=>n+1)}catch{setFailed(true)}finally{setWaiting(false)}}
  const reconnect=()=>{setReading(true);setFailed(false);setRefresh(n=>n+1)}
  const trace=campaign.trace,parcel=campaign.parcel
+ const heading=t(stage==='trace'?'寄存记录':'寄存材料',stage==='trace'?'Filing records':'Filed papers')
  const dismiss=()=>{if(!busy)close()}
  return <dialog ref={root} className="os-map os-campaign" aria-labelledby="os-campaign-title" onCancel={e=>{e.preventDefault();dismiss()}}>
-  <header><h2 id="os-campaign-title">{instance?.content.title??t(stage==='trace'?'寄存记录':'资料架上的纸袋',stage==='trace'?'Filing records':'The packet on the shelf')}</h2><button disabled={busy} onClick={dismiss}>{t('收起','Close')}</button></header>
+  <header><h2 id="os-campaign-title">{heading}</h2><button disabled={busy} onClick={dismiss}>{t('收起','Close')}</button></header>
   <div className="os-campaign__body">
+   {instance?.content.title&&instance.content.title!==heading&&<h3 className="os-campaign__document-title">{instance.content.title}</h3>}
    {!instance?<>
     <p>{t(stage==='trace'?'信旁的寄存条有两处特征，可以和记录册里的条目比对。':'按记录找到的纸袋就在资料架上。',stage==='trace'?'The slip beside the letter has two identifying details. Compare them with the ledger.':'The packet matching the record is on the shelf.')}</p>
     <p role="status">{failed?t('暂时连不上。重新连接即可查看准备进度，也可以先收起。','Connection interrupted. Reconnect to check progress, or close this for now.'):reading?t('正在查看材料的准备进度…','Checking the papers…'):job?.state==='failed'?t('材料暂时没能展开。进度已保存，可以重试。','The papers could not be prepared. Your progress is safe; you can retry.'):job?.state==='ready'?t('材料已经准备好。','The papers are ready.'):job?.state==='planning'||job?.state==='queued'?t('正在展开材料。可以收起，先去街上看看，回来继续。','Preparing the papers. You can close this, explore the street, and return later.'):t('展开材料，查看里面的线索。','Lay out the papers to examine the clues.')}</p>
