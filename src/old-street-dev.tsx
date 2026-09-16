@@ -134,6 +134,9 @@ export default function OldStreetDev() {
   const [loading,setLoading]=useState({stage:'journey',done:0,total:(pixelShop?11:6)+environmentDownloads.length})
   const [pendingSpeech,setPendingSpeech]=useState<string|null>(null)
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), busyRef = useRef(false)
+  const [busyActivity,setBusyActivity]=useState<'approach'|'action'|'reply'|'area'|'journey'>('action')
+  const approachCancellation=useRef<(()=>void)|undefined>()
+  const busyLabel=text(({approach:['正在走近…','Approaching…'],action:['正在行动…','Taking action…'],reply:['等候回应…','Waiting for a reply…'],area:['正在进入…','Entering…'],journey:['正在恢复…','Resuming…']} as const)[busyActivity])
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
   const visibleTurn=useRef(turn);visibleTurn.current=turn
@@ -222,7 +225,7 @@ export default function OldStreetDev() {
       const pendingEnvironment=new Map<string,Promise<void>>()
       prepareEnvironment.current=async room=>{
         const missing=oldStreetEnvironmentDownloads(pixelShop,compositeShop,room).filter(e=>!loadedEnvironment.has(e.id))
-        if(missing.length)setNotice(text(['正在展开前方的场景…','Preparing the next area…']))
+        if(missing.length){setBusyActivity('area');setNotice(text(['正在展开前方的场景…','Preparing the next area…']))}
         await Promise.all(missing.map(entry=>{
           const existing=pendingEnvironment.get(entry.id);if(existing)return existing
           const task=(async()=>{
@@ -250,6 +253,7 @@ export default function OldStreetDev() {
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => findGridPath(a,b,p=>localWalkable(p,room)),
         onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current)setSelected(null);if(moved&&!busyRef.current&&(visibleTurn.current.length||visibleNotice.current)){visibleTurn.current=[];visibleNotice.current='';setNotice('');setSelected(null)}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
+        onRouteCancelled:()=>{const cancel=approachCancellation.current;approachCancellation.current=undefined;if(mounted)cancel?.()},
         onFrame:(dt,hero,room,paused)=>{
           const step=footsteps.current.update(dt,hero,room,paused);if(step)audio.current?.play(step)
           for(const [id,event] of Object.entries(npcEvents.current)){
@@ -311,6 +315,7 @@ export default function OldStreetDev() {
   }, [ready,error])
   async function selectJourney(id:string){
     if(busyRef.current||!ready)return
+    setBusyActivity('journey')
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
       const h=await connection.client.selectSession(id)
@@ -327,6 +332,7 @@ export default function OldStreetDev() {
   }
   async function restart(campaign=false){
     if(busyRef.current||!ready)return
+    setBusyActivity('journey')
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
       const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v1'}:undefined)
@@ -345,6 +351,7 @@ export default function OldStreetDev() {
     const h=serverHead.current
     if(!h||!ready||busyRef.current||error||outcome)throw Error('NOT_READY')
     if(h.expansions?.length&&!activate&&!photoMatch&&!decision)return
+    setBusyActivity('action')
     busyRef.current=true;setBusy(true);runtime.current?.pause(true)
     try{
       const result=await connection.client.send(h,{type:decision?'expansion-photo-decision':photoMatch?'expansion-photo-match':activate?'expansion-activate':'expansion-request',...(photoMatch?{photoMatch}:{}),...(decision?{decision}:{}),template:'photo-darkroom-v1',text:input,position:{...position.current}})
@@ -357,6 +364,8 @@ export default function OldStreetDev() {
     finally{busyRef.current=false;setBusy(false);runtime.current?.pause(connection.client.hasPending())}
   }
   async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false,clockInspection?:unknown) {
+    approachCancellation.current=undefined
+    setBusyActivity(dialogue?'reply':'action')
     if(input!==undefined)setNotice(text(dialogue?['等候回应…','Waiting for a reply…']:['正在行动…','Taking action…']))
     try {
       const h = serverHead.current!
@@ -409,20 +418,32 @@ export default function OldStreetDev() {
     if (!entity || !runtime.current) return
     if(id==='oldstreet:leave'&&serverHead.current?.campaign&&!campaignComplete(serverHead.current.campaign)){setNotice(oldStreetActionFailureMessage('CAMPAIGN_UNFINISHED',locale));return}
     if (id === 'oldstreet:leave' && !confirmed) {setLeaving(true); return}
+    setBusyActivity('approach')
     busyRef.current = true; setBusy(true)
-    const started = runtime.current.walkTo(entity.approach, () => {if(id==='oldstreet:inspect-clock'){setClockOpen(true);setClockMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
-    if (!started) {busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
+    prepareApproachCancellation()
+    const started = runtime.current.walkTo(entity.approach, () => {approachCancellation.current=undefined;if(id==='oldstreet:inspect-clock'){setClockOpen(true);setClockMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else if(id==='oldstreet:match-photos'){setPhotoOpen(true);setPhotoMessage('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)}else void execute(id, entity.id)})
+    if (!started) {approachCancellation.current=undefined;busyRef.current = false; setBusy(false); setNotice(text(['这里暂时走不过去。', 'There is no clear path.']))}
+  }
+  function prepareApproachCancellation(input?:string){
+    approachCancellation.current=()=>{busyRef.current=false;setBusy(false);setPendingSpeech(null);if(input!==undefined){setTyped(input);setInputOpen(true)}setNotice(text(['已停下。','Stopped.']))}
+  }
+  function stopApproaching(){
+    if(!approachCancellation.current)return
+    runtime.current?.pause(true);runtime.current?.pause(Boolean(error||outcome))
   }
   function openCampaign(stage:'trace'|'parcel'){
     if(!ready||busyRef.current||error||!serverHead.current?.campaign)return
     const entity=liveEntities().find(e=>e.id===campaignAnchor[stage].target&&e.scene===current.current.scene)
     if(!entity)return
+    setBusyActivity('approach')
     busyRef.current=true;setBusy(true)
-    if(!runtime.current!.walkTo(entity.approach,()=>{setCampaignOpen(stage);setCampaignMessage('');setNotice('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)})){busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
+    prepareApproachCancellation()
+    if(!runtime.current!.walkTo(entity.approach,()=>{approachCancellation.current=undefined;setCampaignOpen(stage);setCampaignMessage('');setNotice('');runtime.current!.pause(true);busyRef.current=false;setBusy(false)})){approachCancellation.current=undefined;busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
   }
   async function campaignAct(type:'plan'|'observe'|'decide',selection?:number|string){
     const h=serverHead.current,stage=campaignOpen
     if(!h||!stage||busyRef.current)return
+    setBusyActivity('action')
     busyRef.current=true;setBusy(true);setCampaignMessage('')
     try{
       const result=await connection.client.send(h,{type:'campaign-'+type,stage,target:campaignAnchor[stage].target,selection,position:{...position.current}})
@@ -436,8 +457,10 @@ export default function OldStreetDev() {
   function sendInput(dialogue=false,provided?:string){
     if(!chosen||!(provided??typed).trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
     const input=(provided??typed).trim(),target=chosen.id
+    setBusyActivity('approach')
     busyRef.current=true;setBusy(true);setTurn([]);setPendingSpeech(input);setNotice(text(['正在走近…','Walking closer…']))
-    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){setPendingSpeech(null);busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
+    prepareApproachCancellation(input)
+    if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){approachCancellation.current=undefined;setPendingSpeech(null);busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
     else setTyped('')
   }
   function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e})}
@@ -471,6 +494,13 @@ export default function OldStreetDev() {
     const door = oldStreetDoors().find(d => d.actionId === id)
     return door ? text(oldStreetRooms[door.destination.room]) : text(actionNames[id.replace('oldstreet:', '')] ?? [id, id])
   }
+  function targetTitle(entity:typeof entities[number]){
+    const door=oldStreetDoors().find(d=>d.id===entity.id)
+    const known=head.save.characters.find(c=>c.id===oldStreetPerson(entity.id)?.id)
+    const clockAvailable=entity.id==='drawer'&&oldStreetContextAction(head.save,entity).actions.includes('oldstreet:inspect-clock')
+    return clockAvailable?text(['抽屉旁 · 检查钟底','By the drawer · inspect clock']):known?.name??(door?text(oldStreetRooms[door.destination.room]):text(oldStreetPerson(entity.id,head.save)?.appearance??oldStreetPropState(entity.id,head.save)??propNames[entity.id]??[entity.id,entity.id]))
+  }
+  const inspectionHint=inspectionOpen&&!campaignTarget&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
   const outcome = oldStreetOutcome(head.save)
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
@@ -491,18 +521,16 @@ export default function OldStreetDev() {
       <div id="rpg"/>
       {entities.map(e => {
         const door = oldStreetDoors().find(d => d.id === e.id)
-        const known = head.save.characters.find(c=>c.id===oldStreetPerson(e.id)?.id)
-        const clockInspectionAvailable=e.id==='drawer'&&oldStreetContextAction(head.save,e).actions.includes('oldstreet:inspect-clock')
-        const title = clockInspectionAvailable?text(['抽屉旁 · 检查钟底','By the drawer · inspect clock']):known?.name ?? (door ? text(oldStreetRooms[door.destination.room]) : text(oldStreetPerson(e.id,head.save)?.appearance ?? oldStreetPropState(e.id,head.save) ?? propNames[e.id] ?? [e.id, e.id]))
+        const title = targetTitle(e)
         return <button className={'os-target' + (door ? ' os-target--door' : '')+(renderedProps.includes(e.id)||e.id==='developing-bench'?' os-target--actor':'')} key={e.id} data-side={door?.side} data-closed={door?.gate&&!head.save.facts[door.gate]?'true':undefined} style={{left: `${e.position.x / 384 * 100}%`, top: `${e.position.y / 576 * 100}%`}}
           disabled={!ready || busy || !!outcome || !!error} onClick={() => {if(selected!==e.id)setNotice('');setSelected(e.id); if (door) {const rule=ruleFor(door.actionId); if(rule?.status==='accepted')request(door.actionId);else setNotice(rule?.reasons.join(' ')??'')}}}><span className={door?'os-door-label':undefined}>{title}{door?.gate && !head.save.facts[door.gate] ? text([' · 关闭', ' · closed']) : ''}</span></button>
       })}
     </div>
     </div>
     <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')+(inputOpen?' os-actions--composing':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!notice&&!error&&!turn.length&&!pendingSpeech&&!inspectionOpen&&!(expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready'])&&!(expansionCapabilities.media&&head.scene==='darkroom')}>
-      {(inspectionOpen||turn.length>0)&&<div className="os-actions__heading"><strong>{knownSpeaker?head.save.characters.find(c=>c.id===oldStreetPerson(chosen!.id)?.id)?.name:text(['眼前','Here'])}</strong><button disabled={busy} onClick={closeInteraction}>{text(conversationOpen?['结束交谈','Leave conversation']:['收起','Close'])}</button></div>}
+      {(inspectionOpen||turn.length>0)&&<div className="os-actions__heading"><strong>{inspectionOpen&&chosen?targetTitle(chosen):text(['发现','Discovery'])}</strong><button disabled={busy} onClick={closeInteraction}>{text(conversationOpen?['结束交谈','Leave conversation']:['收起','Close'])}</button></div>}
       <div className="os-actions__body">
-        {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice}</p>}
+        {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice||inspectionHint)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice||inspectionHint}</p>}
       </div>
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
       {!error&&morePages?<button className="os-dialogue-continue" disabled={busy} onClick={()=>setTurnPage(n=>n+1)}>{text(['继续','Continue'])}</button>:<>
@@ -518,7 +546,7 @@ export default function OldStreetDev() {
     </section>
     <footer>
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||!!campaignOpen} move={(x,y)=>runtime.current?.move(x,y)}/>
-      <button hidden={conversationOpen} disabled={!ready || busy || !chosen || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : campaignTarget?text(['查阅材料','Examine papers']):chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
+      <button hidden={conversationOpen&&!(busy&&busyActivity==='approach')} aria-busy={busy} disabled={!ready || (busy&&busyActivity!=='approach') || !chosen || !!outcome || !!error} onPointerDown={busy?stopApproaching:useNearby}>{busy ? busyActivity==='approach'?text(['停下','Stop walking']):busyLabel : campaignTarget?text(['查阅材料','Examine papers']):chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
     {lanTrialEnabled&&ready&&head.scene==='laundry'&&<div style={{position:'fixed',right:8,top:410,zIndex:40,background:'#202624',padding:8}}>{(['left','right','up','down'] as const).map((direction,i)=><button key={direction} style={{minHeight:44,minWidth:44}} disabled={busy||!!error||lanTrial.current?.running} onClick={()=>{lanTrial.current?.start(direction);setResidentPosition({...resident.current.position})}}>{text(['试走：'+['左','右','上','下'][i],'Test: '+direction])}</button>)}<output style={{display:'block'}}>{lanTrial.current?.pose} · {lanTrial.current?.distance.toFixed(1)}/24</output></div>}
