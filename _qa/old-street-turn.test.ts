@@ -27,3 +27,18 @@ test('a committed free attempt enters the short response area, while unrelated n
  const ordinary=structuredClone(after);ordinary.save.blocks.at(-1)!.data=undefined
  assert.deepEqual(oldStreetTurn(before,ordinary,true),[])
 })
+
+test('authored handover keeps stage directions outside NPC speech in both languages',()=>{
+ for(const locale of ['zh','en'] as const){
+  const save=createInitialSave(oldStreetCartridge(locale))
+  const text=locale==='zh'?'修表师把旧钟递来：“洗衣店的，替我带过去吧。”':'The watchmaker hands you the clock. “It belongs to the laundry. Could you take it back?”'
+  const result=recordOldStreetInteraction(save,'watchmaker','oldstreet:take-clock',text,'handover')
+  assert.equal(result[0].kind,'narration')
+  assert.equal(result[1].kind,'narration');assert.equal(result[1].speaker,undefined)
+  assert.equal(result[2].kind,'dialogue');assert.equal(result[2].speaker,locale==='zh'?'老周':'Zhou')
+  assert.ok(!/修表师|watchmaker/.test(result[2].text))
+  assert.equal(new Set(result.map(b=>b.id)).size,result.length)
+  const consent=recordOldStreetInteraction(save,'laundry-owner','oldstreet:consent-clock',locale==='zh'?'店主同意留下旧钟的照片和来历。':'The owner agrees to a photo of the clock and its history.','consent')
+  assert.ok(consent.every(b=>b.kind==='narration'&&!b.speaker))
+ }
+})
