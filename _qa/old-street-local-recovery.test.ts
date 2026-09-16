@@ -1,3 +1,4 @@
+import {decodeSpatialArt} from '../src/spatial-art-decode'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
@@ -51,5 +52,23 @@ test('local transport bounds a lost receipt and recovers the same committed acti
   assert.equal(actionIds.at(-1),actionIds.at(-2))
   assert.equal(server.events('test-owner',start.id,0).length,3)
   assert.equal(connection.client.hasPending(),false)
+  // The authority has acknowledged a door transfer before the destination art
+  // decodes. Reload must read that head, not resubmit the completed transfer.
+  const exit=oldStreetDoors().find(d=>d.room==='shop'&&d.destination.room==='street')!
+  const transferred=await connection.client.send(resumed.head,{type:'action',action:exit.actionId,target:exit.id,position:exit.approach})
+  await assert.rejects(decodeSpatialArt('blob:broken-room',{createImage:()=>({src:'',decode:async():Promise<void>=>{throw Error('corrupt image')}} as HTMLImageElement)}),/ART_IMAGE_DECODE_FAILED/)
+  assert.equal(connection.client.hasPending(),false)
+  const posts=actionIds.length
+  const reloaded=oldStreetSession(storage,async(_name,work)=>work(),request)
+  const enrolled=await reloaded.client.enroll('zh')
+  const recovery=await reloaded.client.recover()
+  const restored=recovery?.head??enrolled
+  assert.equal(restored.sceneId,'street')
+  assert.deepEqual(restored.position,transferred.head.position)
+  assert.equal(restored.version,transferred.head.version)
+  assert.equal(restored.save.inventory.find((i:{id:string})=>i.id==='lens')?.count,1)
+  assert.equal(actionIds.length,posts)
+  assert.equal(server.events('test-owner',start.id,0).length,4)
+
  }finally{raw.close()}
 })

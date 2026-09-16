@@ -1,3 +1,4 @@
+import {decodeSpatialArt} from './spatial-art-decode'
 import shedBenchUrl from '../doc/oldstreet-shed-bench/cutout.png'
 import {oldStreetFurniture,oldStreetFurnitureSheet} from './old-street-furniture'
 import OldStreetJoystick from './old-street-joystick'
@@ -178,7 +179,7 @@ export default function OldStreetDev() {
       environmentBlobs=initialEnvironment.map(e=>urls[e.id])
       setLoading({stage:'textures',done:sources.length,total:sources.length})
       await Promise.all(Object.entries(urls).map(async([id,url])=>{
-        if(id.startsWith('environment-')){const image=new Image();image.src=url;await image.decode()}
+        if(id.startsWith('environment-')){await decodeSpatialArt(url,{signal:downloads.signal})}
         else await loadSpatialArtTexture(url,pixelShop?'nearest':'linear')
       }))
       if(mounted&&boot.pending())setDoorCratesArt(cratesBlob)
@@ -194,7 +195,7 @@ export default function OldStreetDev() {
             const downloaded=await downloadSpatialArt([entry],{signal:downloads.signal})
             const url=downloaded[entry.id]
             try{
-              const image=new Image();image.src=url;await image.decode()
+              await decodeSpatialArt(url,{signal:downloads.signal})
               if(!mounted)throw Error('ART_DOWNLOAD_CANCELLED')
               environmentBlobs.push(url);loadedEnvironment.add(entry.id)
               setEnvironmentArt(previous=>({...previous,[entry.id.slice('environment-'.length)]:url}))
@@ -204,7 +205,7 @@ export default function OldStreetDev() {
         }))
       }
       if(!mounted||!boot.pending())return
-      const preview=new Image();preview.src=heroBlob;await preview.decode()
+      const preview=await decodeSpatialArt(heroBlob!,{signal:downloads.signal})
       if(mounted&&boot.pending())setLoading({stage:'map',done:sources.length,total:sources.length})
       if (!mounted||!boot.pending()) return
       createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576,

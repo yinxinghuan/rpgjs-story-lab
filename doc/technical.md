@@ -2091,3 +2091,5 @@ oldStreetEnvironmentKeys 提供各房间实际环境依赖，oldStreetEnvironmen
 
 自由尝试生成器 `server/old-street-attempt.ts` 在格式或语义拒绝后最多重新生成并检查一次；两轮共享原有 20 秒 AbortController 预算，网络错误不自动重发。审查区分事实依据与新发现记录，空 discoveryIds 不再意味着短暂动作或旧知识回应不合格。只有通过审查的结果返回 Session 提交，废弃候选不进入旅程。
 `oldStreetTurn` 接纳同一旅程、同一场景且恰好增加一个版本的 `oldStreetAttemptTarget` 叙述块，沿用现有回应区与移动收起逻辑；普通叙述提示及历史恢复不进入该区域。自由行动输入与人物交谈共用等待中的输入展示。
+
+`decodeSpatialArt` 为初次背景、转场背景与主角预览解码提供 10 秒期限与页面 AbortSignal；解码失败统一为 ART_IMAGE 错误，由现有素材恢复提示承接。失败清空临时 Image 来源，blob 仍由调用方按既有生命周期释放。合成恢复测试串联实际 OldStreetAuthority、SessionClient 和解码故障：服务端已确认转场后重新 enroll/recover 保留场景、落点及放大镜，不再 POST 行动；此证据不等于真实 iPhone 故障测试。
