@@ -1,10 +1,15 @@
 import type {StorySave} from './vendor/original-train/types'
+import {oldStreetRecordBookPose} from './old-street-record-book'
 
 /** Semantic physical states shared by map labels and dialogue knowledge.
  * These do not assert that appearance or each art state has been admitted. */
 export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): readonly [string, string] | undefined {
   const f = save.facts
   switch (id) {
+    case 'record-book': {
+      const pose=oldStreetRecordBookPose(save)
+      return pose==='both'?['记录册 · 旧钟与旧照','Record book · clock and photograph']:pose==='photo'?['记录册 · 旧照','Record book · photograph']:pose==='clock'?['记录册 · 旧钟','Record book · clock']:['记录册 · 空白','Record book · blank']
+    }
     case 'clock-display': return f['clock-returned'] === true ? ['柜台 · 已归还的旧钟', 'Counter · returned clock'] : ['柜台', 'Counter']
     case 'trolley': return f['trolley-borrowed'] === true ? ['推车停放处 · 空', 'Trolley bay · empty'] : ['推车', 'Trolley']
     case 'viewing-table': return f['photos-returned'] === true ? ['放大台 · 已归还的照片夹', 'Viewing table · returned photo folder'] : ['放大台', 'Viewing table']
