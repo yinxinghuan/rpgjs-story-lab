@@ -16,3 +16,14 @@ test('turn preserves introduction and named speech without repeating history or 
  assert.deepEqual(oldStreetTurn(before,{...after,sceneId:'roof'},true),[])
  assert.deepEqual(oldStreetTurn(after,after,true),[])
 })
+
+test('a committed free attempt enters the short response area, while unrelated notices stay out',()=>{
+ const before:OldStreetHead={id:'attempt-turn',version:2,mapVersion:'oldstreet-furniture-3',sceneId:'shop',position:{x:100,y:100},save:createInitialSave(oldStreetCartridge('zh'))}
+ const after=structuredClone(before);after.version++
+ after.save.blocks.push({id:'attempt-3',kind:'narration',text:'你俯身查看抽屉。',data:{oldStreetAttemptTarget:'drawer',input:'俯身看看',outcome:'observed'}})
+ assert.equal(oldStreetTurn(before,after,true)[0]?.text,'你俯身查看抽屉。')
+ assert.deepEqual(oldStreetTurn(before,after,false),[])
+ assert.deepEqual(oldStreetTurn(after,after,true),[])
+ const ordinary=structuredClone(after);ordinary.save.blocks.at(-1)!.data=undefined
+ assert.deepEqual(oldStreetTurn(before,ordinary,true),[])
+})

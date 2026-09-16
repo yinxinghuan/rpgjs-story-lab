@@ -116,3 +116,16 @@ test('attempts recall confirmed puzzle discoveries without exposing unseen answe
  const restored=JSON.parse(JSON.stringify(h))
  assert.deepEqual(oldStreetAttemptContext(restored,'viewing-table',[]),oldStreetAttemptContext(h,'viewing-table',[]))
 })
+
+test('one rejected answer can repair into a textual gesture without animation or new discoveries',async()=>{
+ const context={locale:'zh' as const,scene:'shop',target:'drawer',inventory:[],knowledge:[{id:'visible:drawer',text:'抽屉被空盒挡住。'}],recentAttempts:[],recentTurns:[],introducedPerson:null,actions:[{id:'oldstreet:move-box',label:'移开空盒'}]}
+ const replies=[{kind:'attempt',outcome:'observed',text:'你敲开抽屉，拿到了钥匙。',discoveryIds:[]},{valid:false},{kind:'attempt',outcome:'inconclusive',text:'你俯身轻敲抽屉，暂时还不能判断里面装着什么。',discoveryIds:[]},{valid:true}]
+ let calls=0
+ const result=await createOldStreetAttemptGenerator(async()=>replies[calls++])('我俯下身轻轻敲一下抽屉',context)
+ assert.equal(calls,4)
+ assert.equal(result.kind,'attempt')
+ if(result.kind==='attempt'){assert.match(result.text,/轻敲/);assert.deepEqual(result.discoveryIds,[]);assert.ok(!result.text.includes('钥匙'))}
+ let rejectedCalls=0
+ await createOldStreetAttemptGenerator(async()=>{rejectedCalls++;return {kind:'action',actionId:'invented'}})('轻敲抽屉',context)
+ assert.equal(rejectedCalls,2,'malformed answers get only one repair, never an unbounded loop')
+})
