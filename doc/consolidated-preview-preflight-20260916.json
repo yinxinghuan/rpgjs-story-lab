@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "c953937111c23f8c92cd8f25e6bd7222137edc09",
+  "purpose": "Existing-game consolidated preview update, not final single-player acceptance",
+  "tests": {
+    "initial": {"total": 974, "passed": 930, "failed": 44, "failureCause": "Sandbox denied local HTTP listener (listen EPERM 127.0.0.1)"},
+    "affectedFilesRerun": {"files": 12, "tests": 68, "passed": 68, "failed": 0, "scope": "Local synthetic HTTP services; no live model requests"},
+    "remainingObservedFailures": 0
+  },
+  "build": "npm run build passed, including existing original-resource hash checks and Worker build",
+  "legacySpatialCompatibility": {"journeys": 120, "failures": 0, "coveredActions": 82},
+  "checks": {"gameApiBase": "passed", "gameUuid": "passed", "publicSecrets": "passed", "distributedThirdPartyNotices": "present and nonempty"},
+  "deployment": "Not performed in this preflight",
+  "openAcceptance": ["Live unsupported persistent-action handling remains unresolved", "Lan and Xu walking art not admitted", "Verified platform identity and cross-device recovery unavailable", "Consolidated main/Pages deployment and platform playthrough not yet performed"]
+}
