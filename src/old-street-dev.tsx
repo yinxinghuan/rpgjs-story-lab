@@ -111,6 +111,7 @@ export default function OldStreetDev() {
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
   const trolleyEvent=useRef<RpgPlayer>(),drawerEvent=useRef<RpgPlayer>(),compartmentEvent=useRef<RpgPlayer>(),photoShelfEvent=useRef<RpgPlayer>(),photoTableEvent=useRef<RpgPlayer>(),clockDisplayEvent=useRef<RpgPlayer>(),cratesEvent=useRef<RpgPlayer>()
   useEffect(()=>{if(cratesEvent.current){const p=oldStreetProjectedProps(head.save).find(p=>p.id==='crates')!;void cratesEvent.current.teleport({x:p.body.x,y:p.body.y});cratesEvent.current.syncChanges()}if(clockDisplayEvent.current){clockDisplayEvent.current.animationName.set(oldStreetClockDisplayPose(head.save));clockDisplayEvent.current.syncChanges()}if(photoTableEvent.current){photoTableEvent.current.animationName.set(oldStreetPhotoTablePose(head.save));photoTableEvent.current.syncChanges()}if(photoShelfEvent.current){photoShelfEvent.current.animationName.set(oldStreetPhotoShelfPose(head.save));photoShelfEvent.current.syncChanges()}if(compartmentEvent.current){compartmentEvent.current.animationName.set(oldStreetCompartmentPose(head.save));compartmentEvent.current.syncChanges()}if(drawerEvent.current){drawerEvent.current.animationName.set(oldStreetDrawerPose(head.save));drawerEvent.current.syncChanges()}if(trolleyEvent.current){trolleyEvent.current.animationName.set(oldStreetTrolleyPose(head.save));trolleyEvent.current.syncChanges()}},[head])
+  const prepareEnvironment=useRef<(room:string)=>Promise<void>>(async()=>{})
   const [environmentArt,setEnvironmentArt]=useState(oldStreetEnvironmentArt)
   const [doorCratesArt,setDoorCratesArt]=useState<string>()
   const [loading,setLoading]=useState({stage:'journey',done:0,total:(pixelShop?11:6)+environmentDownloads.length})
@@ -169,18 +170,39 @@ export default function OldStreetDev() {
       resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
       setNotice(restored.version===0?cartridge.opening.blocks[0].text:text(['已恢复旅程。', 'Journey restored.']))
       const npcArt=actorArt.balanced.mechanic
-      const sources=[...environmentDownloads,{id:'shedBench',url:shedBenchUrl},{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'photoShelf',url:photoShelfUrl},{id:'photoTable',url:photoTableUrl},{id:'mantelClock',url:mantelClockUrl},{id:'crates',url:cratesUrl}]:[])]
+      const initialEnvironment=oldStreetEnvironmentDownloads(pixelShop,compositeShop,restored.sceneId)
+      const sources=[...initialEnvironment,{id:'shedBench',url:shedBenchUrl},{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'photoShelf',url:photoShelfUrl},{id:'photoTable',url:photoTableUrl},{id:'mantelClock',url:mantelClockUrl},{id:'crates',url:cratesUrl}]:[])]
       const urls=await downloadSpatialArt(sources,{signal:downloads.signal,progress:(done,total)=>{if(mounted)setLoading({stage:'art',done,total})}})
       shedBenchBlob=urls.shedBench;cratesBlob=urls.crates;mantelClockBlob=urls.mantelClock;photoTableBlob=urls.photoTable;photoShelfBlob=urls.photoShelf;heroBlob=urls.hero;watchmakerBlob=urls.watchmaker;lanBlob=urls.lan;xuBlob=urls.xu;drawerBlob=urls.drawer;trolleyBlob=urls.trolley;pixelPropsBlob=urls.props
       if(!mounted||!boot.pending()){Object.values(urls).forEach(url=>URL.revokeObjectURL(url));return}
-      environmentBlobs=environmentDownloads.map(e=>urls[e.id])
+      environmentBlobs=initialEnvironment.map(e=>urls[e.id])
       setLoading({stage:'textures',done:sources.length,total:sources.length})
       await Promise.all(Object.entries(urls).map(async([id,url])=>{
         if(id.startsWith('environment-')){const image=new Image();image.src=url;await image.decode()}
         else await loadSpatialArtTexture(url,pixelShop?'nearest':'linear')
       }))
       if(mounted&&boot.pending())setDoorCratesArt(cratesBlob)
-      if(mounted&&boot.pending())setEnvironmentArt({...oldStreetEnvironmentArt,...Object.fromEntries(environmentDownloads.map(e=>[e.id.slice('environment-'.length),urls[e.id]]))})
+      if(mounted&&boot.pending())setEnvironmentArt({...oldStreetEnvironmentArt,...Object.fromEntries(initialEnvironment.map(e=>[e.id.slice('environment-'.length),urls[e.id]]))})
+      const loadedEnvironment=new Set(initialEnvironment.map(e=>e.id))
+      const pendingEnvironment=new Map<string,Promise<void>>()
+      prepareEnvironment.current=async room=>{
+        const missing=oldStreetEnvironmentDownloads(pixelShop,compositeShop,room).filter(e=>!loadedEnvironment.has(e.id))
+        if(missing.length)setNotice(text(['正在展开前方的场景…','Preparing the next area…']))
+        await Promise.all(missing.map(entry=>{
+          const existing=pendingEnvironment.get(entry.id);if(existing)return existing
+          const task=(async()=>{
+            const downloaded=await downloadSpatialArt([entry],{signal:downloads.signal})
+            const url=downloaded[entry.id]
+            try{
+              const image=new Image();image.src=url;await image.decode()
+              if(!mounted)throw Error('ART_DOWNLOAD_CANCELLED')
+              environmentBlobs.push(url);loadedEnvironment.add(entry.id)
+              setEnvironmentArt(previous=>({...previous,[entry.id.slice('environment-'.length)]:url}))
+            }catch(error){URL.revokeObjectURL(url);throw error}
+          })().finally(()=>pendingEnvironment.delete(entry.id))
+          pendingEnvironment.set(entry.id,task);return task
+        }))
+      }
       if(!mounted||!boot.pending())return
       const preview=new Image();preview.src=heroBlob;await preview.decode()
       if(mounted&&boot.pending())setLoading({stage:'map',done:sources.length,total:sources.length})
@@ -241,6 +263,7 @@ export default function OldStreetDev() {
       const h=await connection.client.selectSession(id)
       serverHead.current=h
       const next={save:h.save,scene:h.sceneId,position:h.position};current.current=next
+      await prepareEnvironment.current(h.sceneId)
       await runtime.current!.restore(h.position,h.sceneId)
       setHead(next);position.current=h.position;setFeet(h.position);setSelected(null);setError('');setNotice(text(['已继续这段旅程。','Journey resumed.']));setJourneysOpen(false)
       runtime.current!.pause(Boolean(h.save.facts.departed))
@@ -254,6 +277,7 @@ export default function OldStreetDev() {
       serverHead.current=h
       const next={save:h.save,scene:h.sceneId,position:h.position}
       current.current=next
+      await prepareEnvironment.current(h.sceneId)
       await runtime.current!.restore(h.position,h.sceneId)
       current.current=next;setHead(next);position.current=h.position;setFeet(h.position);setSelected(null);setError('');setNotice(cartridge.opening.blocks[0].text)
       runtime.current!.pause(false)
@@ -302,6 +326,7 @@ export default function OldStreetDev() {
       serverHead.current = nextHead
       const next = {save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current = next
+      await prepareEnvironment.current(nextHead.sceneId)
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
       current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)

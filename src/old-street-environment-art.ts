@@ -1,3 +1,4 @@
+import {oldStreetEnvironmentKeys} from './old-street-environment-dependencies'
 import shedFloor from '../doc/oldstreet-shed-floor/correction/candidate.png'
 import doorWood from '../doc/oldstreet-door-wood/candidate.png'
 import roofFloor from '../doc/oldstreet-roof-floor/candidate.png'
@@ -14,6 +15,7 @@ import shopWall from '../doc/oldstreet-pixel-study/workshop-wall/candidate.png'
 import shedWall from '../doc/oldstreet-shed-wall/candidate.png'
 export const oldStreetEnvironmentArt={wood,laundry,shopWall,shedWall,shedFloor,yard,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
 export type OldStreetEnvironmentArt=typeof oldStreetEnvironmentArt
-export function oldStreetEnvironmentDownloads(pixel:boolean,composite=false){
- return Object.entries(oldStreetEnvironmentArt).filter(([id])=>id==='shopComposite'?composite:(pixel||id==='wood'||id==='laundry')).map(([id,url])=>({id:'environment-'+id,url}))
+export function oldStreetEnvironmentDownloads(pixel:boolean,composite=false,room?:string){
+ const needed=room?new Set(oldStreetEnvironmentKeys(room,pixel,composite)):null
+ return Object.entries(oldStreetEnvironmentArt).filter(([id])=>needed?needed.has(id):id==='shopComposite'?composite:(pixel||id==='wood'||id==='laundry')).map(([id,url])=>({id:'environment-'+id,url}))
 }
