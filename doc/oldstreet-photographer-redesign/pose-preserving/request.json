@@ -1,0 +1,13 @@
+{
+  "requestId": "9b5b03ae-3eac-4e5c-b318-b6bace65370f",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789577555272944.png"
+  ],
+  "size": {
+    "width": 1024,
+    "height": 1408
+  },
+  "prompt": "Edit this sprite sheet IN PLACE. Preserve its exact 3-column, 4-row grid, overhead B camera angle, compact adult proportions, scale, foot positions, pixel grain and crisp dark outlines. Repaint all 12 figures as ONE different person: a middle-aged woman with medium-brown skin, short close-fitting dark curly hair, small round dark-framed glasses, a muted indigo-blue short-sleeved work shirt, charcoal trousers and light gray shoes. Her hands are empty. No ponytail, apron, skirt, camera, bag, hat or straps. Keep the same person and clothing in every cell. Keep row 1 facing FRONT, row 2 facing LEFT, row 3 facing RIGHT and row 4 facing BACK. Middle column standing still, outer columns opposite walking steps. Preserve the clearly alternating left/right forward foot in front and back rows; side views should also alternate the near and far legs with a small opposing arm swing. Keep heads facing exactly the assigned direction. Do not make the bodies taller, heads larger or the camera lower. The tops of heads and shoulders remain prominently visible, as in the reference. Keep a uniform bright magenta background RGB 255,0,255, no floor, shadows, labels, grid lines or extra figures. This is a controlled identity and clothing repaint, not a new layout."
+}

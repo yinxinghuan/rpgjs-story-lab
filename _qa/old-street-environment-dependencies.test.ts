@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {oldStreetEnvironmentKeys} from '../src/old-street-environment-dependencies'
 test('initial street does not wait for indoor environments and shared layers are reused',()=>{
  const street=oldStreetEnvironmentKeys('street',true,true),shed=oldStreetEnvironmentKeys('shed',true,true),cellar=oldStreetEnvironmentKeys('cellar',true,true)
- assert.deepEqual(street,['doorWood','stoneStair','debris','yard'])
+ assert.deepEqual(street,['doorWood','stoneStair','debris','streetGround'])
  assert.deepEqual(shed.filter(k=>!street.includes(k)),['shedFloor','shedWall'])
  assert.deepEqual(cellar.filter(k=>!shed.includes(k)),['cellarFloor'])
  assert.ok(!street.includes('shopComposite'));assert.ok(!street.includes('photoFloor'))

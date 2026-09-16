@@ -34,7 +34,15 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-narrow-wood)"/>
     {pixelShop&&<OldStreetShopEnvironment image={art.shopWall}/>}
   </g>
-  if((room==='yard'||room==='street')&&pixelShop)return <g>
+  // The source's thin facade/border is excluded: only flat paving, light and
+  // litter enter the walkable area. Runtime entrances retain their real slots.
+  if(room==='street'&&pixelShop)return <g>
+    <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#626954"/>
+    <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="40 64 728 1050" preserveAspectRatio="none" overflow="hidden">
+      <image href={art.streetGround} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
+    </svg>
+  </g>
+  if(room==='yard'&&pixelShop)return <g>
     <defs><pattern id="os-yard-stone" x={floor.x} y={floor.y} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} patternUnits="userSpaceOnUse"><image href={art.yard} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} opacity={oldStreetStoneTile.opacity} style={{imageRendering:'pixelated'}}/></pattern></defs>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-yard-stone)" stroke="#81786c" strokeWidth="6"/>
   </g>

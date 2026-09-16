@@ -1,0 +1,13 @@
+{
+  "requestId": "a88e55c2-24a3-48a5-82a7-6c17e43d7d70",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789581823844672.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 1152
+  },
+  "prompt": "Redraw the reference as a TOP-DOWN ORTHOGRAPHIC PIXEL ART TILEMAP, NOT an illustration looking along a street. Make the camera MUCH MORE OVERHEAD. Remove the perspective completely. The two pavement edges MUST be absolutely straight VERTICAL parallel lines x112 and x656 over the full height. Equal-width pavement at the top and bottom. Every paving block is the same size at the top and bottom. No tall upright facades, no converging diagonals, no trapezoids, no view into the distance. Think a playable classic 2D RPG map with the roofs removed and only low cutaway shop edges. Crisp visible pixel clusters and modest dark outlines, not smooth comic art. Preserve the appealing weathered green watch-shop wood, navy photo-shop trim, warm lamps, patches of old brick, little weeds, drainpipes, leaves, subtle damp stains and aged feel.\nEXACT MAP on 768x1152 canvas: empty walkable ground rectangle x112 to656 and y64 to1088. Tiny paving units 16-24px across, NEVER the large blocks in the reference. Buildings and all solid decor must stay strictly in x0..112 and x656..768. They should look like short low wall strips seen from above, without roofs or overhanging awnings. North wall only y0..64, with open alley centered at x384 width100px. West boundary has one doorway gap at x112,y320 width100px along the boundary; east boundary has one doorway gap at x656,y472 width100px. South remains an open continuation of the same floor. Do not paint door leaves, the engine overlays them. Interior play floor has only FLAT cracks, moss, dirt, wet patches, tiny scraps and leaves, not any furniture, columns, planters or obstacles. No characters, no written words, no signs with text, no UI. The warm-cool atmosphere and detailed fine pixel materials should survive this drastic camera and layout correction."
+}

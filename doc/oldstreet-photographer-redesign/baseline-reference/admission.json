@@ -1,0 +1,20 @@
+{
+  "asset": "actor-atlas.png",
+  "sha256": "669e0256ffbdf4cbfdcb2c51ef02a17e9e1f2c911c03e494beb0cc239a7d0475",
+  "source": "platform-media-edit",
+  "sourceReference": "original B mechanic image, GPT-generated",
+  "userDecision": "side walking slightly unnatural but acceptable; rounded body shapes are not a reusable baseline",
+  "usage": [
+    "four-direction standing and walking",
+    "bounded horizontal photo studio pacing"
+  ],
+  "journeyFact": "photographer-cast-v2",
+  "renderer": "src/old-street-photographer-art.ts",
+  "evidence": "../review.md",
+  "excluded": [
+    "legacy journeys",
+    "universal character body-shape standard",
+    "online release this turn"
+  ],
+  "postprocessingOnly": true
+}

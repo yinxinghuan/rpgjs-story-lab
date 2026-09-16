@@ -1,0 +1,11 @@
+{
+  "intent": "Second platform-produced resident, following user accepted-range standard. Keep old photographer and all old journeys until reviewed.",
+  "reference": "../../oldstreet-laundry-redesign/pose-preserving/candidate.png",
+  "referenceSha256": "10035a21b51874a271c776716e6e9e1aa785c748bdc327e0a9cf374717e5b7dc",
+  "changes": [
+    "short curls instead of long ponytail",
+    "simple indigo shirt and trousers",
+    "same approved grid and camera"
+  ],
+  "productionAdmitted": false
+}

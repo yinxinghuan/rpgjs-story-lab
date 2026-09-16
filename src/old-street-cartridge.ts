@@ -1,4 +1,4 @@
-import {oldStreetCharacterDefinitions,laundryCastVersionFact} from './old-street-characters'
+import {oldStreetCharacterDefinitions,currentOldStreetCastFacts} from './old-street-characters'
 import type {DomainActionRule, DomainEffect, DomainRequirement, Locale, StoryCartridge, StorySave} from './vendor/original-train/types'
 
 /** In-project story draft. Not registered in production, and not an art-ready
@@ -109,9 +109,9 @@ export function oldStreetCartridge(locale: Locale): StoryCartridge {
     statDefinitions: [], drawerLabels: {party: t('认识的人', 'People met'), map: t('街区', 'Neighbourhood'), inventory: t('随身物品', 'Inventory'), log: t('发现', 'Discoveries')},
     opening: {location: t(...oldStreetRooms.street), time: t('下午', 'Afternoon'), objective: t('到修表铺取家人寄存的信。', 'Collect your family’s letter from the watch shop.'), imagePrompt: '', imageMode: 'none',
       blocks: [{id: 'oldstreet-opening', kind: 'narration', text: t('家人让你到旧街取一封信。修表铺门开着，柜台后却没人。', 'Your family asked you to collect a letter from the old street. The watch shop is open, but nobody is behind the counter.')}], choices: []},
-    characters: oldStreetCharacterDefinitions(locale,{facts:{[laundryCastVersionFact]:true}}), initialPartyMemberIds: [], initialInventory: [],
+    characters: oldStreetCharacterDefinitions(locale,{facts:currentOldStreetCastFacts}), initialPartyMemberIds: [], initialInventory: [],
     initialMap: Object.entries(oldStreetRooms).map(([id, labels]) => ({id, label: t(labels[0], labels[1]), current: id === 'street', visited: id === 'street'})),
-    initialFacts: {...Object.fromEntries(flagNames.map(name => [name, false])), 'key-borrowed': false, 'trolley-borrowed': false,[laundryCastVersionFact]:true},
+    initialFacts: {...Object.fromEntries(flagNames.map(name => [name, false])), 'key-borrowed': false, 'trolley-borrowed': false,...currentOldStreetCastFacts},
     domainRules: {rules: oldStreetRules(locale)}, demoTurns: [],
   }
 }

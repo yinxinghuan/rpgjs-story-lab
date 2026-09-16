@@ -7,7 +7,11 @@ const cast = [
 ] as const
 const choose=(pair:readonly [string,string],locale:Locale)=>pair[locale==='zh'?0:1]
 export const laundryCastVersionFact='laundry-cast-v2'
+export const photographerCastVersionFact='photographer-cast-v2'
+export const currentOldStreetCastFacts={[laundryCastVersionFact]:true,[photographerCastVersionFact]:true}
 export function usesCurrentLaundryCast(save:Pick<StorySave,'facts'>){return save.facts[laundryCastVersionFact]===true}
+export function usesCurrentPhotographerCast(save:Pick<StorySave,'facts'>){return save.facts[photographerCastVersionFact]===true}
+export function oldStreetCastArtVersion(save:Pick<StorySave,'facts'>){return `${usesCurrentLaundryCast(save)?2:1}:${usesCurrentPhotographerCast(save)?2:1}`}
 export function oldStreetCharacterDefinitions(locale:Locale,save?:Pick<StorySave,'facts'>):CharacterDefinition[]{return cast.map(entry=>{const p=oldStreetPerson(entry.entity,save)!;return {id:p.id,name:choose(p.name,locale),role:choose(p.role,locale),vitality:100,stress:0,skills:[],hiddenUntilIntroduced:true}})}
 export const oldStreetCharacterBindings = cast.map(p=>({id:p.id,kind:'physical' as const,entities:[p.entity]}))
 export function oldStreetPerson(entity:string,save?:Pick<StorySave,'facts'>){
@@ -15,6 +19,9 @@ export function oldStreetPerson(entity:string,save?:Pick<StorySave,'facts'>){
  if(p?.entity==='laundry-owner'&&save&&usesCurrentLaundryCast(save))return {...p,
   name:['玛拉','Mara'] as const,appearance:['穿青绿工作衫的女人','Woman in a teal work shirt'] as const,
   intro:['铜棕短发的女人停下脚步，抚平青绿色工作衫：“我是玛拉，这家洗衣店的店主。有事就叫我。”','The woman with short copper-brown hair stops and smooths her teal work shirt. “I’m Mara, the owner. Let me know if you need anything.”'] as const}
+ if(p?.entity==='photographer'&&save&&usesCurrentPhotographerCast(save))return {...p,
+  name:['诺拉','Nora'] as const,appearance:['深蓝工作服的短发女人','Short-haired woman in navy workwear'] as const,
+  intro:['穿深蓝工作服的短卷发女人停下来，扶了扶眼镜：“我是诺拉，在这里洗照片。你可以先看看。”','The woman with short curls and navy workwear stops and adjusts her glasses. “I’m Nora. I develop photos here. Feel free to look around.”'] as const}
  return p
 }
 /** Authored visible introduction and its persisted roster entry share one Session commit.

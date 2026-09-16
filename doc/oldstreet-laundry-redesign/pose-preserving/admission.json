@@ -3,16 +3,16 @@
   "asset": "actor-atlas.png",
   "sha256": "ef62d57b07de415effc024a0d2c17d166920c4743eca57396a603e0edad221cf",
   "source": "platform-media-edit",
-  "userDecision": "acceptable imperfections, not a perfect target",
+  "userDecision": "side walking slightly unnatural but acceptable; rounded body shapes are not a reusable baseline",
   "usage": [
-    "four-direction standing and attention",
-    "vertical bounded laundry pacing"
+    "four-direction standing and walking",
+    "current authored route: vertical bounded laundry pacing"
   ],
   "journeyFact": "laundry-cast-v2",
   "renderer": "src/old-street-laundry-art.ts",
   "evidence": "../../technical.md#新旅程店主接入与自然活动2026-09-17晚于上段候选阶段",
   "excluded": [
-    "general four-direction walking template",
+    "universal character body-shape standard",
     "legacy journeys",
     "online release this turn"
   ],

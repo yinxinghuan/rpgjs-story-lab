@@ -1,0 +1,26 @@
+{
+  "asset": "candidate.png",
+  "sha256": "1996056c4995b53f327becfa71e624d9144c4dbe44198ff5b2e7ef52e34e9acf",
+  "source": "platform-media-text",
+  "usage": "street flat ground only",
+  "sourceCrop": [
+    40,
+    64,
+    728,
+    1050
+  ],
+  "worldRect": [
+    56,
+    32,
+    272,
+    512
+  ],
+  "geometryChanged": false,
+  "runtime": "src/old-street-floor.tsx",
+  "verification": "ordinary journey photo -> street; desktop and 390x844; click-to-walk",
+  "limits": [
+    "side buildings and entrance art remain unfinished",
+    "not a universal pixel-density baseline",
+    "not released online"
+  ]
+}

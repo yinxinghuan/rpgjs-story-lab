@@ -9,11 +9,12 @@ import shopComposite from '../doc/oldstreet-shop-composite/correction/candidate.
 import debris from '../doc/oldstreet-ground-debris/cutout.png'
 import photoWall from '../doc/oldstreet-photo-wall/candidate.png'
 import yard from '../doc/oldstreet-yard-floor/candidate.png'
+import streetGround from '../doc/oldstreet-street-atmosphere/ground/candidate.png'
 import wood from '../doc/oldstreet-pixel-study/floor-narrow/candidate-actual.png'
 import laundry from '../doc/oldstreet-laundry-candidate/correction/candidate.png'
 import shopWall from '../doc/oldstreet-pixel-study/workshop-wall/candidate.png'
 import shedWall from '../doc/oldstreet-shed-wall/candidate.png'
-export const oldStreetEnvironmentArt={wood,laundry,shopWall,shedWall,shedFloor,yard,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
+export const oldStreetEnvironmentArt={wood,laundry,shopWall,shedWall,shedFloor,yard,streetGround,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
 export type OldStreetEnvironmentArt=typeof oldStreetEnvironmentArt
 export function oldStreetEnvironmentDownloads(pixel:boolean,composite=false,room?:string){
  const needed=room?new Set(oldStreetEnvironmentKeys(room,pixel,composite)):null
