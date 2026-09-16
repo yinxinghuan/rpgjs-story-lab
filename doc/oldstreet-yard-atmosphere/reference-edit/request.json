@@ -1,0 +1,13 @@
+{
+  "requestId": "0c1d784a-aae3-43b7-9b54-b494723c6905",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 576,
+    "height": 960
+  },
+  "prompt": "Use this image as the exact pixel-art surface treatment, small paving stone scale, and overhead camera reference. Make a different old harbor-town shared courtyard FLOOR ONLY ground plate, portrait 576x960. Preserve the very small irregular stone setts and finely textured crisp pixel clusters from the reference; do NOT enlarge them into bricks or squares. The entire room is 9 meters wide, each stone is only 15 centimeters wide: about 55-65 SMALL stones across the image. Half-abandoned but once inhabited, warm grey and muted sage paving. Add restrained moss, irregular worn terracotta repairs in a few edge spots, tiny leaf litter, faint damp stains and gentle daylight shadows from unseen buildings. Quiet open center. Entire frame flat ground only, straight-down orthographic, constant scale, no perspective. Absolutely no trees, bushes, tall grass, visible buildings, walls, doors, stairs, pipes, furniture, crates, people, raised objects, big papers, foam or bubbles. All four edges remain flat paving. Rich detailed miniature pixel game art; keep values subdued enough for dark-outlined characters and independent wooden crates to read clearly.",
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789582659951850.png"
+  ]
+}

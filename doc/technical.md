@@ -2189,3 +2189,12 @@ streetEdges 通过现有环境下载/解码流程仅在街口加载。平台512�
 old-street-crate-layout.ts共享64×24占地、768×512图集、384/448脚点与64/614等比缩放。yard箱体贴北边界、cellar背面也有关闭态碰撞；oldStreetProjectedProps提供清路前后位置，RPG-JS事件仍随权威facts移动。oldstreet-thresholds-4保留旧版本读取时的原箱体规则，服务upgrade迁到新安全点，不改剧情/人物/库存。34项空间与Session检查通过；最后贴墙位置调整后相关9项复验通过。真实UI借推车、搬箱、台阶露出、进入地下室已验证，见doc/oldstreet-crates/threshold-redesign/review.md。
 
 同一正常UI旅程实际通过清开的台阶进入地下储物室并返回院子，随后主动刷新，界面仍显示“墙边的旧箱”、开放地下入口和随身推车。已完成cloud构建、9场景资源校验、Worker启动检查及凭据扫描。本次不更新正式主站/Pages。
+
+
+## 合住院氛围地面（2026-09-17）
+
+`old-street-environment-art.ts` 的yard键改指平台edit候选 `doc/oldstreet-yard-atmosphere/reference-edit/candidate.png`，`old-street-floor.tsx` 使用完整576×960图等比映射288×480，替代原重复pattern。下载依赖仍为既有yard键，原图不被改写；门、箱子、碰撞、地图版本与存档均未修改。前两张未准入候选和原因保留，不能误当成运行素材。
+
+CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地面比例、箱组紧贴台阶；点地移动带动镜头；院落→街口→院落实际背景切换；刷新恢复同一院落未清路状态。外部访客栏仍加载，用其Close检查无覆盖主构图。没有重复全部剧情路线。
+
+验证：环境依赖两项测试通过；npm run build（cloud构建、原作资源检查、Worker启动检查）通过，日志 `/tmp/rpg-yard-atmosphere-build.log`。实际dist/assets/candidate-2Tfv8UFx.png与源图SHA256均为2dd7ffa17140584d7fce7f8a8f1af9018b86de5126a859be1e246b28b9f77988，资源打包非仅源码存在；凭据扫描通过。仅本地开发增量，未发布正式主站或Pages，不代表完整单人/平台验收完成。

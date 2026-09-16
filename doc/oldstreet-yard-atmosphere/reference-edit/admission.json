@@ -1,0 +1,24 @@
+{
+  "assetId": "oldstreet-yard-ground-v2",
+  "status": "admitted-local",
+  "sourceTaskId": "mt_3da288c907caa0ee2f97b273d945ff15",
+  "sha256": "2dd7ffa17140584d7fce7f8a8f1af9018b86de5126a859be1e246b28b9f77988",
+  "sourceSize": [
+    576,
+    960
+  ],
+  "worldRect": {
+    "x": 48,
+    "y": 48,
+    "w": 288,
+    "h": 480
+  },
+  "crop": null,
+  "sourceModified": false,
+  "changingObjectsBaked": false,
+  "scope": "Static courtyard floor only; no collision, story or save changes",
+  "limitations": [
+    "Paving scale finer than rejected candidate but not a general character-scale baseline",
+    "Room boundaries still use existing entrance assets; not whole-game art completion"
+  ]
+}

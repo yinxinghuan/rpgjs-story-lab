@@ -1,6 +1,6 @@
 import {oldStreetShopWallRegions} from './old-street-shop-environment-layout'
 import {OldStreetPhotoEnvironment} from './old-street-photo-environment'
-import {oldStreetWoodTile,oldStreetStoneTile} from './old-street-floor-material'
+import {oldStreetWoodTile} from './old-street-floor-material'
 import {OldStreetShedEnvironment} from './old-street-shed-environment'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
@@ -43,8 +43,12 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     </svg>
   </g>
   if(room==='yard'&&pixelShop)return <g>
-    <defs><pattern id="os-yard-stone" x={floor.x} y={floor.y} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} patternUnits="userSpaceOnUse"><image href={art.yard} width={oldStreetStoneTile.width} height={oldStreetStoneTile.height} opacity={oldStreetStoneTile.opacity} style={{imageRendering:'pixelated'}}/></pattern></defs>
-    <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-yard-stone)" stroke="#81786c" strokeWidth="6"/>
+    <rect x={floor.x-3} y={floor.y-3} width={floor.w+6} height={floor.h+6} fill="#716c50"/>
+    {/* One reviewed ground plate, not a repeating tile. Its 3:5 ratio gives
+        equal x/y scale; all changing objects remain independent layers. */}
+    <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="0 0 576 960" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+      <image href={art.yard} width="576" height="960" style={{imageRendering:'pixelated'}}/>
+    </svg>
   </g>
   if(room==='darkroom')return <g>
     <rect x={floor.x-6} y={floor.y-8} width={floor.w+12} height={floor.h+16} fill="#555748"/>

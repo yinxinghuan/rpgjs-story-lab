@@ -1,0 +1,10 @@
+{
+  "requestId": "c8af6c85-d4eb-4c11-bc51-77473435da76",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 576,
+    "height": 960
+  },
+  "prompt": "Detailed hand-crafted PIXEL ART flat ground plate for a worn shared service courtyard in an old North American harbor town. Exactly 576x960 portrait. STRICT ORTHOGRAPHIC 90 DEGREE TOP DOWN: parallel rows, same scale everywhere, no perspective, no buildings, walls, roofs or horizon. Entire frame is flat walkable ground. It will cover 288x480 world units; person is 16 units wide. Small weathered gray-taupe stone setts about 14-22 source pixels wide with clearly formed pixel clusters and subtle fine texture. Avoid large coarse blocks, painterly smoothing and photorealistic noise. Rich but quiet environmental storytelling: irregular faded terracotta repair bricks mixed into the old stone in a few peripheral patches, darker damp stones and thin moss in edge joints, a narrow flush drainage grate against the far right margin with a little reflected cool light, modest shallow rain puddles near the lower right edge, dry amber leaves and tiny torn paper near corners. Gentle old laundry-courtyard character, pale worn soap-water traces near the upper left edge, soft leafy dappled shadows across the upper-right quarter, warm late-afternoon light from left and cooler teal-gray shade at right. Many subtly different stones, not a single uniformly repeated tile. Center broadly clear and lighter with believable foot-worn surfaces, no central stripe. Keep upper edge between x110 and x270 clear for independent runtime staircase. Keep left edge middle and bottom-center clear for separate exits. NO doors, stairs, crates, furniture, people, buckets, raised plants, solid obstacles, labels, writing, symbols or UI. No black voids, no raised borders, no ornamental design. Restrained inhabited but half-abandoned mood. Ground texture, flat litter and light only. Crisp rich pixel art, never blur."
+}
