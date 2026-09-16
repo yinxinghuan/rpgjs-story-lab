@@ -1,0 +1,13 @@
+{
+  "requestId": "581d6082-d870-4d4e-996e-afea6c7d45fc",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "referenceUrls": [
+    "https://raw.githubusercontent.com/yinxinghuan/rpgjs-story-lab/f36dc3bf82f75247e54650150941cc91b7b20668/doc/oldstreet-lan-single-pose/reference.png"
+  ],
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Costume-edit the ONE left-facing walking pixel-art sprite in the reference. This is a pose-preserving reskin: retain its exact elevated orthographic camera, top of head and shoulders, compact proportions, head tilt, torso angle, elbow and hand positions, leg separation, knee angles, shoe locations and near/far limb overlaps. Do not change its stepping pose or rotate it. Replace the identity with an adult laundry woman: short black bob hair, moss-green rolled-sleeve work shirt, plain pale cream waist apron ending above the knees, brown trousers and dark brown shoes. Remove the shoulder bag and hood; otherwise preserve the walking silhouette and limb positions. Keep crisp pixel clusters and dark brown outline. ONE isolated full-body sprite about 230 pixels tall centered on a 512x512 canvas. No text, extra poses or objects. Entire background flat pure magenta #FF00FF, no shadow, checkerboard or gradient."
+}

@@ -1,0 +1,12 @@
+{
+  "status": "rejected",
+  "method": "one exact approved hero walking frame instead of selecting from a full sheet",
+  "observations": [
+    "Left-facing walking pose is present",
+    "Elevated B camera is lost: face and shoulders read as low side view",
+    "Torso and legs are elongated relative to reference; requested compact scale not retained"
+  ],
+  "productionAdmitted": false,
+  "walkingAdmitted": false,
+  "decision": "Do not replace game art or repeat this reskin prompt; test temporally conditioned animation as a different production method"
+}
