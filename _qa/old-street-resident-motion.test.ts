@@ -15,6 +15,34 @@ test('resident gait follows displacement across frame rates and stays within the
  }
  assert.ok(Math.max(...results)-Math.min(...results)<2)
 })
+test('first short walk shows both feet, with no held pose longer than a quarter second',()=>{
+ for(const fps of [30,60,120]){
+  const m=new OldStreetResidentMotion(home),sequence:string[]=[]
+  let moving=false,held=0,longest=0,previous='stand'
+  for(let i=0;i<fps*5;i++){
+   m.update(1/fps,far,false,false,()=>true)
+   if(m.pose==='stand'){if(moving)break;continue}
+   moving=true
+   if(m.pose!==previous){sequence.push(m.pose);held=0}
+   held+=1/fps;longest=Math.max(longest,held);previous=m.pose
+  }
+  assert.deepEqual(sequence.slice(0,4),['stride-0','stride-1','stride-2','stride-1'])
+  assert.ok(longest<=.25,`${fps}fps held a pose for ${longest}s`)
+  assert.ok(Math.abs(m.position.x-home.x-24)<.01)
+ }
+})
+test('attention and pause reset a planted gait; resuming does not jump to the old phase',()=>{
+ for(const reason of ['attention','pause'] as const){
+  const m=new OldStreetResidentMotion(home)
+  for(let i=0;i<300&&m.pose!=='stride-2';i++)m.update(1/60,far,false,false,()=>true)
+  assert.equal(m.pose,'stride-2')
+  const stopped={...m.position}
+  m.update(1/60,reason==='attention'?{x:stopped.x,y:stopped.y+50}:far,reason==='pause',false,()=>true)
+  assert.equal(m.pose,'stand');assert.deepEqual(m.position,stopped)
+  m.update(1/60,far,false,false,()=>true)
+  assert.equal(m.pose,'stride-0')
+ }
+})
 test('approach, selection, pause and blocked movement all stop actual displacement',()=>{
  const m=new OldStreetResidentMotion(home)
  for(let i=0;i<220;i++)m.update(1/60,far,false,false,()=>true)
