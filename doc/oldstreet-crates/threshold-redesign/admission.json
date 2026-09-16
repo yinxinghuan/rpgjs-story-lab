@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "status": "admitted-local",
+  "scope": "movable-step-barrier",
+  "source": "AlterU public media text generation",
+  "taskId": "mt_6cda6e4152d231f3408d0204357334fd",
+  "sourceSha256": "fcf795eaa14354d1b20d7e4f5fb4b53cc0d5b167af58f2d0974e165794ad2673",
+  "preparedSha256": "d1a00193c6b6ae918b6c5a3eb43548137c366b71d96ad0374baedd67236a291f",
+  "rawRetained": true,
+  "visibleSourceWidth": 614,
+  "scale": 0.10423452768729642,
+  "footprint": {
+    "width": 64,
+    "depth": 24
+  },
+  "checks": [
+    "390x844 closed/open visual inspection",
+    "real UI borrowed trolley then moved crate barrier",
+    "cleared steps traversed into cellar",
+    "legacy closed/open collision migration synthetic test"
+  ],
+  "limits": [
+    "not formally deployed",
+    "not a universal prop or character perspective baseline",
+    "minor top-face taper accepted as candidate detail"
+  ]
+}

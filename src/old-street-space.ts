@@ -1,4 +1,5 @@
 import {oldStreetFurniture} from './old-street-furniture'
+import {oldStreetCrateFootprint} from './old-street-crate-layout'
 import {oldStreetCharacterBindings,usesCurrentLaundryCast,usesCurrentPhotographerCast} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
 import {oldStreetCartridge, oldStreetConnections, oldStreetTravelId, oldStreetActionId, type OldStreetRoom} from './old-street-cartridge'
@@ -47,8 +48,9 @@ export function oldStreetDoors() {
     const placements = doorPlacement[edge.id]
     if (!placements) throw Error('OLD_STREET_DOOR_UNPLACED:' + edge.id)
     const a = endpoint(edge.a, placements[0]), b = endpoint(edge.b, placements[1])
-    // Stand on the landing above the crates; a larger footprint must not overlap them.
-    if(edge.id==='cellar-steps')a.approach.y=a.position.y+16
+    // The crate barrier touches this threshold. Approach from the courtyard,
+    // never from the former gap between the pile and the stair opening.
+    if(edge.id==='cellar-steps')b.approach.y=b.position.y-52
     return [[a, b], [b, a]].map(([from, to]) => ({
       id: `door:${edge.id}:${from.room}`, actionId: oldStreetTravelId(edge.id, from.room),
       kind: edge.kind, gate: edge.gate, ...from, destination: to,
@@ -60,6 +62,8 @@ const prop = (id: string, room: OldStreetRoom, x: number, y: number, actions: st
   const position = pointIn(room, x, y)
   return {id, room, position, approach: {x: position.x, y: position.y + (['watchmaker','laundry-owner','photographer','drawer','letter-compartment'].includes(id)?44:28)}, actions: actions.map(oldStreetActionId), body: {x: position.x - 12, y: position.y - 12, w: 32, h: 28}}
 }
+const crateDoor=oldStreetDoors().find(d=>d.room==='yard'&&d.gate==='crates-cleared')!
+const crateBody={x:crateDoor.position.x-oldStreetCrateFootprint.width/2,y:crateDoor.position.y,w:oldStreetCrateFootprint.width,h:oldStreetCrateFootprint.depth}
 export const oldStreetProps = [
   prop('drawer', 'shop', .28, .32, ['move-box', 'take-lens', 'inspect-clock']),
   prop('letter-compartment', 'shop', .7, .32, ['unlock-letter', 'take-letter']),
@@ -67,7 +71,7 @@ export const oldStreetProps = [
   prop('clock-display', 'laundry', .65, .13, []),
   prop('trolley', 'laundry', .3, .3, ['borrow-trolley', 'return-trolley']),
   prop('laundry-owner', 'laundry', .66, .65, ['greet-laundry', 'return-clock', 'consent-clock']),
-  prop('crates', 'yard', .3, .13, ['clear-crates']),
+  {...prop('crates', 'yard', .3, .13, ['clear-crates']),body:crateBody,position:{x:crateDoor.position.x,y:crateBody.y+crateBody.h},approach:{x:crateDoor.position.x-8,y:crateBody.y+crateBody.h+8}},
   prop('watchmaker', 'shed', .65, .45, ['greet-watchmaker', 'borrow-key', 'return-key', 'take-clock']),
   prop('photo-folder', 'cellar', .3, .4, ['take-photos']),
   prop('viewing-table', 'photo', .3, .3, ['match-photos']),
@@ -76,31 +80,38 @@ export const oldStreetProps = [
   prop('street-exit', 'street', .5, .88, ['leave']),
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
-export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {}) {
+export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates=false) {
   return oldStreetProps.map(p => {
     const resident=residents[p.id]
     if(resident&&['watchmaker','laundry-owner','photographer'].includes(p.id)){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
+    if(p.id==='crates'&&legacyCrates){
+      const old=prop('crates','yard',.3,.13,['clear-crates'])
+      if(save.facts['crates-cleared']!==true)return old
+      const body={...old.body,x:oldStreetFloors.yard.x+32,y:oldStreetFloors.yard.y+220}
+      return {...old,body,position:{x:body.x+12,y:body.y+12},approach:{x:body.x+12,y:body.y+40}}
+    }
     if (p.id !== 'crates' || save.facts['crates-cleared'] !== true) return p
-    const body = {...p.body, x: oldStreetFloors.yard.x + 32, y: oldStreetFloors.yard.y + 220}
-    const position = {x: body.x + 12, y: body.y + 12}
-    return {...p, body, position, approach: {x: position.x, y: position.y + 28}}
+    const body = {...p.body, x: oldStreetFloors.yard.x + 4, y: oldStreetFloors.yard.y + 220}
+    const position = {x: body.x + body.w/2, y: body.y + body.h}
+    return {...p, body, position, approach: {x: position.x-8, y: position.y+8}}
   })
 }
-export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer'): Rect[] {
+export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates=false): Rect[] {
   // Resident choreography is local. The authority validates permanent geometry
   // and the bounded authored interaction area, never a stale NPC home hitbox.
   // The live client supplies the actual resident positions for solid collision.
-  return [...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
+  const closedStairs=room==='cellar'&&!legacyCrates&&!save.facts['crates-cleared']?oldStreetDoors().filter(d=>d.room===room&&d.gate==='crates-cleared').map(d=>({x:d.position.x-oldStreetCrateFootprint.width/2,y:d.position.y-oldStreetCrateFootprint.depth,w:oldStreetCrateFootprint.width,h:oldStreetCrateFootprint.depth})):[]
+  return [...closedStairs,...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents,legacyCrates).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
     && (p.id!=='laundry-owner'||!usesCurrentLaundryCast(save)||!!residents?.['laundry-owner'])
     && (p.id!=='photographer'||!usesCurrentPhotographerCast(save)||!!residents?.photographer)
     && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))]
 }
-export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer') {
+export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates=false) {
   const r = oldStreetFloors[room as OldStreetRoom]
   if (!r || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return false
   const feet = {...p, ...body}
   return p.x >= r.x && p.y >= r.y && p.x + feet.w <= r.x + r.w && p.y + feet.h <= r.y + r.h
-    && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents,includeFurniture,ignoreResident).some(body => intersects(feet, body))
+    && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents,includeFurniture,ignoreResident,legacyCrates).some(body => intersects(feet, body))
 }
 export function oldStreetSafePosition(room:string,p:SpatialPoint,save:Pick<StorySave,'facts'>):SpatialPoint {
   if(oldStreetWalkable(room,p,save))return {...p}
@@ -116,7 +127,7 @@ export const oldStreetPath = (room: string, start: SpatialPoint, end: SpatialPoi
 export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}}): SpatialBindingDefinition {
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
-  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-furniture-3', interactionDistance: 54,
+  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-thresholds-4', interactionDistance: 54,
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn: pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),

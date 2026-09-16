@@ -1,4 +1,5 @@
 import {oldStreetDoors} from './old-street-space'
+import {oldStreetCrateSprite as crateArt,oldStreetCrateScale as crateScale} from './old-street-crate-layout'
 import {OldStreetCurtain} from './old-street-curtain'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
@@ -55,7 +56,7 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
     </g>}
    </g>}
    {closed&&d.gate==='crates-cleared'&&room==='cellar'&&<g transform={`rotate(${-angle})`}>
-    {cratesImage?<image href={cratesImage} x="-27" y="-42" width="54" height="54" style={{imageRendering:'pixelated'}}/>:<g fill="#80613e" stroke="#453b2b" strokeWidth="2"><rect x="-23" y="-22" width="27" height="25"/><rect x="3" y="-15" width="23" height="20"/><path d="M-20-17H1M-20-10H1M6-10H23"/></g>}
+    {cratesImage?<image href={cratesImage} x={-crateArt.foot.x*crateScale} y={-crateArt.foot.y*crateScale} width={crateArt.width*crateScale} height={crateArt.height*crateScale} style={{imageRendering:'pixelated'}}/>:<g fill="#80613e" stroke="#453b2b" strokeWidth="2"><rect x="-32" y="-24" width="64" height="24"/><path d="M-30-18H30M-30-10H30M-10-24V0M12-24V0"/></g>}
    </g>}
   </g>
  })}</g>

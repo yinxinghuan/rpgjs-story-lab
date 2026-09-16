@@ -63,10 +63,11 @@ test('closed stairs reject travel and crate relocation changes collision without
   const input = {scene: 'yard', position: door.approach, target: door.id, actionId: door.actionId}
   assert.throws(() => prepareDoorTravel(save, cartridge, bindOldStreet('zh', save), input), /DOOR_CLOSED/)
   const crates = oldStreetProps.find(p => p.id === 'crates')!
-  assert.equal(oldStreetWalkable('yard', crates.position, save), false)
+  const blockedPoint={x:crates.body.x+8,y:crates.body.y+4}
+  assert.equal(oldStreetWalkable('yard', blockedPoint, save), false)
   save.inventory.push({id: 'trolley', label: 'Trolley', count: 1})
   applyDomainResolution(save, cartridge, resolveDomainAction(save, cartridge, oldStreetActionId('clear-crates')))
-  assert.equal(oldStreetWalkable('yard', crates.position, save), true)
+  assert.equal(oldStreetWalkable('yard', blockedPoint, save), true)
   assert.equal(save.inventory.find(i => i.id === 'trolley')?.count, 1)
   assert.equal(prepareDoorTravel(save, cartridge, bindOldStreet('zh', save), input).scene, 'cellar')
 })
