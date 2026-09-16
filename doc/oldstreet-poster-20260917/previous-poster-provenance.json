@@ -1,0 +1,19 @@
+{
+  "generator": "Aigram transit gen-image",
+  "endpoint": "https://chat.aiwaves.tech/aigram/api/gen-image",
+  "origin": "https://aigram.app",
+  "prompt": "Create a finished illustrated key-art poster for an atmospheric pixel-art narrative adventure. Square 1024x1024. English text only, absolutely no Chinese characters. Exact large title CARRIAGE 07 in the upper 25 percent safe area, smaller subtitle A LIGHT LEFT ON beneath it. One single young traveler with dark brown hair, mustard yellow hooded jacket, teal trousers and brown satchel stands in the narrow central aisle of a vintage railway carriage, seen from a balanced elevated orthographic RPG perspective. The carriage is a long narrow strip, correctly scaled compact paired seats flank the aisle. Cold blue-green rainy landscape is visible outside on both sides. A single warm amber lamp and an open brass electrical cabinet promise rescue; the traveler holds a small ceramic fuse. Strong narrative focus, handcrafted detailed pixel-art textures, crisp silhouette, dark navy and moss green against warm amber, tasteful cinematic lighting. Design a cohesive illustration, not a screenshot, interface, sprite sheet, collage, diagram or layout study. No UI icons, no inventory, no buttons, no numbers except 07 in title. Keep main person and key lamp in central 60 percent; bottom 20 percent is quiet low-contrast rain and shadow for list overlays. Readable and intriguing at 160x160. No other text, no logos or watermark.",
+  "resultUrl": "https://cdn.aiwaves.tech/prodsv/telegram/avatar/0/1788980707097522.png",
+  "file": "public/poster.png",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1079a0bc353b35786a062df0b89f928c15f3799a6d5dc5ce147c0f02c2ef25fc",
+  "review": {
+    "original1024": "pass",
+    "thumbnail160": "pass",
+    "title": "English only, upper safe area",
+    "composition": "illustrated marketing key art; does not replace approved orthographic gameplay assets"
+  }
+}

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {oldStreetTurn,oldStreetRecoveredTurn} from '../src/old-street-turn'
 import {oldStreetCartridge} from '../src/old-street-cartridge'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
-import {recordOldStreetInteraction} from '../src/old-street-characters'
+import {recordOldStreetInteraction,photographerCastVersionFact} from '../src/old-street-characters'
 import type {OldStreetHead} from '../src/old-street-head'
 test('lost-response recovery shows only the confirmed pending interaction, not subsequent turns',()=>{
  const after:OldStreetHead={id:'recovered-journey',version:3,mapVersion:'oldstreet-furniture-3',sceneId:'shop',position:{x:100,y:100},save:createInitialSave(oldStreetCartridge('zh'))}
@@ -17,12 +17,15 @@ test('lost-response recovery shows only the confirmed pending interaction, not s
  assert.deepEqual(oldStreetRecoveredTurn(pending,{...after,version:4},true),[])
  assert.deepEqual(oldStreetRecoveredTurn(pending,{...after,sceneId:'yard'},true),[])
 })
-test('turn preserves introduction and named speech without repeating history or later recovery',()=>{
- const before:OldStreetHead={id:'synthetic',version:2,mapVersion:'oldstreet-blockout-2',sceneId:'photo',position:{x:100,y:100},save:createInitialSave(oldStreetCartridge('zh'))}
+for(const locale of ['zh','en'] as const)for(const legacy of [false,true])test(`turn preserves journey-specific introduction and named speech without repeating history (${locale}, legacy=${legacy})`,()=>{
+ const before:OldStreetHead={id:'synthetic',version:2,mapVersion:'oldstreet-blockout-2',sceneId:'photo',position:{x:100,y:100},save:createInitialSave(oldStreetCartridge(locale))}
+ if(legacy)delete before.save.facts[photographerCastVersionFact]
+ const name=locale==='zh'?(legacy?'许青':'诺拉'):(legacy?'Xu Qing':'Nora')
+ const speech=locale==='zh'?'楼梯通向屋顶。':'The stairs lead to the roof.'
  const after=structuredClone(before);after.version++
- recordOldStreetInteraction(after.save,'photographer','oldstreet:greet-photographer','楼梯通向屋顶。','turn-3')
+ recordOldStreetInteraction(after.save,'photographer','oldstreet:greet-photographer',speech,'turn-3')
  const result=oldStreetTurn(before,after,true)
- assert.equal(result.length,2);assert.equal(result[0].kind,'narration');assert.equal(result[1].speaker,'许青');assert.equal(result[1].text,'楼梯通向屋顶。')
+ assert.equal(result.length,2);assert.equal(result[0].kind,'narration');assert.ok(result[0].text.includes(name));assert.equal(result[1].speaker,name);assert.equal(result[1].text,speech)
  assert.deepEqual(oldStreetTurn(before,after,false),[])
  assert.deepEqual(oldStreetTurn(before,{...after,version:4},true),[])
  assert.deepEqual(oldStreetTurn(before,{...after,sceneId:'roof'},true),[])

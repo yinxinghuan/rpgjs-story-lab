@@ -1,19 +1,18 @@
 {
-  "generator": "Aigram transit gen-image",
-  "endpoint": "https://chat.aiwaves.tech/aigram/api/gen-image",
-  "origin": "https://aigram.app",
-  "prompt": "Create a finished illustrated key-art poster for an atmospheric pixel-art narrative adventure. Square 1024x1024. English text only, absolutely no Chinese characters. Exact large title CARRIAGE 07 in the upper 25 percent safe area, smaller subtitle A LIGHT LEFT ON beneath it. One single young traveler with dark brown hair, mustard yellow hooded jacket, teal trousers and brown satchel stands in the narrow central aisle of a vintage railway carriage, seen from a balanced elevated orthographic RPG perspective. The carriage is a long narrow strip, correctly scaled compact paired seats flank the aisle. Cold blue-green rainy landscape is visible outside on both sides. A single warm amber lamp and an open brass electrical cabinet promise rescue; the traveler holds a small ceramic fuse. Strong narrative focus, handcrafted detailed pixel-art textures, crisp silhouette, dark navy and moss green against warm amber, tasteful cinematic lighting. Design a cohesive illustration, not a screenshot, interface, sprite sheet, collage, diagram or layout study. No UI icons, no inventory, no buttons, no numbers except 07 in title. Keep main person and key lamp in central 60 percent; bottom 20 percent is quiet low-contrast rain and shadow for list overlays. Readable and intriguing at 160x160. No other text, no logos or watermark.",
-  "resultUrl": "https://cdn.aiwaves.tech/prodsv/telegram/avatar/0/1788980707097522.png",
+  "generator": "AlterU platform media service",
+  "endpoint": "https://game.aiwaves.tech/alteru-media/api",
+  "taskId": "mt_ded2c033fdf3e15c0ffdbdd47ea47b66",
+  "prompt": "Create a finished square 1024x1024 pixel-art game cover for a quiet exploration mystery in a weathered fictional American harbor town. Exact readable English title at the TOP: THE LAST LETTER. Smaller word beneath: PREVIEW. Title within top 25 percent, no other lettering. One young traveler with short dark brown hair, mustard yellow hooded jacket, teal trousers and brown satchel stands at the center holding a cream sealed envelope, exploring a narrow old cobbled street. Balanced elevated orthographic RPG view, crisp hand-placed pixel clusters, beautiful detailed lived-in textures, no perspective vanishing point. A warm watch repair shop window and a dim photography studio flank the street; a connected little courtyard is hinted at behind an open gateway. Moss in paving cracks, scattered dry leaves, patched old brick, faded green wood, cool dusk shadows and warm amber pools of light. Cozy yet abandoned atmosphere, curious and intimate, not horror. Strong central silhouette and clear envelope; no crowds, no train, no east Asian signs or architecture. A cohesive illustrated scene, not a game screenshot, UI, collage, mockup, sprite sheet or diagram. No UI controls, no inventory icons, no watermark. Bottom 20 percent reserved as quiet darker cobbles with no key information. Attractive and legible when reduced to a small 160px store thumbnail.",
   "file": "public/poster.png",
   "dimensions": [
     1024,
     1024
   ],
-  "sha256": "1079a0bc353b35786a062df0b89f928c15f3799a6d5dc5ce147c0f02c2ef25fc",
+  "sha256": "ebf6f6e160d9ba8b4abef707ed0cc464c5e1cfb955abe63ba7d7661b1f882e5e",
   "review": {
     "original1024": "pass",
     "thumbnail160": "pass",
-    "title": "English only, upper safe area",
-    "composition": "illustrated marketing key art; does not replace approved orthographic gameplay assets"
+    "title": "English title and preview label in upper safe area",
+    "composition": "Marketing illustration only; front/elevated perspective is not an approved orthographic gameplay reference. Face and letter remain above bottom overlay area."
   }
 }
