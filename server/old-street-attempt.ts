@@ -7,9 +7,17 @@ import {originalActionIntentIssues} from '../src/original-action-intent'
 import {LabError} from '../src/journey-runtime'
 export function oldStreetAttemptContext(h:OldStreetHead,target:string,actions:Array<{id:string;label:string}>){
  const person=oldStreetPerson(target),known=person&&h.save.characters.some(c=>c.id===person.id)
+ const knowledge=known?oldStreetDialogueContext(h,target).knowledge:oldStreetSceneKnowledge(h.save,h.sceneId)
+ if(h.sceneId==='darkroom'&&target==='developing-bench'){
+  const choice=h.save.facts['darkroom-photo-choice'],matched=!!h.save.facts['darkroom-photo-matched'],ready=actions.some(a=>a.id==='oldstreet:match-darkroom-photo')
+  const text=h.save.locale==='zh'
+   ?choice==='keep'?'拼好的旧街照片已放进行囊，显影台上不再留有这张照片。':matched?'拼好的旧街照片平放在显影台上。':ready?'显影台上的旧街照片还需要手动拼合。':'旧街照片尚未准备好，现在可以先观察显影台。'
+   :choice==='keep'?'The completed street photograph is in your bag, no longer on the bench.':matched?'The completed street photograph lies on the developing bench.':ready?'The street photograph on the bench still needs to be assembled by hand.':'The street photograph is not ready yet; you can examine the developing bench.'
+  knowledge.push({id:'visible:developing-bench',text})
+ }
  return {locale:h.save.locale,scene:h.sceneId,target,actions,
   inventory:h.save.inventory.filter(i=>i.count>0).map(i=>({name:i.label,count:i.count})),
-  knowledge:known?oldStreetDialogueContext(h,target).knowledge:oldStreetSceneKnowledge(h.save,h.sceneId),
+  knowledge,
   recentAttempts:h.save.blocks.filter(b=>b.data?.oldStreetAttemptTarget===target).slice(-4).map(b=>({input:b.data?.input,response:b.text})),
   introducedPerson:known?{name:h.save.characters.find(c=>c.id===person.id)!.name}:null}
 }

@@ -43,3 +43,50 @@ test('hybrid resolver accepts transient attempts and persistent-change limitatio
  }
  n=0;const rejected=await createOldStreetAttemptGenerator(async()=>++n===1?{kind:'attempt',outcome:'observed',text:'你已拿到信。',discoveryIds:[]}:{valid:false})('查看小格',context);assert.equal(rejected.kind,'attempt');if(rejected.kind==='attempt')assert.ok(!rejected.text.includes('拿到信'))
 })
+
+test('expanded darkroom uses hybrid attempts without bypassing the photo puzzle or losing item continuity',async()=>{
+ const {OldStreetExpansionJobs}=await import('../server/old-street-expansion-jobs')
+ const {compileExpansionPlan}=await import('../src/old-street-expansion-plan')
+ const raw=new DatabaseSync(':memory:')
+ const db:AuthorityStorage={all:(q,...b)=>raw.prepare(q).all(...b) as any,run:(q,...b)=>{raw.prepare(q).run(...b)},transaction:work=>{raw.exec('BEGIN');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
+ let jobs:InstanceType<typeof OldStreetExpansionJobs>,photoReady=false,calls=0
+ const attempt:import('../server/old-street-attempt').OldStreetAttemptGenerator=async(input,context)=>{
+  calls++
+  if(input==='请帮我把这些画面接成一张')return {kind:'action',actionId:'oldstreet:match-darkroom-photo'}
+  if(input==='我把拼好的这张收进包里')return {kind:'action',actionId:'oldstreet:keep-darkroom-photo'}
+  const fact=context.knowledge.find(k=>k.id==='visible:developing-bench')!
+  assert.ok(fact)
+  return {kind:'attempt',outcome:'observed',text:fact.text,discoveryIds:[fact.id]}
+ }
+ const service=new OldStreetAuthority(db,()=>true,undefined,undefined,h=>jobs?.candidateFor(h),()=>photoReady?'a'.repeat(64):undefined,attempt)
+ try{
+  let h=service.create('test',randomUUID(),'zh')
+  const base=()=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:h.position})
+  const go=async(to:string)=>{const door=oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===to)!;h=(await service.action('test',h.id,{...base(),type:'action',action:door.actionId,target:door.id,position:door.approach})).head}
+  await go('photo')
+  h=(await service.action('test',h.id,{...base(),type:'expansion-request',template:'photo-darkroom-v1',text:'探索暗房'})).head
+  jobs=new OldStreetExpansionJobs(db,(_,id)=>service.get('test',id),async intent=>compileExpansionPlan(intent,{title:'暗房',discovery:'旧街影像。',photograph:'An old storefront with continuous window edges.'}))
+  jobs.enqueue('test',h.id);await jobs.run('test',h.id)
+  h=(await service.action('test',h.id,{...base(),type:'expansion-activate'})).head
+  await go('darkroom')
+  const free=(text:string)=>({...base(),type:'free-input',text,target:'developing-bench',position:{x:192,y:244}})
+  let result=await service.action('test',h.id,free('我凑近看看显影台现在有什么'));h=result.head
+  assert.match(result.text,/尚未准备/);assert.equal(h.save.facts['darkroom-photo-matched'],undefined)
+  photoReady=true
+  result=await service.action('test',h.id,free('我凑近看看显影台现在有什么'));h=result.head
+  assert.match(result.text,/手动拼合/)
+  const version=h.version
+  await assert.rejects(service.action('test',h.id,free('请帮我把这些画面接成一张')),/ALIGNMENT_REQUIRED/)
+  assert.equal(service.get('test',h.id).version,version)
+  h=(await service.action('test',h.id,{...free('请帮我把这些画面接成一张'),photoMatch:{version:'a'.repeat(64),piece:'piece-river',rotation:0}})).head
+  assert.equal(h.save.facts['darkroom-photo-matched'],'a'.repeat(64))
+  h=(await service.action('test',h.id,free('我把拼好的这张收进包里'))).head
+  assert.equal(h.save.inventory.find(i=>i.id==='darkroom-print')?.count,1)
+  const observation=free('再看看台上还剩什么')
+  result=await service.action('test',h.id,observation);h=result.head
+  assert.match(result.text,/不再留有/)
+  const beforeReplay=calls
+  assert.deepEqual(await service.action('test',h.id,observation),result);assert.equal(calls,beforeReplay)
+  assert.ok(oldStreetJournal(h.save).notes.some(n=>n.text.includes('不再留有')))
+ }finally{raw.close()}
+})

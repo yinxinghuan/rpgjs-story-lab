@@ -154,7 +154,7 @@ test('a model result cannot overwrite a newer action and model failure never mut
   release('oldstreet:borrow-trolley');await assert.rejects(pending,/VERSION_CONFLICT/)
   assert.deepEqual(fast.get('owner',h.id),newer.head)
   const failing=new OldStreetAuthority(db,admit,async()=>{throw Error('TEST_MODEL_OFFLINE')})
-  await assert.rejects(failing.action('owner',h.id,{...request(newer.head,'oldstreet:return-trolley'),type:'free-input',mode:'live',text:'I put the cart back where it belongs.'}),/TEST_MODEL_OFFLINE/)
+  await assert.rejects(failing.action('owner',h.id,{...request(newer.head,'oldstreet:return-trolley'),type:'free-input',mode:'live',text:'I put the cart back where it belongs.'}),/OLD_STREET_MODEL_UNAVAILABLE/)
   assert.deepEqual(fast.get('owner',h.id),newer.head)
  }finally{raw.close()}
 })

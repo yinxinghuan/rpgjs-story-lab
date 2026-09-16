@@ -59,11 +59,30 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      const resolveAttempt=async(actions:Array<{id:string;label:string}>)=>{
+        check({...h,position:pos})
+        if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
+        const context=oldStreetAttemptContext(h,body.target,actions),result=await oldStreetModelCall(()=>attempt!(body.text,context))
+        if(result.kind==='action')return {actionId:result.actionId}
+        else {
+          const save=structuredClone(h.save)
+          const discoveries=context.knowledge.filter(k=>result.discoveryIds.includes(k.id))
+          save.blocks.push({id:body.action_id+':attempt',kind:'narration',text:result.text,data:{oldStreetAttemptTarget:body.target,oldStreetAttemptScene:h.sceneId,input:body.text,outcome:result.outcome,oldStreetDiscoveries:JSON.stringify(discoveries)}})
+          const next={...h,version:h.version+1,position:pos,save};check(next,h)
+          return {response:{head:next,kind:'attempt',accepted:true,source:'model',text:result.text,outcome:result.outcome}}
+        }
+      }
       if(body.type==='free-input'&&h.sceneId==='darkroom'&&body.target==='developing-bench'){
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         if(!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
         const allowed=['oldstreet:observe-darkroom',...(!h.save.facts['darkroom-photo-matched']?(expansionPhoto?.(h)?['oldstreet:match-darkroom-photo']:[]):!h.save.facts['darkroom-photo-choice']?['oldstreet:keep-darkroom-photo','oldstreet:leave-darkroom-photo']:[])]
         let action=resolveOldStreetInput(body.text,h.save.locale,allowed)
+        if(!action&&attempt&&body.mode!=='local'){
+          const actions=allowed.map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
+          const resolved=await resolveAttempt(actions)
+          if(resolved.response)return resolved.response
+          action=resolved.actionId
+        }
         if(!action&&(body.mode==='live'||body.mode===undefined&&!!interpreter)){
           const actions=allowed.map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
           if(originalActionIntentIssues(body.text,actions.map(a=>a.label)).length)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
@@ -135,17 +154,9 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(!action&&attempt&&body.mode!=='local'){
           const cartridge=oldStreetCartridge(h.save.locale)
           const actions=entity.actions.filter(id=>id!=='oldstreet:leave'&&oldStreetActionNames[id.replace('oldstreet:','')]&&resolveDomainAction(h.save,cartridge,id)?.status==='accepted').map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
-          check({...h,position:pos})
-          if(!reserveNarration())throw new LabError('NARRATION_RATE_LIMIT',429)
-          const context=oldStreetAttemptContext(h,entity.id,actions),result=await oldStreetModelCall(()=>attempt(body.text,context))
-          if(result.kind==='action')action=result.actionId
-          else {
-            const save=structuredClone(h.save)
-            const discoveries=context.knowledge.filter(k=>result.discoveryIds.includes(k.id))
-            save.blocks.push({id:body.action_id+':attempt',kind:'narration',text:result.text,data:{oldStreetAttemptTarget:entity.id,oldStreetAttemptScene:h.sceneId,input:body.text,outcome:result.outcome,oldStreetDiscoveries:JSON.stringify(discoveries)}})
-            const next={...h,version:h.version+1,position:pos,save};check(next,h)
-            return {head:next,kind:'attempt',accepted:true,source:'model',text:result.text,outcome:result.outcome}
-          }
+          const resolved=await resolveAttempt(actions)
+          if(resolved.response)return resolved.response
+          action=resolved.actionId
         }
         if(!action&&(body.mode==='live'||body.mode===undefined&&!!interpreter)){
           if(!interpreter)throw new LabError('OLD_STREET_INTERPRETER_NOT_READY',409)
