@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-09-16T14:49:33.199Z",
+  "scope": "local synthetic SQLite authority + actual RPG-JS/React UI, no live model or personal data",
+  "beforeFix": {
+    "refusalGeneratorCalls": 2,
+    "recoveryButtonOverlappedDiagnostics": true
+  },
+  "afterFix": {
+    "attemptCalls": 2,
+    "actions": [
+      {
+        "id": "250e48b5-1e22-425a-a54a-4c37ef4d14b7",
+        "type": "action",
+        "action": "oldstreet:through:shop-front:street",
+        "version": 0
+      },
+      {
+        "id": "3fc4637d-0a2c-427a-8a6f-f351291d8a84",
+        "type": "free-input",
+        "input": "轻敲抽屉听听",
+        "version": 1
+      },
+      {
+        "id": "3fc4637d-0a2c-427a-8a6f-f351291d8a84",
+        "type": "free-input",
+        "input": "轻敲抽屉听听",
+        "version": 1
+      },
+      {
+        "id": "704b5dc5-0c73-451b-974b-7858c76bac2b",
+        "type": "free-input",
+        "input": "摸摸抽屉边缘",
+        "version": 2
+      },
+      {
+        "id": "f14c2a8d-9bbc-4a17-a3bb-db647e53b244",
+        "type": "action",
+        "action": "oldstreet:move-box",
+        "version": 2
+      }
+    ],
+    "droppedCommittedReply": true,
+    "droppedRefusalRead": true,
+    "version": 3,
+    "scene": "shop",
+    "inventory": [],
+    "eventCount": 3,
+    "committedReplyVisibleAfterReconnect": true,
+    "rejectedInputRefilled": "摸摸抽屉边缘",
+    "ordinaryActionContinued": "oldstreet:move-box",
+    "recoveryButtonInsideActionPanel": true,
+    "guestBannerClosedThroughVisibleCloseButton": true,
+    "viewport": {
+      "width": 319,
+      "height": 676
+    }
+  },
+  "limits": [
+    "Injected model outputs are not live semantic validation",
+    "Not iPhone or AlterU production acceptance",
+    "Development overview camera used to reach the target; normal camera unchanged"
+  ]
+}

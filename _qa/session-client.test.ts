@@ -29,6 +29,28 @@ test('cloud timeout diagnostics distinguish handshake, reads and writes without 
 })
 const open={target:'cabinet',position:approachPoints.cabinet,type:'action',action:'open-cabinet'},take={...open,action:'take-fuse'}
 function setup(){const storage=new MemoryStorage(),store=new BrowserJourney(randomUUID()),transport:Transport=(p,b)=>store.api(p,b);return {storage,store,transport,client:new SessionClient(storage,'test-',transport)}}
+test('a received refusal survives a failed head read without reposting the action after reload',async()=>{
+ const {storage,store,transport,client}=setup()
+ let writes=0,failRead=false
+ const flaky:Transport=async(path,body)=>{
+  if(path.endsWith('/actions')){writes++;failRead=true;throw Error('UNSUPPORTED_ACTION')}
+  if(failRead){failRead=false;throw Error('HEAD_READ_LOST')}
+  return transport(path,body)
+ }
+ try{
+  const h=await client.enroll('zh')
+  const c=new SessionClient(storage,'test-',flaky)
+  await assert.rejects(c.send(h,open),/HEAD_READ_LOST/)
+  assert.equal(c.hasPending(),true)
+  const reloaded=new SessionClient(storage,'test-',flaky),r=await reloaded.recover()
+  assert.equal(writes,1);assert.equal(r.accepted,false);assert.equal(r.rejectionCode,'UNSUPPORTED_ACTION')
+  assert.equal(r.head.version,h.version);assert.deepEqual(r.head.save.inventory,h.save.inventory)
+  assert.equal(reloaded.hasPending(),false)
+  // Choosing to try again is a new request, not silent recovery generation.
+  await assert.rejects(reloaded.send(r.head,open),/HEAD_READ_LOST/)
+  assert.equal(writes,2)
+ }finally{await store.close()}
+})
 test('unsupported journey retains the pending action across reload and recovers with the same ID',async()=>{
  const {storage,store,transport,client}=setup(),h=await client.enroll('zh');let compatible=false;const ids:string[]=[]
  const guarded:Transport=async(p,b:any)=>{if(p.endsWith('/actions')){ids.push(b.action_id);if(!compatible)throw Error('JOURNEY_VERSION_UNSUPPORTED')}return transport(p,b)}

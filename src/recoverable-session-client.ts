@@ -4,7 +4,7 @@ export interface RecoverableHead{id:string;version:number}
 export interface SessionClientPolicy<H extends RecoverableHead>{scene:(head:H)=>string;assertHead:(value:unknown)=>asserts value is H;terminalErrors?:readonly string[];preparedAction?:{assertPlan:(value:any,body:Record<string,any>,id:string)=>void;ready:(plan:any)=>Promise<void>};ending?:{request:(head:H)=>{snapshot_id:string;mapVersion:string};assertResult:(result:any,body:Record<string,any>)=>void;terminalErrors:readonly string[]}}
 export type Transport=(path:string,body?:unknown)=>Promise<any>
 export type SessionLock=<T>(name:string,work:()=>Promise<T>)=>Promise<T>
-export type Pending={id:string;operation?:'ending'|'prepared-action';body:Record<string,any>&{expected_version:number;sceneId:string}}
+export type Pending={id:string;operation?:'ending'|'prepared-action';confirmedRejection?:string;body:Record<string,any>&{expected_version:number;sceneId:string}}
 const pendingId=(p:Pending)=>p.operation==='ending'?'ending:'+p.body.ending_id:p.body.action_id
 const terminal=new Set(['VERSION_CONFLICT','OFF_SCENE_ENTITY','INVALID_ACTION','UNKNOWN_ENTITY','INVALID_POSITION','TOO_FAR','UNSUPPORTED_ACTION','INVALID_TEXT','INVALID_ACTION_TYPE','INVALID_NARRATION_MODE','ACTION_ID_CONFLICT'])
 const idPattern=/^[a-zA-Z0-9-]{16,80}$/
@@ -29,6 +29,11 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   return items
  }
  private put(p:Pending){const key=this.key('pending-v2:'+pendingId(p)),raw=JSON.stringify(p),old=this.storage.getItem(key);if(old&&old!==raw)throw Error('PENDING_ID_CONFLICT');this.storage.setItem(key,raw)}
+ private rememberRejection(p:Pending,code:string){
+  const key=this.key('pending-v2:'+pendingId(p))
+  if(this.storage.getItem(key)!==JSON.stringify(p))throw Error('PENDING_ID_CONFLICT')
+  p.confirmedRejection=code;this.storage.setItem(key,JSON.stringify(p))
+ }
  private ack(p:Pending){const key=this.key('pending-v2:'+pendingId(p));if(this.storage.getItem(key)===JSON.stringify(p))this.storage.removeItem(key)}
  hasPending(){const session=this.read('session','');return this.pending().some(p=>p.id===session)}
  async enroll(locale:Locale,restart=false):Promise<H>{return this.lock(this.key('bootstrap'),async()=>{
@@ -57,6 +62,14 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
   let result:any,rejected=false
   const ending=p.operation==='ending'
   if(ending&&!this.policy.ending)throw Error('ENDING_UNAVAILABLE')
+  const isTerminal=(code:string)=>terminal.has(code)||(ending?this.policy.ending?.terminalErrors:this.policy.terminalErrors)?.includes(code)
+  const refusal=(code:string)=>({kind:'recovered',text:null,accepted:false,rejectionCode:code})
+  if(p.confirmedRejection!==undefined){
+   if(typeof p.confirmedRejection!=='string'||!isTerminal(p.confirmedRejection))throw Error('INVALID_PENDING')
+   // The refusal reached this client. Only the following head read is pending;
+   // replaying the mutation could spend model quota again after a read failure.
+   rejected=true;result=refusal(p.confirmedRejection)
+  }else{
   try{
    if(p.operation==='prepared-action'){
     const policy=this.policy.preparedAction;if(!policy)throw Error('PREPARED_ACTION_UNAVAILABLE')
@@ -64,7 +77,8 @@ export class RecoverableSessionClient<H extends RecoverableHead>{
     if(plan.status!=='committed')await policy.ready(plan)
     result=await this.transport('/sessions/'+p.id+'/commit-action',p.body)
    }else result=await this.transport('/sessions/'+p.id+(ending?'/ending':'/actions'),p.body)
-  }catch(e){if(!(e instanceof Error)||!terminal.has(e.message)&&!(ending?this.policy.ending?.terminalErrors:this.policy.terminalErrors)?.includes(e.message))throw e;rejected=true;result={kind:'recovered',text:null,accepted:false,rejectionCode:e.message}}
+  }catch(e){if(!(e instanceof Error)||!isTerminal(e.message))throw e;this.rememberRejection(p,e.message);rejected=true;result=refusal(e.message)}
+  }
   if(ending&&!rejected)this.policy.ending!.assertResult(result,p.body)
   if(result.head)this.head(result.head,p.id)
   const latest=await this.get(p.id)
