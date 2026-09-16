@@ -22,13 +22,16 @@ export function recordOldStreetInteraction(save:StorySave,entity:string,action:s
   blocks.push({id:receipt+':introduction',kind:'narration',text:choose(p.intro,save.locale),data:{characterId:p.id}})
   save.characters.push({...definition,status:'known',origin:'cartridge',lastKnownLocation:save.location,updatedAtScene:save.scene})
  }
+ // The introduced identity belongs to this journey. Later cast revisions must
+ // not switch a familiar speaker back to a name from the current cartridge.
+ const speaker=p?save.characters.find(c=>c.id===p.id)?.name:undefined
  // These are authored action results, not model prose. Only quoted speech
  // belongs to the NPC; physical actions and consent summaries stay narration.
  const parts=p&&!action.startsWith('oldstreet:greet-')?text.split(/(“[^”]+”)/u):[text]
  for(const [index,part] of parts.entries()){
   const spoken=!!p&&(action.startsWith('oldstreet:greet-')||/^“[^”]+”$/u.test(part))
   const content=(spoken?part.replace(/^“|”$/gu,''):part.replace(/[：:]\s*$/u,'')).trim()
-  if(content)blocks.push({id:receipt+':result'+(index?':'+index:''),kind:spoken?'dialogue':'narration',...(spoken?{speaker:choose(p!.name,save.locale)}:{}),text:content})
+  if(content)blocks.push({id:receipt+':result'+(index?':'+index:''),kind:spoken?'dialogue':'narration',...(spoken?{speaker}:{}),text:content})
  }
  const relationship = ({'oldstreet:return-key':['zhou-watchmaker','kept-promise'],'oldstreet:return-clock':['lan-laundry','returned-family-clock'],'oldstreet:return-photos':['xu-photographer','returned-photographs']} as Record<string,[string,string]>)[action]
  if(relationship){
