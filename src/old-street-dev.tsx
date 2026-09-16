@@ -130,11 +130,10 @@ export default function OldStreetDev() {
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   const [feet, setFeet] = useState(head.position), [destination, setDestination] = useState<{x: number; y: number} | null>(null)
   const stage = useRef<HTMLDivElement>(null), world=useRef<HTMLDivElement>(null)
-  const [viewport,setViewport]=useState({width:390,height:844}),[actionHeight,setActionHeight]=useState(160)
+  const [viewport,setViewport]=useState({width:390,height:844})
   const overview=debug&&new URLSearchParams(location.search).get('camera')==='overview'
-  const camera=oldStreetCamera(viewport,feet,actionHeight,overview)
+  const camera=oldStreetCamera(viewport,feet,overview)
   useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
-  useEffect(()=>{const node=actionPanel.current;if(!node)return;const observer=new ResizeObserver(([entry])=>setActionHeight(entry.contentRect.height+24));observer.observe(node);return()=>observer.disconnect()},[])
   residentControls.current={paused:busy||!!error||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||leaving||!!head.save.facts.departed,selected:selected==='watchmaker'}
   const [diagnostic, setDiagnostic] = useState('')
   useEffect(() => {if(!debug)return;const timer = setInterval(() => setDiagnostic(JSON.stringify({sheets:engine.current?.getCurrentPlayer()?.graphicsSignals().map((g:any)=>({keys:Object.keys(g),width:g.width,height:g.height,textures:Object.keys(g.textures??{})})),players:Object.keys(engine.current?.sceneMap.players() ?? {}).length,motion:runtime.current?.motion?.(),render:runtime.current?.diagnostics?.()})), 2000); return () => clearInterval(timer)}, [])
@@ -347,7 +346,7 @@ export default function OldStreetDev() {
     setSelected(nearest.id)
     if(nearbyAction.primary.kind==='action')request(nearbyAction.primary.id)
     else if(nearbyAction.primary.kind==='inspect')setNotice(nearbyAction.reason)
-    else {setNotice('');requestAnimationFrame(()=>actionPanel.current?.querySelector<HTMLButtonElement>('button')?.focus())}
+    else {setNotice('');requestAnimationFrame(()=>actionPanel.current?.querySelector<HTMLButtonElement>('button')?.focus({preventScroll:true}))}
   }
   const label = (id: string) => {
     const door = oldStreetDoors().find(d => d.actionId === id)
