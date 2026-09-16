@@ -1,0 +1,138 @@
+{
+  "sourceCommit": "7e29e895d242db7e8034bd41d24311d39c297448",
+  "marker": "oldstreet-preview-neighborhood-recovery-20260917",
+  "checkedAt": "2026-09-16T20:00:05.449Z",
+  "results": [
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "index.html",
+      "status": 200,
+      "bytes": 1696,
+      "sha256": "c88976b3ec8eb20f01009ec8ad6aca27d934776064f19504e97816534e9020e5"
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "assets/index-pssyFWGC.js",
+      "status": 200,
+      "bytes": 74886,
+      "sha256": "d4494d65274e274a0b459ce958867b6ee86a523c210f00c410ed5890afb15a14"
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "poster.png",
+      "status": 200,
+      "bytes": 1501900,
+      "sha256": "ebf6f6e160d9ba8b4abef707ed0cc464c5e1cfb955abe63ba7d7661b1f882e5e"
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "THIRD_PARTY_NOTICES.txt",
+      "status": 200,
+      "bytes": 107869,
+      "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "assets/candidate-2Tfv8UFx.png",
+      "status": 200,
+      "bytes": 1041143,
+      "sha256": "2dd7ffa17140584d7fce7f8a8f1af9018b86de5126a859be1e246b28b9f77988"
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "assets/actor-atlas-BweSacP8.png",
+      "status": 200,
+      "bytes": 536323,
+      "sha256": "ef62d57b07de415effc024a0d2c17d166920c4743eca57396a603e0edad221cf"
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "asset": "assets/actor-atlas-CAE0cqpH.png",
+      "status": 200,
+      "bytes": 529701,
+      "sha256": "669e0256ffbdf4cbfdcb2c51ef02a17e9e1f2c911c03e494beb0cc239a7d0475"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "index.html",
+      "status": 200,
+      "bytes": 1696,
+      "sha256": "c88976b3ec8eb20f01009ec8ad6aca27d934776064f19504e97816534e9020e5"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/index-pssyFWGC.js",
+      "status": 200,
+      "bytes": 74886,
+      "sha256": "d4494d65274e274a0b459ce958867b6ee86a523c210f00c410ed5890afb15a14"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "poster.png",
+      "status": 200,
+      "bytes": 1501900,
+      "sha256": "ebf6f6e160d9ba8b4abef707ed0cc464c5e1cfb955abe63ba7d7661b1f882e5e"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "THIRD_PARTY_NOTICES.txt",
+      "status": 200,
+      "bytes": 107869,
+      "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/candidate-2Tfv8UFx.png",
+      "status": 200,
+      "bytes": 1041143,
+      "sha256": "2dd7ffa17140584d7fce7f8a8f1af9018b86de5126a859be1e246b28b9f77988"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/actor-atlas-BweSacP8.png",
+      "status": 200,
+      "bytes": 536323,
+      "sha256": "ef62d57b07de415effc024a0d2c17d166920c4743eca57396a603e0edad221cf"
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/actor-atlas-CAE0cqpH.png",
+      "status": 200,
+      "bytes": 529701,
+      "sha256": "669e0256ffbdf4cbfdcb2c51ef02a17e9e1f2c911c03e494beb0cc239a7d0475"
+    }
+  ],
+  "pages": {
+    "runId": 35143037890,
+    "conclusion": "success",
+    "commit": "7e29e895d242db7e8034bd41d24311d39c297448"
+  },
+  "main": {
+    "preflight": "pass",
+    "storage": "durable-object-sqlite",
+    "identityMode": "anonymous-capability-v1"
+  },
+  "catalog": {
+    "commit": "9858cfb",
+    "coverVisibleInPlatform": true,
+    "platformTitleSynced": false,
+    "note": "Published games.json name and description updated; platform DB still displays old Carriage 07 title. Edit opens creation Agent, not a metadata form; no Agent request submitted. Later native interaction stopped due to OS lock."
+  },
+  "platform": {
+    "environment": "Telegram AlterU macOS WebView",
+    "resumedExistingEnding": true,
+    "ending": "letter-delivered",
+    "existingItemsPreserved": [
+      "magnifier",
+      "compartment-key"
+    ],
+    "newSyntheticJourneyCreated": true,
+    "streetToPhotoTransition": true,
+    "currentPhotographerVisible": "Nora",
+    "authoredGreetingCompleted": true,
+    "newAndCompletedJourneysBothListed": true,
+    "fullStoryAcceptance": false,
+    "iphoneAudioPerception": "unverified",
+    "accountCrossDeviceRecovery": "not implemented"
+  }
+}
