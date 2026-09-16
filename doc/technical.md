@@ -2214,3 +2214,11 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 ## DOM/SVG图片准备（2026-09-17）
 
 `decodeSpatialArt` 不再只依赖decode Promise：成功load或complete缓存且natural尺寸非零也可完成准备，取消/损坏/真实停滞仍保持明确失败。适用于环境图和主角预览尺寸，不替代`loadSpatialArtTexture`或renderer握手。真实PNG+模拟停滞已复现旧误判并验证修复，主游戏刷新及切换现有旅程通过；见 `oldstreet-image-ready-20260917.md`。自然发生的旧超时原因仍未完全确认。
+
+### 2026-09-17 对话分页与尾声演出（本地）
+
+`old-street-dialogue-pages.ts`仅投影展示段落，保持原文本和顺序，中文64字符/英文180字符目标长度，不向Session提交翻页动作。`old-street-dev.tsx`统一显式选择和右下角主行动，NPC交互完成后保留谈话目标，结束/走动收起面板；自由输入按需展开，恢复提示3.2秒消退。
+
+`old-street-ending-reel.ts`只读取complete状态且departed的结局快照：preserved、已登场人物的epilogues、unresolved。不改存档，不重新运行结算。`old-street-ending-view.tsx/css`提供全屏原生dialog，复用主角图集正面中帧、已准入钟和照片。SVG clipPath限制到单帧，避免字形SVG全局尺寸和邻帧漏出。尾声的前后段、暂停、跳过和重看只改组件状态；查看旅程继续使用已有旅程对话框。隐藏页面停止自动节拍，prefers-reduced-motion改为手动阅读。媒体失败时文字仍能完整阅读。
+
+19项相关测试通过：分页保真、上下文主行动、回合恢复、既有结局与新增尾声不修改存档。真实浏览器已验证320/390中文状态、暂停/跳过/重看/返回旅程和reduce模式；并未据此宣称英文长内容、iPhone键盘、完整平台流程或最终UI验收完成。

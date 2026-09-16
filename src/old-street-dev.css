@@ -46,3 +46,28 @@
 .os-photo__pieces span{height:clamp(64px,16dvh,108px);width:clamp(42.67px,10.6667dvh,72px);margin-inline:auto}
 .os-photo__controls{display:flex;gap:8px;padding-top:12px;border-top:1px solid #a69c88}
 .os-photo__controls button{flex:1;min-height:44px}
+
+/* One primary action lives beside the joystick. Dialogue controls stay outside
+   the reading region, and all overlays leave camera dimensions unchanged. */
+.os-dev--immersive>.os-actions[hidden],.os-dev button[hidden]{display:none}
+.os-dev--immersive>.os-actions{display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 160px);bottom:calc(84px + env(safe-area-inset-bottom));padding:12px;overflow:auto;scrollbar-width:thin}
+.os-actions__heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
+.os-actions__heading>strong{font:600 16px/1.4 system-ui;min-width:0}
+.os-actions__heading>button{font-size:14px;background:transparent;color:var(--os-paper);padding:6px 8px}
+.os-actions__body{display:block!important;flex-shrink:1;min-height:0;overflow:auto;overscroll-behavior:contain;max-height:25dvh}
+.os-actions__body:empty{display:none!important}
+.os-actions .os-turn{margin:0}
+.os-actions .os-turn__speech{padding:8px 10px;border-radius:4px}
+.os-actions .os-turn__scene{padding:0}
+.os-actions .os-turn__speech strong{margin:0 0 4px}
+.os-actions .os-choices{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;flex:none}
+.os-choices button{text-align:left;font-size:16px;line-height:1.35;padding:8px 10px}
+.os-actions .os-compose{display:block;flex:none}
+.os-compose__toggle{background:transparent!important;color:var(--os-paper)!important;border-color:#c9bfad66!important;text-align:left;font-size:14px!important;width:100%}
+.os-compose form{display:grid;grid-template-columns:minmax(0,1fr) auto;margin:8px 0 0}
+.os-compose form input{grid-column:1/-1;width:100%}
+.os-compose form button{min-width:88px}
+.os-dialogue-continue{align-self:flex-end;min-width:96px!important;flex:none}
+.os-actions--conversation .os-actions__heading{border-bottom:1px solid #c9bfad35;padding-bottom:4px}
+.os-dev button:focus-visible{outline:2px solid #f4cf86;outline-offset:2px}
+.os-dev button:active:not(:disabled){filter:brightness(.88)}

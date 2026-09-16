@@ -1,3 +1,5 @@
+import {OldStreetEndingView} from './old-street-ending-view'
+import {oldStreetDialoguePages} from './old-street-dialogue-pages'
 import {oldStreetRecordBookPose,oldStreetRecordBookSheets} from './old-street-record-book'
 import {oldStreetPhotoPuzzle} from './old-street-photo-puzzle'
 import {decodeSpatialArt} from './spatial-art-decode'
@@ -132,6 +134,10 @@ export default function OldStreetDev() {
   const [notice, updateNotice] = useState(cartridge.opening.blocks[0].text), [error, setError] = useState('')
   const [turn,setTurn]=useState<ReturnType<typeof oldStreetTurn>>([])
   const visibleTurn=useRef(turn);visibleTurn.current=turn
+  const visibleNotice=useRef(notice);visibleNotice.current=notice
+  const [turnPage,setTurnPage]=useState(0)
+  useEffect(()=>setTurnPage(0),[turn])
+  useEffect(()=>{if(!turn.length&&/^(已恢复旅程。|已继续这段旅程。|Journey restored\.|Journey resumed\.)$/.test(notice)){const timer=setTimeout(()=>updateNotice(''),3200);return()=>clearTimeout(timer)}},[notice,turn.length])
   const actionPanel=useRef<HTMLElement>(null)
   useEffect(()=>{if(actionPanel.current)actionPanel.current.scrollTop=0},[turn,notice,error])
   const setNotice=(value:string)=>{updateNotice(value);setTurn([])}
@@ -143,6 +149,7 @@ export default function OldStreetDev() {
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
   useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);runtime.current?.pause(true)}},[error])
   const [typed, setTyped] = useState('')
+  const [inputOpen,setInputOpen]=useState(false)
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   const [feet, setFeet] = useState(head.position), [destination, setDestination] = useState<{x: number; y: number} | null>(null)
   const stage = useRef<HTMLDivElement>(null), world=useRef<HTMLDivElement>(null)
@@ -238,7 +245,7 @@ export default function OldStreetDev() {
         walkable: localWalkable,
         safePosition: (p, room) => oldStreetWalkable(room, p, current.current.save) ? p : plan.scenes.find(s => s.id === room)!.spawn,
         findPath: (a, b, room) => findGridPath(a,b,p=>localWalkable(p,room)),
-        onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current)setSelected(null);if(moved&&!busyRef.current&&visibleTurn.current.length){visibleTurn.current=[];setNotice('');setSelected(null)}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
+        onPosition: p => {const moved=Math.hypot(p.x-position.current.x,p.y-position.current.y)>.01;position.current = p; if (mounted) {setFeet(p);if(moved&&!busyRef.current)setSelected(null);if(moved&&!busyRef.current&&(visibleTurn.current.length||visibleNotice.current)){visibleTurn.current=[];visibleNotice.current='';setNotice('');setSelected(null)}}}, onDestination: p => {if (mounted) {setDestination(p);if(p){visibleTurn.current=[];setNotice('');if(!busyRef.current)setSelected(null)}}},
         onFrame:(dt,hero,room,paused)=>{
           const step=footsteps.current.update(dt,hero,room,paused);if(step)audio.current?.play(step)
           for(const [id,event] of Object.entries(npcEvents.current)){
@@ -374,7 +381,7 @@ export default function OldStreetDev() {
       current.current = next
       await prepareEnvironment.current(nextHead.sceneId)
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
-      current.current = next; setHead(next); position.current = next.position; setSelected(result.accepted===false && next.scene===h.sceneId ? target : null)
+      current.current = next; setHead(next); position.current = next.position; setSelected(next.scene===h.sceneId&&(result.accepted===false||Boolean(oldStreetPerson(target)))?target:null)
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
       const blockedReason=attemptedAction?[...new Set(resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons??[])].join(' '):undefined
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode?oldStreetActionFailureMessage(result.rejectionCode,locale):undefined) ?? '')
@@ -416,13 +423,20 @@ export default function OldStreetDev() {
   const talkTopics=chosen?oldStreetTalkTopics(head.save,chosen.id):[]
   const chosenAction = chosen?oldStreetContextAction(head.save,chosen):undefined
   const actions = chosenAction?.actions??[]
-  const nearbyAction=nearest?oldStreetContextAction(head.save,nearest):undefined
+  const pages=oldStreetDialoguePages(turn,locale)
+  const page=pages[Math.min(turnPage,pages.length-1)]
+  const morePages=turnPage<pages.length-1
+  const inspectionOpen=Boolean(selected&&!oldStreetDoors().some(d=>d.id===selected))
+  const conversationOpen=Boolean(knownSpeaker&&(inspectionOpen||turn.length||pendingSpeech))
+  const secondaryActions=conversationOpen?actions:actions.filter(id=>chosenAction?.primary.kind!=='action'||id!==chosenAction.primary.id)
+  useEffect(()=>setInputOpen(false),[chosen?.id])
+  function closeInteraction(){setSelected(null);setNotice('');setInputOpen(false)}
   function useNearby(){
-    if(!nearest||!nearbyAction)return
-    setSelected(nearest.id)
-    if(nearbyAction.primary.kind==='action')request(nearbyAction.primary.id)
-    else if(nearbyAction.primary.kind==='inspect')setNotice(nearbyAction.reason)
-    else {setNotice('');requestAnimationFrame(()=>actionPanel.current?.querySelector<HTMLButtonElement>('button')?.focus({preventScroll:true}))}
+    if(!chosen||!chosenAction)return
+    setSelected(chosen.id)
+    if(chosenAction.primary.kind==='action')request(chosenAction.primary.id)
+    else if(chosenAction.primary.kind==='inspect')setNotice(chosenAction.reason)
+    else requestAnimationFrame(()=>actionPanel.current?.querySelector<HTMLButtonElement>('.os-choices button')?.focus({preventScroll:true}))
   }
   const label = (id: string) => {
     const door = oldStreetDoors().find(d => d.actionId === id)
@@ -456,19 +470,26 @@ export default function OldStreetDev() {
       })}
     </div>
     </div>
-    <section className="os-actions" ref={actionPanel} aria-label={text(['当前行动', 'Current actions'])}>
-      {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:turn.length&&!error?<section className="os-turn" role="log" aria-label={text(['互动回应','Interaction'])}>{turn.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice || (!ready ? text(['载入角色与地图…', 'Loading character and maps…']) : chosenAction?.primary.kind==='inspect'?chosenAction.reason:text(['点击地面行走，或走近物件。', 'Click the floor or approach an object.']))}</p>}
+    <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!notice&&!error&&!turn.length&&!pendingSpeech&&!inspectionOpen&&!(expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready'])&&!(expansionCapabilities.media&&head.scene==='darkroom')}>
+      {(inspectionOpen||turn.length>0)&&<div className="os-actions__heading"><strong>{knownSpeaker?head.save.characters.find(c=>c.id===oldStreetPerson(chosen!.id)?.id)?.name:text(['眼前','Here'])}</strong><button disabled={busy} onClick={closeInteraction}>{text(conversationOpen?['结束交谈','Leave conversation']:['收起','Close'])}</button></div>}
+      <div className="os-actions__body">
+        {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}><div key={page.id} className={page.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{page.speaker&&<strong>{page.speaker}</strong>}<p>{page.text}</p></div></section>:(error||notice)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice}</p>}
+      </div>
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
-      <div>{actions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>
-      {talkTopics.length>0&&<div>{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
-      {chosen && !oldStreetDoors().some(d=>d.id===chosen.id) && <form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
-      {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} submit={requestExpansion} activate={()=>requestExpansion('',true)}/>}
-      <small>{text(['随身：', 'Carrying: '])}{head.save.inventory.map(i => i.label).join(' · ') || text(['无', 'Nothing'])}</small>
+      {!error&&morePages?<button className="os-dialogue-continue" disabled={busy} onClick={()=>setTurnPage(n=>n+1)}>{text(['继续','Continue'])}</button>:<>
+        {inspectionOpen&&secondaryActions.length>0&&<div className="os-choices">{secondaryActions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>}
+        {conversationOpen&&talkTopics.length>0&&<div className="os-choices">{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
+        {inspectionOpen&&chosen&&<div className="os-compose">
+          <button className="os-compose__toggle" aria-expanded={inputOpen} disabled={busy} onClick={()=>setInputOpen(open=>!open)}>{text(knownSpeaker?['聊点别的…','Say something else…']:['尝试别的办法…','Try something else…'])}</button>
+          {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
+        </div>}
+      </>}
+      {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&!conversationOpen&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} submit={requestExpansion} activate={()=>requestExpansion('',true)}/>}
       {expansionCapabilities.media&&head.scene==='darkroom'&&serverHead.current&&<OldStreetExpansionPhotoView requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
     </section>
     <footer>
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen} move={(x,y)=>runtime.current?.move(x,y)}/>
-      <button disabled={!ready || busy || !nearest || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : nearbyAction?.primary.kind==='action'?label(nearbyAction.primary.id):nearbyAction?.primary.kind==='talk'?text(['交谈','Talk']):nearbyAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
+      <button hidden={conversationOpen} disabled={!ready || busy || !chosen || !!outcome || !!error} onPointerDown={useNearby}>{busy ? text(['正在走近…', 'Approaching…']) : chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
     {lanTrialEnabled&&ready&&head.scene==='laundry'&&<div style={{position:'fixed',right:8,top:410,zIndex:40,background:'#202624',padding:8}}>{(['left','right','up','down'] as const).map((direction,i)=><button key={direction} style={{minHeight:44,minWidth:44}} disabled={busy||!!error||lanTrial.current?.running} onClick={()=>{lanTrial.current?.start(direction);setResidentPosition({...resident.current.position})}}>{text(['试走：'+['左','右','上','下'][i],'Test: '+direction])}</button>)}<output style={{display:'block'}}>{lanTrial.current?.pose} · {lanTrial.current?.distance.toFixed(1)}/24</output></div>}
@@ -479,6 +500,6 @@ export default function OldStreetDev() {
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p>{borrowedItems.length>0&&<p>{text(['还带着待归还的物品：','You still have items to return: '])}{borrowedItems.map(i=>i.label).join(' · ')}{text(['。可以再逛逛，先把它们送回去。','. You can stay and return them first.'])}</p>}<button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
-    {outcome && <div className="os-modal" role="dialog" aria-label={text(['旅程结果','Journey result'])}><section><h2>{head.save.finale.ending?.title ?? text(['信已送到','Letter delivered'])}</h2><p>{head.save.finale.ending?.thesis}</p>{head.save.finale.ending?.preserved.map((line,i)=><p key={'p'+i}>{line}</p>)}{head.save.finale.ending?.unresolved.map((line,i)=><p key={'u'+i}>{line}</p>)}{Boolean(head.save.finale.ending?.characterEpilogues.length)&&<details><summary>{text(['街上的人','People on the street'])}</summary>{head.save.finale.ending!.characterEpilogues.map(entry=><p key={entry.characterId}>{entry.text}</p>)}</details>}<button disabled={busy||!ready} onClick={()=>{void restart()}}>{text(['重新探索','Explore again'])}</button><button disabled={busy||!ready} onClick={()=>setJourneysOpen(true)}>{text(['查看旅程','View journeys'])}</button></section></div>}
+    {outcome && <OldStreetEndingView key={serverHead.current?.id} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)}/>}
   </main>
 }
