@@ -71,3 +71,13 @@
 .os-actions--conversation .os-actions__heading{border-bottom:1px solid #c9bfad35;padding-bottom:4px}
 .os-dev button:focus-visible{outline:2px solid #f4cf86;outline-offset:2px}
 .os-dev button:active:not(:disabled){filter:brightness(.88)}
+/* Compact labelled tools keep English scene titles readable on narrow phones. */
+.os-dev>header h1{flex:1;min-width:0;overflow-wrap:normal;word-break:normal;font-size:17px}
+.os-dev .os-tools{display:flex;flex:none;gap:4px}
+.os-dev .os-tools button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:56px;min-height:52px;padding:4px 2px;font-size:12px;line-height:1.2}
+.os-dev .os-tools svg{width:20px;height:20px;flex:none}
+@media(max-height:480px){
+ .os-dev--immersive>.os-actions--composing{max-height:calc(100dvh - 148px)}
+ .os-actions--composing .os-actions__body,.os-actions--composing .os-choices,.os-actions--composing .os-compose__toggle{display:none!important}
+ .os-actions--composing .os-compose form{margin:0}
+}

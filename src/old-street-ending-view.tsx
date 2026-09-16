@@ -6,7 +6,7 @@ import street from '../doc/oldstreet-street-atmosphere/ground/candidate.png'
 import {actorArt} from './art-catalog'
 import {oldStreetPhotoPuzzle} from './old-street-photo-puzzle'
 import './old-street-ending-view.css'
-export function OldStreetEndingView({save,busy,onJourneys,onRestart}:{save:StorySave;busy:boolean;onJourneys:()=>void;onRestart:()=>void}){
+export function OldStreetEndingView({save,busy,onJourneys,onRestart,onReplay}:{save:StorySave;busy:boolean;onJourneys:()=>void;onRestart:()=>void;onReplay:()=>void}){
  const zh=save.locale==='zh',t=(a:string,b:string)=>zh?a:b
  const beats=useMemo(()=>oldStreetEndingReel(save),[save]),[index,setIndex]=useState(0),[paused,setPaused]=useState(false)
  const [reduced,setReduced]=useState(()=>matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -15,7 +15,7 @@ export function OldStreetEndingView({save,busy,onJourneys,onRestart}:{save:Story
  useEffect(()=>{root.current?.showModal();const query=matchMedia('(prefers-reduced-motion: reduce)'),change=()=>setReduced(query.matches),visibility=()=>setHidden(document.hidden);query.addEventListener('change',change);document.addEventListener('visibilitychange',visibility);return()=>{root.current?.close();query.removeEventListener('change',change);document.removeEventListener('visibilitychange',visibility)}},[])
  useEffect(()=>setImageFailed(false),[index])
  useEffect(()=>{if(!beat||paused||reduced||hidden)return;const ms=Math.max(6500,Math.min(16000,beat.text.length*(zh?155:55)));const timer=setTimeout(()=>setIndex(n=>n+1),ms);return()=>clearTimeout(timer)},[beat,paused,reduced,hidden,zh])
- const replay=()=>{setIndex(0);setPaused(false)}
+ const replay=()=>{setIndex(0);setPaused(false);onReplay()}
  return <dialog ref={root} className="os-ending" onCancel={e=>{e.preventDefault();setIndex(beats.length)}} aria-label={t('旅程尾声','Journey epilogue')}>
   <div className="os-ending__backdrop" style={{backgroundImage:`url("${street}")`}} aria-hidden="true"/>
   <header><span>{t('旧街最后一封信','THE LAST LETTER')}</span>{!ended&&<button onClick={()=>setIndex(beats.length)}>{t('跳过演出','Skip epilogue')}</button>}</header>

@@ -1,5 +1,6 @@
+import {OldStreetToolIcon} from './old-street-tool-icon'
 import {OldStreetEndingView} from './old-street-ending-view'
-import {oldStreetDialoguePages} from './old-street-dialogue-pages'
+import {oldStreetDialogueBeats} from './old-street-dialogue-pages'
 import {oldStreetRecordBookPose,oldStreetRecordBookSheets} from './old-street-record-book'
 import {oldStreetPhotoPuzzle} from './old-street-photo-puzzle'
 import {decodeSpatialArt} from './spatial-art-decode'
@@ -373,7 +374,8 @@ export default function OldStreetDev() {
       const nextHead = result.head as OldStreetHead
       if(result.accepted&&nextHead.version>h.version&&!dialogue){
         const gained=nextHead.save.inventory.some(item=>item.count>(h.save.inventory.find(old=>old.id===item.id)?.count??0))
-        if(gained)audio.current?.play('pickup')
+        if(nextHead.save.facts.departed&&!h.save.facts.departed)audio.current?.play('ending')
+        else if(gained)audio.current?.play('pickup')
         else if(target!=='watchmaker'&&target!=='laundry-owner'&&target!=='photographer'&&nextHead.sceneId===h.sceneId&&JSON.stringify(h.save.facts)!==JSON.stringify(nextHead.save.facts))audio.current?.play('handle')
       }
       serverHead.current = nextHead
@@ -423,7 +425,7 @@ export default function OldStreetDev() {
   const talkTopics=chosen?oldStreetTalkTopics(head.save,chosen.id):[]
   const chosenAction = chosen?oldStreetContextAction(head.save,chosen):undefined
   const actions = chosenAction?.actions??[]
-  const pages=oldStreetDialoguePages(turn,locale)
+  const pages=oldStreetDialogueBeats(turn,locale)
   const page=pages[Math.min(turnPage,pages.length-1)]
   const morePages=turnPage<pages.length-1
   const inspectionOpen=Boolean(selected&&!oldStreetDoors().some(d=>d.id===selected))
@@ -445,7 +447,7 @@ export default function OldStreetDev() {
   const outcome = oldStreetOutcome(head.save)
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
-    <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}>{text(['街区','Neighbourhood'])}</button><button ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setJournalOpen(true)}}>{text(['随身与发现','Items & discoveries'])}</button><button disabled={!ready||busy||!!error} onClick={()=>{runtime.current?.pause(true);setJourneysOpen(true)}}>{text(['旅程','Journeys'])}</button></nav></header>
+    <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button aria-label={text(['街区','Neighbourhood'])} ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setMapOpen(true)}}><OldStreetToolIcon kind="map"/><span>{text(['街区','Map'])}</span></button><button aria-label={text(['随身与发现','Items & discoveries'])} ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{runtime.current?.pause(true);setJournalOpen(true)}}><OldStreetToolIcon kind="items"/><span>{text(['随身','Items'])}</span></button><button aria-label={text(['旅程','Journeys'])} disabled={!ready||busy||!!error} onClick={()=>{runtime.current?.pause(true);setJourneysOpen(true)}}><OldStreetToolIcon kind="journeys"/><span>{text(['旅程','Journeys'])}</span></button></nav></header>
     <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || journalOpen || mapOpen || journeysOpen || clockOpen || photoOpen) return
       const r = e.currentTarget.getBoundingClientRect()
@@ -470,10 +472,10 @@ export default function OldStreetDev() {
       })}
     </div>
     </div>
-    <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!notice&&!error&&!turn.length&&!pendingSpeech&&!inspectionOpen&&!(expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready'])&&!(expansionCapabilities.media&&head.scene==='darkroom')}>
+    <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')+(inputOpen?' os-actions--composing':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!notice&&!error&&!turn.length&&!pendingSpeech&&!inspectionOpen&&!(expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready'])&&!(expansionCapabilities.media&&head.scene==='darkroom')}>
       {(inspectionOpen||turn.length>0)&&<div className="os-actions__heading"><strong>{knownSpeaker?head.save.characters.find(c=>c.id===oldStreetPerson(chosen!.id)?.id)?.name:text(['眼前','Here'])}</strong><button disabled={busy} onClick={closeInteraction}>{text(conversationOpen?['结束交谈','Leave conversation']:['收起','Close'])}</button></div>}
       <div className="os-actions__body">
-        {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}><div key={page.id} className={page.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{page.speaker&&<strong>{page.speaker}</strong>}<p>{page.text}</p></div></section>:(error||notice)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice}</p>}
+        {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice}</p>}
       </div>
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
       {!error&&morePages?<button className="os-dialogue-continue" disabled={busy} onClick={()=>setTurnPage(n=>n+1)}>{text(['继续','Continue'])}</button>:<>
@@ -500,6 +502,6 @@ export default function OldStreetDev() {
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p>{borrowedItems.length>0&&<p>{text(['还带着待归还的物品：','You still have items to return: '])}{borrowedItems.map(i=>i.label).join(' · ')}{text(['。可以再逛逛，先把它们送回去。','. You can stay and return them first.'])}</p>}<button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
-    {outcome && <OldStreetEndingView key={serverHead.current?.id} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)}/>}
+    {outcome && <OldStreetEndingView key={serverHead.current?.id} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)} onReplay={()=>audio.current?.play('ending')}/>}
   </main>
 }

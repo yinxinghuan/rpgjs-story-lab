@@ -12,3 +12,11 @@ for(const locale of ['zh','en'] as const)test(`dialogue pagination preserves int
  assert.ok(pages.filter(p=>p.id.startsWith('intro:')).every(p=>p.text.length<=(locale==='zh'?64:180)))
  assert.deepEqual(oldStreetDialoguePages([],locale),[])
 })
+
+test('short speech and stage direction share one beat without merging their roles',async()=>{
+ const {oldStreetDialogueBeats}=await import('../src/old-street-dialogue-pages')
+ const blocks=[{id:'speech',kind:'dialogue' as const,speaker:'Zhou',text:'Take the key; bring it back when you’re done.'},{id:'action',kind:'narration' as const,text:'He hands it to you.'}]
+ const beats=oldStreetDialogueBeats(blocks,'en')
+ assert.equal(beats.length,1);assert.deepEqual(beats[0].map(b=>b.kind),['dialogue','narration'])
+ assert.equal(beats.flat().map(b=>b.text).join(''),blocks.map(b=>b.text).join(''))
+})

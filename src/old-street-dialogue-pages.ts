@@ -14,3 +14,15 @@ export function oldStreetDialoguePages(blocks:StoryBlock[],locale:'zh'|'en'){
   return pages.map((text,index)=>({...block,id:block.id+':page:'+index,text}))
  })
 }
+
+/** Keep a short spoken line and its immediate stage direction together. Long
+ * introductions still form separate beats, so choices remain reachable. */
+export function oldStreetDialogueBeats(blocks:StoryBlock[],locale:'zh'|'en'){
+ const limit=locale==='zh'?64:180,beats:StoryBlock[][]=[]
+ for(const page of oldStreetDialoguePages(blocks,locale)){
+  const last=beats.at(-1)
+  if(last&&last.length<2&&last.reduce((n,b)=>n+b.text.length,0)+page.text.length<=limit)last.push(page)
+  else beats.push([page])
+ }
+ return beats
+}

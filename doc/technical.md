@@ -2222,3 +2222,13 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 `old-street-ending-reel.ts`只读取complete状态且departed的结局快照：preserved、已登场人物的epilogues、unresolved。不改存档，不重新运行结算。`old-street-ending-view.tsx/css`提供全屏原生dialog，复用主角图集正面中帧、已准入钟和照片。SVG clipPath限制到单帧，避免字形SVG全局尺寸和邻帧漏出。尾声的前后段、暂停、跳过和重看只改组件状态；查看旅程继续使用已有旅程对话框。隐藏页面停止自动节拍，prefers-reduced-motion改为手动阅读。媒体失败时文字仍能完整阅读。
 
 19项相关测试通过：分页保真、上下文主行动、回合恢复、既有结局与新增尾声不修改存档。真实浏览器已验证320/390中文状态、暂停/跳过/重看/返回旅程和reduce模式；并未据此宣称英文长内容、iPhone键盘、完整平台流程或最终UI验收完成。
+
+## 2026-09-17：英文 UI、对白节拍与相机边界
+
+`old-street-tool-icon.tsx` 提供三枚同体系工具图标，工具按钮保留完整 aria-label，短英文标签避免 320px 标题被挤成竖排。`oldStreetDialogueBeats` 在原分页结果上合并至多两段、总长不超过中文64/英文180的短块，仅改展示，不改 StorySave 或说话身份。短视口展开输入时保留提交区域，暂隐藏正文与选择。
+
+`old-street-camera.ts` 的纵向 scale 下限改为 viewportHeight/576，平移下界使用完整视口减地图高度，上界为0；原固定阅读带只参与跟随目标，不再作为地图下沿，消除靠近南门时的场景外留白。总览调试模式不变；世界/碰撞单位与反向点击换算不变。
+
+`OldStreetAudio` 增加 ending cue：新确认 departed 提交或主动重放时播放两次有限长度的正弦音，先停止旧 foley；恢复结局不自动触发音效。静音、失焦与音频未解锁仍按原合同处理。`old-street-context-action.ts` 对已取信小格提供具体的已知状态。
+
+代表性英文实景及模拟键盘、18项定向测试范围见 `ui-polish-review-20260917.md`。不把合成音频测试视为真机听感，不把本轮本地测试视为正式部署验收。

@@ -19,6 +19,8 @@ export function oldStreetContextAction(save:StorySave,entity:Entity){
  // without inventing receipt contents or implying another item can be taken.
  const observation=!next&&entity.id==='drawer'&&save.facts['lens-taken']===true
   ?(save.locale==='zh'?'抽屉里还留着收据，放大镜已经拿走了。':'The receipt remains in the drawer; the magnifying glass has been taken.')
-  :undefined
+  :!next&&entity.id==='letter-compartment'&&save.facts['letter-taken']===true
+   ?(save.locale==='zh'?'小格敞开着，密封信已经收进了你的行囊。':'The compartment is open; the sealed letter is already in your bag.')
+   :undefined
  return {actions:offered,primary:next?{kind:'action' as const,id:next}:known?{kind:'talk' as const}:{kind:'inspect' as const},reason:observation??reasons[0]??(save.locale==='zh'?'这里暂时没有别的可做的事。':'There is nothing else to do here for now.')}
 }

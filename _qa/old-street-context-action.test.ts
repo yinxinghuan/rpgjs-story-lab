@@ -34,3 +34,11 @@ for(const locale of ['zh','en'] as const)test(`exhausted drawer ${locale} remain
  save.inventory.push({id:'clock',label:'Clock',count:1,rarity:'common'})
  assert.deepEqual(oldStreetContextAction(save,entity).primary,{kind:'action',id:'oldstreet:inspect-clock'})
 })
+
+test('an emptied letter compartment describes the actual result instead of a generic rule rejection',()=>{
+ const save=createInitialSave(oldStreetCartridge('en'))
+ save.facts['letter-unlocked']=true;save.facts['letter-taken']=true
+ save.location='Watch shop';save.map.forEach(node=>node.current=node.id==='shop')
+ const action=oldStreetContextAction(save,{id:'letter-compartment',actions:['oldstreet:unlock-letter','oldstreet:take-letter']})
+ assert.equal(action.primary.kind,'inspect');assert.match(action.reason,/sealed letter.*bag/)
+})
