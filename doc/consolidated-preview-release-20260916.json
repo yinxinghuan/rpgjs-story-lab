@@ -1,0 +1,50 @@
+{
+  "commit": "73deaaf5483d69b13dec9d7d0f33d40dee8d58c4",
+  "checkedAt": "2026-09-16T06:42:44.490Z",
+  "workflow": "https://github.com/yinxinghuan/rpgjs-story-lab/actions/runs/35064261167",
+  "checks": [
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "path": "index.html",
+      "sha256": "3db86e4e61bb1bd3a33ef4b80329cb3634ac618477beacf9628d4feda55d62cf",
+      "bytes": 1684,
+      "equalsLocal": true
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "path": "assets/old-street-dev-Bod8ORdx.js",
+      "sha256": "84f19344803b8fc7d4e663a99c09b38193d75cea551d803627b7be90e4bf73cf",
+      "bytes": 119622,
+      "equalsLocal": true
+    },
+    {
+      "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+      "path": "assets/cutout-CcmnNgqq.png",
+      "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f",
+      "bytes": 124172,
+      "equalsLocal": true
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "path": "index.html",
+      "sha256": "3db86e4e61bb1bd3a33ef4b80329cb3634ac618477beacf9628d4feda55d62cf",
+      "bytes": 1684,
+      "equalsLocal": true
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "path": "assets/old-street-dev-Bod8ORdx.js",
+      "sha256": "84f19344803b8fc7d4e663a99c09b38193d75cea551d803627b7be90e4bf73cf",
+      "bytes": 119622,
+      "equalsLocal": true
+    },
+    {
+      "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "path": "assets/cutout-CcmnNgqq.png",
+      "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f",
+      "bytes": 124172,
+      "equalsLocal": true
+    }
+  ],
+  "scope": "Published preview only. Pages is a static frontend mirror. Does not establish platform play, trusted account recovery, NPC walking or full-game acceptance."
+}
