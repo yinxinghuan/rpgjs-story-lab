@@ -23,14 +23,21 @@ const fixtures=cases.map(c=>{
 })
 const args=process.argv.slice(2),live=args.includes('--live')
 const output=args.find(a=>a.startsWith('--output='))?.slice(9)??'/tmp/oldstreet-free-attempts.json'
-if(!live){writeFileSync(output,JSON.stringify({mode:'prepared-no-network',endpoint:'https://chat.aiwaves.tech/aigram/api/game-chat',maxRequests:24,fixtures},null,2));console.log('Prepared synthetic inputs only: '+output)}
+const selected=args.find(a=>a.startsWith('--cases='))?.slice(8).split(',')
+if(selected?.some(id=>!fixtures.some(f=>f.id===id)))throw Error('UNKNOWN_CASE')
+if(selected&&args.some(a=>a.startsWith('--retry=')))throw Error('CASES_AND_RETRY_ARE_EXCLUSIVE')
+const chosen=fixtures.filter(f=>!selected||selected.includes(f.id))
+if(!live){
+ if(existsSync(output))throw Error('OUTPUT_EXISTS')
+ writeFileSync(output,JSON.stringify({mode:'prepared-no-network',endpoint:'https://chat.aiwaves.tech/aigram/api/game-chat',maxRequests:chosen.length*4,fixtures:chosen},null,2));console.log('Prepared synthetic inputs only: '+output)
+}
 else{
  const retry=args.find(a=>a.startsWith('--retry='))?.slice(8).split(',')
  if(!retry&&existsSync(output))throw Error('OUTPUT_EXISTS_USE_EXPLICIT_RETRY')
  const previous=retry?JSON.parse(readFileSync(output,'utf8')):{results:[]}
  const results:any[]=previous.results
  if(retry&&retry.some(id=>!fixtures.some(f=>f.id===id)))throw Error('UNKNOWN_CASE')
- for(const f of fixtures.filter(f=>!retry||retry.includes(f.id))){
+ for(const f of chosen.filter(f=>!retry||retry.includes(f.id))){
   const used=results.filter(r=>r.id===f.id).reduce((n,r)=>n+r.requests,0)
   if(used>=4)throw Error('APPROVED_CASE_REQUEST_LIMIT')
   let requests=0;const started=Date.now()
