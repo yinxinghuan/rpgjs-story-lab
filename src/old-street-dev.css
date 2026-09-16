@@ -33,3 +33,7 @@
 .os-stick[data-active=true]{border-color:#d6ddcb}
 .os-stick[aria-disabled=true]{opacity:.5}
 @media(prefers-reduced-motion:reduce){.os-stick span{transition:none}}
+
+/* The camera owns map translation. Focused off-screen hotspots must not scroll
+   this container in addition to the camera transform. clip is not a scroll box. */
+.os-dev--immersive .os-world{overflow:clip}
