@@ -15,5 +15,10 @@ export function oldStreetContextAction(save:StorySave,entity:Entity){
  offered.sort((a,b)=>priority(a)-priority(b))
  const next=offered[0]
  const reasons=[...new Set(results.filter(r=>r.result?.status!=='accepted').flatMap(r=>r.result?.reasons??[]))]
- return {actions:offered,primary:next?{kind:'action' as const,id:next}:known?{kind:'talk' as const}:{kind:'inspect' as const},reason:reasons[0]??(save.locale==='zh'?'这里暂时没有别的可做的事。':'There is nothing else to do here for now.')}
+ // An exhausted pickup is still a visible object. Keep its observation useful
+ // without inventing receipt contents or implying another item can be taken.
+ const observation=!next&&entity.id==='drawer'&&save.facts['lens-taken']===true
+  ?(save.locale==='zh'?'抽屉里还留着收据，放大镜已经拿走了。':'The receipt remains in the drawer; the magnifying glass has been taken.')
+  :undefined
+ return {actions:offered,primary:next?{kind:'action' as const,id:next}:known?{kind:'talk' as const}:{kind:'inspect' as const},reason:observation??reasons[0]??(save.locale==='zh'?'这里暂时没有别的可做的事。':'There is nothing else to do here for now.')}
 }

@@ -23,3 +23,14 @@ test('blocked exit has an inspect explanation without mutation',()=>{
  const before=JSON.stringify(save),context=oldStreetContextAction(save,entity)
  assert.equal(context.primary.kind,'inspect');assert.match(context.reason,/旧箱/);assert.equal(JSON.stringify(save),before)
 })
+for(const locale of ['zh','en'] as const)test(`exhausted drawer ${locale} remains observable without hiding available clock inspection`,()=>{
+ const save=createInitialSave(oldStreetCartridge(locale));save.map.forEach(m=>m.current=m.id==='shop')
+ save.facts['drawer-open']=true;save.facts['lens-taken']=true
+ save.inventory.push({id:'lens',label:'Lens',count:1,rarity:'common'})
+ const entity=oldStreetSpatialPlan(save).entities.find(e=>e.id==='drawer')!
+ const before=JSON.stringify(save),context=oldStreetContextAction(save,entity)
+ assert.equal(context.primary.kind,'inspect');assert.match(context.reason,locale==='zh'?/收据/:/receipt/)
+ assert.equal(JSON.stringify(save),before)
+ save.inventory.push({id:'clock',label:'Clock',count:1,rarity:'common'})
+ assert.deepEqual(oldStreetContextAction(save,entity).primary,{kind:'action',id:'oldstreet:inspect-clock'})
+})
