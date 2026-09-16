@@ -17,7 +17,7 @@ export function oldStreetJournal(save:StorySave){
   trolley:t('从洗衣店借来，用完可以放回原处。','Borrowed from the laundry; return it to its bay when finished.'),
   'letter-key':t('修表师借给你的小格钥匙，用完要交还。','The watchmaker lent you this compartment key. Bring it back when finished.'),
   letter:t('写着家人姓名的密封信。','A sealed letter addressed to your family.'),
-  clock:t('修表师请你送回洗衣店的旧钟。','The watchmaker asked you to take this clock back to the laundry.'),
+  clock:t('修表师请你送回洗衣店的旧钟。','The watchmaker asked you to take this clock back to the laundry.')+(f['clock-mark-known']===true?'':t('也可以先到修表铺抽屉旁，用放大镜看看钟底。','You can also examine its underside with the lens beside the watch-shop drawer before returning it.')),
   photos:t('照片夹上印着照相馆的标记。','The folder bears the photo studio’s stamp.'),
  }
  const notes:Array<{id:string;title:string;text:string}>=[]
