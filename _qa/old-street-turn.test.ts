@@ -1,10 +1,22 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {oldStreetTurn} from '../src/old-street-turn'
+import {oldStreetTurn,oldStreetRecoveredTurn} from '../src/old-street-turn'
 import {oldStreetCartridge} from '../src/old-street-cartridge'
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {recordOldStreetInteraction} from '../src/old-street-characters'
 import type {OldStreetHead} from '../src/old-street-head'
+test('lost-response recovery shows only the confirmed pending interaction, not subsequent turns',()=>{
+ const after:OldStreetHead={id:'recovered-journey',version:3,mapVersion:'oldstreet-furniture-3',sceneId:'shop',position:{x:100,y:100},save:createInitialSave(oldStreetCartridge('zh'))}
+ const pending={id:after.id,body:{action_id:'my-attempt',sceneId:'shop',expected_version:2,type:'free-input',text:'轻敲抽屉',target:'drawer'}}
+ after.save.blocks.push({id:'my-attempt:attempt',kind:'narration',text:'你轻敲抽屉，里面的东西还无法确认。',data:{oldStreetAttemptTarget:'drawer'}})
+ after.save.blocks.push({id:'other:dialogue',kind:'dialogue',text:'Unrelated history'})
+ assert.deepEqual(oldStreetRecoveredTurn(pending,after,true).map(b=>b.id),['my-attempt:attempt'])
+ assert.deepEqual(oldStreetRecoveredTurn(pending,after,false),[])
+ assert.deepEqual(oldStreetRecoveredTurn(undefined,after,true),[])
+ assert.deepEqual(oldStreetRecoveredTurn(pending,{...after,id:'another-journey'},true),[])
+ assert.deepEqual(oldStreetRecoveredTurn(pending,{...after,version:4},true),[])
+ assert.deepEqual(oldStreetRecoveredTurn(pending,{...after,sceneId:'yard'},true),[])
+})
 test('turn preserves introduction and named speech without repeating history or later recovery',()=>{
  const before:OldStreetHead={id:'synthetic',version:2,mapVersion:'oldstreet-blockout-2',sceneId:'photo',position:{x:100,y:100},save:createInitialSave(oldStreetCartridge('zh'))}
  const after=structuredClone(before);after.version++

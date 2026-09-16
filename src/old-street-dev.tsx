@@ -32,7 +32,7 @@ import {OLD_STREET_PREVIEW_VERSION} from './old-street-runtime-contract'
 import drawerStatesUrl from '../doc/oldstreet-drawer-guided/states.png'
 import {oldStreetDrawerPose,oldStreetDrawerSheet} from './old-street-prop-art'
 import {OldStreetJourneysView} from './old-street-journeys-view'
-import {oldStreetTurn} from './old-street-turn'
+import {oldStreetTurn,oldStreetRecoveredTurn} from './old-street-turn'
 import {oldStreetRequiredInspection} from './old-street-inspection'
 import {OldStreetClockView} from './old-street-clock-view'
 import type {RpgPlayer} from '@rpgjs/server'
@@ -162,6 +162,7 @@ export default function OldStreetDev() {
     let trolleyBlob: string | undefined
     void (async () => {try {
       let restored = await connection.client.enroll(locale)
+      const pendingInteraction=connection.client.pending().filter(p=>p.id===restored.id).at(-1)
       const recovered = await connection.client.recover()
       if (recovered) restored = recovered.head
       if (!mounted||!boot.pending()) return
@@ -170,6 +171,13 @@ export default function OldStreetDev() {
       current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
       resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
       setNotice(restored.version===0?cartridge.opening.blocks[0].text:text(['已恢复旅程。', 'Journey restored.']))
+      if(recovered?.rejectionCode){
+        setNotice(oldStreetActionFailureMessage(recovered.rejectionCode,locale))
+        const body=pendingInteraction?.body
+        if(body&&['free-input','dialogue'].includes(body.type)&&typeof body.text==='string'&&body.sceneId===restored.sceneId){
+          setTyped(body.text);setSelected(body.target)
+        }
+      }else if(recovered)setTurn(oldStreetRecoveredTurn(pendingInteraction,restored,recovered.accepted===true))
       const npcArt=actorArt.balanced.mechanic
       const initialEnvironment=oldStreetEnvironmentDownloads(pixelShop,compositeShop,restored.sceneId)
       const sources=[...initialEnvironment,{id:'shedBench',url:shedBenchUrl},{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:lanStandingUrl},{id:'xu',url:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'photoShelf',url:photoShelfUrl},{id:'photoTable',url:photoTableUrl},{id:'mantelClock',url:mantelClockUrl},{id:'crates',url:cratesUrl}]:[])]
