@@ -1,3 +1,5 @@
+import {chatModel} from './model'
+import {createOriginalActionInterpreter} from './original-action-interpreter'
 import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {OldStreetExpansionJobs} from './old-street-expansion-jobs'
 import {createOldStreetExpansionPlanner} from './old-street-expansion-planner'
@@ -14,7 +16,7 @@ import type {AuthorityStorage} from './session-authority'
 import {GAME_ID} from '../src/game-id'
 /** Loopback authoring adapter only. Not platform identity or a production route. */
 export function oldStreetDevPlugin(){
- const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0))
+ const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0)) ?? (process.env.OLDSTREET_MODEL_TEST_BUDGET==='0'?undefined:{request:chatModel,interpreter:createOriginalActionInterpreter(chatModel)})
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
  let expansions:OldStreetExpansionJobs|undefined
  let expansionMedia:OldStreetExpansionMedia|undefined

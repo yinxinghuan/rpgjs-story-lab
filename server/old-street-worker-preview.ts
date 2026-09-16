@@ -1,3 +1,5 @@
+import {chatModel} from './model'
+import {createOriginalActionInterpreter} from './original-action-interpreter'
 import {expansionPhotoProducer} from './old-street-expansion-media'
 import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {originalPreflightModels} from './original-preflight-model'
@@ -9,7 +11,7 @@ import {OLD_STREET_API_PATH} from '../src/old-street-runtime-contract'
 
 /** Only installed by oldstreet-dev. Executes the real Worker boundary on local SQLite. */
 export function oldStreetWorkerPreviewPlugin(){
- const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0))
+ const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0)) ?? (process.env.OLDSTREET_MODEL_TEST_BUDGET==='0'?undefined:{request:chatModel,interpreter:createOriginalActionInterpreter(chatModel)})
  const storage=new PreflightStorage('.data/oldstreet-worker-preview')
  const objects=new Map<string,CarriageJourneyAuthority>()
  const env={CARRIAGE_JOURNEYS:{idFromName:(name:string)=>name,get:(key:unknown)=>({fetch:(request:Request)=>{
