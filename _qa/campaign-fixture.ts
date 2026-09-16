@@ -1,6 +1,14 @@
 import type {OldStreetCampaignGenerator} from '../server/old-street-campaign-planner'
-/** Explicitly synthetic; never installed by a production entry. */
+import {readFileSync} from 'node:fs'
+import {isDeepStrictEqual} from 'node:util'
+// Optional immutable provider-output replay for UI inspection only. This can
+// include a semantically rejected candidate; it must never be production art.
+const replayPath=process.env.OLDSTREET_QA_CAMPAIGN_REPORT
+const replay=replayPath?JSON.parse(readFileSync(replayPath,'utf8')):undefined
+/** Synthetic by default; explicit report replay never makes network calls.
+ * Neither mode is installed by a production entry. */
 export const campaignFixture:OldStreetCampaignGenerator=async(context)=>{
+ if(replay){const row=replay.cases.find((r:any)=>r.chain===1&&r.stage===context.stage&&r.accepted!==undefined);if(!row||!isDeepStrictEqual(row.context,context))throw Error('REPLAY_CONTEXT_MISMATCH');return structuredClone(row.accepted)}
  if(context.stage==='archive')return {
   title:context.locale==='zh'?'小桥维修记录':'Footbridge work records',layout:'east-index',
   cards:context.locale==='zh'?[{id:'a',label:'装好新木板'},{id:'b',label:'裁切替换木板'},{id:'c',label:'重新开放小桥'},{id:'d',label:'测量损坏的木板'}]:[{id:'a',label:'New boards were fitted'},{id:'b',label:'Replacement boards were cut'},{id:'c',label:'The footbridge reopened'},{id:'d',label:'Damaged boards were measured'}],

@@ -1,5 +1,13 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 真实模型的记录配对修复（2026-09-17）
+
+首批真实 trace 两次都没有双特征匹配项。现 `createOldStreetCampaignPlanner` 请求 `{title,marks,wrappings,subjects}`，`compileTraceDraft` 构造唯一配对和两种干扰并随机排列，继续用 `readTraceContent` 校验和保存既有格式。已保存记录不再运行编译。原有合法 `records` 返回仍能验证读取，不静默修补不合法旧候选。
+
+`scripts/test-oldstreet-campaign-live.ts` 记录每次请求上下文、原始输出、结构准入和累计使用量；已有报告路径拒绝覆盖。`OLDSTREET_MODEL_TEST_USED` 用于同一有界批次在修复后延续累计计数，不是批准追加额度。`_qa/campaign-fixture.ts` 可显式指定 `OLDSTREET_QA_CAMPAIGN_REPORT` 回放已记录的一组内容，严格检查上下文一致，无新网络请求，也不用于生产。
+
+实际六请求及叙事失败见 `campaign-live-20260917/review.md`：模型输出可解并不代表问题被回答，当前尚无已验证的语义准入保证。
+
 ## 新主线的委托、问题与答案（2026-09-17，本地增量）
 
 `old-street-campaign-story.ts` 只在新建 `letter-trail-v2` 旅程时写入委托事实、目标与可见开场；恢复、升级以及 v1/普通旅程不回填它。启动提示读取该旅程保存的开场，发现页和已知信息共用同一委托标记。结局只有在该标记和调查完成事实都成立时才称为完成家人委托，旧结局不改写。

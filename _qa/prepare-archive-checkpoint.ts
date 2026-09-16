@@ -8,6 +8,7 @@ import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
 import {oldStreetDoors,oldStreetSpatialPlan} from '../src/old-street-space'
 import type {AuthorityStorage} from '../server/session-authority'
 import {campaignFixture} from './campaign-fixture'
+import {campaignRecordMatches} from '../src/old-street-campaign'
 const raw=new DatabaseSync('.data/campaign-map-playtest-20260917/journeys.sqlite',{open:true})
 raw.exec('PRAGMA busy_timeout=5000')
 try{
@@ -23,7 +24,7 @@ try{
  if(h.version===0){
   await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
   jobs.enqueue(owner,h.id,'trace');await jobs.run(owner,h.id,'trace')
-  await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:2})
+  await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:h.campaign!.trace!.content.records.findIndex((_,i)=>campaignRecordMatches(h.campaign!.trace!.content,i))})
   await steps(['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar'])
   jobs.enqueue(owner,h.id,'parcel');await jobs.run(owner,h.id,'parcel')
   await send('photo-folder',{type:'campaign-read',stage:'parcel'});await send('photo-folder',{type:'campaign-decide',stage:'parcel',selection:'leave'})

@@ -25,5 +25,5 @@ const port=Number(process.env.OLDSTREET_QA_PORT)||(probe.address() as {port:numb
 await new Promise<void>((resolve,reject)=>probe.close(error=>error?reject(error):resolve()))
 const server=await createServer({...config,configFile:false,mode:'oldstreet-dev',server:{host:'127.0.0.1',port,strictPort:true}})
 await server.listen()
-console.log('Synthetic campaign map playtest: '+server.resolvedUrls?.local[0]+'?debug=1 — no remote model/media; isolated local database')
+console.log((process.env.OLDSTREET_QA_CAMPAIGN_REPORT?'Recorded provider replay':'Synthetic campaign map playtest')+': '+server.resolvedUrls?.local[0]+'?debug=1 — no remote model/media; isolated local database')
 for(const signal of ['SIGINT','SIGTERM'] as const)process.once(signal,()=>{void server.close().then(()=>process.exit(0))})

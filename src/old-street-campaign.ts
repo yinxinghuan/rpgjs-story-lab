@@ -31,6 +31,22 @@ export function readTraceContent(raw:unknown):TraceContent{
  for(const key of ['mark','wrapping'] as const)if(content.records.filter(r=>r[key].normalize('NFKC').toLowerCase()===content.clue[key].normalize('NFKC').toLowerCase()).length<2)throw Error('CAMPAIGN_PUZZLE_TRIVIAL')
  return content
 }
+/** Model authors vocabulary; the engine constructs the solvable conjunction.
+ * The accepted result is stored as ordinary TraceContent, never re-shuffled. */
+export function compileTraceDraft(raw:unknown,variant=Math.floor(Math.random()*6)):TraceContent{
+ const r=object(raw,['title','marks','wrappings','subjects'])
+ const pair=(value:unknown)=>{
+  if(!Array.isArray(value)||value.length!==2)throw Error('CAMPAIGN_CONTENT_INVALID')
+  const values=value.map(v=>line(v,60))
+  if(values[0].normalize('NFKC').toLowerCase()===values[1].normalize('NFKC').toLowerCase())throw Error('CAMPAIGN_CONTENT_INVALID')
+  return values
+ }
+ if(!Array.isArray(r.subjects)||r.subjects.length!==3||!Number.isInteger(variant)||variant<0||variant>5)throw Error('CAMPAIGN_CONTENT_INVALID')
+ const marks=pair(r.marks),wrappings=pair(r.wrappings),subjects=r.subjects.map(v=>line(v,70))
+ const records=[{label:subjects[0],mark:marks[0],wrapping:wrappings[0]},{label:subjects[1],mark:marks[0],wrapping:wrappings[1]},{label:subjects[2],mark:marks[1],wrapping:wrappings[0]}]
+ const order=[[0,1,2],[0,2,1],[1,0,2],[2,0,1],[1,2,0],[2,1,0]][variant]
+ return readTraceContent({title:line(r.title,60),clue:{mark:marks[0],wrapping:wrappings[0]},records:order.map(i=>records[i])})
+}
 export function readParcelContent(raw:unknown):ParcelContent{
  const r=object(raw,['title','fragment','question']);return {title:line(r.title,60),fragment:line(r.fragment,420),...(r.question===undefined?{}:{question:line(r.question,140)})}
 }
