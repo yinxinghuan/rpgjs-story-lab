@@ -1,3 +1,4 @@
+import {introduceCampaignCommission,campaignCommission} from '../src/old-street-campaign-story'
 import {oldStreetAttemptContext,type OldStreetAttemptGenerator} from './old-street-attempt'
 import {prepareCampaignAction,type CampaignCandidate} from './old-street-campaign-actions'
 import {campaignComplete} from '../src/old-street-campaign'
@@ -55,6 +56,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(options!==undefined){
         if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         h.campaign={version:(options as {campaign:string}).campaign==='letter-trail-v2'?2:1}
+        if(h.campaign.version===2)introduceCampaignCommission(h.save)
       }
       check(h);return h
     },
@@ -202,6 +204,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(body.action==='oldstreet:match-photos'&&!oldStreetPhotoMatches(body.photoMatch))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
       let next:OldStreetHead, text=resolution.successText
       if(body.action==='oldstreet:take-letter'&&h.campaign)text=h.save.locale==='zh'?'你收好密封信，信旁另有一张寄存条。先到铺里的记录册比对标记，找出还在旧街的材料。':'You secure the sealed letter. A separate filing slip beside it points to papers still on the street. Compare its marks with the shop record book.'
+      if(body.action==='oldstreet:take-letter'&&campaignCommission(h.save))text=h.save.locale==='zh'?'你收好密封信，没有拆开。旁边的寄存条指向家人托你查清的旧街记录，铺里的记录册能帮你找到它。':'You put away the letter without opening it. The filing slip points to the street records your family asked about; the shop ledger can help you locate them.'
       if(body.action==='oldstreet:observe-darkroom'&&h.save.facts['darkroom-photo-matched']){const keep=h.save.facts['darkroom-photo-choice']==='keep';text=h.save.locale==='zh'?(keep?'拼好的旧街照片已在你的行囊里。':'拼好的旧街照片平放在显影台上。'):(keep?'The completed street photograph is in your bag.':'The completed street photograph lies flat on the developing bench.')}
       if(oldStreetDoors().some(d=>d.actionId===body.action)) {
         const result=prepareDoorTravel(h.save,c,binding,{scene:h.sceneId,target:body.target,position:pos,actionId:body.action})

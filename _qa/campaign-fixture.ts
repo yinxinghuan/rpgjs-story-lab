@@ -18,5 +18,5 @@ export const campaignFixture:OldStreetCampaignGenerator=async(context)=>{
   {label:'Roof measurements',mark:'one notch',wrapping:'linen cord'},
   {label:'Street repairs',mark:'two notches',wrapping:'linen cord'},
  ]}
- return context.locale==='zh'?{title:'修好的小桥',fragment:`「${context.previous.label}」纸袋里保存着一张维修便条。便条记着：洪水过后，邻居们换掉了河边小桥上的三块旧木板，恢复了通向工坊的道路。`}:{title:'The repaired footbridge',fragment:`The packet labelled “${context.previous.label}” holds a repair note. After the flood, neighbours replaced three boards on the footbridge, restoring the path to the workshops.`}
+ return context.locale==='zh'?{title:'小桥的一张便条',fragment:`「${context.previous.label}」纸袋里有一张没有日期的便条，记着小桥上换了三块木板。旁边却只有“测量”和“裁切”两个词，事情的经过并没有写全。`,...(context.investigation?{question:'替换木板是在测量损坏处之前，还是之后裁切的？'}:{})}:{title:'A note from the footbridge',fragment:`The packet labelled “${context.previous.label}” holds an undated note: three boards were replaced on the footbridge. It lists “measurement” and “cutting” without explaining their order.`,...(context.investigation?{question:'Were the replacement boards cut before or after the damage was measured?'}:{})}
 }

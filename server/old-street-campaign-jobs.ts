@@ -15,7 +15,7 @@ export function campaignJobContext(h:OldStreetHead,stage:Stage):CampaignContext{
   if(h.campaign.version!==2||!h.campaign.parcel?.observed)throw new LabError('CAMPAIGN_PAPERS_REQUIRED',409)
   return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),papers:structuredClone(h.campaign.parcel.content)}
  }
- return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected])}
+ return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),...(h.campaign.version===2?{investigation:true as const}:{})}
 }
 /** Sidecar draft only: movement/ordinary actions continue during generation. */
 export class OldStreetCampaignJobs{

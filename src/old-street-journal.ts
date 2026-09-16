@@ -1,3 +1,4 @@
+import {campaignCommission} from './old-street-campaign-story'
 import {oldStreetPropState} from './old-street-prop-state'
 import {campaignComplete,type OldStreetCampaign} from './old-street-campaign'
 import {campaignPropTitle} from './old-street-campaign-interaction'
@@ -8,6 +9,7 @@ export function oldStreetCurrentPurpose(save:StorySave,campaign?:OldStreetCampai
  if(f.departed===true)return t('信已经交给家人。','The letter has been delivered.')
  if(campaign?.version===2&&campaign.parcel?.observed&&!campaign.archive?.order)return campaign.archive?t('进入档案工作间，调查两处资料架，再到整理桌核对先后顺序。','Examine both archive shelves, then reconstruct the order at the sorting table.'):t('在地下室资料架追查原始记录，准备隔壁档案工作间。','Follow the source records from the cellar shelf to prepare the adjoining archive.')
  if(f['letter-taken']===true&&campaign&&!campaignComplete(campaign))return campaign.trace?.selected===undefined?t('到修表铺记录册比对寄存条，寻找信件关联的材料。','Compare the filing slip with the shop record book to trace the papers linked to the letter.'):t('到地下储物室阅读寄存材料，再决定带走原件或留下。','Read the archived papers in the cellar, then decide whether to take the original or leave it there.')
+ if(campaignCommission(save)&&!save.characters.some(c=>c.id==='zhou-watchmaker'&&c.status==='known')&&!f['letter-unlocked']&&!save.inventory.some(i=>i.id==='letter-key'&&i.count>0)&&!f['letter-taken'])return save.objective
  if(f['letter-taken']===true)return t('信已收好，可以从街口回家；也可以继续逛逛。','You have the letter. Go home from the street, or keep exploring.')
  if(f['letter-unlocked']===true)return t('修表铺的小格已经打开，回去收好里面的信。','The compartment in the watch shop is open. Collect the letter inside.')
  if(save.inventory.some(i=>i.id==='letter-key'&&i.count>0))return t('带钥匙回修表铺，打开小格取信。','Take the key to the watch shop and open the compartment to collect the letter.')
@@ -27,12 +29,13 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
   photos:t('照片夹上印着照相馆的标记。','The folder bears the photo studio’s stamp.'),
  }
  const notes:Array<{id:string;title:string;text:string}>=[]
+ const commission=campaignCommission(save);if(commission)notes.push({id:'campaign-commission',title:t('家人的委托','Your family’s request'),text:commission})
  if(campaign?.trace?.observed){
   const {clue,records}=campaign.trace.content
   notes.push({id:'campaign-slip',title:t('寄存条','Filing slip'),text:`${clue.mark}; ${clue.wrapping}`})
   for(const [index,r] of records.entries())notes.push({id:`campaign-record-${index}`,title:r.label,text:`${r.mark}; ${r.wrapping}`+(campaign.trace.selected===index?t(' · 已确认；记录指向地下储物室资料架。',' · Confirmed; this record points to the cellar shelf.'):'')})
  }
- if(campaign?.parcel?.observed)notes.push({id:'campaign-papers',title:campaign.parcel.content.title,text:campaign.parcel.content.fragment})
+ if(campaign?.parcel?.observed){notes.push({id:'campaign-papers',title:campaign.parcel.content.title,text:campaign.parcel.content.fragment});if(campaign.parcel.content.question)notes.push({id:'campaign-question',title:t('记录里的疑问','The unanswered question'),text:campaign.parcel.content.question})}
  if(campaign?.parcel?.disposition)notes.push({id:'campaign-disposition',title:t('原件去向','The original papers'),text:campaign.parcel.disposition==='take'?t('原件已在行囊里，架上不再留着这份材料。','The original is in your bag, no longer on the shelf.'):t('原件留在资料架上，你记住了内容。','The original remains on the shelf; you remember its contents.')})
  if(campaign?.archive){for(const source of campaign.archive.examined)notes.push({id:'archive-'+source,title:t(source==='index'?'施工索引':'工作日志',source==='index'?'Work index':'Work log'),text:archiveEvidence(campaign.archive.content,source,save.locale).join(' ')});if(campaign.archive.order)notes.push({id:'archive-reconstructed',title:campaign.archive.content.title,text:campaign.archive.content.discovery})}
  const encounters:Record<string,{character:string;text:string}>={

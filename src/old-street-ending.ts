@@ -1,3 +1,4 @@
+import {campaignCommission} from './old-street-campaign-story'
 import type {StorySave,StoryCartridge,StoryEndingCandidate} from './vendor/original-train/types'
 import {buildEndingSnapshot,finalizeEnding} from './vendor/original-train/engine/endingDirector'
 /** A quiet exploration ending has no mandatory loss, four-act montage or new
@@ -7,9 +8,11 @@ export function completeOldStreetEnding(save:StorySave,cartridge:StoryCartridge)
  if(save.finale.status==='complete')return
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en
  const flag=(id:string)=>save.facts[id]===true
+ const commission=Boolean(campaignCommission(save))&&flag('archive-reconstructed')
  const preserved=[t('密封信已交到家人手里。','The sealed letter is back with your family.')]
  if(save.facts['campaign-enclosure-disposition']==='take')preserved.push(t('你也带回了在旧街查到的寄存材料，原件不再留在资料架上。','You also brought home the archived papers you traced. The original no longer remains on the shelf.'))
  if(save.facts['campaign-enclosure-disposition']==='leave')preserved.push(t('你向家人转述了材料里的发现，原件仍留在旧街。','You told your family what you found in the papers. The original remains on the old street.'))
+ if(commission)preserved.push(t('你也把核对过的旧街记录讲给家人听，完成了这次委托。','You shared the account you reconstructed from the street records, completing your family’s request.'))
  if(flag('archive-reconstructed')){const record=save.blocks.find(b=>b.data?.archiveReconstructed===1);if(record)preserved.push(record.text)}
  if(flag('clock-returned'))preserved.push(t('旧钟回到了洗衣店。','The old clock is back at the laundry.'))
  if(flag('photos-returned'))preserved.push(t('照片夹回到了照相馆。','The photo folder is back at the studio.'))
@@ -30,7 +33,7 @@ export function completeOldStreetEnding(save:StorySave,cartridge:StoryCartridge)
  // invent a returned key unless a recorded promise actually exists.
  const zhou=epilogues.find(e=>e.characterId==='zhou-watchmaker')
  if(zhou&&!flag('key-borrowed')&&!save.relationships.some(r=>r.characterId==='zhou-watchmaker'&&r.axis==='kept-promise'))zhou.text=t(`你在河边工作棚认识了${watchmaker}。`,`You met ${watchmaker} at the riverside workshop.`)
- const candidate:StoryEndingCandidate={anchorFamily:'oldstreet-home',title:t('信已送到','The letter is home'),thesis:t('一封信到了目的地，旧街留下了你走过的痕迹。','The letter reached its destination. Your visit left its mark on the old street.'),capabilitiesUsed:[],irreversibleCosts:[],preserved,lost:[],unresolved,finaleScenes:[t('你把密封信交到家人手里。','You place the sealed letter in your family’s hands.'),...preserved.slice(1)],characterEpilogues:epilogues,regionalEpilogues:[],finalImagePrompt:''}
+ const candidate:StoryEndingCandidate={anchorFamily:'oldstreet-home',title:commission?t('信与答案','A letter and an answer'):t('信已送到','The letter is home'),thesis:t('一封信到了目的地，旧街留下了你走过的痕迹。','The letter reached its destination. Your visit left its mark on the old street.'),capabilitiesUsed:[],irreversibleCosts:[],preserved,lost:[],unresolved,finaleScenes:[t('你把密封信交到家人手里。','You place the sealed letter in your family’s hands.'),...preserved.slice(1)],characterEpilogues:epilogues,regionalEpilogues:[],finalImagePrompt:''}
  const snapshot=buildEndingSnapshot(save,cartridge)
  save.finale={status:'complete',reason:'oldstreet:letter-delivered',snapshot,ending:finalizeEnding(candidate,snapshot,false)}
  save.sessionEnded=true;save.choices=[]

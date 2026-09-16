@@ -2,8 +2,8 @@ import {readArchiveContent,archiveOrderMatches,type ArchiveProgress} from './old
 /** Journey-local generated content. No executable model rules or media promises. */
 export type TraceRecord={label:string;mark:string;wrapping:string}
 export type TraceContent={title:string;clue:{mark:string;wrapping:string};records:TraceRecord[]}
-export type ParcelContent={title:string;fragment:string}
-export type CampaignContext={locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
+export type ParcelContent={title:string;fragment:string;question?:string}
+export type CampaignContext={locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
  version:1|2;
@@ -32,7 +32,7 @@ export function readTraceContent(raw:unknown):TraceContent{
  return content
 }
 export function readParcelContent(raw:unknown):ParcelContent{
- const r=object(raw,['title','fragment']);return {title:line(r.title,60),fragment:line(r.fragment,420)}
+ const r=object(raw,['title','fragment','question']);return {title:line(r.title,60),fragment:line(r.fragment,420),...(r.question===undefined?{}:{question:line(r.question,140)})}
 }
 export function campaignRecordMatches(content:TraceContent,index:number){return Number.isInteger(index)&&!!content.records[index]&&signature(content.records[index])===signature(content.clue)}
 export function campaignComplete(c:OldStreetCampaign){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)}

@@ -2,7 +2,7 @@ import {useEffect,useRef,useState} from 'react'
 import {archiveEvidence,type ArchiveCardId,type ArchiveProgress} from './old-street-archive'
 import type {CampaignJob} from '../server/old-street-campaign-jobs'
 import './old-street-campaign-view.css'
-export function OldStreetArchiveView({archive,target,locale,sessionId,api,busy,feedback,act,tryAnother,close}:{archive?:ArchiveProgress;target:string;locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;busy:boolean;feedback:string;act:(type:'plan'|'observe'|'decide',order?:ArchiveCardId[])=>Promise<void>;tryAnother:()=>void;close:()=>void}){
+export function OldStreetArchiveView({archive,target,question,locale,sessionId,api,busy,feedback,act,tryAnother,close}:{archive?:ArchiveProgress;target:string;question?:string;locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;busy:boolean;feedback:string;act:(type:'plan'|'observe'|'decide',order?:ArchiveCardId[])=>Promise<void>;tryAnother:()=>void;close:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,root=useRef<HTMLDialogElement>(null)
  const [job,setJob]=useState<CampaignJob|null>(null),[error,setError]=useState(false),[waiting,setWaiting]=useState(false),[refresh,setRefresh]=useState(0),[reading,setReading]=useState(true)
  const [order,setOrder]=useState<ArchiveCardId[]>(archive?.order??[])
@@ -20,6 +20,7 @@ export function OldStreetArchiveView({archive,target,locale,sessionId,api,busy,f
  return <dialog ref={root} className="os-map os-campaign" aria-labelledby="os-archive-title" onCancel={e=>{e.preventDefault();if(!busy)close()}}>
   <header><h2 id="os-archive-title">{archive?.content.title??t('追查原始记录','Follow the source records')}</h2><button disabled={busy} onClick={close}>{t('收起','Close')}</button></header>
   <div className="os-campaign__body">
+   {question&&!archive?.order&&<p className="os-campaign__clue">{question}</p>}
    {!archive?<><p>{t('材料指向隔壁档案工作间。那里的记录能补全这件事的经过。','The papers point to the adjoining archive workroom, where source records can fill in what happened.')}</p><p role="status">{error?t('暂时连接不上，可以重新连接。','Connection interrupted. You can reconnect.'):reading?t('正在查看准备进度…','Checking progress…'):job?.state==='ready'?t('工作间已经可以进入。','The workroom is ready to enter.'):job?.state==='failed'?t('暂时没能备齐记录，可以重试。','The records could not be prepared. You can retry.'):['queued','planning'].includes(job?.state??'')?t('正在准备记录。可以收起，先去别处探索。','Preparing the records. You can close this and explore elsewhere.'):t('先备齐这里的原始记录，再沿地下室侧门进去调查。','Prepare the source records, then enter through the cellar side door.')}</p></>
    :target==='photo-folder'?<p>{t('从地下室东侧的门进入档案工作间。两处资料架和整理桌都在里面。','Enter through the cellar’s east door. Both source shelves and the sorting table are inside.')}</p>
    :source?<><p>{t(source==='index'?'这是施工索引里的片段。':'这是工作日志里的片段。',source==='index'?'This shelf holds the work index.':'This shelf holds the work log.')}</p>{archive.examined.includes(source)?archiveEvidence(archive.content,source,locale).map((text,i)=><p key={i} className="os-campaign__clue">{text}</p>):<p>{t('靠近后查阅，把可核对的线索记下来。','Examine the records and note their evidence.')}</p>}</>

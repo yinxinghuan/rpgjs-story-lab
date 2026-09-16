@@ -13,7 +13,7 @@ import {oldStreetJournal} from '../src/old-street-journal'
 import type {AuthorityStorage} from '../server/session-authority'
 const archive={title:'The footbridge work',layout:'west-index',cards:[{id:'a',label:'The new boards were fitted'},{id:'b',label:'Replacement boards were cut'},{id:'c',label:'The footbridge reopened'},{id:'d',label:'The damaged boards were surveyed'}],sources:{index:[{before:'d',after:'b'},{before:'a',after:'c'}],ledger:[{before:'b',after:'a'}]},discovery:'Neighbors measured the damage before cutting replacement boards. The path reopened only after the boards were fitted.'}
 const trace={title:'Filed packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[{label:'Bridge repairs',mark:'two notches',wrapping:'linen cord'},{label:'Roof repairs',mark:'two notches',wrapping:'folded flap'},{label:'Workshop repairs',mark:'one notch',wrapping:'linen cord'}]}
-const parcel={title:'A repaired path',fragment:'A note records three new boards on the old footbridge.'}
+const parcel={title:'A repaired path',fragment:'A note records three new boards on the old footbridge.',question:'Was the damage measured before replacement boards were cut?'}
 
 test('generated ordering evidence has a unique answer requiring both sources; variants change the answer',()=>{
  const c=readArchiveContent(archive)
@@ -60,7 +60,12 @@ test('new campaign enters its generated archive through the real door, gathers e
   await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
   await prepare('trace');await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:0})
   await steps(['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar'])
-  await prepare('parcel');await send('photo-folder',{type:'campaign-read',stage:'parcel'});await send('photo-folder',{type:'campaign-decide',stage:'parcel',selection:'leave'})
+  await prepare('parcel')
+  assert.ok(!campaignInputKnowledge(h).some(k=>k.id==='learned:campaign-question'),'a prepared draft is not player knowledge')
+  await send('photo-folder',{type:'campaign-read',stage:'parcel'})
+  assert.equal(campaignInputKnowledge(h).find(k=>k.id==='learned:campaign-question')?.text,parcel.question)
+  assert.equal(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='campaign-question')?.text,parcel.question)
+  await send('photo-folder',{type:'campaign-decide',stage:'parcel',selection:'leave'})
   assert.equal(campaignComplete(h.campaign!),false,'v2 cannot finish at the former short ending')
   await prepare('archive');assert.equal(h.save.facts['archive-ready'],undefined,'background generation does not open a room')
   const admitted=await send('photo-folder',{type:'campaign-plan',stage:'archive'})
@@ -80,6 +85,8 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.text===archive.discovery))
   await steps(['cellar','yard','street','oldstreet:leave'])
   assert.equal(h.save.finale.status,'complete');assert.ok(h.save.finale.ending?.preserved.includes(archive.discovery))
+  assert.equal(h.save.finale.ending?.title,'A letter and an answer')
+  assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
   s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,3)
  }finally{raw.close()}
 })

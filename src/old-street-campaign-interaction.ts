@@ -1,3 +1,4 @@
+import {campaignCommission} from './old-street-campaign-story'
 import {campaignAnchor} from './old-street-campaign'
 import type {OldStreetHead} from './old-street-head'
 import {originalActionIntentIssues} from './original-action-intent'
@@ -40,14 +41,16 @@ export function campaignPropTitle(h:Pick<OldStreetHead,'save'|'campaign'>,target
 export function campaignInputKnowledge(h:OldStreetHead){
  const c=h.campaign,t=(zh:string,en:string)=>h.save.locale==='zh'?zh:en
  const knowledge:Array<{id:string;text:string}>=[]
- if(!c||!h.save.facts['letter-taken'])return knowledge
+ if(!c)return knowledge
+ const commission=campaignCommission(h.save);if(commission)knowledge.push({id:'learned:campaign-commission',text:commission})
+ if(!h.save.facts['letter-taken'])return knowledge
  knowledge.push({id:'learned:filing-slip',text:t('密封信旁有一张独立寄存条，需要在修表铺记录册比对。','A separate filing slip beside the sealed letter can be compared with the shop record book.')})
  if(c.trace?.observed){
   const {clue,records}=c.trace.content
   knowledge.push({id:'learned:campaign-records',text:t('已经查阅的寄存条与记录：','Previously examined slip and records: ')+JSON.stringify({clue,records})})
  }
  if(c.trace?.selected!==undefined)knowledge.push({id:'learned:campaign-match',text:t(`已确认记录：${c.trace.content.records[c.trace.selected].label}。这条记录指向地下储物室的旧资料架。`,`Confirmed record: ${c.trace.content.records[c.trace.selected].label}. This record points to the old paper shelf in the cellar.`)})
- if(c.parcel?.observed)knowledge.push({id:'learned:campaign-papers',text:c.parcel.content.fragment})
+ if(c.parcel?.observed){knowledge.push({id:'learned:campaign-papers',text:c.parcel.content.fragment});if(c.parcel.content.question)knowledge.push({id:'learned:campaign-question',text:c.parcel.content.question})}
  if(c.archive){
   for(const source of c.archive.examined)knowledge.push({id:'learned:archive-'+source,text:archiveEvidence(c.archive.content,source,h.save.locale).join(' ')})
   if(c.archive.order)knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery})
