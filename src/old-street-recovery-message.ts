@@ -22,6 +22,10 @@ export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
 export function oldStreetActionFailureMessage(code:string,locale:'zh'|'en'){
  const text=(zh:string,en:string)=>locale==='zh'?zh:en
  if(code==='NARRATION_RATE_LIMIT')return text('先歇一会儿再聊吧。现在仍可走动或选择行动。','Try chatting again shortly. You can still walk around or choose an action.')
+ if(code==='CAMPAIGN_RECORD_MISMATCH')return text('这条记录没有同时对上两处特征，再比较一下寄存条。','This record does not match both details. Compare it with the filing slip again.')
+ if(code==='CAMPAIGN_OBSERVATION_REQUIRED')return text('先看看眼前的材料，再作决定。','Examine the papers before deciding.')
+ if(code==='CAMPAIGN_UNFINISHED')return text('寄存材料的线索还没有查完，可以看看当前发现。','The trail to the archived papers is unfinished. Check your discoveries.')
+ if(code==='CAMPAIGN_PLAN_REJECTED'||code==='CAMPAIGN_GENERATOR_UNAVAILABLE')return text('这份材料暂时没能展开。进度已保留，可以稍后再试。','These papers could not be prepared yet. Your progress is safe; try again later.')
  if(code==='OLD_STREET_MODEL_UNAVAILABLE')return text('暂时没能回应。可以稍后再试，或选择现有的话题和行动。','A response is unavailable right now. Try later, or choose an available topic or action.')
  if(code==='OLD_STREET_DIALOGUE_TIMEOUT')return text('这次没等到回应。可以再问一次，或先看看别处。','No reply came this time. Ask again, or explore somewhere else.')
  if(code==='OLD_STREET_DIALOGUE_REJECTED')return text('这次没能回答。可以换个问法，或选择一个话题。','That question could not be answered. Rephrase it, or choose a topic.')
