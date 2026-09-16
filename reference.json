@@ -1,0 +1,22 @@
+{
+  "source": "doc/oldstreet-lan-candidate/standing.png",
+  "sourceSha256": "004dc0d9959da5cb124348ab5e7c503492849bf8c24a505ffbe10221320ee3d9",
+  "sourceRetained": true,
+  "sourceRect": {
+    "x": 256,
+    "y": 0,
+    "width": 256,
+    "height": 352
+  },
+  "operation": "Extract left standing frame; no scaling or redraw; center on explicitly composed magenta 9:16 canvas",
+  "canvas": {
+    "width": 288,
+    "height": 512
+  },
+  "offset": {
+    "x": 16,
+    "y": 80
+  },
+  "referenceSha256": "243aa915b233ef1068448d894e3efaf9601c4c453473d5d918ee8fc3ddd859b8",
+  "purpose": "experimental video keyframe, not a game asset"
+}

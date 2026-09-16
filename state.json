@@ -1,0 +1,23 @@
+{
+  "requestSha256": "a198cdeb03e44288e4a82263fa93ba556317888d292fd54eee7618781903b26c",
+  "requestId": "fe19baaf-b0f8-4725-ace9-52cb4010de9d",
+  "startedAt": "2026-09-16T14:59:58.964Z",
+  "status": "failed",
+  "admission": "not-reviewed",
+  "task": {
+    "task_id": "mt_b0532ab4556d501a6a7c6bf2b513e84a",
+    "request_id": "fe19baaf-b0f8-4725-ace9-52cb4010de9d",
+    "type": "video",
+    "status": "failed",
+    "created_at": 1789570800447,
+    "updated_at": 1789570853561,
+    "timing_ms": 0,
+    "error": {
+      "code": "PROVIDER_REJECTED",
+      "message": "ReadTimeout: HTTPSConnectionPool(host='raw.githubusercontent.com', port=443): Read timed out. (read timeout=50)",
+      "retryable": false
+    }
+  },
+  "error": "PROVIDER_REJECTED",
+  "retryable": false
+}

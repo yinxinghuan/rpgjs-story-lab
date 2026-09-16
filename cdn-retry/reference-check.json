@@ -1,0 +1,7 @@
+{
+  "url": "https://cdn.jsdelivr.net/gh/yinxinghuan/rpgjs-story-lab@289fe2fc4dd9fc31b2a93e2e9f43aebca8bc0a73/doc/oldstreet-lan-video-walk/reference.png",
+  "sha256": "243aa915b233ef1068448d894e3efaf9601c4c453473d5d918ee8fc3ddd859b8",
+  "bytes": 48350,
+  "replacesRequestId": "fe19baaf-b0f8-4725-ace9-52cb4010de9d",
+  "reason": "Structured terminal failure: generation server timed out fetching raw.githubusercontent.com. Prompt and source pixels unchanged."
+}
