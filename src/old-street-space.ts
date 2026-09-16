@@ -1,3 +1,4 @@
+import {oldStreetFurniture} from './old-street-furniture'
 import {oldStreetCharacterBindings} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
 import {oldStreetCartridge, oldStreetConnections, oldStreetTravelId, oldStreetActionId, type OldStreetRoom} from './old-street-cartridge'
@@ -85,19 +86,19 @@ export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, resident
     return {...p, body, position, approach: {x: position.x, y: position.y + 28}}
   })
 }
-export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>): Rect[] {
+export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true): Rect[] {
   // Resident choreography is local. The authority validates permanent geometry
   // and the bounded authored interaction area, never a stale NPC home hitbox.
   // The live client supplies the actual resident positions for solid collision.
-  return oldStreetProjectedProps(save,residents).filter(p => p.room === room && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
-    && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))
+  return [...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents).filter(p => p.room === room && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
+    && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))]
 }
-export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>) {
+export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true) {
   const r = oldStreetFloors[room as OldStreetRoom]
   if (!r || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return false
   const feet = {...p, ...body}
   return p.x >= r.x && p.y >= r.y && p.x + feet.w <= r.x + r.w && p.y + feet.h <= r.y + r.h
-    && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents).some(body => intersects(feet, body))
+    && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents,includeFurniture).some(body => intersects(feet, body))
 }
 export function oldStreetSafePosition(room:string,p:SpatialPoint,save:Pick<StorySave,'facts'>):SpatialPoint {
   if(oldStreetWalkable(room,p,save))return {...p}
@@ -113,7 +114,7 @@ export const oldStreetPath = (room: string, start: SpatialPoint, end: SpatialPoi
 export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}}): SpatialBindingDefinition {
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
-  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-blockout-2', interactionDistance: 54,
+  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-furniture-3', interactionDistance: 54,
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn: pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),

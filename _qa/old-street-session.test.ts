@@ -200,7 +200,7 @@ test('legacy footprint upgrades in place without resetting story or journey iden
   raw.prepare('UPDATE journeys SET data=? WHERE id=?').run(JSON.stringify(h),h.id)
   const updated=s.get('owner',h.id)
   assert.equal(updated.id,h.id);assert.equal(updated.version,h.version);assert.deepEqual(updated.save,h.save)
-  assert.equal(updated.mapVersion,'oldstreet-blockout-2');assert.ok(updated.position.x<318)
+  assert.equal(updated.mapVersion,oldStreetSpatialPlan().mapVersion);assert.ok(updated.position.x<318)
   assert.deepEqual(s.get('owner',h.id),updated)
  }finally{raw.close()}
 })

@@ -1,0 +1,13 @@
+{
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "d53f92b1-5e44-4331-bef0-b02ffb814e9a",
+  "mode": "edit",
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789451817908142.png"
+  ],
+  "prompt": "Use reference only for its detailed muted pixel RPG furniture style and raised orthographic camera. ONE old square wooden repair workbench sprite, centered on 512x512 canvas, fully contained within x80..432 y70..440. Strict non-isometric orthographic overhead RPG projection: rectangular top with horizontal left/right spanning edges, parallel vertical depth edges; see a broad top plane and a short south-facing drawer front, very little leg length. Weathered warm brown timber, slender dark outlines, crisp medium-fine stepped pixel clusters and restrained shading. Small fixed iron vise bolted at rear left, a shallow tray of tiny dull screws at rear right, a permanently attached worn green work mat. Keep middle clear. Bench is square in plan, not a long desk. No clock, watch, keys, letter, photo, loose quest object, people, labels, text or UI. No perspective vanishing point, no diagonal isometric edges, no floor or wall. Background pure flat #FF00FF magenta, no shadow on background, no checkerboard, no gradient. No magenta inside furniture."
+}

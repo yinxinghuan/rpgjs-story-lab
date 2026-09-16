@@ -2064,3 +2064,7 @@ Worker/对白组合测试 15 项通过，其中新增两例分别模拟自然行
 ### 工作棚地面独立化（2026-09-16）
 
 新增环境资源 shedFloor，经统一预加载进入 OldStreetFloor，替代工作棚对 cellarFloor 的裁切复用；地图和碰撞不变。平台首图误带人物已拒绝，一次修正后实际沿照相馆—屋顶—工作棚检查比例与入口。细节见 `doc/oldstreet-shed-floor/review.md`。构建和 secret audit 通过，旧旅程保留，未发布。
+
+### 固定家具与旧地图落点升级（2026-09-16）
+
+`old-street-furniture.ts` 同时提供静态家具碰撞footprint和图集元数据，工作台由RPG-JS事件渲染而非纯地面贴图。新增素材进入启动下载、texture加载和销毁释放。地图升级到oldstreet-furniture-3，旧blockout-1/2允许按原几何读取，再恢复到新几何附近安全位置；新增测试证明故事、物品与旅程版本保持。7项家具/通路测试与25项会话测试、完整构建通过；实际地图检查人物绕桌以及前后画面。详见 `doc/oldstreet-shed-bench/review.md`，未发布。
