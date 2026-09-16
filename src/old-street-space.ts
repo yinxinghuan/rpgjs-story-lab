@@ -1,4 +1,5 @@
 import {oldStreetFurniture} from './old-street-furniture'
+import {archiveLayout} from './old-street-archive'
 import {oldStreetCrateFootprint} from './old-street-crate-layout'
 import {oldStreetCharacterBindings,usesCurrentLaundryCast,usesCurrentPhotographerCast} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
@@ -15,6 +16,7 @@ export const oldStreetHeroScale = .24
 export const oldStreetStride = 56
 /** Logical blockout coordinates, not approved art or final room proportions. */
 export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
+  archive:archiveLayout('west-index').floor,
   darkroom: {x:88,y:112,w:208,h:320},
   street: {x: 56, y: 32, w: 272, h: 512}, shop: {x: 80, y: 80, w: 224, h: 416},
   yard: {x: 48, y: 48, w: 288, h: 480}, laundry: {x: 88, y: 112, w: 208, h: 352},
@@ -23,6 +25,7 @@ export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
 }
 const pair = (a: Side, af: number, b: Side, bf: number): [Endpoint, Endpoint] => [{side: a, fraction: af}, {side: b, fraction: bf}]
 const doorPlacement: Record<string, [Endpoint, Endpoint]> = {
+  'cellar-archive':pair('E',.7,'S',.5),
   'studio-darkroom': pair('E', .33, 'S', .5),
   'shop-front': pair('W', .25, 'S', .6), 'studio-front': pair('E', .4, 'S', .5),
   'yard-alley': pair('N', .5, 'S', .5), 'shop-back': pair('N', .55, 'W', .6),
@@ -81,7 +84,8 @@ export const oldStreetProps = [
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates=false) {
-  return oldStreetProps.map(p => {
+  const archive=save.facts['archive-ready']===true?archiveLayout(save.facts['archive-layout']==='east-index'?'east-index':'west-index').props:[]
+  return [...oldStreetProps,...archive].map(p => {
     const resident=residents[p.id]
     if(resident&&['watchmaker','laundry-owner','photographer'].includes(p.id)){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
     if(p.id==='crates'&&legacyCrates){
@@ -128,7 +132,7 @@ export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
   return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-thresholds-4', interactionDistance: 54,
-    scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn: pointIn(id, .5, .52)})),
+    scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn:id==='archive'?archiveLayout('west-index').arrival:pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),
       ...oldStreetProjectedProps(save).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),

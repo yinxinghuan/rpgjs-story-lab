@@ -1,13 +1,15 @@
+import {readArchiveContent,archiveOrderMatches,type ArchiveProgress} from './old-street-archive'
 /** Journey-local generated content. No executable model rules or media promises. */
 export type TraceRecord={label:string;mark:string;wrapping:string}
 export type TraceContent={title:string;clue:{mark:string;wrapping:string};records:TraceRecord[]}
 export type ParcelContent={title:string;fragment:string}
-export type CampaignContext={locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord}
+export type CampaignContext={locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
- version:1;
+ version:1|2;
  trace?:CampaignInstance<TraceContent>&{selected?:number};
  parcel?:CampaignInstance<ParcelContent>&{disposition?:'take'|'leave'};
+ archive?:ArchiveProgress;
 }
 const object=(raw:unknown,keys:string[])=>{
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).some(k=>!keys.includes(k)))throw Error('CAMPAIGN_CONTENT_INVALID')
@@ -33,10 +35,10 @@ export function readParcelContent(raw:unknown):ParcelContent{
  const r=object(raw,['title','fragment']);return {title:line(r.title,60),fragment:line(r.fragment,420)}
 }
 export function campaignRecordMatches(content:TraceContent,index:number){return Number.isInteger(index)&&!!content.records[index]&&signature(content.records[index])===signature(content.clue)}
-export function campaignComplete(c:OldStreetCampaign){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')}
+export function campaignComplete(c:OldStreetCampaign){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)}
 export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCampaign|undefined{
  if(raw===undefined)return
- const c=object(raw,['version','trace','parcel']);if(c.version!==1)throw Error('CAMPAIGN_SAVE_INVALID')
+ const c=object(raw,['version','trace','parcel','archive']);if(c.version!==1&&c.version!==2)throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.trace!==undefined){
   const trace=object(c.trace,['id','content','observed','selected']);instance(trace);const content=readTraceContent(trace.content)
   if(trace.selected!==undefined&&(!trace.observed||!campaignRecordMatches(content,trace.selected as number)))throw Error('CAMPAIGN_SAVE_INVALID')
@@ -45,6 +47,13 @@ export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCam
   const trace=c.trace as OldStreetCampaign['trace'],parcel=object(c.parcel,['id','content','observed','disposition']);instance(parcel);readParcelContent(parcel.content)
   if(!trace||trace.selected===undefined)throw Error('CAMPAIGN_SAVE_INVALID')
   if(parcel.disposition!==undefined&&(!parcel.observed||!['take','leave'].includes(parcel.disposition as string)))throw Error('CAMPAIGN_SAVE_INVALID')
+ }
+ if(c.archive!==undefined){
+  if(c.version!==2||!(c.parcel as OldStreetCampaign['parcel'])?.observed)throw Error('CAMPAIGN_SAVE_INVALID')
+  const a=object(c.archive,['id','content','examined','order']);instance({id:a.id,observed:true})
+  const content=readArchiveContent(a.content)
+  if(!Array.isArray(a.examined)||new Set(a.examined).size!==a.examined.length||a.examined.some(v=>v!=='index'&&v!=='ledger'))throw Error('CAMPAIGN_SAVE_INVALID')
+  if(a.order!==undefined&&(a.examined.length!==2||!archiveOrderMatches(content,a.order)))throw Error('CAMPAIGN_SAVE_INVALID')
  }
 }
 function instance(r:Record<string,unknown>){if(typeof r.id!=='string'||!/^[a-zA-Z0-9-]{16,80}$/.test(r.id)||typeof r.observed!=='boolean')throw Error('CAMPAIGN_SAVE_INVALID')}

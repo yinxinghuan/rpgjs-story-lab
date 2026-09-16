@@ -6,7 +6,7 @@ import type {OldStreetExpansionJobs} from './old-street-expansion-jobs'
 import type {OldStreetCampaignJobs} from './old-street-campaign-jobs'
 import type {OldStreetExpansionMedia,ExpansionPhotoProducer} from './old-street-expansion-media'
 
-export function oldStreetCampaignOperation(method:string,owner:string,id:string,stage:'trace'|'parcel',jobs:OldStreetCampaignJobs|undefined,body:unknown,background:(p:Promise<unknown>)=>void){
+export function oldStreetCampaignOperation(method:string,owner:string,id:string,stage:'trace'|'parcel'|'archive',jobs:OldStreetCampaignJobs|undefined,body:unknown,background:(p:Promise<unknown>)=>void){
  if(!jobs)throw new LabError('CAMPAIGN_NOT_AVAILABLE',503)
  if(method==='GET')return {job:jobs.get(owner,id,stage)}
  if(method!=='POST')throw new LabError('METHOD_NOT_ALLOWED',405)
@@ -54,10 +54,10 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
   if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion,campaign:!!campaign})}
-  if(m[2]==='campaign-trace'||m[2]==='campaign-parcel')return oldStreetJson(oldStreetCampaignOperation(request.method,owner,m[1],m[2]==='campaign-trace'?'trace':'parcel',campaign?.jobs,request.method==='POST'?await readBody(request):undefined,campaign?.background??(()=>{})))
+  if(m[2]==='campaign-trace'||m[2]==='campaign-parcel'||m[2]==='campaign-archive')return oldStreetJson(oldStreetCampaignOperation(request.method,owner,m[1],m[2]==='campaign-trace'?'trace':m[2]==='campaign-parcel'?'parcel':'archive',campaign?.jobs,request.method==='POST'?await readBody(request):undefined,campaign?.background??(()=>{})))
   if(m[2]==='expansion-photo'){
    if(!expansion)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
    return oldStreetJson(oldStreetExpansionPhotoOperation(request.method,owner,m[1],expansion.media,expansion.produce,request.method==='POST'?await readBody(request):undefined,expansion.background))

@@ -27,12 +27,12 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
   </g>
   // This candidate has ~16 actual plank columns, not the requested 32.
   // Tile at half-room width: ~7 world units per plank, independent of camera zoom.
-  if(room==='shop')return <g>
+  if(room==='shop'||room==='archive')return <g>
     <defs><pattern id="os-narrow-wood" x={floor.x} y={floor.y} width={oldStreetWoodTile.width} height={oldStreetWoodTile.height} patternUnits="userSpaceOnUse"><image href={art.wood} width={oldStreetWoodTile.width} height={oldStreetWoodTile.height} opacity={oldStreetWoodTile.opacity}/></pattern></defs>
     <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#806142" stroke="#463d31" strokeWidth="2"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#a08866"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-narrow-wood)"/>
-    {pixelShop&&<OldStreetShopEnvironment image={art.shopWall}/>}
+    {pixelShop&&room==='shop'&&<OldStreetShopEnvironment image={art.shopWall}/>}
   </g>
   // The source's thin facade/border is excluded: only flat paving, light and
   // litter enter the walkable area. Runtime entrances retain their real slots.

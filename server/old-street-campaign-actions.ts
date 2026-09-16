@@ -3,9 +3,11 @@ import type {OldStreetHead} from '../src/old-street-head'
 import {bindOldStreet} from '../src/old-street-space'
 import {LabError} from '../src/journey-runtime'
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
-export type CampaignCandidate=(head:OldStreetHead,stage:'trace'|'parcel')=>unknown|undefined
+import {prepareArchiveAction} from './old-street-archive-actions'
+export type CampaignCandidate=(head:OldStreetHead,stage:'trace'|'parcel'|'archive')=>unknown|undefined
 
 export async function prepareCampaignAction(head:OldStreetHead,body:any,position:OldStreetHead['position'],generate:OldStreetCampaignGenerator|undefined,reserve:()=>boolean,candidate?:CampaignCandidate){
+ if(body.stage==='archive')return prepareArchiveAction(head,body,position,candidate)
  const anchor=campaignAnchor[body.stage as keyof typeof campaignAnchor],c=head.campaign
  if(!anchor||!c||head.save.facts['letter-taken']!==true||head.sceneId!==anchor.scene||body.target!==anchor.target||!bindOldStreet(head.save.locale,head.save).canInteract(anchor.target,anchor.scene,position))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  const next=structuredClone(head),campaign=next.campaign!,save=next.save,t=(zh:string,en:string)=>save.locale==='zh'?zh:en
@@ -55,6 +57,7 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
    if(body.selection==='take')save.inventory.push({id:'letter-enclosure',label:t('寄存的旧街材料','Archived street papers'),count:1,rarity:'common'})
    text=body.selection==='take'?t('你把材料收好，准备和密封信一起带回去。架上不再留着这份原件。','You pack the papers to bring home with the sealed letter. The original is no longer on the shelf.'):t('你记住材料里的发现，把原件留在架上。回家时可以转述，但不会带走实物。','You remember what you read and leave the original on the shelf. You can tell your family about it, but will not bring the papers.')
    save.objective=t('从街口带信回家，或继续帮助街上的人。','Take the letter home from the street, or stay to help the neighbors.')
+   if(campaign.version===2&&!campaign.archive?.order)save.objective=t('从资料架继续追查，进入隔壁档案工作间核对原始记录。','Follow the papers into the adjoining archive to examine the source records.')
   }
  }else if(body.type!=='campaign-plan')throw new LabError('INVALID_ACTION_TYPE')
  next.version++;next.position=position

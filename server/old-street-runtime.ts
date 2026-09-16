@@ -53,8 +53,8 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
     initial:(locale,id,options)=>{
       const h:OldStreetHead={id,version:0,mapVersion:plan.mapVersion,sceneId:'street',position:{...plan.scenes.find(s=>s.id==='street')!.spawn},save:createInitialSave(oldStreetCartridge(locale))}
       if(options!==undefined){
-        if((!campaignGenerator&&!campaignCandidate)||JSON.stringify(options)!==JSON.stringify({campaign:'letter-trail-v1'}))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
-        h.campaign={version:1}
+        if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
+        h.campaign={version:(options as {campaign:string}).campaign==='letter-trail-v2'?2:1}
       }
       check(h);return h
     },

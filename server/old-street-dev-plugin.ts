@@ -65,12 +65,12 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator){
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
     return send(200,s.create(owner,body.enrollment_id,body.locale,body.options))
    }
-   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel))?$/.exec(route)
+   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive))?$/.exec(route)
    if(!match)return send(404,{error:'NOT_FOUND'})
    const [,id,operation]=match
    if(operation==='expansion-capabilities'&&req.method==='GET'){s.get(owner,id);return send(200,{planning:!!expansions,media:!!expansionMedia,campaign:!!campaignJobs})}
-   if(operation==='campaign-trace'||operation==='campaign-parcel'){
-    return send(200,oldStreetCampaignOperation(req.method!,owner,id,operation==='campaign-trace'?'trace':'parcel',campaignJobs,body,p=>{void p.catch(()=>{})}))
+   if(operation==='campaign-trace'||operation==='campaign-parcel'||operation==='campaign-archive'){
+    return send(200,oldStreetCampaignOperation(req.method!,owner,id,operation==='campaign-trace'?'trace':operation==='campaign-parcel'?'parcel':'archive',campaignJobs,body,p=>{void p.catch(()=>{})}))
    }
    if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
    if(operation==='expansion-photo-file'&&req.method==='GET'){

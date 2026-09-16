@@ -22,6 +22,10 @@ export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
 export function oldStreetActionFailureMessage(code:string,locale:'zh'|'en'){
  const text=(zh:string,en:string)=>locale==='zh'?zh:en
  if(code==='NARRATION_RATE_LIMIT')return text('先歇一会儿再聊吧。现在仍可走动或选择行动。','Try chatting again shortly. You can still walk around or choose an action.')
+ if(code==='CAMPAIGN_ARCHIVE_ORDER_MISMATCH')return text('这个顺序与记录不一致。对照已查到的线索，再调整一下。','That order contradicts the records. Compare the evidence and rearrange the cards.')
+ if(code==='CAMPAIGN_ARCHIVE_EVIDENCE_REQUIRED')return text('两处资料架的线索还没有查齐，可以先过去看看。','You still need evidence from both shelves. Examine them first.')
+ if(code==='CAMPAIGN_PAPERS_REQUIRED')return text('先阅读地下室里找到的材料。','Read the papers on the cellar shelf first.')
+ if(code==='CAMPAIGN_ALREADY_RESOLVED')return text('这组记录已经核对好了。','These records have already been reconstructed.')
  if(code==='CAMPAIGN_RECORD_MISMATCH')return text('这条记录没有同时对上两处特征，再比较一下寄存条。','This record does not match both details. Compare it with the filing slip again.')
  if(code==='CAMPAIGN_OBSERVATION_REQUIRED')return text('先看看眼前的材料，再作决定。','Examine the papers before deciding.')
  if(code==='CAMPAIGN_UNFINISHED')return text('寄存材料的线索还没有查完，可以看看当前发现。','The trail to the archived papers is unfinished. Check your discoveries.')

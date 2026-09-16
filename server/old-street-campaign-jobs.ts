@@ -3,13 +3,18 @@ import type {OldStreetHead} from '../src/old-street-head'
 import {readTraceContent,readParcelContent,type CampaignContext,type TraceContent,type ParcelContent} from '../src/old-street-campaign'
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import {LabError} from '../src/journey-runtime'
-type Stage='trace'|'parcel'
-export type CampaignJob={stage:Stage;state:'queued'|'planning'|'ready'|'failed';attempt:number;deadline:number;context:CampaignContext;content?:TraceContent|ParcelContent}
+import {readArchiveContent,type ArchiveContent} from '../src/old-street-archive'
+type Stage='trace'|'parcel'|'archive'
+export type CampaignJob={stage:Stage;state:'queued'|'planning'|'ready'|'failed';attempt:number;deadline:number;context:CampaignContext;content?:TraceContent|ParcelContent|ArchiveContent}
 export function campaignJobContext(h:OldStreetHead,stage:Stage):CampaignContext{
- if(!h.campaign||!h.save.facts['letter-taken']||!['trace','parcel'].includes(stage))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
+ if(!h.campaign||!h.save.facts['letter-taken']||!['trace','parcel','archive'].includes(stage))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  if(stage==='trace')return {stage,locale:h.save.locale}
  const trace=h.campaign.trace
  if(trace?.selected===undefined)throw new LabError('CAMPAIGN_TRACE_REQUIRED',409)
+ if(stage==='archive'){
+  if(h.campaign.version!==2||!h.campaign.parcel?.observed)throw new LabError('CAMPAIGN_PAPERS_REQUIRED',409)
+  return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),papers:structuredClone(h.campaign.parcel.content)}
+ }
  return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected])}
 }
 /** Sidecar draft only: movement/ordinary actions continue during generation. */
@@ -49,7 +54,7 @@ export class OldStreetCampaignJobs{
   if(!claimed)return this.get(owner,id,stage)
   try{
    const signal=AbortSignal.timeout(22000),raw=await this.produce(context,signal);signal.throwIfAborted()
-   const content=stage==='trace'?readTraceContent(raw):readParcelContent(raw)
+   const content=stage==='trace'?readTraceContent(raw):stage==='parcel'?readParcelContent(raw):readArchiveContent(raw)
    this.db.transaction(()=>{const j=this.read(owner,id,stage);if(j?.state==='planning'&&j.attempt===claimed.attempt)this.write(owner,id,{...j,state:'ready',deadline:0,content})})
   }catch{
    this.db.transaction(()=>{const j=this.read(owner,id,stage);if(j?.state==='planning'&&j.attempt===claimed.attempt)this.write(owner,id,{...j,state:'failed',deadline:0})})

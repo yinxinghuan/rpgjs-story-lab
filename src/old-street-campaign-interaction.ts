@@ -1,13 +1,15 @@
 import {campaignAnchor} from './old-street-campaign'
 import type {OldStreetHead} from './old-street-head'
 import {originalActionIntentIssues} from './original-action-intent'
+import {archiveEvidence} from './old-street-archive'
 
-type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide';stage:'trace'|'parcel';selection?:number|'take'|'leave'}
+type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive';selection?:number|'take'|'leave'}
 /** Labels describe every visible choice, never which one is correct. The model
  * proposes an ID; the existing campaign authority still evaluates the choice. */
 export function campaignInputActions(h:OldStreetHead,target:string):CampaignAction[]{
  const c=h.campaign,t=(zh:string,en:string)=>h.save.locale==='zh'?zh:en
  if(!c||!h.save.facts['letter-taken'])return []
+ if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
  if(h.sceneId===campaignAnchor.trace.scene&&target===campaignAnchor.trace.target)return [
   {id:'campaign:read-trace',label:t('查阅寄存记录','Read the filing records'),type:'campaign-read',stage:'trace'},
   ...(c.trace?.observed&&c.trace.selected===undefined?c.trace.content.records.map((r,selection)=>({
@@ -46,6 +48,10 @@ export function campaignInputKnowledge(h:OldStreetHead){
  }
  if(c.trace?.selected!==undefined)knowledge.push({id:'learned:campaign-match',text:t(`已确认记录：${c.trace.content.records[c.trace.selected].label}。这条记录指向地下储物室的旧资料架。`,`Confirmed record: ${c.trace.content.records[c.trace.selected].label}. This record points to the old paper shelf in the cellar.`)})
  if(c.parcel?.observed)knowledge.push({id:'learned:campaign-papers',text:c.parcel.content.fragment})
+ if(c.archive){
+  for(const source of c.archive.examined)knowledge.push({id:'learned:archive-'+source,text:archiveEvidence(c.archive.content,source,h.save.locale).join(' ')})
+  if(c.archive.order)knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery})
+ }
  if(c.parcel?.disposition)knowledge.push({id:'learned:campaign-disposition',text:c.parcel.disposition==='take'?t('寄存材料原件已在行囊里，不在架上。','The original archived papers are in your bag, no longer on the shelf.'):t('你已选择把寄存材料原件留在架上，记住内容。','You chose to leave the original archived papers on the shelf and remember their contents.')})
  return knowledge
 }

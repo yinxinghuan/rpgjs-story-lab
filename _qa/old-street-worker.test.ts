@@ -40,23 +40,25 @@ test('Worker campaign capability stays explicit and existing journeys keep their
  }finally{h.close()}
 })
 
-test('Worker campaign: asynchronous papers persist, connect the chosen record, retry explicitly and reach the same ending after reopen',async()=>{
+for(const campaignVersion of [1,2] as const)test(`Worker campaign v${campaignVersion}: asynchronous papers persist, connect the chosen record, retry explicitly and reach the same ending after reopen`,async()=>{
  const trace={title:'Filed packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[
   {label:'Roof measurements',mark:'one notch',wrapping:'linen cord'},
   {label:'Footbridge repairs',mark:'two notches',wrapping:'linen cord'},
   {label:'Workshop repairs',mark:'two notches',wrapping:'folded flap'},
  ]}
  const parcel={title:'A repaired path',fragment:'The footbridge record describes three boards replaced by the neighbors after the flood.'}
+ const archive={title:'Repair chronology',layout:'east-index',cards:[{id:'a',label:'Boards fitted'},{id:'b',label:'Boards cut'},{id:'c',label:'Bridge reopened'},{id:'d',label:'Damage measured'}],sources:{index:[{before:'d',after:'b'}],ledger:[{before:'b',after:'a'},{before:'a',after:'c'}]},discovery:'The footbridge reopened after neighbors measured, cut and fitted the replacement boards.'}
  let calls=0,parcelCalls=0,finish!:(value:unknown)=>void
  const h=harness(true,undefined,undefined,undefined,async context=>{
   calls++
   if(context.stage==='trace')return new Promise(resolve=>{finish=resolve})
   assert.deepEqual(context.previous,trace.records[1],'next generation receives the committed selection')
+  if(context.stage==='archive'){assert.deepEqual(context.papers,parcel);return archive}
   if(++parcelCalls===1)throw Error('SYNTHETIC_TEMPORARY_FAILURE')
   return parcel
  }),token=randomBytes(32).toString('base64url')
  try{
-  const enroll={enrollment_id:randomUUID(),locale:'en',options:{campaign:'letter-trail-v1'}}
+  const enroll={enrollment_id:randomUUID(),locale:'en',options:{campaign:'letter-trail-v'+campaignVersion}}
   let response=await handler(request('/sessions',token,enroll),h.env)
   assert.equal(response.status,200)
   let head=await response.json() as OldStreetHead
@@ -105,10 +107,26 @@ test('Worker campaign: asynchronous papers persist, connect the chosen record, r
   h.reopen()
   assert.deepEqual(await (await handler(request(prefix+'/actions',token,chosen.input),h.env)).json(),chosen.value)
   assert.equal(head.campaign?.parcel?.disposition,'leave');assert.ok(!head.save.inventory.some(i=>i.id==='letter-enclosure'))
+  if(campaignVersion===2){
+   await job('archive',{});await h.drain()
+   assert.equal((await job('archive')).state,'ready')
+   await send('photo-folder',{type:'campaign-plan',stage:'archive'})
+   assert.equal(head.sceneId,'cellar','admission does not teleport')
+   h.reopen();assert.equal((await job('archive')).state,'ready')
+   await steps(['archive'])
+   await send('archive-index',{type:'campaign-observe',stage:'archive'})
+   await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
+   const solved=await send('archive-desk',{type:'campaign-decide',stage:'archive',order:['d','b','a','c']})
+   assert.equal(solved.value.accepted,true);h.reopen()
+   assert.deepEqual(await (await handler(request(prefix+'/actions',token,solved.input),h.env)).json(),solved.value)
+   assert.deepEqual(head.campaign?.archive?.order,['d','b','a','c'])
+   await steps(['cellar'])
+  }
+
   await steps(['yard','street','oldstreet:leave'])
   assert.equal(head.save.finale.status,'complete')
   h.reopen();assert.deepEqual(await (await handler(request(prefix,token),h.env)).json(),head)
-  assert.equal(calls,3,'one trace and one failed + one successful packet generation')
+  assert.equal(calls,campaignVersion===2?4:3,'one trace, one failed + successful packet, and archive only for v2')
  }finally{await h.drain();h.close()}
 })
 test('oldstreet Worker stays release-gated and rejects untrusted identity and runtime',async()=>{

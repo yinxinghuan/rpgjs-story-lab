@@ -8,12 +8,14 @@ export const oldStreetRooms = {
   street: ['街口', 'Street'], shop: ['修表铺', 'Watch shop'], yard: ['合住院', 'Courtyard'],
   laundry: ['洗衣店', 'Laundry'], photo: ['照相馆', 'Photo studio'], cellar: ['地下储物室', 'Cellar'],
   darkroom: ['暗房', 'Darkroom'],
+  archive: ['档案工作间','Archive workroom'],
   roof: ['屋顶', 'Roof terrace'], shed: ['河边工作棚', 'Riverside workshop'],
 } as const
 export type OldStreetRoom = keyof typeof oldStreetRooms
 export const oldStreetConnections: ReadonlyArray<{
   id: string; a: OldStreetRoom; b: OldStreetRoom; kind: 'door' | 'alley' | 'stairs'; gate?: string
 }> = [
+  {id:'cellar-archive',a:'cellar',b:'archive',kind:'door',gate:'archive-ready'},
   {id: 'studio-darkroom', a: 'photo', b: 'darkroom', kind: 'door', gate: 'darkroom-ready'},
   {id: 'shop-front', a: 'street', b: 'shop', kind: 'door'},
   {id: 'studio-front', a: 'street', b: 'photo', kind: 'door'},
