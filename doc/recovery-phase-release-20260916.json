@@ -22,12 +22,35 @@
       "status": 200,
       "bytes": 124172,
       "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f"
+    },
+    {
+      "root": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "index.html",
+      "status": 200,
+      "bytes": 1696,
+      "sha256": "a9a9b2df8fdd2a345b91b8124391a9b5e763921ec0e0850e73c81ba46dc34fcf"
+    },
+    {
+      "root": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/old-street-dev-CN9R-Z_b.js",
+      "status": 200,
+      "bytes": 121216,
+      "sha256": "4efc135a166e99c72be4e835e1ea3d8d0b41411266bca792fc8fbd45230b63cb"
+    },
+    {
+      "root": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+      "asset": "assets/cutout-CcmnNgqq.png",
+      "status": 200,
+      "bytes": 124172,
+      "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f"
     }
   ],
   "pages": {
     "runId": 35105833855,
-    "state": "pending",
-    "verified": false
+    "state": "success",
+    "verified": true,
+    "verification": "Fetched published HTML, application bundle and representative PNG; all matched the main site hashes",
+    "checkedAt": "2026-09-16T14:26:18.020Z"
   },
   "platform": {
     "resumePassed": true,
