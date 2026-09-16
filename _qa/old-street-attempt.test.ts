@@ -33,7 +33,7 @@ test('unlisted observation commits text and grounded notes, replays once and pre
 })
 
 test('hybrid resolver accepts transient attempts and persistent-change limitations, rejects fabricated state claims',async()=>{
- const context={locale:'zh' as const,scene:'shop',target:'drawer',inventory:[],knowledge:[{id:'visible:drawer',text:'抽屉被空盒挡住。'}],recentAttempts:[],introducedPerson:null,actions:[{id:'oldstreet:move-box',label:'移开空盒'}]}
+ const context={locale:'zh' as const,scene:'shop',target:'drawer',inventory:[],knowledge:[{id:'visible:drawer',text:'抽屉被空盒挡住。'}],recentAttempts:[],recentTurns:[],introducedPerson:null,actions:[{id:'oldstreet:move-box',label:'移开空盒'}]}
  for(const outcome of ['inconclusive','needs-support'] as const){let n=0;const generate=createOldStreetAttemptGenerator(async()=>++n===1?{kind:'attempt',outcome,text:'你试着查看，暂时没有足够线索确认。',discoveryIds:[]}:{valid:true});assert.equal((await generate('听听里面有什么',context)).kind,'attempt')}
  let n=0
  const action=createOldStreetAttemptGenerator(async()=>++n===1?{kind:'action',actionId:'oldstreet:move-box'}:{valid:true})

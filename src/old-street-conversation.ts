@@ -2,6 +2,12 @@ import {oldStreetLetterGuidance} from './old-street-letter-guidance'
 import type {StorySave,StoryBlock} from './vendor/original-train/types'
 import {oldStreetPerson} from './old-street-characters'
 
+/** Player intent and narrative feedback, never authority for world changes. */
+export function oldStreetAttemptHistory(save:StorySave,target:string){
+ return save.blocks.filter(b=>b.data?.oldStreetAttemptTarget===target&&typeof b.data.input==='string')
+  .slice(-4).map(b=>({input:String(b.data!.input),response:b.text}))
+}
+
 export function oldStreetConversation(save:StorySave,speakerId:string){
  const pairs=new Map<string,{input?:string;reply?:string}>()
  for(const b of save.blocks){const d=b.data;if(b.kind!=='dialogue'||d?.oldStreetSpeakerId!==speakerId||typeof d.oldStreetConversationId!=='string')continue
