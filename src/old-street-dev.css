@@ -37,3 +37,12 @@
 /* The camera owns map translation. Focused off-screen hotspots must not scroll
    this container in addition to the camera transform. clip is not a scroll box. */
 .os-dev--immersive .os-world{overflow:clip}
+
+/* Keep puzzle submission reachable independently of photograph/help scrolling. */
+.os-photo[open]{display:flex;flex-direction:column;overflow:hidden}
+.os-photo header,.os-photo__controls{flex:none}
+.os-photo__content{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 4px}
+.os-photo__joined{width:min(100%,42.6667dvh);margin-inline:auto}
+.os-photo__pieces span{height:clamp(64px,16dvh,108px);width:clamp(42.67px,10.6667dvh,72px);margin-inline:auto}
+.os-photo__controls{display:flex;gap:8px;padding-top:12px;border-top:1px solid #a69c88}
+.os-photo__controls button{flex:1;min-height:44px}
