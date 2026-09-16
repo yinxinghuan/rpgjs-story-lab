@@ -8,6 +8,25 @@ import {cloudTransport,newCapability} from '../src/cloud-session'
 import {selectRuntime} from '../src/runtime-selection'
 import {approachPoints} from '../src/scene-layout'
 class MemoryStorage implements Storage{private data=new Map<string,string>();get length(){return this.data.size}key(i:number){return [...this.data.keys()][i]??null}clear(){this.data.clear()}getItem(k:string){return this.data.get(k)??null}setItem(k:string,v:string){this.data.set(k,String(v))}removeItem(k:string){this.data.delete(k)}}
+test('cloud timeout diagnostics distinguish handshake, reads and writes without retrying a mutation',async()=>{
+ const {RUNTIME_CONTRACT}=await import('../src/runtime-contract')
+ for(const phase of ['HEALTH','READ','WRITE'] as const){
+  const storage=new MemoryStorage();let healthCalls=0,sessionCalls=0
+  const request:typeof fetch=async url=>{
+   if(String(url).endsWith('/health')){
+    healthCalls++;if(phase==='HEALTH')throw new DOMException('synthetic timeout','TimeoutError')
+    return Response.json({runtimeContract:RUNTIME_CONTRACT})
+   }
+   sessionCalls++
+   // Covers a timeout while consuming the response, not only before headers.
+   return new Response(new ReadableStream({start(controller){controller.error(new DOMException('synthetic timeout','TimeoutError'))}}),{headers:{'Content-Type':'application/json'}})
+  }
+  const api=cloudTransport(storage,'stage-','/game/api/lab',async(_n,f)=>f(),request)
+  await assert.rejects(api('/sessions',phase==='WRITE'?{enrollment_id:randomUUID()}:undefined),new RegExp('^Error: CLOUD_'+phase+'_TIMEOUT$'))
+  assert.equal(healthCalls,1);assert.equal(sessionCalls,phase==='HEALTH'?0:1)
+  assert.ok(storage.getItem('stage-capability'))
+ }
+})
 const open={target:'cabinet',position:approachPoints.cabinet,type:'action',action:'open-cabinet'},take={...open,action:'take-fuse'}
 function setup(){const storage=new MemoryStorage(),store=new BrowserJourney(randomUUID()),transport:Transport=(p,b)=>store.api(p,b);return {storage,store,transport,client:new SessionClient(storage,'test-',transport)}}
 test('unsupported journey retains the pending action across reload and recovers with the same ID',async()=>{

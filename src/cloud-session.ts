@@ -1,6 +1,11 @@
 import type {SessionLock,Transport} from './session-client'
 import {RUNTIME_CONTRACT,RUNTIME_HEADER} from './runtime-contract'
 export function newCapability(source:Pick<Crypto,'getRandomValues'>=crypto){const bytes=source.getRandomValues(new Uint8Array(32));return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+/** Stage-only diagnostics: never put a URL, identity or response body in a timeout. */
+function transportFailure(error:unknown,phase:'HEALTH'|'READ'|'WRITE',signal:AbortSignal):never{
+ if(signal.aborted||error instanceof Error&&error.name==='TimeoutError')throw Error('CLOUD_'+phase+'_TIMEOUT')
+ throw error
+}
 export function cloudTransport(storage:Storage,prefix:string,apiBase:string,lock:SessionLock,request:typeof fetch=fetch,wire={header:RUNTIME_HEADER,version:RUNTIME_CONTRACT}):Transport{
  let capability:Promise<string>|undefined
  let handshake:Promise<void>|undefined
@@ -14,13 +19,17 @@ export function cloudTransport(storage:Storage,prefix:string,apiBase:string,lock
   const headers={'Content-Type':'application/json',Authorization:'Bearer '+token,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[wire.header]:wire.version}
   // An old server ignores unknown request headers. Check its health contract
   // before sending any session request, including enrollment or a pending retry.
-  await (handshake??=request(apiBase+'/health',{headers,cache:'no-store',signal:AbortSignal.timeout(10000)}).then(async r=>{
+  const healthSignal=AbortSignal.timeout(10000)
+  await (handshake??=request(apiBase+'/health',{headers,cache:'no-store',signal:healthSignal}).then(async r=>{
    const h=await r.json();if(!r.ok)throw Error(h.error??'NETWORK_ERROR')
    if(h.runtimeContract!==wire.version)throw Error('RUNTIME_VERSION_MISMATCH')
-  }).catch(e=>{handshake=undefined;throw e}))
-  const response=await request(apiBase+path,{method:body===undefined?'GET':'POST',headers,cache:'no-store',body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(30000)})
+  }).catch(e=>{handshake=undefined;transportFailure(e,'HEALTH',healthSignal)}))
+  const requestSignal=AbortSignal.timeout(30000)
+  try{
+  const response=await request(apiBase+path,{method:body===undefined?'GET':'POST',headers,cache:'no-store',body:body===undefined?undefined:JSON.stringify(body),signal:requestSignal})
   const data=response.ok&&response.headers.get('Content-Type')?.startsWith('image/png')?new Uint8Array(await response.arrayBuffer()):await response.json();if(!response.ok){if(data.error==='RUNTIME_VERSION_MISMATCH')handshake=undefined;throw Error(data.error??'NETWORK_ERROR')}
   if(response.headers.get(wire.header)!==wire.version){handshake=undefined;throw Error('RUNTIME_VERSION_MISMATCH')}
   return data
+  }catch(error){transportFailure(error,body===undefined?'READ':'WRITE',requestSignal)}
  }
 }
