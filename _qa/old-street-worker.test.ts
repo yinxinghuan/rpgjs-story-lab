@@ -15,17 +15,102 @@ import type {OldStreetHead} from '../src/old-street-head'
 
 const handler=createHandler(true,false,false,()=>false,()=>false,false,false,false,true)
 function request(path:string,token:string,body?:unknown){return new Request('https://worker.invalid'+base+path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+token,[RUNTIME_HEADER]:RUNTIME_CONTRACT,[header]:contract,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)})}
-function harness(admitted=true,interpreter?:OriginalActionInterpreter,providers?:ConstructorParameters<typeof CarriageJourneyAuthority>[12],narrationModel?:ConstructorParameters<typeof CarriageJourneyAuthority>[2]){
+function harness(admitted=true,interpreter?:OriginalActionInterpreter,providers?:ConstructorParameters<typeof CarriageJourneyAuthority>[12],narrationModel?:ConstructorParameters<typeof CarriageJourneyAuthority>[2],campaign?:ConstructorParameters<typeof CarriageJourneyAuthority>[14]){
  const pending:Promise<unknown>[]=[]
  const dir=mkdtempSync(join(tmpdir(),'oldstreet-worker-')),storage=new PreflightStorage(dir),objects=new Map<string,CarriageJourneyAuthority>(),names=new Set<string>()
  const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(id:unknown)=>({fetch:async(r:Request)=>{
   const key=String(id);names.add(key)
   let object=objects.get(key)
-  if(!object){object=new CarriageJourneyAuthority({...storage.context(key),waitUntil:p=>pending.push(p)},undefined,narrationModel,undefined,undefined,undefined,undefined,undefined,undefined,narrationModel?undefined:admitted?()=>true:()=>{throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)},interpreter,undefined,providers);objects.set(key,object)}
+  if(!object){object=new CarriageJourneyAuthority({...storage.context(key),waitUntil:p=>pending.push(p)},undefined,narrationModel,undefined,undefined,undefined,undefined,undefined,undefined,narrationModel?undefined:admitted?()=>true:()=>{throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)},interpreter,undefined,providers,undefined,campaign);objects.set(key,object)}
   return object.fetch(r)
  }})}}
  return {env,names,drain:()=>Promise.all(pending.splice(0)),reopen:()=>{objects.clear();storage.close()},close:()=>{objects.clear();storage.close();rmSync(dir,{recursive:true,force:true})}}
 }
+
+test('Worker campaign capability stays explicit and existing journeys keep their original rules',async()=>{
+ const h=harness(),token=randomBytes(32).toString('base64url')
+ try{
+  const head=await (await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'en'}),h.env)).json()
+  assert.equal(head.campaign,undefined)
+  const caps=await (await handler(request('/sessions/'+head.id+'/expansion-capabilities',token),h.env)).json()
+  assert.equal(caps.campaign,false)
+  const denied=await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'en',options:{campaign:'letter-trail-v1'}}),h.env)
+  assert.equal(denied.status,409);assert.equal((await denied.json()).error,'CAMPAIGN_NOT_AVAILABLE')
+  assert.equal((await handler(request('/sessions/'+head.id+'/campaign-trace',token,{}),h.env)).status,503)
+ }finally{h.close()}
+})
+
+test('Worker campaign: asynchronous papers persist, connect the chosen record, retry explicitly and reach the same ending after reopen',async()=>{
+ const trace={title:'Filed packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[
+  {label:'Roof measurements',mark:'one notch',wrapping:'linen cord'},
+  {label:'Footbridge repairs',mark:'two notches',wrapping:'linen cord'},
+  {label:'Workshop repairs',mark:'two notches',wrapping:'folded flap'},
+ ]}
+ const parcel={title:'A repaired path',fragment:'The footbridge record describes three boards replaced by the neighbors after the flood.'}
+ let calls=0,parcelCalls=0,finish!:(value:unknown)=>void
+ const h=harness(true,undefined,undefined,undefined,async context=>{
+  calls++
+  if(context.stage==='trace')return new Promise(resolve=>{finish=resolve})
+  assert.deepEqual(context.previous,trace.records[1],'next generation receives the committed selection')
+  if(++parcelCalls===1)throw Error('SYNTHETIC_TEMPORARY_FAILURE')
+  return parcel
+ }),token=randomBytes(32).toString('base64url')
+ try{
+  const enroll={enrollment_id:randomUUID(),locale:'en',options:{campaign:'letter-trail-v1'}}
+  let response=await handler(request('/sessions',token,enroll),h.env)
+  assert.equal(response.status,200)
+  let head=await response.json() as OldStreetHead
+  assert.deepEqual(await (await handler(request('/sessions',token,enroll),h.env)).json(),head,'lost enrollment response uses the same campaign')
+  const prefix='/sessions/'+head.id
+  const send=async(target:string,extra:Record<string,unknown>)=>{
+   const entity=oldStreetSpatialPlan(head.save).entities.find(e=>e.scene===head.sceneId&&e.id===target)!
+   assert.ok(entity,target)
+   const input={action_id:randomUUID(),expected_version:head.version,sceneId:head.sceneId,target,position:entity.approach,...extra}
+   const r=await handler(request(prefix+'/actions',token,input),h.env),value=await r.json()
+   assert.equal(r.status,200,JSON.stringify(value));head=value.head
+   return {input,value}
+  }
+  const steps=async(route:string[])=>{for(const step of route){
+   const action=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===head.sceneId&&d.destination.room===step)!.actionId
+   const entity=oldStreetSpatialPlan(head.save).entities.find(e=>e.scene===head.sceneId&&e.actions.includes(action))!
+   await send(entity.id,{type:'action',action})
+  }}
+  const job=async(stage:string,b?:unknown)=>{
+   const r=await handler(request(prefix+'/campaign-'+stage,token,b),h.env),value=await r.json()
+   assert.equal(r.status,200,JSON.stringify(value));return value.job
+  }
+  assert.equal((await (await handler(request(prefix+'/expansion-capabilities',token),h.env)).json()).campaign,true)
+  await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
+  assert.equal((await job('trace',{})).state,'queued')
+  assert.equal((await job('trace',{})).state,'planning');assert.equal(calls,1)
+  await steps(['street'])
+  const exploring=structuredClone(head)
+  finish(trace);await h.drain()
+  assert.deepEqual(await (await handler(request(prefix,token),h.env)).json(),exploring,'background completion must not teleport or advance the player')
+  h.reopen()
+  assert.equal((await job('trace')).state,'ready')
+  await job('trace',{});assert.equal(calls,1,'ready draft survives process restart without regeneration')
+  await steps(['shop'])
+  await send('record-book',{type:'campaign-read',stage:'trace'})
+  assert.equal(head.campaign?.trace?.observed,true)
+  assert.deepEqual(head.campaign?.trace?.content,trace)
+  await send('record-book',{type:'campaign-decide',stage:'trace',selection:1})
+  await job('parcel',{});await h.drain();assert.equal((await job('parcel')).state,'failed')
+  await job('parcel',{});await h.drain();assert.equal(parcelCalls,1,'poll or ordinary prepare never silently retries')
+  assert.equal((await job('parcel',{retry:true})).attempt,2);await h.drain()
+  assert.equal((await job('parcel')).state,'ready')
+  await steps(['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar'])
+  await send('photo-folder',{type:'campaign-read',stage:'parcel'})
+  const chosen=await send('photo-folder',{type:'campaign-decide',stage:'parcel',selection:'leave'})
+  h.reopen()
+  assert.deepEqual(await (await handler(request(prefix+'/actions',token,chosen.input),h.env)).json(),chosen.value)
+  assert.equal(head.campaign?.parcel?.disposition,'leave');assert.ok(!head.save.inventory.some(i=>i.id==='letter-enclosure'))
+  await steps(['yard','street','oldstreet:leave'])
+  assert.equal(head.save.finale.status,'complete')
+  h.reopen();assert.deepEqual(await (await handler(request(prefix,token),h.env)).json(),head)
+  assert.equal(calls,3,'one trace and one failed + one successful packet generation')
+ }finally{await h.drain();h.close()}
+})
 test('oldstreet Worker stays release-gated and rejects untrusted identity and runtime',async()=>{
  const h=harness(false),token=randomBytes(32).toString('base64url')
  try{
@@ -133,7 +218,7 @@ test('Worker expansion routes share the journey capability and retain generated 
   await send({type:'action',action:door.actionId,target:door.id,position:entity.approach})
   await send({type:'expansion-request',template:'photo-darkroom-v1',text:'查看暗房'})
   const root='/sessions/'+head.id
-  assert.deepEqual(await (await handler(request(root+'/expansion-capabilities',token),h.env)).json(),{planning:true,media:true})
+  assert.deepEqual(await (await handler(request(root+'/expansion-capabilities',token),h.env)).json(),{planning:true,media:true,campaign:false})
   assert.equal((await handler(request(root+'/expansion',token,{}),h.env)).status,200);await h.drain()
   await send({type:'expansion-activate'})
   assert.equal((await handler(request(root+'/expansion-photo',token,{}),h.env)).status,200);await h.drain()
@@ -151,7 +236,7 @@ test('Worker preview advertises released expansion providers without making a ge
  try{
   const head=await (await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'zh'}),h.env)).json() as OldStreetHead
   const r=await handler(request('/sessions/'+head.id+'/expansion-capabilities',token),h.env)
-  assert.equal(r.status,200);assert.deepEqual(await r.json(),{planning:true,media:true})
+  assert.equal(r.status,200);assert.deepEqual(await r.json(),{planning:true,media:true,campaign:false})
   assert.equal((await handler(request('/sessions/'+head.id,token),h.env)).status,200)
  }finally{h.close()}
 })

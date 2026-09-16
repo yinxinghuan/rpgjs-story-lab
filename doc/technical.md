@@ -2241,7 +2241,7 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 `old-street-campaign-actions.ts` 的 plan / observe / decide 接入现有 SessionAuthority 的准备、提交、回执和重放流程，不建第二套存档。位置和目标绑定当前 record-book / photo-folder；必须实际观察才能判断，错误比对不提交状态。已生成实例禁止被新请求重生，已决定取舍禁止重复领物品。取原件与留下原件均可完成，尾声分别反映实物带回或仅转述。
 
-只有在 Authority 显式装配 campaignGenerator 或 campaignCandidate 且创建选项为 `{campaign:'letter-trail-v1'}` 时才新建这种旅程。默认创建与所有旧存档不变；本地调试入口、专用材料视图与异步任务已按下节接入，正式Worker任务接口和实际地图完整试玩仍待接通与验收。开启后的取信反馈指向记录册，最终离开要求两段都完成；旧旅程仍可按原规则离开。直接生成器保留给独立权威测试，本地开发服务采用后台准备后的候选准入。
+只有在 Authority 显式装配 campaignGenerator 或 campaignCandidate 且创建选项为 `{campaign:'letter-trail-v1'}` 时才新建这种旅程。默认创建与所有旧存档不变；本地调试入口、专用材料视图与异步任务已按下节接入，正式Worker任务接口与合成内容地图完整试玩已在后续接通，见下节；真实生成和线上验收仍待完成。开启后的取信反馈指向记录册，最终离开要求两段都完成；旧旅程仍可按原规则离开。直接生成器保留给独立权威测试，本地开发服务采用后台准备后的候选准入。
 
 模型失败按已有 OLD_STREET_MODEL_UNAVAILABLE 返回确定未提交；内容准入失败用 CAMPAIGN_PLAN_REJECTED；新增确定失败码已加入恢复客户端的终止分类，不使错误答案变成永久 pending。结构无效不会保存实例、线索或完成事实。
 
@@ -2264,4 +2264,14 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 材料提交块带 `oldStreetCampaignStage`，由现有短段落及丢回执恢复呈现，避免长线索在临时提示里消失。`oldStreetJournal(save,campaign?)` 根据同一已观察实例生成寄存条、各记录、材料正文及原件去向，目的提示在完成前不再提前建议回家。原件位置与记录所指地点分开表达。记录册/资料架标题与模型上下文不再错误投射为空白/空架；不会据此宣称补出了新实物美术。
 
-合成机制测试及组件画面检查见 `campaign-input-review-20260917.md`。主线完整内容、实际生成、正式Worker接入和平台整合验收仍未完成。
+合成机制测试及组件画面检查见 `campaign-input-review-20260917.md`。后续地图试玩和Worker增量以下节为准，主线完整内容、实际生成和平台整合验收仍未完成。
+
+### 材料主线地图试玩与Worker任务（2026-09-17）
+
+`worker/source.ts` 在已有旧街Durable Object内装配 `OldStreetCampaignJobs`，构造器可显式注入campaignProvider供本地测试；正常发布由 `OLD_STREET_CAMPAIGN_RELEASED`控制，当前false。候选读取注入原 `OldStreetAuthority`，不另建剧情数据库或同步生成入口。已有任务能跨对象重建复用，后台任务交给waitUntil；超时/重试仍由原任务表裁决。
+
+`handleOldStreetSession` 接受登记options并交原Authority验证；`expansion-capabilities`增加campaign布尔值；`campaign-trace`/`campaign-parcel`复用 `oldStreetCampaignOperation`。GET查询，POST仅允许retry字段；queued才执行，failed仅显式重试。开发适配器也使用此操作，避免开发与正式路由不同。Worker本地预览在已有模型配置且 `OLDSTREET_CAMPAIGN_TRIAL=1` 时显式装配，不改变线上开关。
+
+材料视图的ready按钮改为 `campaign-read`，一次准入+观察，决定仍单独提交。`oldStreetPhotoShelfPose(save,campaign?)`的stand/empty/papers/both投射两份物品，三图层分别对应架子、照片夹与主线纸袋。使用已准入图集，不增添剧情事实或碰撞。
+
+`_qa/campaign-playtest-server.ts`仅本地开发启动：合成生产器禁用全部真实模型，独立测试数据库，运行原游戏renderer。实际路线与Worker测试证据、局限见 `campaign-map-playtest-20260917.md`；该启动器不是第二个游戏或发布入口。

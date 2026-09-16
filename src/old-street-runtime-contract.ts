@@ -7,6 +7,9 @@ export const OLD_STREET_RELEASED = false
 // Public playable preview is distinct from final art/content admission.
 export const OLD_STREET_PREVIEW_RELEASED = true
 export const OLD_STREET_EXPANSION_RELEASED = true
+// Candidate campaign still needs real generated-content and complete-story review.
+// Injected local Worker providers exercise the same routes without opening it live.
+export const OLD_STREET_CAMPAIGN_RELEASED = false
 // Preview capability, not complete-game or verified-account admission.
 export const OLD_STREET_NARRATION_PREVIEW = true
 export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-preview-neighborhood-recovery-20260917'

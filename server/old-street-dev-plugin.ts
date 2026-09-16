@@ -1,12 +1,12 @@
 import {OldStreetCampaignJobs} from './old-street-campaign-jobs'
-import {createOldStreetCampaignPlanner} from './old-street-campaign-planner'
+import {createOldStreetCampaignPlanner,type OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import {createOldStreetAttemptGenerator} from './old-street-attempt'
 import {chatModel} from './model'
 import {createOriginalActionInterpreter} from './original-action-interpreter'
 import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {OldStreetExpansionJobs} from './old-street-expansion-jobs'
 import {createOldStreetExpansionPlanner} from './old-street-expansion-planner'
-import {oldStreetExpansionOperation,oldStreetExpansionPhotoOperation} from './old-street-http'
+import {oldStreetExpansionOperation,oldStreetExpansionPhotoOperation,oldStreetCampaignOperation} from './old-street-http'
 import {OldStreetExpansionMedia,expansionPhotoProducer} from './old-street-expansion-media'
 import {originalPreflightModels} from './original-preflight-model'
 import {DatabaseSync} from 'node:sqlite'
@@ -18,13 +18,15 @@ import {OldStreetAuthority} from './old-street-runtime'
 import type {AuthorityStorage} from './session-authority'
 import {GAME_ID} from '../src/game-id'
 /** Loopback authoring adapter only. Not platform identity or a production route. */
-export function oldStreetDevPlugin(){
- const models=originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0)) ?? (process.env.OLDSTREET_MODEL_TEST_BUDGET==='0'?undefined:{request:chatModel,interpreter:createOriginalActionInterpreter(chatModel)})
+export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator){
+ // Only a local QA launcher can inject this dependency. No query/body flag can
+ // select a fixture, and fixture mode cannot fall through to remote generation.
+ const models=offlineCampaign?undefined:originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0)) ?? (process.env.OLDSTREET_MODEL_TEST_BUDGET==='0'?undefined:{request:chatModel,interpreter:createOriginalActionInterpreter(chatModel)})
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
  let expansions:OldStreetExpansionJobs|undefined
  let expansionMedia:OldStreetExpansionMedia|undefined
  let campaignJobs:OldStreetCampaignJobs|undefined
- const campaignEnabled=process.env.OLDSTREET_CAMPAIGN_TRIAL==='1'&&!!models
+ const campaignEnabled=!!offlineCampaign||process.env.OLDSTREET_CAMPAIGN_TRIAL==='1'&&!!models
  const prefix='/'+GAME_ID+'/api/oldstreet-dev'
  function authority(){
   if(service)return service
@@ -34,7 +36,7 @@ export function oldStreetDevPlugin(){
   db.exec('PRAGMA busy_timeout=5000')
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
   service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h),h=>expansionMedia?.candidateFor(h),models?createOldStreetAttemptGenerator(models.request):undefined,undefined,campaignEnabled?(h,stage)=>campaignJobs?.candidateFor(h,stage):undefined)
-  if(campaignEnabled&&models)campaignJobs=new OldStreetCampaignJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetCampaignPlanner(models.request))
+  if(campaignEnabled)campaignJobs=new OldStreetCampaignJobs(storage,(owner,id)=>service!.get(owner,id),offlineCampaign??createOldStreetCampaignPlanner(models!.request))
   if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
   if(models)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
   return service
@@ -68,12 +70,7 @@ export function oldStreetDevPlugin(){
    const [,id,operation]=match
    if(operation==='expansion-capabilities'&&req.method==='GET'){s.get(owner,id);return send(200,{planning:!!expansions,media:!!expansionMedia,campaign:!!campaignJobs})}
    if(operation==='campaign-trace'||operation==='campaign-parcel'){
-    if(!campaignJobs)return send(503,{error:'CAMPAIGN_NOT_AVAILABLE'})
-    const stage=operation==='campaign-trace'?'trace':'parcel'
-    if(req.method==='GET')return send(200,{job:campaignJobs.get(owner,id,stage)})
-    const job=campaignJobs.enqueue(owner,id,stage,body?.retry===true)
-    void campaignJobs.run(owner,id,stage).catch(()=>{})
-    return send(200,{job})
+    return send(200,oldStreetCampaignOperation(req.method!,owner,id,operation==='campaign-trace'?'trace':'parcel',campaignJobs,body,p=>{void p.catch(()=>{})}))
    }
    if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
    if(operation==='expansion-photo-file'&&req.method==='GET'){

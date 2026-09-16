@@ -28,7 +28,7 @@ function Fixture(){
  return <main className="os-dev"><h1>Local materials UI fixture</h1><button onClick={()=>setLocale(locale==='en'?'zh':'en')}>Language: {locale}</button><button onClick={()=>start('disconnect')}>Preparation with interrupted poll</button><button onClick={()=>start('records')}>Three records</button><button onClick={()=>start('parcel')}>Packet choice</button><button onClick={()=>setJournalOpen(true)}>Review discoveries</button><p>Prepare requests: {posts}; status reads: {reads}</p>{!open&&<button onClick={()=>setOpen(true)}>Reopen same papers</button>}
  {journalOpen&&<OldStreetJournalView save={save} campaign={campaign} onClose={()=>setJournalOpen(false)}/>}
  {open&&<OldStreetCampaignView campaign={campaign} stage={mode==='parcel'?'parcel':'trace'} locale={locale} sessionId="synthetic" api={api} busy={false} feedback={feedback} close={()=>setOpen(false)} act={async(type,selection)=>{
-  if(type==='plan')setCampaign({version:1,trace:{id:'fixture-trace',content:trace,observed:false}})
+  if(type==='read')setCampaign({version:1,trace:{id:'fixture-trace',content:trace,observed:true}})
   if(type==='observe')setCampaign(c=>({...c,trace:{...c.trace!,observed:true}}))
   if(type==='decide'&&mode==='parcel')setCampaign(c=>({...c,parcel:{...c.parcel!,disposition:selection as 'take'|'leave'}}))
   else if(type==='decide'&&selection===2){setFeedback('');setCampaign(c=>({...c,trace:{...c.trace!,selected:2}}))}

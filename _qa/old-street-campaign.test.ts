@@ -15,6 +15,7 @@ import {campaignInputActions,campaignInputKnowledge,campaignPropTitle} from '../
 import {createOldStreetAttemptGenerator,oldStreetAttemptContext,type OldStreetAttemptGenerator} from '../server/old-street-attempt'
 import {oldStreetTurn,oldStreetRecoveredTurn} from '../src/old-street-turn'
 import {oldStreetJournal} from '../src/old-street-journal'
+import {oldStreetPhotoShelfPose} from '../src/old-street-photo-shelf'
 const trace={title:'The paper packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[
  {label:'Workshop repairs',mark:'two notches',wrapping:'folded flap'},
  {label:'Roof measurements',mark:'one notch',wrapping:'linen cord'},
@@ -122,9 +123,11 @@ for(const decision of ['take','leave'] as const)test(`campaign ${decision}: link
   assert.equal(campaignComplete(h.campaign!),false)
   await assert.rejects(s.action('synthetic',h.id,body(h,'photo-folder',{type:'campaign-decide',stage:'parcel',selection:decision})),/OBSERVATION_REQUIRED/)
   h=(await s.action('synthetic',h.id,body(h,'photo-folder',{type:'campaign-observe',stage:'parcel'}))).head
+  assert.equal(oldStreetPhotoShelfPose(h.save,h.campaign),'both','uncollected photo folder and archived papers coexist')
   const choose=body(h,'photo-folder',{type:'campaign-decide',stage:'parcel',selection:decision}),chosen=await s.action('synthetic',h.id,choose);h=chosen.head
   assert.deepEqual(await s.action('synthetic',h.id,choose),chosen)
   assert.equal(h.save.inventory.filter(i=>i.id==='letter-enclosure').length,decision==='take'?1:0)
+  assert.equal(oldStreetPhotoShelfPose(h.save,h.campaign),decision==='take'?'stand':'both','original disposition does not remove the photograph folder')
   h=await steps(s,h,['yard','street','oldstreet:leave'])
   assert.equal(h.save.finale.status,'complete');assert.ok(campaignComplete(h.campaign!))
   const saved=s.get('synthetic',h.id);assert.deepEqual(saved,h)
@@ -197,6 +200,7 @@ test('free input reads the same generated records, commits the chosen record and
   h=await steps(s,h,['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar','oldstreet:take-photos'])
   s.advanceMinute() // Walking the real route takes time; no production quota changes.
   assert.equal(campaignPropTitle(h,'photo-folder')?.[1],'Old paper shelf')
+  assert.equal(oldStreetPhotoShelfPose(h.save,h.campaign),'papers','collecting photographs does not hide archived papers')
   const unread=oldStreetAttemptContext(h,'photo-folder',campaignInputActions(h,'photo-folder'))
   assert.ok(!JSON.stringify(unread).includes('Empty shelf'))
   assert.ok(!JSON.stringify(unread).includes(parcel.fragment))
@@ -206,6 +210,7 @@ test('free input reads the same generated records, commits the chosen record and
   const taken=await s.action('synthetic',h.id,taking);h=taken.head
   assert.deepEqual(await s.action('synthetic',h.id,taking),taken)
   assert.equal(h.save.inventory.filter(i=>i.id==='letter-enclosure').length,1)
+  assert.equal(oldStreetPhotoShelfPose(h.save,h.campaign),'empty','both physical items are now carried')
   assert.ok(campaignComplete(h.campaign!));assert.equal(generations,2)
   assert.ok(!campaignInputActions(h,'photo-folder').some(a=>a.id==='campaign:take-parcel'))
   assert.ok(campaignInputKnowledge(h).some(k=>k.text.includes('no longer on the shelf')))

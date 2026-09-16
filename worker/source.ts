@@ -1,4 +1,7 @@
 import {createOldStreetAttemptGenerator,type OldStreetAttemptGenerator} from '../server/old-street-attempt'
+import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
+import {createOldStreetCampaignPlanner,type OldStreetCampaignGenerator} from '../server/old-street-campaign-planner'
+import {OLD_STREET_CAMPAIGN_RELEASED} from '../src/old-street-runtime-contract'
 import {OldStreetExpansionJobs} from '../server/old-street-expansion-jobs'
 import {OldStreetExpansionMedia,expansionPhotoProducer,type ExpansionPhotoProducer} from '../server/old-street-expansion-media'
 import {createOldStreetExpansionPlanner} from '../server/old-street-expansion-planner'
@@ -88,6 +91,7 @@ interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sq
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
  private expansions?:OldStreetExpansionJobs
+ private campaignJobs?:OldStreetCampaignJobs
  private expansionMedia?:OldStreetExpansionMedia
  private oldstreet?:OldStreetAuthority
  private original?:OriginalTrainAuthority
@@ -99,11 +103,12 @@ export class CarriageJourneyAuthority{
  private originalGate:OriginalPresentationGate
  private produceImage:ImageProducer
  private background:(promise:Promise<unknown>)=>void
- constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate:OldStreetGate|undefined=OLD_STREET_PREVIEW_RELEASED?oldStreetPreviewPresentation:undefined,private oldStreetInterpreter?:OriginalActionInterpreter,private oldStreetDialogue?:OldStreetDialogueGenerator,private expansionProviders?:{model:ModelRequest;photo:ExpansionPhotoProducer},private oldStreetAttempt?:OldStreetAttemptGenerator){
+ constructor(ctx:DurableContext,private env?:Environment,modelRequest?:ModelRequest,imageProducer?:ImageProducer,originalGate:OriginalPresentationGate=ORIGINAL_STORY_RELEASED?originalReleasedPresentation:originalPresentationUnavailable,private originalInterpreter?:OriginalActionInterpreter,private originalDialogue?:OriginalDialogueGenerator,private artSource?:ArtArchiveSource,private illustrationProducer?:IllustrationProducer,private oldStreetGate:OldStreetGate|undefined=OLD_STREET_PREVIEW_RELEASED?oldStreetPreviewPresentation:undefined,private oldStreetInterpreter?:OriginalActionInterpreter,private oldStreetDialogue?:OldStreetDialogueGenerator,private expansionProviders?:{model:ModelRequest;photo:ExpansionPhotoProducer},private oldStreetAttempt?:OldStreetAttemptGenerator,private campaignProvider?:OldStreetCampaignGenerator){
   this.produceImage=imageProducer??createJournalImageProducer()
   this.background=p=>{if(ctx.waitUntil)ctx.waitUntil(p);else void p.catch(()=>{})}
   const db:AuthorityStorage={all:(sql,...values)=>ctx.storage.sql.exec(sql,...values).toArray(),run:(sql,...values)=>{ctx.storage.sql.exec(sql,...values)},transaction:work=>ctx.storage.transactionSync(work)}
   this.db=db;this.originalGate=originalGate
+  if(OLD_STREET_CAMPAIGN_RELEASED&&oldStreetGate===oldStreetPreviewPresentation)this.campaignProvider??=createOldStreetCampaignPlanner(modelRequest??chatModel)
   // Explicit preflight/test gates never acquire a live provider accidentally.
   // The session authority enforces its persisted per-owner narration quota.
   if(originalGate===originalReleasedPresentation){
@@ -231,13 +236,14 @@ export class CarriageJourneyAuthority{
    }catch(e){return respond({error:e instanceof LabError?e.code:'ART_SOURCE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
   }
   if(url.pathname.startsWith(OLD_STREET_API_PATH+'/')){
-   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate,this.oldStreetInterpreter,this.oldStreetDialogue,h=>this.expansions?.candidateFor(h),h=>this.expansionMedia?.candidateFor(h),this.oldStreetAttempt)
+   this.oldstreet??=new OldStreetAuthority(this.db,this.oldStreetGate,this.oldStreetInterpreter,this.oldStreetDialogue,h=>this.expansions?.candidateFor(h),h=>this.expansionMedia?.candidateFor(h),this.oldStreetAttempt,undefined,this.campaignProvider?(h,stage)=>this.campaignJobs?.candidateFor(h,stage):undefined)
+   if(this.campaignProvider)this.campaignJobs??=new OldStreetCampaignJobs(this.db,(o,id)=>this.oldstreet!.get(o,id),this.campaignProvider)
    if(OLD_STREET_EXPANSION_RELEASED)this.expansionProviders??={model:chatModel,photo:expansionPhotoProducer()}
    if(this.expansionProviders){
     this.expansions??=new OldStreetExpansionJobs(this.db,(o,id)=>this.oldstreet!.get(o,id),createOldStreetExpansionPlanner(this.expansionProviders.model))
     this.expansionMedia??=new OldStreetExpansionMedia(this.db,(o,id)=>this.oldstreet!.get(o,id),h=>this.expansions?.candidateFor(h))
    }
-   return handleOldStreetSession(request,owner,this.oldstreet,body,this.expansions&&this.expansionMedia&&this.expansionProviders?{jobs:this.expansions,media:this.expansionMedia,produce:this.expansionProviders.photo,background:this.background}:undefined)
+   return handleOldStreetSession(request,owner,this.oldstreet,body,this.expansions&&this.expansionMedia&&this.expansionProviders?{jobs:this.expansions,media:this.expansionMedia,produce:this.expansionProviders.photo,background:this.background}:undefined,this.campaignJobs?{jobs:this.campaignJobs,background:this.background}:undefined)
   }
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){
    this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter,this.originalDialogue)

@@ -3,7 +3,19 @@ import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
 import type {OldStreetAuthority} from './old-street-runtime'
 import type {OldStreetExpansionJobs} from './old-street-expansion-jobs'
+import type {OldStreetCampaignJobs} from './old-street-campaign-jobs'
 import type {OldStreetExpansionMedia,ExpansionPhotoProducer} from './old-street-expansion-media'
+
+export function oldStreetCampaignOperation(method:string,owner:string,id:string,stage:'trace'|'parcel',jobs:OldStreetCampaignJobs|undefined,body:unknown,background:(p:Promise<unknown>)=>void){
+ if(!jobs)throw new LabError('CAMPAIGN_NOT_AVAILABLE',503)
+ if(method==='GET')return {job:jobs.get(owner,id,stage)}
+ if(method!=='POST')throw new LabError('METHOD_NOT_ALLOWED',405)
+ const b=body as {retry?:unknown}
+ if(!b||typeof b!=='object'||Array.isArray(b)||Object.keys(b).some(k=>k!=='retry')||b.retry!==undefined&&typeof b.retry!=='boolean')throw new LabError('INVALID_CAMPAIGN_REQUEST')
+ const job=jobs.enqueue(owner,id,stage,b.retry===true)
+ if(job.state==='queued')background(jobs.run(owner,id,stage))
+ return {job}
+}
 
 export function oldStreetExpansionPhotoOperation(method:string,owner:string,id:string,media:OldStreetExpansionMedia|undefined,produce:ExpansionPhotoProducer,body:unknown,background:(p:Promise<unknown>)=>void){
  if(!media)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
@@ -29,7 +41,7 @@ export function oldStreetExpansionOperation(method:string,owner:string,id:string
 
 export const oldStreetJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
 /** Owner is supplied exclusively by the Worker's capability boundary. */
-export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void}){
+export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void},campaign?:{jobs:OldStreetCampaignJobs;background:(p:Promise<unknown>)=>void}){
  try{
   if(request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(OLD_STREET_API_PATH.length)
@@ -37,14 +49,15 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    if(request.method==='GET')return oldStreetJson({sessions:authority.directory(owner)})
    if(request.method==='POST'){
     const b=await readBody(request)
-    if(!b||Object.keys(b).some(k=>!['enrollment_id','locale'].includes(k))||!['zh','en'].includes(b.locale))throw new LabError('INVALID_ENROLLMENT')
-    return oldStreetJson(authority.create(owner,b.enrollment_id,b.locale))
+    if(!b||Object.keys(b).some(k=>!['enrollment_id','locale','options'].includes(k))||!['zh','en'].includes(b.locale))throw new LabError('INVALID_ENROLLMENT')
+    return oldStreetJson(authority.create(owner,b.enrollment_id,b.locale,b.options))
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
-  if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion})}
+  if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion,campaign:!!campaign})}
+  if(m[2]==='campaign-trace'||m[2]==='campaign-parcel')return oldStreetJson(oldStreetCampaignOperation(request.method,owner,m[1],m[2]==='campaign-trace'?'trace':'parcel',campaign?.jobs,request.method==='POST'?await readBody(request):undefined,campaign?.background??(()=>{})))
   if(m[2]==='expansion-photo'){
    if(!expansion)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)
    return oldStreetJson(oldStreetExpansionPhotoOperation(request.method,owner,m[1],expansion.media,expansion.produce,request.method==='POST'?await readBody(request):undefined,expansion.background))

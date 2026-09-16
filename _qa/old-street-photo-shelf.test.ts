@@ -19,8 +19,12 @@ test('taking and returning photos never restores the folder on its original shel
  const ret=resolveDomainAction(s,c,'oldstreet:return-photos')!
  assert.equal(ret.status,'accepted');applyDomainResolution(s,c,ret)
  assert.equal(oldStreetPhotoShelfPose(JSON.parse(JSON.stringify(s))),'empty')
- const [shelf,folder]=oldStreetPhotoShelfSheets('prepared')
- for(const pose of ['stand','empty'] as const)assert.equal(shelf.textures[pose].animations()[0][0].opacity,1)
+ const [shelf,folder,papers]=oldStreetPhotoShelfSheets('prepared')
+ for(const pose of ['stand','empty','papers','both'] as const){
+  assert.equal(shelf.textures[pose].animations()[0][0].opacity,1)
+  assert.equal(folder.textures[pose].animations()[0][0].opacity,['stand','both'].includes(pose)?1:0)
+  assert.equal(papers.textures[pose].animations()[0][0].opacity,['papers','both'].includes(pose)?1:0)
+ }
  assert.equal(folder.textures.stand.animations()[0][0].opacity,1)
  assert.equal(folder.textures.empty.animations()[0][0].opacity,0)
 })
