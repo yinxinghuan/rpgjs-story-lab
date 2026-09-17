@@ -356,14 +356,14 @@ export default function OldStreetDev() {
     }catch(e){setJourneysOpen(false);setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
   function ruleFor(id: string) {return resolveDomainAction(current.current.save, cartridge, id)}
-  async function requestExpansion(input:string,activate=false,photoMatch?:unknown,decision?:string){
+  async function requestExpansion(input:string,activate=false,photoMatch?:unknown,decision?:string,followArchive=false){
     const h=serverHead.current
     if(!h||!ready||busyRef.current||error||outcome)throw Error('NOT_READY')
     if(h.expansions?.length&&!activate&&!photoMatch&&!decision)return
     setBusyActivity('action')
     busyRef.current=true;setBusy(true);runtime.current?.pause(true)
     try{
-      const result=await connection.client.send(h,{type:decision?'expansion-photo-decision':photoMatch?'expansion-photo-match':activate?'expansion-activate':'expansion-request',...(photoMatch?{photoMatch}:{}),...(decision?{decision}:{}),template:'photo-darkroom-v1',text:input,position:{...position.current}})
+      const result=await connection.client.send(h,{type:decision?'expansion-photo-decision':photoMatch?'expansion-photo-match':activate?'expansion-activate':'expansion-request',...(photoMatch?{photoMatch}:{}),...(decision?{decision}:{}),template:'photo-darkroom-v1',text:input,...(followArchive?{followArchive:true}:{}),position:{...position.current}})
       const nextHead=result.head as OldStreetHead
       if(!nextHead.expansions?.length)throw Error('EXPANSION_NOT_SAVED')
       serverHead.current=nextHead
@@ -574,8 +574,8 @@ export default function OldStreetDev() {
           {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
         </div>}
       </>}
-      {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&!conversationOpen&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} submit={requestExpansion} activate={()=>requestExpansion('',true)}/>}
-      {expansionCapabilities.media&&head.scene==='darkroom'&&serverHead.current&&<OldStreetExpansionPhotoView requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
+      {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&!conversationOpen&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} archiveTitle={serverHead.current.campaign?.archive?.order?serverHead.current.campaign.archive.content.title:undefined} submit={(input,follow)=>requestExpansion(input,false,undefined,undefined,follow)} activate={()=>requestExpansion('',true)}/>}
+      {expansionCapabilities.media&&head.scene==='darkroom'&&serverHead.current&&<OldStreetExpansionPhotoView requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
     </section>
     <footer>
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||(!!campaignOpen||!!archiveOpen)} move={(x,y)=>runtime.current?.move(x,y)}/>

@@ -29,6 +29,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
   photos:t('照片夹上印着照相馆的标记。','The folder bears the photo studio’s stamp.'),
  }
  const notes:Array<{id:string;title:string;text:string}>=[]
+ if(typeof f['darkroom-photo-matched']==='string'&&typeof f['darkroom-photo-discovery']==='string')notes.push({id:'darkroom-photo-discovery',title:t('照片里的发现','What the photograph shows'),text:f['darkroom-photo-discovery']})
  const commission=campaignCommission(save);if(commission)notes.push({id:'campaign-commission',title:t('家人的委托','Your family’s request'),text:commission})
  if(campaign?.trace?.observed){
   const {clue,records}=campaign.trace.content

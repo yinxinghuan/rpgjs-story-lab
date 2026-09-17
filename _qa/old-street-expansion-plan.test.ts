@@ -18,3 +18,15 @@ test('model content compiles to playable baseline; only visual puzzle awaits its
  assert.equal(plan.media.length,2);assert.ok(plan.media.every(m=>!m.requiredForEntry))
  assert.throws(()=>readExpansionContent({...content,door:{x:0,y:0}}),/INVALID/)
 })
+
+const archiveSource={archiveId:'archive-source-00001',title:'Bridge repair',events:['The damage was measured','Replacement boards were cut','New boards were fitted','The bridge reopened'],account:'Boards were fitted before the bridge reopened.'}
+test('linked photograph carries the confirmed chronology into generation and review, without changing room geometry',async()=>{
+ const inputs:any[]=[]
+ const plan=await createOldStreetExpansionPlanner(async(_system,user)=>{const data=JSON.parse(user);inputs.push(data);return inputs.length===1?content:{valid:true,issues:[]}})({...intent,archiveSource},'en',new AbortController().signal)
+ assert.equal(inputs.length,2);assert.deepEqual(inputs[0].archiveSource,archiveSource);assert.deepEqual(inputs[1].archiveSource,archiveSource)
+ assert.deepEqual(plan.space, (await createOldStreetExpansionPlanner(async()=>content)(intent,'en',new AbortController().signal)).space)
+})
+test('review cannot admit a photograph about an unrelated event',async()=>{
+ let calls=0
+ await assert.rejects(createOldStreetExpansionPlanner(async()=>++calls===1?content:{valid:false,issues:['The archive is about a bridge, not a storefront.']})({...intent,archiveSource},'en',new AbortController().signal),/ARCHIVE_PHOTO_REVIEW_REJECTED/)
+})

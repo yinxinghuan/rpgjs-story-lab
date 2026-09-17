@@ -4,7 +4,7 @@ import {readExpansionJob} from './old-street-expansion-recovery'
 import type {OldStreetExpansionMedia} from '../server/old-street-expansion-media'
 type Job=ReturnType<OldStreetExpansionMedia['get']>
 /** Showing a completed image does not itself unlock the puzzle's story result. */
-export function OldStreetExpansionPhotoView({locale,sessionId,api,disabled,matched,submit,pause,choice,decide,allowRegenerate=false,requestOpen=0}:{locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;disabled:boolean;matched:boolean;choice:string;allowRegenerate?:boolean;requestOpen?:number;decide:(choice:'keep'|'leave')=>Promise<void>;submit:(proof:unknown)=>Promise<void>;pause:(open:boolean)=>void}){
+export function OldStreetExpansionPhotoView({locale,sessionId,api,disabled,matched,discovery,submit,pause,choice,decide,allowRegenerate=false,requestOpen=0}:{locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;disabled:boolean;matched:boolean;discovery?:string;choice:string;allowRegenerate?:boolean;requestOpen?:number;decide:(choice:'keep'|'leave')=>Promise<void>;submit:(proof:unknown)=>Promise<void>;pause:(open:boolean)=>void}){
  const [image,setImage]=useState('')
  const [open,setOpen]=useState(false),[feedback,setFeedback]=useState('')
  const [job,setJob]=useState<Job>(null),[failed,setFailed]=useState(false),[sending,setSending]=useState(false),[revision,setRevision]=useState(0)
@@ -32,6 +32,7 @@ export function OldStreetExpansionPhotoView({locale,sessionId,api,disabled,match
  async function start(){if(sending||disabled)return;setSending(true);try{const result=await api(path,{retry:job?.state==='failed'||job?.state==='candidate'});setJob(result.job);setFailed(false);setRevision(n=>n+1)}catch{setFailed(true)}finally{setSending(false)}}
  return <div className="os-expansion">
   <p role="status">{choice==='keep'?t('旧街照片已收进随身行囊。','The photograph is in your bag.'):choice==='leave'?t('照片留在显影台上。','The photograph remains on the developing bench.'):matched?t('旧街照片已拼合，已记入这次旅程。','The completed photograph is saved in this journey.'):(failed||imageFailed)?t('照片暂时取不到，可以继续探索。','The photograph is unavailable. You can keep exploring.'):job?.state==='candidate'?t('照片显出来了。','The photograph has developed.'):job?.state==='preparing'?t('照片正在显影，可以先去别处看看。','The photograph is developing. You can explore elsewhere.'):job?.state==='failed'?t('显影暂时中断了。','Developing was interrupted.'):t('显影台上留着一张待冲洗的照片。','An undeveloped photograph rests on the workbench.')}</p>
+  {matched&&discovery&&<p>{discovery}</p>}
   {failed&&<button disabled={disabled||sending} onClick={()=>{setFailed(false);setRevision(n=>n+1)}}>{t('重新连接','Reconnect')}</button>}
   {imageFailed&&job?.state==='candidate'&&<button disabled={disabled||sending} onClick={()=>setImageRevision(n=>n+1)}>{t('重新载入照片','Reload photograph')}</button>}
   {matched&&!choice&&(['keep','leave'] as const).map(value=><button key={value} disabled={disabled||sending} onClick={()=>{setSending(true);void decide(value).catch(()=>setFailed(true)).finally(()=>setSending(false))}}>{value==='keep'?t('带走照片','Take the photograph'):t('留在暗房','Leave it here')}</button>)}

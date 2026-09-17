@@ -2365,3 +2365,11 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 材料视图的ready按钮改为 `campaign-read`，一次准入+观察，决定仍单独提交。`oldStreetPhotoShelfPose(save,campaign?)`的stand/empty/papers/both投射两份物品，三图层分别对应架子、照片夹与主线纸袋。使用已准入图集，不增添剧情事实或碰撞。
 
 `_qa/campaign-playtest-server.ts`仅本地开发启动：合成生产器禁用全部真实模型，独立测试数据库，运行原游戏renderer。实际路线与Worker测试证据、局限见 `campaign-map-playtest-20260917.md`；该启动器不是第二个游戏或发布入口。
+
+### 档案到照片的连续发现（2026-09-17）
+
+`old-street-archive-photo.ts` 只从已完成重建的 archive 取得稳定 ID、按已解顺序排列的事件和结论。玩家在照相馆选择关联调查时，runtime 从权威 head 构造 `expansions[0].archiveSource`；忽略客户端自报背景，未完成档案不能建立关联。普通暗房意图仍不自动关联，已有请求不改写。head 校验快照与原档案一致。
+
+扩展 planner 把快照送入原平台叙事接口；关联请求增加一次语义复核，与生成共用原 22 秒预算，不自动无限修复。图像仍走既有媒体任务和 SHA 准入，布局、碰撞和门不变。复核仅是候选筛查，不能保证图片或生成语义正确。
+
+真实拼图凭证通过后，将候选 discovery 保存到 `darkroom-photo-discovery`；此前只准备候选不授予该发现。暗房结果、旅程笔记、自由行动的已知内容及结局读取同一字段。带走/留下原图不删除观察，旧已完成照片不追溯补造发现。没有新增完成条件。实证与局限见 `archive-photo-review-20260917.md`。

@@ -1,3 +1,4 @@
+import {archivePhotoSource} from './old-street-archive-photo'
 import {archiveReadingItem} from './old-street-archive-reading'
 import {archiveRackState} from './old-street-archive'
 import type {StorySave} from './vendor/original-train/types'
@@ -16,6 +17,8 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     || !h.position || !oldStreetWalkable(h.sceneId,h.position,s,h.mapVersion==='oldstreet-blockout-1'?{w:9,h:15}:undefined,undefined,[plan.mapVersion,'oldstreet-furniture-3'].includes(h.mapVersion),undefined,h.mapVersion!==plan.mapVersion)) throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)
   try {
     bindOldStreet(s.locale,s).locate(s,h.sceneId);assertOldStreetExpansions(h.expansions);assertOldStreetCampaign(h.campaign)
+    if(h.expansions?.[0]?.archiveSource&&JSON.stringify(h.expansions[0].archiveSource)!==JSON.stringify(archivePhotoSource(h.campaign)))throw Error('ARCHIVE_PHOTO_SOURCE_MISMATCH')
+    if(s.facts['darkroom-photo-discovery']!==undefined&&(typeof s.facts['darkroom-photo-matched']!=='string'||typeof s.facts['darkroom-photo-discovery']!=='string'||!s.facts['darkroom-photo-discovery'].trim()||s.facts['darkroom-photo-discovery'].length>220))throw Error('PHOTO_DISCOVERY_NOT_OBSERVED')
     if(s.facts['archive-ready']===true&&(!h.campaign?.archive||s.facts['archive-layout']!==h.campaign.archive.content.layout)||h.campaign?.archive&&s.facts['archive-ready']!==true||h.sceneId==='archive'&&!h.campaign?.archive)throw Error('ARCHIVE_NOT_ADMITTED')
     if(h.campaign&&s.facts.departed&&!campaignComplete(h.campaign))throw Error('CAMPAIGN_INCOMPLETE')
     if(s.facts['archive-published']===true&&!h.campaign?.archive?.order)throw Error('ARCHIVE_NOT_RECONSTRUCTED')

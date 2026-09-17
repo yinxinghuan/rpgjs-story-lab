@@ -1,3 +1,4 @@
+import {archivePhotoSource} from '../src/old-street-archive-photo'
 import {introduceCampaignCommission,campaignCommission} from '../src/old-street-campaign-story'
 import {oldStreetAttemptContext,type OldStreetAttemptGenerator} from './old-street-attempt'
 import {prepareCampaignAction,type CampaignCandidate} from './old-street-campaign-actions'
@@ -127,7 +128,9 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(h.sceneId!=='darkroom'||!h.save.facts['darkroom-ready']||!hash||!binding.canInteract('developing-bench',h.sceneId,pos))throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         if(!oldStreetPhotoMatches(body.photoMatch,hash))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
         const save=structuredClone(h.save);save.facts['darkroom-photo-matched']=hash
-        const text=save.locale==='zh'?'屋檐与石板路接上了。这张旧街照片完整了。':'The rooflines and paving join. The old street photograph is complete.'
+        const content=expansionPlan?.(h)?.content
+        if(content)save.facts['darkroom-photo-discovery']=content.discovery
+        const text=content?.discovery??(save.locale==='zh'?'这张旧街照片完整了。':'The old street photograph is complete.')
         recordOldStreetInteraction(save,'developing-bench','expansion-photo-match',text,body.action_id)
         const next={...h,version:h.version+1,position:pos,save};check(next,h)
         return {head:next,kind:'expansion-photo-match',accepted:true,text}
@@ -144,7 +147,9 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(h.sceneId!=='photo'||body.template!=='photo-darkroom-v1')throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         if(h.expansions?.length)throw new LabError('OLD_STREET_EXPANSION_ALREADY_REQUESTED',409)
-        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:body.text.trim(),status:'requested',requestedAtVersion:h.version}]}
+        const archiveSource=body.followArchive===true?archivePhotoSource(h.campaign):undefined
+        if(body.followArchive===true&&!archiveSource)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
+        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:body.text.trim(),status:'requested',requestedAtVersion:h.version,...(archiveSource?{archiveSource}:{})}]}
         check(next,h)
         return {head:next,kind:'expansion-request',accepted:true,text:h.save.locale==='zh'?'已记下你想探索的新去处。准备好后才能进入；现在可以继续逛。':'Your exploration idea is saved. You can keep exploring while the new area is prepared.'}
       }

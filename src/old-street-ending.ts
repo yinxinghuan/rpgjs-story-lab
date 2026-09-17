@@ -21,6 +21,7 @@ export function completeOldStreetEnding(save:StorySave,cartridge:StoryCartridge)
  if(flag('photo-recorded')&&flag('photo-consent'))preserved.push(t('获准分享的店面旧照留在记录册里。','The approved shop photograph remains in the record book.'))
  if(save.facts['darkroom-photo-choice']==='keep')preserved.push(t('你带回了一张在暗房拼好的旧街照片。','You brought home the street photograph you matched in the darkroom.'))
  if(save.facts['darkroom-photo-choice']==='leave')preserved.push(t('拼好的旧街照片留在暗房，等下一位来客翻看。','The completed street photograph remains in the darkroom for another visitor.'))
+ if(typeof save.facts['darkroom-photo-matched']==='string'&&typeof save.facts['darkroom-photo-discovery']==='string')preserved.push(save.facts['darkroom-photo-discovery'])
  const unresolved=save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id)).map(i=>t(`你离开时还带着${i.label}。`,`You still carried ${i.label} when you left.`))
  const known=new Set(save.characters.map(c=>c.id))
  const name=(id:string)=>save.characters.find(c=>c.id===id)?.name??''

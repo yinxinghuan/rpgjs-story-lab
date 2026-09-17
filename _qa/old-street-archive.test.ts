@@ -1,3 +1,5 @@
+import {archivePhotoSource} from '../src/old-street-archive-photo'
+import {compileExpansionPlan,type ExpansionPlan} from '../src/old-street-expansion-plan'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
@@ -48,7 +50,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
  const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(readingMode==='direct'?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
- let jobs:OldStreetCampaignJobs,calls=0
+ let jobs:OldStreetCampaignJobs,calls=0,photoPlan:ExpansionPlan|undefined
  const planner=createOldStreetCampaignPlanner(async(_system,user)=>{
   calls++;const context=JSON.parse(user)
   if('candidate' in context||'chronologicalEvents' in context)return {valid:true,issues:[]}
@@ -56,7 +58,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   if(context.stage==='parcel')return parcelDraft
   throw Error('Archive must reuse the prepared episode, not generate another history')
  })
- const authority=()=>new OldStreetAuthority(db,()=>true,undefined,undefined,undefined,undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
+ const authority=()=>new OldStreetAuthority(db,()=>true,undefined,undefined,()=>photoPlan,()=>photoPlan?'synthetic-photo-hash':undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
  let h=s.create('synthetic',randomUUID(),'en',{campaign:'letter-trail-v2'})
  const input=(target:string,extra:any)=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.id===target)!.approach,target,...extra})
@@ -153,7 +155,28 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   assert.ok(!privateEnding.finale.ending?.preserved.some(p=>p.includes('public record book')),'withdrawn summary is absent from ending')
   await send('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='campaign-public-summary')?.text.includes('public record book'))
+  if(readingMode==='direct'){
+   await steps(['street','photo'])
+   const source=archivePhotoSource(h.campaign)!
+   const request=await send('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'Find a photograph of the bridge repairs',followArchive:true,archiveSource:{account:'client must not invent history'}})
+   assert.deepEqual(h.expansions![0].archiveSource,source)
+   assert.deepEqual(await s.action('synthetic',h.id,request.b),request.r)
+   s=authority();h=s.get('synthetic',h.id);assert.deepEqual(h.expansions![0].archiveSource,source)
+   photoPlan=compileExpansionPlan(h.expansions![0],{title:'The bridge boards',discovery:'Three newer boards interrupt the worn planks of the footbridge.',photograph:'Monochrome pixel art of a footbridge with three replacement boards.'},'en')
+   await send('viewing-table',{type:'expansion-activate'})
+   assert.equal(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='darkroom-photo-discovery'),false,'preparation does not reveal the photograph')
+   await steps(['darkroom'])
+   const matched=await send('developing-bench',{type:'expansion-photo-match',photoMatch:{version:'synthetic-photo-hash',piece:'piece-river',rotation:0}})
+   assert.equal(matched.r.text,photoPlan.content.discovery)
+   assert.deepEqual(await s.action('synthetic',h.id,matched.b),matched.r)
+   await send('developing-bench',{type:'expansion-photo-decision',decision:'leave'})
+   s=authority();h=s.get('synthetic',h.id)
+   assert.equal(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='darkroom-photo-discovery')?.text,photoPlan.content.discovery)
+   assert.equal(h.save.inventory.some(i=>i.id==='darkroom-print'),false,'leaving the print does not erase the discovery')
+   await steps(['photo'])
+  }
   await steps(['street','oldstreet:leave'])
+  if(photoPlan)assert.ok(h.save.finale.ending?.preserved.includes(photoPlan.content.discovery))
   assert.equal(h.save.finale.status,'complete');assert.ok(h.save.finale.ending?.preserved.includes(archive.discovery))
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
