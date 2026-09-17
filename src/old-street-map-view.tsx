@@ -16,7 +16,7 @@ export function OldStreetMapView({save,room,locale,onClose}:{save:StorySave;room
   <p>{t('你在这里：','You are here: ')}<strong>{label(room)}</strong></p>
   <div className="os-map__diagram" style={{aspectRatio:`360/${height}`}}>
    <svg viewBox={`0 0 360 ${height}`} aria-hidden="true">{map.connections.map(e=><line key={e.id} x1={positions[e.a][0]} y1={positions[e.a][1]} x2={positions[e.b][0]} y2={positions[e.b][1]} stroke="currentColor" strokeWidth="2" strokeDasharray={e.open?undefined:'5 5'}/>)}</svg>
-   {map.rooms.map(r=><button key={r.id} aria-pressed={destination===r.id} aria-current={room===r.id?'location':undefined} onClick={()=>setDestination(r.id)} style={{left:`${positions[r.id][0]/3.6}%`,top:`${positions[r.id][1]/height*100}%`}}>{label(r.id)}</button>)}
+   {map.rooms.map(r=><button key={r.id} aria-label={label(r.id)} aria-pressed={destination===r.id} aria-current={room===r.id?'location':undefined} onClick={()=>setDestination(r.id)} style={{left:`${positions[r.id][0]/3.6}%`,top:`${positions[r.id][1]/height*100}%`}}>{locale==='en'&&r.id==='archive'?'Archive':locale==='en'&&r.id==='shed'?'Workshop':label(r.id)}</button>)}
   </div>
   <p className="os-map__route" role="status">{destination===room?t('你就在这里。','You are already here.'):route?route.map(label).join(' → '):t('已知通道暂时无法到达这里。','No known open route reaches this place yet.')}</p>
   {map.connections.filter(e=>!e.open).map(e=><p className="os-map__blocked" key={e.id}>{label(e.a)} — {label(e.b)}：{t(e.gate==='crates-cleared'?'旧箱挡路':'门闩未打开',e.gate==='crates-cleared'?'blocked by crates':'latched')}</p>)}

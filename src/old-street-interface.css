@@ -1,0 +1,89 @@
+/* Shared screen regions. The map never reserves space for a transient panel. */
+.os-dev--immersive {
+  --os-control-bottom: max(8px, env(safe-area-inset-bottom));
+  --os-control-height: 80px;
+  --os-sheet-bottom: calc(var(--os-control-bottom) + var(--os-control-height) + 12px);
+  --os-sheet-height: min(48dvh, 420px);
+  --os-content-width: 520px;
+}
+.os-dev--immersive > footer {
+  bottom: var(--os-control-bottom);
+  max-width: var(--os-content-width);
+  min-height: var(--os-control-height);
+  align-items: end;
+}
+.os-dev--immersive > footer .os-primary {
+  width: min(60%, 260px);
+  min-width: 0;
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  padding: 8px 14px;
+}
+.os-primary__target {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: .8;
+}
+.os-primary strong { font-size: 16px; line-height: 1.4; font-weight: 600; }
+.os-dev--immersive > .os-actions {
+  bottom: var(--os-sheet-bottom);
+  max-height: var(--os-sheet-height);
+  width: calc(100% - 24px);
+  max-width: var(--os-content-width);
+  gap: 12px;
+  padding: 12px;
+}
+.os-actions__heading { flex-wrap: nowrap !important; align-items: start; }
+.os-actions__heading > strong { overflow-wrap: anywhere; }
+.os-actions__heading > button { flex: none; max-width: 48%; line-height: 1.3; }
+.os-actions .os-turn { max-height: none; overflow: visible; }
+.os-actions .os-expansion p { font-size: 16px; }
+.os-actions .os-expansion button { margin: 4px 4px 4px 0; }
+.os-actions .os-expansion summary { font-size: 16px; }
+.os-actions textarea { box-sizing: border-box; width: 100%; font: inherit; }
+.os-dev--immersive > .os-feedback {
+  position: absolute;
+  z-index: 3;
+  top: calc(max(4px, env(safe-area-inset-top)) + 68px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(calc(100% - 32px), 460px);
+  margin: 0;
+  padding: 8px 12px;
+  background: #192326e8;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  pointer-events: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* The light outline and primary button refer to the same nearby target. */
+.os-target[data-targeted=true] { outline: 1px solid #d5c79e99; outline-offset: 3px; }
+/* Consistent exit access for longer map, inventory and document content. */
+.os-map > header { position: sticky; top: -1px; z-index: 2; background: var(--os-paper); padding-bottom: 8px; }
+.os-map > header h2 { min-width: 0; overflow-wrap: anywhere; }
+.os-map > header button { flex-shrink: 0; max-width: 45%; }
+@media (max-height:650px) {
+  .os-dev--immersive { --os-control-height: 64px; --os-sheet-height: min(48dvh, 300px); }
+}
+@media (max-height:480px) {
+  .os-dev--immersive > .os-actions--composing { max-height: calc(100dvh - var(--os-sheet-bottom) - 72px); }
+  .os-actions--composing .os-actions__heading { display: none; }
+  .os-actions--composing .os-compose__toggle, .os-actions--composing .os-expansion { display: none !important; }
+}
+
+.os-map__diagram button { width: 30%; overflow-wrap: normal; }
