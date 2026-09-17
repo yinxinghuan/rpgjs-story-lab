@@ -26,6 +26,7 @@ export function archiveReadingStatus(archive:ArchiveProgress,save:Pick<StorySave
  return ''
 }
 export function archivePaperPose(target:string,facts:Record<string,unknown>){
+ if(target==='archive-ledger'&&facts['archive-ledger-site'])return 'without-paper'
  const source=facts['archive-dense-source'],position=facts['archive-reading-position']
  if(target==='archive-'+source&&position)return 'without-paper'
  if(target==='archive-desk'&&position==='desk')return 'spread-paper'

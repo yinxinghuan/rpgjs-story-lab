@@ -1,3 +1,4 @@
+import {archiveLoanKnown,archiveLoanLead} from './old-street-archive-loan'
 import {fieldKnowledge} from './old-street-field-inquiry'
 import {campaignCommission,campaignPhotoPurpose} from './old-street-campaign-story'
 import {oldStreetPropState} from './old-street-prop-state'
@@ -8,7 +9,8 @@ import {archiveEvidence} from './old-street-archive'
 export function oldStreetCurrentPurpose(save:StorySave,campaign?:OldStreetCampaign){
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
  if(f.departed===true)return t('信已经交给家人。','The letter has been delivered.')
- if(campaign&&campaign.version>=2&&campaign.parcel?.observed&&!campaign.archive?.order)return campaign.archive?t('进入档案工作间，调查两处资料架，再到整理桌核对先后顺序。','Examine both archive shelves, then reconstruct the order at the sorting table.'):t('在地下室资料架追查原始记录，准备隔壁档案工作间。','Follow the source records from the cellar shelf to prepare the adjoining archive.')
+ if(campaign?.archive&&!campaign.archive.order&&archiveLoanKnown(campaign.archive,f)&&!campaign.archive.examined.includes('ledger'))return archiveLoanLead(campaign.archive.content,save.locale)
+ if(campaign&&campaign.version>=2&&campaign.parcel?.observed&&!campaign.archive?.order)return campaign.archive?t('找到施工索引与工作日志，再到档案整理桌核对先后顺序。','Find the work index and work log, then reconstruct the order at the archive table.'):t('在地下室资料架追查原始记录，准备隔壁档案工作间。','Follow the source records from the cellar shelf to prepare the adjoining archive.')
  const photoPurpose=campaignPhotoPurpose(save,campaign);if(photoPurpose)return photoPurpose
  if(f['letter-taken']===true&&campaign&&!campaignComplete(campaign,save.facts))return campaign.trace?.selected===undefined?t('到修表铺记录册比对寄存条，寻找信件关联的材料。','Compare the filing slip with the shop record book to trace the papers linked to the letter.'):t('到地下储物室阅读寄存材料，再决定带走原件或留下。','Read the archived papers in the cellar, then decide whether to take the original or leave it there.')
  if(campaignCommission(save)&&!save.characters.some(c=>c.id==='zhou-watchmaker'&&c.status==='known')&&!f['letter-unlocked']&&!save.inventory.some(i=>i.id==='letter-key'&&i.count>0)&&!f['letter-taken'])return save.objective
@@ -45,6 +47,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  if(campaign?.archive?.order)notes.push({id:'campaign-public-summary',title:t('留下的经过','A record for others'),text:f['archive-published']===true?t('调查摘要已抄进修表铺的公共记录册。原件去向不变，离开前仍可回去撤下。','Your summary is in the watch shop public record book. The original stays where you chose; you can remove the summary before leaving.'):t('摘要没有留在公共记录册。可以回修表铺抄入，也可以只把发现带回家。','No summary remains in the public record book. You may copy it in at the watch shop, or keep the findings for your family.')})
  if(campaign?.archive){for(const source of campaign.archive.examined)notes.push({id:'archive-'+source,title:t(source==='index'?'施工索引':'工作日志',source==='index'?'Work index':'Work log'),text:archiveEvidence(campaign.archive.content,source,save.locale).join(' ')});if(campaign.archive.order)notes.push({id:'archive-reconstructed',title:campaign.archive.content.title,text:campaign.archive.content.discovery})}
  for(const note of fieldKnowledge({save,campaign}))notes.push({...note,title:t(note.id==='field-lead'?'补充便笺的线索':note.id==='field-finding'?'便笺里的发现':note.id==='field-copy'?'抄录的副本':note.id==='field-handling'?'原件与副本':'便笺去向',note.id==='field-lead'?'Follow-up lead':note.id==='field-finding'?'The note’s finding':note.id==='field-copy'?'A written copy':note.id==='field-handling'?'Original and copy':'Where the note remains')})
+ if(archiveLoanKnown(campaign?.archive,f))notes.push({id:'archive-loan',title:t('工作日志的去向','Where to find the work log'),text:archiveLoanLead(campaign!.archive!.content,save.locale)})
  const encounters:Record<string,{character:string;text:string}>={
   'kept-promise':{character:'zhou-watchmaker',text:t('你已把借来的钥匙交还给他。','You returned the key he lent you.')},
   'returned-family-clock':{character:'lan-laundry',text:t('你帮她送回了母亲留下的旧钟。','You brought back the clock that belonged to her mother.')},

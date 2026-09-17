@@ -1,3 +1,5 @@
+import {archiveLoanAt,archiveLoanLead} from '../src/old-street-archive-loan'
+import {archivePaperPose} from '../src/old-street-archive-reading'
 import {developingTarget} from '../src/old-street-developing-puzzle'
 import {assertOldStreetHead} from '../src/old-street-head'
 import {fieldChoices,fieldKnowledge} from '../src/old-street-field-inquiry'
@@ -52,9 +54,10 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
  assert.equal(oldStreetWalkable('archive',{x:plan.props[0].body.x+4,y:plan.props[0].body.y+4},save),false,'furniture blocks passage')
 })
 
-for(const readingMode of ['direct','lens','table','commission'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async()=>{
- const fullCommission=readingMode==='commission',direct=readingMode==='direct'||fullCommission
- const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(direct?{}:{denseSource:'index'})}
+for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async()=>{
+ const loanSite=readingMode==='photo-loan'?'photo':readingMode==='laundry-loan'?'laundry':undefined
+ const fullCommission=readingMode==='commission'||!!loanSite,direct=readingMode==='direct'||fullCommission
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(loanSite?{ledgerSite:loanSite}:{}),...(direct?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0,interpretationCalls=0,photoPlan:ExpansionPlan|undefined
@@ -144,6 +147,24 @@ for(const readingMode of ['direct','lens','table','commission'] as const)test(`c
   await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'slide'})
   await steps(['cellar','archive'])
   await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
+  if(loanSite){
+   assert.deepEqual(h.campaign!.archive!.examined,['index'],'loan slip does not grant the missing evidence')
+   assert.equal(archivePaperPose('archive-ledger',h.save.facts),'without-paper')
+   assert.equal(h.save.facts['archive-ledger-site'],loanSite)
+   assert.equal(oldStreetCurrentPurpose(h.save,h.campaign),archiveLoanLead(archive,'en'))
+   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)
+   const target=loanSite==='photo'?'viewing-table':'clock-display',route=loanSite==='photo'?['cellar','yard','street','photo']:['cellar','yard','laundry']
+   await steps(route)
+   assert.ok(archiveLoanAt(h.campaign!.archive!.content,target))
+   const entry=oldStreetDoors().find(d=>d.room===h.sceneId)!.approach,table=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===target)!
+   assert.ok(oldStreetPath(h.sceneId as any,entry,table.approach,h.save).length,'the loaned source is physically reachable')
+   const observed=await send(target,{type:'free-input',text:'Read the work log on loan',mode:'local'})
+   assert.deepEqual(h.campaign!.archive!.examined,['index','ledger'])
+   assert.deepEqual(await s.action('synthetic',h.id,observed.b),observed.r)
+   s=authority();h=s.get('synthetic',h.id)
+   assert.equal(h.campaign!.archive!.content.ledgerSite,loanSite)
+   await steps(loanSite==='photo'?['street','yard','cellar','archive']:['yard','cellar','archive'])
+  }
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','b','c','d']})),/ORDER_MISMATCH/)
   assert.throws(()=>jobs.enqueue('synthetic',h.id,'field'),/OBSERVATION_REQUIRED/)
   const completed=await send('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})

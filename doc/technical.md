@@ -1,5 +1,13 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 2026-09-17 借阅日志的空间落地
+
+`ArchiveContent.ledgerSite` 可选 photo/laundry；缺省保留架上原件。准备编译器接收 archive/photo/laundry，拒绝未支持地点及外放日志搭配 denseSource=ledger；后者只能把密集夹页放在 index。`archive-ledger-site` 是同一内容的图层投影，head 校验两者相等。`archive-loan-read` 只保存可见借阅信息，不授予 ledger 证据。
+
+`old-street-archive-loan.ts` 共用位置、去向短文与独立纸层；`old-street-archive-actions.ts` 通过同一个 bindOldStreet 验证正确场景和家具接近点，实体读日志才写 examined。按钮和自由输入走相同动作，既有桌面动作／补充便笺保持。笔记与目标复用同一借阅位置；已生成内容不重新抽取。
+
+28 项定向检查通过。真实 renderer 从档案架走到洗衣店，再回档案桌完成调查与刷新恢复；前置进度是 QA 专用数据库中的普通权威动作准备，不是从开场全程 UI 试玩。两份真实生成内容共 7 次请求均选择 archive；因此外放路线仅有合成内容与实际 renderer 证据，不能声称自然生成多样性通过。详见 `archive-loan-review-20260917.md`。
+
 ## 显影台操作与版本保持（2026-09-17）
 
 新建 v3 campaign 写入可选 `photoMethod: develop-v1`，请求创建时将它复制到唯一扩展意图。旧 campaign / request 缺字段则继续拼图，升级不回填；head 校验两处方法一致。原 `expansion-photo-match` 行动继续承载提交，方法由权威请求决定，不由客户端随意切换。新方法验证照片hash及焦距/曝光；旧方法仍验证半片与旋转。完成发现、keep/leave、当前目标、库存与结局继续走原 Story Session，不增加一套进度。

@@ -37,7 +37,12 @@ try{
  await prepare('parcel');await act('photo-folder',{type:'campaign-read',stage:'parcel'});await act('photo-folder',{type:'campaign-decide',stage:'parcel',selection:'leave'})
  await prepare('archive');await act('photo-folder',{type:'campaign-plan',stage:'archive'});await walk(['archive'])
  await act('archive-index',{type:'campaign-observe',stage:'archive'});await act('archive-ledger',{type:'campaign-observe',stage:'archive'})
- if(replay){
+ if(process.env.OLDSTREET_QA_LEDGER_SITE){
+  const shelf=oldStreetSpatialPlan(h.save).entities.find(e=>e.id==='archive-ledger')!
+  authority.checkpoint(owner,id,{sceneId:h.sceneId,expected_version:h.version,position:shelf.approach})
+  console.log(JSON.stringify({scene:h.sceneId,version:h.version,ledgerSite:h.campaign?.archive?.content.ledgerSite,setup:'Synthetic loan route via normal authority actions; renderer begins at the loan slip, before visiting the off-site log.'}))
+  process.exitCode=0
+ }else if(replay){
   const a=h.campaign!.archive!
   await act('archive-desk',{type:'campaign-decide',stage:'archive',order:archiveOrders([...a.content.sources.index,...a.content.sources.ledger])[0]})
   await walk(['cellar','yard','street','photo'])
@@ -46,7 +51,9 @@ try{
   await act('viewing-table',{type:'expansion-activate'});await walk(['darkroom'])
   media.start(owner,id);await media.run(owner,id,async()=>new Uint8Array(readFileSync(replay)))
  }
+ if(!process.env.OLDSTREET_QA_LEDGER_SITE){
  const desk=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===(replay?'developing-bench':'archive-desk'))!
  authority.checkpoint(owner,id,{sceneId:h.sceneId,expected_version:h.version,position:desk.approach})
  console.log(JSON.stringify({scene:h.sceneId,version:h.version,archiveObserved:h.campaign?.archive?.examined,archiveSolved:!!h.campaign?.archive?.order,setup:replay?'Normal authority actions to the developing bench; archived photo replay; no model or media calls':'Normal authority actions; renderer walkthrough begins at the sorting table; no model or media calls'}))
+ }
 }finally{raw.close()}

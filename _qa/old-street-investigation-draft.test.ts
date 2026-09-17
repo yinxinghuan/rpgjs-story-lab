@@ -73,3 +73,16 @@ test('recorded real complete accounts compile without another model request or a
   assert.ok(!compiled.parcel.fragment.includes('Neither gives a date'))
  }
 })
+
+test('a prepared loan fixes one real source site while preserving the generated episode',()=>{
+ const original=bundle()
+ for(const ledgerSite of ['photo','laundry']){
+  const prepared=compilePreparedInvestigation({...draft,ledgerSite,denseSource:'index'},record,'en',42)
+  assert.equal(prepared.archive.ledgerSite,ledgerSite)
+  assert.deepEqual(prepared.parcel,original.parcel)
+  assert.deepEqual(prepared.archive.sources,original.archive.sources)
+  assert.throws(()=>compilePreparedInvestigation({...draft,ledgerSite,denseSource:'ledger'},record,'en',42),/LEDGER_SITE_INVALID/)
+ }
+ assert.equal(compilePreparedInvestigation({...draft,ledgerSite:'archive'},record,'en',42).archive.ledgerSite,undefined)
+ assert.throws(()=>compilePreparedInvestigation({...draft,ledgerSite:'unbuilt-library'},record,'en',42),/LEDGER_SITE_INVALID/)
+})

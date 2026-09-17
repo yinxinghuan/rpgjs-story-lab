@@ -33,6 +33,7 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     if(h.campaign&&s.facts.departed&&!campaignComplete(h.campaign,s.facts))throw Error('CAMPAIGN_INCOMPLETE')
     if(s.facts['archive-published']===true&&!h.campaign?.archive?.order)throw Error('ARCHIVE_NOT_RECONSTRUCTED')
     if(s.facts['archive-room']!==undefined&&s.facts['archive-room']!==JSON.stringify(h.campaign?.archive?.content.room)||h.campaign?.archive?.content.room&&s.facts['archive-room']!==JSON.stringify(h.campaign.archive.content.room))throw Error('ARCHIVE_ROOM_MISMATCH')
+    if(s.facts['archive-ledger-site']!==h.campaign?.archive?.content.ledgerSite||s.facts['archive-loan-read']!==undefined&&(s.facts['archive-loan-read']!==true||!h.campaign?.archive?.content.ledgerSite))throw Error('ARCHIVE_LOAN_STATE_INVALID')
     const reading=s.facts['archive-reading-position'],dense=h.campaign?.archive?.content.denseSource
     if(s.facts['archive-dense-source']!==dense||reading!==undefined&&(!dense||!['carried','desk'].includes(String(reading)))||s.inventory.filter(i=>i.id===archiveReadingItem).length!==(reading==='carried'?1:0)||s.inventory.some(i=>i.id===archiveReadingItem&&i.count!==1))throw Error('ARCHIVE_READING_STATE_INVALID')
     if(s.facts['archive-rack-shifted']!==undefined&&(typeof s.facts['archive-rack-shifted']!=='boolean'||!h.campaign?.archive||!archiveRackState(s.facts)?.slide))throw Error('ARCHIVE_RACK_STATE_INVALID')
