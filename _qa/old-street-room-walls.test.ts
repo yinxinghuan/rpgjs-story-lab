@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {oldStreetInteriorRooms,oldStreetRoomWalls,roomWallSize} from '../src/old-street-room-walls'
+import {oldStreetInteriorRooms,oldStreetRoomWalls,roomWallSize,oldStreetWallReveal} from '../src/old-street-room-walls'
 import {oldStreetDoors,oldStreetWalkable,oldStreetBody} from '../src/old-street-space'
 const open={'darkroom-ready':true,'archive-ready':true}
 test('all indoor wall spans use authoritative floors and leave every door opening clear',()=>{
@@ -14,10 +14,19 @@ test('all indoor wall spans use authoritative floors and leave every door openin
   for(const r of [...w.north,...w.south,...w.west,...w.east])assert.ok(r.length>0)
   const foot={x:w.floor.x+40,y:w.floor.y+w.floor.h-oldStreetBody.h-2}
   assert.ok(oldStreetWalkable(room,foot,{facts:open}),room+' near-wall position remains playable')
-  assert.equal(roomWallSize.foreground,24);assert.ok(w.floor.y-roomWallSize.back>=0)
+  assert.equal(roomWallSize.foreground+roomWallSize.thickness,roomWallSize.back);assert.ok(w.floor.y-roomWallSize.back>=0)
  }
 })
 test('unadmitted dynamic doors have a solid wall; admission opens that same side',()=>{
  for(const room of ['photo','cellar'] as const){const before=oldStreetRoomWalls(room,{})!,after=oldStreetRoomWalls(room,open)!;assert.equal(before.east.length,1);assert.equal(after.east.length,2)}
  for(const room of ['street','yard','roof'] as const)assert.equal(oldStreetRoomWalls(room,{}),null)
+})
+
+test('local reveal follows an occluded actor but leaves empty walls and doorways opaque',()=>{
+ const room='photo',wall=oldStreetRoomWalls(room,open)!,y=wall.floor.y+wall.floor.h-28
+ assert.ok(oldStreetWallReveal(room,open,{x:wall.floor.x+32,y}))
+ assert.equal(oldStreetWallReveal(room,open,{x:184,y}),null)
+ assert.equal(oldStreetWallReveal(room,open,{x:104,y:160}),null)
+ assert.equal(oldStreetWallReveal(room,open),null)
+ assert.equal(oldStreetWallReveal('street',open,{x:104,y}),null)
 })

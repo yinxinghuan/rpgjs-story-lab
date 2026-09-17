@@ -1,7 +1,8 @@
+import {useId} from 'react'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
 import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
-import {oldStreetRoomWalls,roomWallSize} from './old-street-room-walls'
+import {oldStreetRoomWalls,roomWallSize,oldStreetWallReveal} from './old-street-room-walls'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import {OldStreetPhotoEnvironment} from './old-street-photo-environment'
 import {OldStreetShedEnvironment} from './old-street-shed-environment'
@@ -15,7 +16,7 @@ const palettes:Record<string,{face:string;cap:string;edge:string;trim:string}>={
  darkroom:{face:'#616b61',cap:'#939889',edge:'#3c4943',trim:'#4b554b'},
  archive:{face:'#888b74',cap:'#b2aa8b',edge:'#535b4c',trim:'#736348'},
 }
-type Props={room:OldStreetRoom;facts:StorySave['facts'];art?:OldStreetEnvironmentArt;compositeShop?:boolean}
+type Props={room:OldStreetRoom;facts:StorySave['facts'];art?:OldStreetEnvironmentArt;compositeShop?:boolean;actor?:{x:number;y:number}}
 /** Static north/side architecture is behind the sortable RPG scene. */
 export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compositeShop=false}:Props){
  const walls=oldStreetRoomWalls(room,facts);if(!walls)return null
@@ -43,11 +44,14 @@ export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compo
   </g>)}
  </g>
 }
-/** South is a cutaway foreground wall: opaque below the cap, never a fake floor border. */
-export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt}:Props){
+/** Equal-height foreground wall, with a small actor-following visibility window. */
+export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt,actor}:Props){
+ const id=useId().replace(/:/g,''),reveal=oldStreetWallReveal(room,facts,actor)
  const walls=oldStreetRoomWalls(room,facts);if(!walls)return null
  const {floor:f,south}=walls,s=roomWallSize,p=palettes[room],top=f.y+f.h-s.foreground
- return <g data-room-foreground={room}>{south.map((r,i)=><g key={i}>
+ return <g data-room-foreground={room}>
+  <defs><radialGradient id={id+'fade'}><stop offset="0" stopColor="black" stopOpacity=".8"/><stop offset=".58" stopColor="black" stopOpacity=".8"/><stop offset="1" stopColor="black" stopOpacity="0"/></radialGradient><mask id={id+'mask'} maskUnits="userSpaceOnUse" x="0" y="0" width="384" height="576"><rect width="384" height="576" fill="white"/>{reveal&&<circle cx={reveal.x} cy={reveal.y} r={reveal.radius} fill={`url(#${id}fade)`}/>}</mask></defs>
+  <g mask={`url(#${id}mask)`}>{south.map((r,i)=><g key={i}>
   <rect x={r.start} y={top} width={r.length} height={s.foreground+s.thickness} fill={p.face}/>
   <rect x={r.start} y={top} width={r.length} height={s.thickness} fill={p.cap}/>
   <svg x={r.start} y={top+s.thickness} width={r.length} height={s.foreground} viewBox="8 176 236 56" preserveAspectRatio="none" overflow="hidden" opacity=".2"><image href={art.photoWall} width="768" height="256" style={{imageRendering:'pixelated'}}/></svg>
@@ -57,5 +61,5 @@ export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt}
   <rect x={r.start} y={f.y+f.h+4} width={r.length} height="4" fill={p.trim}/>
   {/* Short end faces make a doorway read as a cut through a wall. */}
   <path d={`M${r.start} ${top}v${s.foreground+s.thickness}M${r.start+r.length} ${top}v${s.foreground+s.thickness}`} stroke={p.edge} strokeWidth="2"/>
- </g>)}</g>
+ </g>)}</g></g>
 }

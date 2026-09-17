@@ -36,7 +36,7 @@ import OldStreetJoystick from './old-street-joystick'
 import {OldStreetAudio,StreetFootsteps} from './old-street-audio'
 import {OldStreetExpansionView} from './old-street-expansion-view'
 import {OldStreetExpansionPhotoView} from './old-street-expansion-photo-view'
-import {OldStreetBuildingEdges} from './old-street-boundaries'
+import {OldStreetBuildingEdges,OldStreetEntranceEaves} from './old-street-boundaries'
 import {OldStreetGroundDetail} from './old-street-ground-detail'
 import {oldStreetRecoveryMessage,oldStreetActionFailureMessage,oldStreetRecoveryCode} from './old-street-recovery-message'
 import cratesUrl from '../doc/oldstreet-crates/threshold-redesign/cutout.png'
@@ -641,7 +641,7 @@ export default function OldStreetDev() {
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
-      <svg className="os-room-foreground" viewBox="0 0 384 576" aria-hidden="true"><OldStreetRoomForeground room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt}/></svg>
+      <svg className="os-room-foreground" viewBox="0 0 384 576" aria-hidden="true"><OldStreetRoomForeground room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} actor={feet}/>{pixelShop&&<OldStreetEntranceEaves room={head.scene} image={environmentArt.streetEdges}/>}</svg>
       {displayBook&&<div aria-hidden="true" className="os-displayed-photo" style={{left:`${(displayBook.body.x+displayBook.body.w*.75)/384*100}%`,top:`${(displayBook.body.y-6)/576*100}%`}}>{displayedPhoto&&<img src={displayedPhoto} alt="" draggable={false}/>}</div>}
       {fieldProp&&<div aria-hidden="true" className="os-field-note" style={{left:`${fieldProp.body.x+fieldProp.body.w*.7}px`,top:`${fieldProp.body.y}px`,backgroundImage:`url(${photoShelfUrl})`}}/>}
       {entities.map(e => {

@@ -1,3 +1,4 @@
+import {OldStreetDoorFrame} from './old-street-door-frame'
 import {oldStreetDoors} from './old-street-space'
 import {oldStreetCrateSprite as crateArt,oldStreetCrateScale as crateScale} from './old-street-crate-layout'
 import {OldStreetCurtain} from './old-street-curtain'
@@ -9,9 +10,6 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
  return <g>{oldStreetDoors().filter(d=>d.room===room&&(!['darkroom-ready','archive-ready'].includes(d.gate??'')||facts[d.gate!])).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
   const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
-  const studio=d.id.includes('studio-front'),watchshop=d.id.includes('shop-front')
-  const frame=studio?'#354958':watchshop?'#4d5940':'#584731'
-  const trim=studio?'#aeb3a0':watchshop?'#b1975f':'#a88b57'
   return <g key={d.id} transform={`translate(${d.position.x} ${d.position.y}) rotate(${angle})`}>
    {d.kind==='alley'?<g>
     <path d="M-25 18V-22H25V18" fill="#8e9279"/>
@@ -30,31 +28,7 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
     </g>}
     <path d="M-24-16V22M24-16V22" stroke={outdoor?'#525d59':'#726956'} strokeWidth="3"/>
     {outdoor&&<path d="M-27-18V15M27-18V15M-27-18H-23M27-18H23" stroke="#a0a69a" strokeWidth="2" fill="none"/>}
-   </g>:d.id.includes('laundry-back')?<OldStreetCurtain side={d.side}/>:<g>
-    <rect x="-23" y="-10" width="46" height="29" fill="#8f846e"/>
-    <path d="M-19 11H19M-19 16H19" stroke="#cabca0" strokeWidth="2"/>
-    <rect x="-26" y="-13" width="6" height="33" fill={frame}/><rect x="20" y="-13" width="6" height="33" fill={frame}/>
-    <path d="M-24-12V17M22-12V17" stroke={trim} strokeWidth="1"/>
-    {(studio||watchshop)&&<g>
-     <path d="M-28-14H-20V20H-28M28-14H20V20H28" fill="none" stroke={frame} strokeWidth="2"/>
-     <path d="M-27-8H-23M23 4H27M-27 14H-23" stroke={trim} strokeWidth=".8"/>
-     <rect x="-25" y="-9" width="3" height="4" fill={studio?'#cbd5c6':'#d7b570'}/>
-    </g>}
-    {closed?<g>
-      <rect x="-20" y="-10" width="40" height="21" fill="#776145"/>
-      {woodImage?<image href={woodImage} x="-20" y="-10" width="40" height="21" preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/>:<path d="M-12-9V10M-4-9V10M4-9V10M12-9V10" stroke="#9e8156"/>}
-      <rect x="-20" y="-10" width="40" height="21" fill="none" stroke="#403b2e" strokeWidth="2"/>
-      <path d="M-18-7V8M18-7V8" stroke="#b19b70" strokeWidth=".7" opacity=".6"/>
-      <rect x="-10" y="-2" width="20" height="3" fill="#434c48"/><rect x="6" y="-4" width="3" height="7" fill="#a1a69a"/>
-      <path d="M-18-7H-13M-18 6H-13" stroke="#363b35" strokeWidth="2"/>
-    </g>:<g>
-      <path d="M-20-10L-32-17V8L-20 15Z" fill="#896e47"/>
-      {woodImage&&<g transform="matrix(.3 .175 0 1 -32 -17)"><image href={woodImage} width="40" height="25" preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/></g>}
-      <path d="M-20-10L-32-17V8L-20 15Z" fill="none" stroke="#493c2b" strokeWidth="2"/>
-      <path d="M-23-8L-29-12V5L-23 9Z" fill="none" stroke="#b09059" strokeWidth=".8"/>
-      <path d="M-29-1V2" stroke="#bdb7a0" strokeWidth="2"/>
-    </g>}
-   </g>}
+   </g>:d.id.includes('laundry-back')?<OldStreetCurtain side={d.side}/>:<g transform={`rotate(${-angle}) translate(${-d.position.x} ${-d.position.y})`}><OldStreetDoorFrame door={d} closed={closed} woodImage={woodImage}/></g>}
    {closed&&d.gate==='crates-cleared'&&room==='cellar'&&<g transform={`rotate(${-angle})`}>
     {cratesImage?<image href={cratesImage} x={-crateArt.foot.x*crateScale} y={-crateArt.foot.y*crateScale} width={crateArt.width*crateScale} height={crateArt.height*crateScale} style={{imageRendering:'pixelated'}}/>:<g fill="#80613e" stroke="#453b2b" strokeWidth="2"><rect x="-32" y="-24" width="64" height="24"/><path d="M-30-18H30M-30-10H30M-10-24V0M12-24V0"/></g>}
    </g>}

@@ -2598,10 +2598,16 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ## 室内墙体的统一投射（2026-09-17）
 
-`old-street-room-walls.ts` 从既有 `oldStreetFloors`、`oldStreetDoors()` 和动态入口准入事实计算七个室内的上/下/左右墙段。北墙高64、墙厚8、南侧剖面投影24、门洞半宽28，静态与动态门洞使用同一坐标。室外三处不生成房间外壳。旧的三个装饰墙区函数改为消费该几何结果；工作棚仍保持素材等比，不采到品红占位。
+`old-street-room-walls.ts` 从既有 `oldStreetFloors`、`oldStreetDoors()` 和动态入口准入事实计算七个室内的上/下/左右墙段。北墙高64、墙厚8、南侧剖面投影56（加墙厚后总高64）、门洞半宽28，静态与动态门洞使用同一坐标。室外三处不生成房间外壳。旧的三个装饰墙区函数改为消费该几何结果；工作棚仍保持素材等比，不采到品红占位。
 
 `OldStreetFloor` 只负责地面，北墙/侧墙由 `OldStreetRoomWalls` 在背景 SVG 绘制；`OldStreetRoomForeground` 放在 RPG canvas 上方、互动目标下方，`pointer-events:none`。南墙是固定前景：可行走角色都在墙后，不需要修改角色排序；门洞通过实际拆分墙段留空，没有透明矩形遮住角色。独立家具继续走已有引擎深度排序。本轮未改变地图版本、碰撞、路径、落点、故事状态或存档。
 
 复用现有准入的灰泥墙和墙面细节，`old-street-environment-dependencies.ts` 将各房间实际使用的墙图纳入预加载清单（含原来分层修表铺漏列的 shopWall），街口不因此等待室内素材。未新生成图片。
 
 `_qa-room-walls.html` / `_qa/room-walls-review.tsx` 为本地隔离呈现检查：使用真实 RPG-JS renderer、当前主角图集、共享地面/墙/门/碰撞，可切七个室内、贴墙和门洞站位。它不包含完整家具/剧情，不是新游戏入口，不进入生产构建。`_qa/old-street-room-walls.test.ts` 检查所有门口留空、动态门槽、室外排除和接近位置可行走。视觉结果见 `room-walls-review-20260917.md`。
+
+## 等高墙与檐下入口（2026-09-17）
+
+`old-street-room-walls.ts` 将前墙投影改为56，加8厚度后与上墙64一致。`oldStreetWallReveal` 根据真实主角脚点及墙段决定局部可见窗口；`OldStreetRoomForeground` 使用SVG渐变mask，半径40地图单位，中心墙体保留20%不透明度，边缘恢复完整墙面。站在门洞或离开墙边不会开启窗口。仍是同一camera transform下的前景层，pointer-events为none，碰撞和门端点不变。
+
+`old-street-door-frame.tsx` 独立处理正面门与侧面凹口，正面门高度与墙对齐；门扇开闭直接读权威gate fact。`old-street-boundaries.tsx` 的 `OldStreetEntranceEaves` 在人物画布上方绘制街口两侧连续40单位屋顶，旧边界层改作檐下立面；后院修表铺后门和工作棚门增加短屋檐段。街口与后院复用streetEdges图片，后院依赖清单同步加入该图。阶梯与布帘保持既有表现。
