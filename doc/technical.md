@@ -1,5 +1,12 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 线索驱动取底片与重要物品特写（2026-09-17）
+
+新增 enrollment `letter-trail-v4`，仍使用 campaign schema 3，但显式保存 `photoSource: roof-negative-v1`。档案整理成功后写 `roof-index-origin=archive` 与标记，独立叙事块说明屋顶来源，避免下一步指示污染档案发现／结局。`old-street-negative-source.ts` 统一来源就绪判断；请求照片前检查来源、档案完成与放大台实际距离。底片可携带或寄存；旧 v1/v2/v3 不回填新门槛。head/roof 不变量绑定档案已读、底片与扩展状态，目标、笔记、自由输入知识共用来源语义。
+
+`old-street-object-preview.tsx` 为已登记抽屉／小格按权威 facts 选择既有精灵三态，主动物件面板显示紧凑图，点击进入只读放大 dialog；返回保留原行动面板。`objectDetailOpen` 接入共用输入与 NPC 暂停，错误或离开互动时复位。CSS 保留像素采样和专注界面的固定关闭；钟底、照片、显影仍走原有操作型特写。没有图片生成、图片文件编辑或新增存档字段。
+
+
 ## 随身与交谈内容层级（2026-09-17）
 
 `old-street-journal-view.tsx` 增加默认 now 分类，使用同一滚动节点容纳目标/准备或条目，切分类回顶部。记录原数据不变，发现和人物仅在视图以原生details展开。`old-street-conversation-choices.tsx` 分组现有话题与分享，回调传原文本，选中后关闭分组；实例以人物实体id隔离。没有新增行动映射或模型调用。`old-street-content.css` 管理这两类内容的滚动、导航、展开和短屏编辑行为。主交互输入autoFocus只在用户展开时生效。

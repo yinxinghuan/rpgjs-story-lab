@@ -1,3 +1,4 @@
+import {needsRecoveredNegative,negativeSourceReady} from './old-street-negative-source'
 import {assertRoofRecovery} from './old-street-roof-recovery'
 import {archivePhotoSource} from './old-street-archive-photo'
 import {archiveReadingItem} from './old-street-archive-reading'
@@ -21,6 +22,8 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     bindOldStreet(s.locale,s).locate(s,h.sceneId);assertOldStreetExpansions(h.expansions);assertOldStreetCampaign(h.campaign)
     if(h.expansions?.[0]?.archiveSource&&JSON.stringify(h.expansions[0].archiveSource)!==JSON.stringify(archivePhotoSource(h.campaign)))throw Error('ARCHIVE_PHOTO_SOURCE_MISMATCH')
     if(h.expansions?.[0]&&h.expansions[0].photoMethod!==h.campaign?.photoMethod)throw Error('PHOTO_METHOD_MISMATCH')
+    if(needsRecoveredNegative(h.campaign)!==(s.facts['roof-index-origin']==='archive'))throw Error('NEGATIVE_SOURCE_MISMATCH')
+    if(needsRecoveredNegative(h.campaign)&&(s.facts['roof-recovery']!==true||!!h.campaign?.archive?.order!==(s.facts['roof-index-read']===true)||h.expansions?.length&&!negativeSourceReady(s,h.campaign)))throw Error('NEGATIVE_SOURCE_NOT_RECOVERED')
     if(h.campaign?.version===3){
       const request=h.expansions?.[0],matched=s.facts['darkroom-photo-matched'],linked=s.facts['campaign-photo-archive']
       if(request&&!request.archiveSource||s.facts['darkroom-ready']===true&&!request||matched!==undefined&&(!request||linked!==h.campaign.archive?.id)||linked!==undefined&&(typeof matched!=='string'||!matched||linked!==request?.archiveSource?.archiveId||typeof s.facts['darkroom-photo-discovery']!=='string')||s.facts['darkroom-photo-choice']!==undefined&&(!matched||!['keep','leave'].includes(String(s.facts['darkroom-photo-choice']))))throw Error('CAMPAIGN_PHOTO_STATE_INVALID')

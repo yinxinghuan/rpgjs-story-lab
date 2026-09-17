@@ -1,3 +1,4 @@
+import {needsRecoveredNegative,negativeSourceReady} from './old-street-negative-source'
 import type {OldStreetCampaign} from './old-street-campaign'
 import type {StorySave} from './vendor/original-train/types'
 /** Only called on new v2/v3 enrollment. Never rewrites an existing journey. */
@@ -27,6 +28,8 @@ export function campaignOpening(save:StorySave,fallback:string){return save.bloc
 export function campaignPhotoPurpose(save:Pick<StorySave,'facts'|'locale'>,campaign?:OldStreetCampaign){
  if(save.facts.departed===true||campaign?.version!==3||!campaign.archive?.order||!campaign.parcel?.disposition)return undefined
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
+ if(needsRecoveredNegative(campaign)&&!negativeSourceReady(save,campaign))return t('档案指向屋顶北侧柜子的双缺口底片套。从照相馆楼梯上去，找到通路并取回底片。','The file points to a double-notched negative sleeve in the north roof cabinet. Take the studio stairs, find a way across and recover the film.')
+ if(needsRecoveredNegative(campaign)&&!f['darkroom-ready'])return f['roof-negative-returned']===true?t('底片已交照相馆保存。在放大台准备冲印，再从后门进入暗房。','The negative is stored at the studio. Prepare a print at the viewing table, then enter the darkroom through the back door.'):t('底片已收好。带到照相馆放大台准备冲印；也可先交给摄影师保存。','You have the negative. Bring it to the studio viewing table for printing, or first give it to the photographer for safekeeping.')
  if(typeof f['darkroom-photo-matched']!=='string')return f['darkroom-ready']===true
   ?(campaign.photoMethod?t('从照相馆后门进入暗房，在显影台调焦与曝光，看清相关旧照。','Enter the darkroom through the studio’s back door. Adjust focus and exposure at the bench to reveal the related photograph.'):t('从照相馆后门进入暗房，在显影台拼合相关旧照。','Enter the darkroom through the studio’s back door and match the related photograph at the developing bench.'))
   :t('旧事已经查清。到照相馆寻找与记录有关的旧照片。','The history is reconstructed. Look for a related photograph at the photo studio.')

@@ -12,6 +12,7 @@ export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
  version:1|2|3;
  photoMethod?:'develop-v1';
+ photoSource?:'roof-negative-v1';
  explorationRoute?:InvestigationRoute;
  trace?:CampaignInstance<TraceContent>&{selected?:number};
  parcel?:CampaignInstance<ParcelContent>&{disposition?:'take'|'leave'};
@@ -75,11 +76,12 @@ export function compileLinkedParcel(raw:unknown,record:TraceRecord,locale:'zh'|'
 }
 export function campaignRecordMatches(content:TraceContent,index:number){return Number.isInteger(index)&&!!content.records[index]&&signature(content.records[index])===signature(content.clue)}
 export function campaignComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)&&(c.version!==3||campaignPhotoComplete(c,facts))}
-export function campaignPhotoComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return !!c.archive?.order&&facts?.['campaign-photo-archive']===c.archive.id&&typeof facts['darkroom-photo-matched']==='string'&&typeof facts['darkroom-photo-discovery']==='string'&&['keep','leave'].includes(String(facts['darkroom-photo-choice']))}
+export function campaignPhotoComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return (c.photoSource!=='roof-negative-v1'||facts?.['roof-negative-taken']===true)&&!!c.archive?.order&&facts?.['campaign-photo-archive']===c.archive.id&&typeof facts['darkroom-photo-matched']==='string'&&typeof facts['darkroom-photo-discovery']==='string'&&['keep','leave'].includes(String(facts['darkroom-photo-choice']))}
 export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCampaign|undefined{
  if(raw===undefined)return
- const c=object(raw,['version','photoMethod','explorationRoute','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
+ const c=object(raw,['version','photoMethod','photoSource','explorationRoute','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.explorationRoute!==undefined&&(c.version!==3||!isInvestigationRoute(c.explorationRoute)))throw Error('CAMPAIGN_SAVE_INVALID')
+ if(c.photoSource!==undefined&&(c.version!==3||c.photoSource!=='roof-negative-v1'||c.photoMethod!=='develop-v1'))throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.photoMethod!==undefined&&(c.version!==3||c.photoMethod!=='develop-v1'))throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.trace!==undefined){
   const trace=object(c.trace,['id','content','observed','selected']);instance(trace);const content=readTraceContent(trace.content)

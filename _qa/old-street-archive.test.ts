@@ -58,10 +58,11 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
  assert.equal(oldStreetWalkable('archive',{x:plan.props[0].body.x+4,y:plan.props[0].body.y+4},save),false,'furniture blocks passage')
 })
 
-for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan','switch-index-first','switch-log-first'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async(t)=>{
+for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan','switch-index-first','switch-log-first','negative-carried','negative-stored'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async(t)=>{
  const loanSite=readingMode==='photo-loan'?'photo':readingMode==='laundry-loan'?'laundry':undefined
  const alternating=readingMode.startsWith('switch-'),logFirst=readingMode==='switch-log-first'
- const fullCommission=readingMode==='commission'||!!loanSite,direct=readingMode==='direct'||fullCommission||alternating
+ const sourceCommission=readingMode.startsWith('negative-')
+ const fullCommission=sourceCommission||readingMode==='commission'||!!loanSite,direct=readingMode==='direct'||fullCommission||alternating
  const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:alternating?'switch-left':'left'},...(loanSite?{ledgerSite:loanSite}:{}),...(direct&&!loanSite?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
@@ -80,7 +81,7 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
  const expectedRoute=loanSite==='photo'?'studio-loan-v1':loanSite==='laundry'?'laundry-loan-v1':'on-site-v1'
  while(chooseInvestigationRoute(journeyId)!==expectedRoute||(readingMode==='commission'&&roofRecoveryForJourney(journeyId)['roof-plank-source']!=='shed'))journeyId=randomUUID()
  const uuidMock=t.mock.method(globalThis.crypto,'randomUUID',()=>journeyId)
- let h=s.create('synthetic',randomUUID(),'en',{campaign:fullCommission?'letter-trail-v3':'letter-trail-v2'})
+ let h=s.create('synthetic',randomUUID(),'en',{campaign:sourceCommission?'letter-trail-v4':fullCommission?'letter-trail-v3':'letter-trail-v2'})
  uuidMock.mock.restore()
  const input=(target:string,extra:any)=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.id===target)!.approach,target,...extra})
  const send=async(target:string,extra:any)=>{const b=input(target,extra),r=await s.action('synthetic',h.id,b);h=r.head;return {b,r}}
@@ -274,7 +275,7 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
   assert.deepEqual(h.save.inventory,inventory);assert.deepEqual(h.save.relationships,relationships)
   assert.equal(campaignComplete(h.campaign!,h.save.facts),!fullCommission,'publishing is optional; related photograph is not yet observed')
   if(fullCommission){
-   assert.match(oldStreetCurrentPurpose(h.save,h.campaign),/photograph/)
+   assert.match(oldStreetCurrentPurpose(h.save,h.campaign),sourceCommission?/negative sleeve/:/photograph/)
    await steps(['street'])
    await assert.rejects(s.action('synthetic',h.id,input('street-exit',{type:'action',action:'oldstreet:leave'})),/CAMPAIGN_UNFINISHED/)
    const premature=structuredClone(h);premature.save.facts.departed=true;assert.throws(()=>assertOldStreetHead(premature),/SAVE_UNSUPPORTED/)
@@ -285,6 +286,39 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='campaign-public-summary')?.text.includes('public record book'))
   if(direct){
    await steps(['street','photo'])
+   if(sourceCommission){
+    assert.equal(h.save.facts['roof-index-read'],true,'completed archive reveals the film source before a photograph exists')
+    assert.equal(h.save.facts['roof-photo-ready'],false)
+    assert.equal(h.save.facts['darkroom-photo-matched'],undefined)
+    assert.ok(campaignInputKnowledge(h).some(k=>k.id==='learned:negative-source'&&k.text.includes('north roof cabinet')))
+    assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='roof-index-read'&&n.title==='Negative index in the archive'))
+    const before=structuredClone(h)
+    await assert.rejects(s.action('synthetic',h.id,input('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'print'})),/NEGATIVE_REQUIRED/)
+    assert.deepEqual(s.get('synthetic',h.id),before,'failed early printing does not create a job or change progress')
+    await steps(['roof'])
+    const cache=oldStreetSpatialPlan(h.save).entities.find(e=>e.id==='roof-cache')!
+    assert.equal(oldStreetPath('roof',h.position,cache.approach,h.save).length,0)
+    if(h.save.facts['roof-plank-source']==='shed'){
+     await steps(['shed','oldstreet:take-roof-plank','roof','oldstreet:lay-carried-roof-plank'])
+    }else await steps(['oldstreet:lay-roof-plank'])
+    assert.ok(oldStreetPath('roof',h.position,cache.approach,h.save).length)
+    await steps(['oldstreet:open-roof-box'])
+    const taken=await send('roof-cache',{type:'free-input',text:'Take the negative sleeve',mode:'local'})
+    assert.deepEqual(await s.action('synthetic',h.id,taken.b),taken.r)
+    s=authority();h=s.get('synthetic',h.id)
+    assert.equal(h.save.inventory.find(i=>i.id==='street-negative')?.count,1)
+    assert.equal(h.save.facts['roof-photo-ready'],false,'retrieving film does not reveal its picture')
+    assert.match(oldStreetCurrentPurpose(h.save,h.campaign),/viewing table/)
+    await steps(['photo'])
+    if(readingMode==='negative-stored'){
+     await steps(['oldstreet:return-roof-negative'])
+     assert.ok(!h.save.inventory.some(i=>i.id==='street-negative'))
+     assert.match(h.save.blocks.at(-1)!.text,/prepare a print/)
+    }
+    const wrongPlace={...input('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'print'}),position:{...h.position}}
+    wrongPlace.position=oldStreetDoors().find(d=>d.room==='photo'&&d.destination.room==='street')!.approach
+    await assert.rejects(s.action('synthetic',h.id,wrongPlace),/TARGET_TOO_FAR/)
+   }
    const source=archivePhotoSource(h.campaign)!
    const request=await send('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'Find a photograph of the bridge repairs',followArchive:true,archiveSource:{account:'client must not invent history'}})
    assert.deepEqual(h.expansions![0].archiveSource,source)
@@ -371,7 +405,7 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
     await steps(['darkroom'])
    }
    await steps(['photo'])
-   if(readingMode!=='commission'){
+   if(readingMode!=='commission'&&readingMode!=='negative-stored'){
     assert.deepEqual(evidenceChoices(h,'photographer'),[],'a visible stranger is not yet an introduced recipient')
     await steps(['oldstreet:greet-photographer'])
    }

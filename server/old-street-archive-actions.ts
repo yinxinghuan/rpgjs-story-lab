@@ -1,3 +1,4 @@
+import {needsRecoveredNegative,archiveNegativeLead} from '../src/old-street-negative-source'
 import {archiveLoanAt,archiveLoanLead} from '../src/old-street-archive-loan'
 import {campaignPhotoPurpose} from '../src/old-street-campaign-story'
 import {applyArchiveReading} from './old-street-archive-reading'
@@ -56,10 +57,13 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
    if(!archiveOrderMatches(archive.content,body.order))throw new LabError('CAMPAIGN_ARCHIVE_ORDER_MISMATCH',409)
    archive.order=[...body.order];text=archive.content.discovery
    save.facts['archive-reconstructed']=true
+   if(needsRecoveredNegative(c)){save.facts['roof-index-read']=true;text+=' '+archiveNegativeLead(save.locale)}
    save.objective=campaignPhotoPurpose(save,c)??(c.parcel?.disposition?t('记录已还原。可以带信回家，或继续探索。','The records are reconstructed. Take the letter home, or keep exploring.'):t('记录已还原，回资料架决定原件的去向。','The records are reconstructed. Return to the paper shelf to decide where the original belongs.'))
   }else throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  }
  next.version++;next.position=position
- save.blocks.push({id:body.action_id+':campaign',kind:'narration',text,data:{oldStreetCampaignStage:'archive',archiveReconstructed:body.type==='campaign-decide'&&body.target==='archive-desk'&&body.order?1:0}})
+ const reconstructed=body.type==='campaign-decide'&&body.target==='archive-desk'&&body.order
+ save.blocks.push({id:body.action_id+':campaign',kind:'narration',text:reconstructed?c.archive!.content.discovery:text,data:{oldStreetCampaignStage:'archive',archiveReconstructed:reconstructed?1:0}})
+ if(reconstructed&&needsRecoveredNegative(c))save.blocks.push({id:body.action_id+':negative-index',kind:'narration',text:archiveNegativeLead(save.locale)})
  return {head:next,kind:body.type,accepted:true,text}
 }

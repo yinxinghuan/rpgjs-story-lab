@@ -1,3 +1,4 @@
+import {needsRecoveredNegative,archiveNegativeLead} from './old-street-negative-source'
 import {archiveSourceBlocked,archiveRackDescription} from './old-street-archive'
 import {photoDisplayed,photoDisplayLabel,photoDisplayDescription} from './old-street-photo-display'
 import {archiveLoanAt,archiveLoanKnown,archiveLoanLead} from './old-street-archive-loan'
@@ -71,7 +72,7 @@ export function campaignInputKnowledge(h:OldStreetHead){
   if(archiveLoanKnown(c.archive,h.save.facts))knowledge.push({id:'learned:archive-loan',text:archiveLoanLead(c.archive.content,h.save.locale)})
   const reading=archiveReadingStatus(c.archive,h.save,'archive-'+c.archive.content.denseSource,h.save.locale);if(reading)knowledge.push({id:'learned:archive-reading-status',text:reading})
   for(const source of c.archive.examined)knowledge.push({id:'learned:archive-'+source,text:archiveEvidence(c.archive.content,source,h.save.locale).join(' ')})
-  if(c.archive.order)knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery})
+  if(c.archive.order){knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery});if(needsRecoveredNegative(c))knowledge.push({id:'learned:negative-source',text:archiveNegativeLead(h.save.locale)})}
  }
  if(c.parcel?.disposition)knowledge.push({id:'learned:campaign-disposition',text:c.parcel.disposition==='take'?t('寄存材料原件已在行囊里，不在架上。','The original archived papers are in your bag, no longer on the shelf.'):t('你已选择把寄存材料原件留在架上，记住内容。','You chose to leave the original archived papers on the shelf and remember their contents.')})
  if(photoDisplayed(h.save))knowledge.push({id:'learned:displayed-photo',text:photoDisplayDescription(h.save)})

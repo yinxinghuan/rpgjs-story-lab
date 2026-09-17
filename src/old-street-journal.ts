@@ -1,3 +1,4 @@
+import {archiveNegativeLead} from './old-street-negative-source'
 import {photoDisplayed,photoDisplayDescription} from './old-street-photo-display'
 import {archiveLoanKnown,archiveLoanLead} from './old-street-archive-loan'
 import {fieldKnowledge} from './old-street-field-inquiry'
@@ -65,7 +66,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  })
  if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:photoDisplayed(save)?photoDisplayDescription(save):f['darkroom-photo-choice']==='keep'?t('你把看清细节的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('看清细节的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('照片里的街景细节已看清。','The details of the street photograph are now clear.')})
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
- note('roof-index-read',['照片背面的标记','Filing mark on the print'],['对应底片在屋顶北侧柜子的双缺口纸套里。破损处需要木板跨过去。','The matching negative is in a double-notched sleeve in the north roof cabinet. A plank is needed to cross the damaged decking.'])
+ note('roof-index-read',f['roof-index-origin']==='archive'?['档案里的底片线索','Negative index in the archive']:['照片背面的标记','Filing mark on the print'],f['roof-index-origin']==='archive'?[archiveNegativeLead('zh'),archiveNegativeLead('en')]:['对应底片在屋顶北侧柜子的双缺口纸套里。破损处需要木板跨过去。','The matching negative is in a double-notched sleeve in the north roof cabinet. A plank is needed to cross the damaged decking.'])
  note('roof-plank-taken',['屋顶的备用板','Spare roof plank'],['你已从河边工作棚领取屋顶修补用的长板。','You collected a roof repair plank from the riverside workshop.'])
  note('roof-bridge-laid',['屋顶的通路','Roof crossing'],['长板搭住破损处两侧，可以走到北边的柜子旁。','The long plank spans the damaged decking, giving access to the north cabinet.'])
  note('roof-negative-returned',['底片回到照相馆','Negative returned'],['摄影师把找回的底片收在放大台旁。','The photographer has stored the recovered negative beside the viewing table.'])

@@ -1,3 +1,5 @@
+import {OldStreetObjectPreview} from './old-street-object-preview'
+import {needsRecoveredNegative,negativeSourceReady} from './old-street-negative-source'
 import {archiveRackDescription} from './old-street-archive'
 import {stableInteraction} from './nearby-interaction'
 import {oldStreetInteractionDistance} from './old-street-space'
@@ -184,9 +186,10 @@ export default function OldStreetDev() {
   const [clockOpen,setClockOpen]=useState(false),[clockMessage,setClockMessage]=useState('')
   const [expansionPhotoRequest,setExpansionPhotoRequest]=useState(0)
   const [expansionPhotoOpen,setExpansionPhotoOpen]=useState(false)
+  const [objectDetailOpen,setObjectDetailOpen]=useState(false)
   const modalControls=useRef(false)
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
-  useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);setCampaignOpen(null);setArchiveOpen(null);runtime.current?.pause(true)}},[error])
+  useEffect(()=>{if(error){setObjectDetailOpen(false);setPhotoOpen(false);setClockOpen(false);setCampaignOpen(null);setArchiveOpen(null);runtime.current?.pause(true)}},[error])
   const [typed, setTyped] = useState('')
   const [inputOpen,setInputOpen]=useState(false)
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
@@ -197,7 +200,7 @@ export default function OldStreetDev() {
   const overview=debug&&new URLSearchParams(location.search).get('camera')==='overview'
   const camera=oldStreetCamera(viewport,feet,overview)
   useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
-  const modalOpen=journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||expansionPhotoOpen||!!campaignOpen||!!archiveOpen||leaving
+  const modalOpen=journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||expansionPhotoOpen||objectDetailOpen||!!campaignOpen||!!archiveOpen||leaving
   modalControls.current=modalOpen
   residentControls.current={paused:busy||!!error||modalOpen||!!head.save.facts.departed,selected:selected==='watchmaker',laundrySelected:selected==='laundry-owner',photographerSelected:selected==='photographer'}
   const [diagnostic, setDiagnostic] = useState('')
@@ -371,7 +374,7 @@ export default function OldStreetDev() {
     setBusyActivity('journey')
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
-      const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v3'}:undefined)
+      const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v4'}:undefined)
       if(oldStreetCastArtVersion(h.save)!==oldStreetCastArtVersion(current.current.save)||h.save.facts['archive-layout']!==current.current.save.facts['archive-layout']||h.save.facts['archive-room']!==current.current.save.facts['archive-room']){location.reload();return}
       serverHead.current=h
       const next={save:h.save,scene:h.sceneId,position:h.position}
@@ -553,6 +556,7 @@ export default function OldStreetDev() {
   const secondaryActions=chosen?.id==='developing-bench'&&expansionCapabilities.media?[]:actions
   useEffect(()=>{setInputOpen(false);setTyped('')},[chosen?.id])
   function closeInteraction(){
+    setObjectDetailOpen(false)
     setSelected(null);setOpeningOpen(false);setNotice('');setTurn([]);setInputOpen(false);setExpansionPhotoRequest(0)
     runtime.current?.pause(Boolean(error||outcome||busyRef.current))
   }
@@ -634,10 +638,11 @@ export default function OldStreetDev() {
       <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong>{!error&&<button disabled={busy} onClick={closeInteraction}>{text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])}</button>}</div>
       <div className="os-actions__content">
       <div className="os-actions__body">
+        {pixelShop&&selected&&!error&&!inputOpen&&<OldStreetObjectPreview key={selected} target={selected} save={head.save} drawer={pixelDrawerUrl} cabinet={pixelPropsUrl} disabled={busy} onOpenChange={open=>{setObjectDetailOpen(open);runtime.current?.pause(open||!!error||busyRef.current)}}/>}
         {busy&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true">{pendingSpeech&&<div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div>}<p role="status">{busyLabel}</p>{slowOperation&&<p>{text(['还在等待确认，请稍候，不必重复操作。','Still waiting for confirmation. There is no need to repeat the action.'])}</p>}</section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice||inspectionHint)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice||inspectionHint}</p>}
       </div>
       <div className="os-actions__options">
-      {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&<div hidden={!!error||selected!=='viewing-table'}><OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} commission={serverHead.current.campaign?.version===3} archiveTitle={serverHead.current.campaign?.archive?.order?serverHead.current.campaign.archive.content.title:undefined} submit={(input,follow)=>requestExpansion(input,false,undefined,undefined,follow)} activate={()=>requestExpansion('',true)}/></div>}
+      {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&<div hidden={!!error||selected!=='viewing-table'}><OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} commission={serverHead.current.campaign?.version===3} sourcePending={!!serverHead.current.campaign?.archive?.order&&!negativeSourceReady(head.save,serverHead.current.campaign)} sourceRecovered={needsRecoveredNegative(serverHead.current.campaign)&&negativeSourceReady(head.save,serverHead.current.campaign)} archiveTitle={serverHead.current.campaign?.archive?.order?serverHead.current.campaign.archive.content.title:undefined} submit={(input,follow)=>requestExpansion(input,false,undefined,undefined,follow)} activate={()=>requestExpansion('',true)}/></div>}
       {showExpansionPhoto&&serverHead.current&&<div hidden={!!error||selected!=='developing-bench'}><OldStreetExpansionPhotoView exhibited={photoDisplayed(head.save)} interrupted={!!error} onClose={closeInteraction} photoMethod={serverHead.current.expansions?.[0]?.photoMethod} nearby={nearbyDarkroom} requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} onOpenChange={open=>{setExpansionPhotoOpen(open);runtime.current?.pause(open||!!error||!!head.save.facts.departed||busyRef.current)}}/></div>}
       {openingOpen&&!error&&<p className="os-controls-help">{text(['点击地面或拖动摇杆行走。走近物件后，按右下按钮互动；委托和发现保存在上方“随身”中。','Tap the ground or use the stick to move. Approach an object, then use the lower-right button. Your errand and discoveries are kept in Items.'])}</p>}
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}

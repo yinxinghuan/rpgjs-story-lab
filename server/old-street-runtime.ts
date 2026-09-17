@@ -1,3 +1,4 @@
+import {needsRecoveredNegative,negativeSourceReady} from '../src/old-street-negative-source'
 import {roofRecoveryForJourney} from '../src/old-street-roof-recovery'
 import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {evidenceChoices} from '../src/old-street-shared-evidence'
@@ -65,11 +66,13 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
     initial:(locale,id,options)=>{
       const h:OldStreetHead={id,version:0,mapVersion:plan.mapVersion,sceneId:'street',position:{...plan.scenes.find(s=>s.id==='street')!.spawn},save:createInitialSave(oldStreetCartridge(locale))}
       if(options!==undefined){
-        if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2','letter-trail-v3'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
+        if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2','letter-trail-v3','letter-trail-v4'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         const name=(options as {campaign:string}).campaign
-        if(name==='letter-trail-v3'&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
-        h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1,...(name==='letter-trail-v3'?{photoMethod:'develop-v1' as const,explorationRoute:chooseInvestigationRoute(id)}:{})}
-        if(name==='letter-trail-v3')Object.assign(h.save.facts,roofRecoveryForJourney(id))
+        const full=name==='letter-trail-v3'||name==='letter-trail-v4'
+        if(full&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
+        h.campaign={version:full?3:name==='letter-trail-v2'?2:1,...(full?{photoMethod:'develop-v1' as const,explorationRoute:chooseInvestigationRoute(id)}:{})}
+        if(name==='letter-trail-v4'){h.campaign.photoSource='roof-negative-v1';h.save.facts['roof-index-origin']='archive'}
+        if(full)Object.assign(h.save.facts,roofRecoveryForJourney(id))
         if(h.campaign.version!==1)introduceCampaignCommission(h.save,h.campaign.version)
       }
       check(h);return h
@@ -169,6 +172,8 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const followArchive=h.campaign?.version===3||body.followArchive===true
         const archiveSource=followArchive?archivePhotoSource(h.campaign):undefined
         if(followArchive&&!archiveSource)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
+        if(!negativeSourceReady(h.save,h.campaign))throw new LabError('OLD_STREET_NEGATIVE_REQUIRED',409)
+        if(needsRecoveredNegative(h.campaign)&&!binding.canInteract('viewing-table',h.sceneId,pos))throw new LabError('OLD_STREET_TARGET_TOO_FAR',409)
         const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:h.campaign?.version===3?archivePhotoSuggestion(h.save.locale):body.text.trim(),status:'requested',requestedAtVersion:h.version,...(h.campaign?.photoMethod?{photoMethod:h.campaign.photoMethod}:{}),...(archiveSource?{archiveSource}:{})}]}
         finish(next,h)
         return {head:next,kind:'expansion-request',accepted:true,text:h.save.locale==='zh'?'已记下你想探索的新去处。准备好后才能进入；现在可以继续逛。':'Your exploration idea is saved. You can keep exploring while the new area is prepared.'}
