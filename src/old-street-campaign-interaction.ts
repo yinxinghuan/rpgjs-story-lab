@@ -32,7 +32,7 @@ export function campaignInputActions(h:OldStreetHead,target:string):CampaignActi
  ]
  return []
 }
-export function resolveCampaignInput(text:string,actions:CampaignAction[]){
+export function resolveCampaignInput(text:string,actions:ReadonlyArray<{id:string;label:string}>){
  if(originalActionIntentIssues(text,actions.map(a=>a.label)).length)return undefined
  const normalize=(s:string)=>s.normalize('NFKC').trim().toLowerCase().replace(/[。.!！]+$/u,'')
  // Exact visible choices are an offline convenience, not the natural language parser.

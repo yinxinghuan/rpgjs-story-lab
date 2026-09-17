@@ -1,3 +1,4 @@
+import {evidenceRecallTopics} from './old-street-shared-evidence'
 import {oldStreetLetterGuidance} from './old-street-letter-guidance'
 import type {StorySave,StoryBlock} from './vendor/original-train/types'
 import {oldStreetPerson} from './old-street-characters'
@@ -41,7 +42,7 @@ export function oldStreetTalkTopics(save:StorySave,entity:string){
   :entity==='photographer'&&helped('returned-photographs')&&f['photos-returned']
   ?topic('returned-photos','照片都收好了吗？','Are the photographs safe now?','都收好了。你肯一张张比对，再把它们送回来，我很感激。','They are safely put away. I appreciate you taking the time to match them and bring them back.')
   :null
- return [route,personal,...(afterHelp?[afterHelp]:[])]
+ return [route,personal,...(afterHelp?[afterHelp]:[]),...evidenceRecallTopics(save,entity)]
 }
 const memory=/(?:记得|回忆|我刚才说)|\b(?:remember|recall)\b/i
 export function oldStreetAuthoredTalkReply(save:StorySave,entity:string,input:string):string|null{

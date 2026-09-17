@@ -18,7 +18,7 @@ config.plugins=(config.plugins??[]).map(p=>p&&typeof p==='object'&&'name' in p&&
  writeFileSync(out+'/candidate.png',bytes)
  return bytes
 }}):p)
-const probe=portProbe();await new Promise<void>(r=>probe.listen(0,'127.0.0.1',r));const port=(probe.address() as {port:number}).port;await new Promise<void>((r,j)=>probe.close(e=>e?j(e):r()))
+const probe=portProbe();await new Promise<void>(r=>probe.listen(Number(process.env.ARCHIVE_PHOTO_QA_PORT??0),'127.0.0.1',r));const port=(probe.address() as {port:number}).port;await new Promise<void>((r,j)=>probe.close(e=>e?j(e):r()))
 const server=await createServer({...config,configFile:false,mode:'oldstreet-dev',server:{host:'127.0.0.1',port,strictPort:true}})
 await server.listen();console.log(server.resolvedUrls?.local[0])
 for(const s of ['SIGINT','SIGTERM'] as const)process.once(s,()=>{void server.close().then(()=>process.exit(0))})

@@ -1,3 +1,6 @@
+import {evidenceChoices,sharedEvidence,sharedEvidenceKnowledge} from '../src/old-street-shared-evidence'
+import {oldStreetAuthoredTalkReply,oldStreetTalkTopics} from '../src/old-street-conversation'
+import {oldStreetDialogueContext} from '../server/old-street-dialogue'
 import {archivePhotoSource} from '../src/old-street-archive-photo'
 import {compileExpansionPlan,type ExpansionPlan} from '../src/old-street-expansion-plan'
 import test from 'node:test'
@@ -50,7 +53,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
  const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(readingMode==='direct'?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
- let jobs:OldStreetCampaignJobs,calls=0,photoPlan:ExpansionPlan|undefined
+ let jobs:OldStreetCampaignJobs,calls=0,interpretationCalls=0,photoPlan:ExpansionPlan|undefined
  const planner=createOldStreetCampaignPlanner(async(_system,user)=>{
   calls++;const context=JSON.parse(user)
   if('candidate' in context||'chronologicalEvents' in context)return {valid:true,issues:[]}
@@ -58,7 +61,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   if(context.stage==='parcel')return parcelDraft
   throw Error('Archive must reuse the prepared episode, not generate another history')
  })
- const authority=()=>new OldStreetAuthority(db,()=>true,undefined,undefined,()=>photoPlan,()=>photoPlan?'synthetic-photo-hash':undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
+ const authority=()=>new OldStreetAuthority(db,()=>true,async(text,context)=>{interpretationCalls++;assert.equal(text,'Tell her what I learned from the records');assert.ok(context.actions.some(a=>a.id==='evidence:share-account'));return 'evidence:share-account'},undefined,()=>photoPlan,()=>photoPlan?'synthetic-photo-hash':undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
  let h=s.create('synthetic',randomUUID(),'en',{campaign:'letter-trail-v2'})
  const input=(target:string,extra:any)=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.id===target)!.approach,target,...extra})
@@ -169,11 +172,50 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
    const matched=await send('developing-bench',{type:'expansion-photo-match',photoMatch:{version:'synthetic-photo-hash',piece:'piece-river',rotation:0}})
    assert.equal(matched.r.text,photoPlan.content.discovery)
    assert.deepEqual(await s.action('synthetic',h.id,matched.b),matched.r)
-   await send('developing-bench',{type:'expansion-photo-decision',decision:'leave'})
+   await send('developing-bench',{type:'expansion-photo-decision',decision:'keep'})
    s=authority();h=s.get('synthetic',h.id)
    assert.equal(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='darkroom-photo-discovery')?.text,photoPlan.content.discovery)
-   assert.equal(h.save.inventory.some(i=>i.id==='darkroom-print'),false,'leaving the print does not erase the discovery')
+   assert.equal(h.save.inventory.some(i=>i.id==='darkroom-print'),true)
    await steps(['photo'])
+   assert.deepEqual(evidenceChoices(h,'photographer'),[],'a visible stranger is not yet an introduced recipient')
+   await steps(['oldstreet:greet-photographer'])
+   const label=(id:string)=>evidenceChoices(h,'photographer').find(c=>c.id===id)!.label
+   const inventoryBefore=structuredClone(h.save.inventory),relationsBefore=structuredClone(h.save.relationships)
+   assert.deepEqual(sharedEvidence(h.save,'photographer'),[],'a discovery is not automatically shared')
+   const leftPrint=structuredClone(h);leftPrint.save.inventory=leftPrint.save.inventory.filter(i=>i.id!=='darkroom-print')
+   assert.ok(!evidenceChoices(leftPrint,'photographer').some(c=>c.kind==='photo-shown'))
+   assert.ok(evidenceChoices(leftPrint,'photographer').some(c=>c.kind==='photo-described'))
+   const describedLabel=label('evidence:describe-photo')
+   const described=await send('photographer',{type:'free-input',text:describedLabel,mode:'local',evidenceText:'CLIENT INVENTED HISTORY'})
+   assert.equal(described.r.kind,'shared-evidence')
+   assert.equal(sharedEvidence(h.save,'photographer')[0].text,photoPlan.content.discovery)
+   assert.match(sharedEvidenceKnowledge(h.save,'photographer')[0].text,/not seen the print/)
+   assert.deepEqual(await s.action('synthetic',h.id,described.b),described.r,'retry returns the same share without duplicate memories')
+   const recall=oldStreetTalkTopics(h.save,'photographer').find(t=>t.id==='shared-photo')!
+   assert.match(oldStreetAuthoredTalkReply(h.save,'photographer',recall.text)!,/not seen the print/)
+   await assert.rejects(s.action('synthetic',h.id,input('photographer',{type:'free-input',text:describedLabel,mode:'local'})),/INPUT_UNSUPPORTED/)
+   const shown=await send('photographer',{type:'free-input',text:label('evidence:show-photo'),mode:'local'})
+   assert.deepEqual(await s.action('synthetic',h.id,shown.b),shown.r)
+   assert.equal(evidenceChoices(h,'photographer').some(c=>c.kind.startsWith('photo-')),false)
+   assert.equal(sharedEvidenceKnowledge(h.save,'photographer').length,1)
+   assert.match(sharedEvidenceKnowledge(h.save,'photographer')[0].text,/showed you/)
+   assert.match(oldStreetAuthoredTalkReply(h.save,'photographer',recall.text)!,/showed me the print/)
+   await send('photographer',{type:'free-input',text:'Tell her what I learned from the records',mode:'live'})
+   assert.equal(interpretationCalls,1,'a model-resolved paraphrase reaches the same authoritative share')
+   assert.equal(sharedEvidence(h.save,'photographer').length,3)
+   assert.deepEqual(sharedEvidence(h.save,'watchmaker'),[])
+   assert.deepEqual(sharedEvidence(h.save,'laundry-owner'),[])
+   assert.deepEqual(h.save.inventory,inventoryBefore,'showing a print does not transfer it')
+   assert.deepEqual(h.save.relationships,relationsBefore,'sharing does not farm relationship points')
+   s=authority();h=s.get('synthetic',h.id)
+   assert.equal(oldStreetDialogueContext(h,'photographer').knowledge.filter(k=>k.id.startsWith('received:')).length,2)
+   const reply=await send('photographer',{type:'dialogue',text:recall.text,mode:'local'})
+   assert.match(reply.r.text,/showed me the print/)
+   assert.ok(reply.r.text.includes(photoPlan.content.discovery))
+   await steps(['roof','shed'])
+   assert.equal(oldStreetDialogueContext(h,'watchmaker').knowledge.filter(k=>k.id.startsWith('received:')).length,0)
+   await steps(['roof','photo'])
+   assert.equal(sharedEvidence(h.save,'photographer').length,3,'leaving and returning preserves the recipient memory')
   }
   await steps(['street','oldstreet:leave'])
   if(photoPlan)assert.ok(h.save.finale.ending?.preserved.includes(photoPlan.content.discovery))

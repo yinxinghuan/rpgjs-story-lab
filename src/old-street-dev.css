@@ -51,11 +51,12 @@
 /* One primary action lives beside the joystick. Dialogue controls stay outside
    the reading region, and all overlays leave camera dimensions unchanged. */
 .os-dev--immersive>.os-actions[hidden],.os-dev button[hidden]{display:none}
-.os-dev--immersive>.os-actions{display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 160px);bottom:calc(84px + env(safe-area-inset-bottom));padding:12px;overflow:auto;scrollbar-width:thin}
+.os-dev--immersive>.os-actions{display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 160px);bottom:calc(84px + env(safe-area-inset-bottom));padding:12px;overflow:hidden}
 .os-actions__heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
 .os-actions__heading>strong{font:600 16px/1.4 system-ui;min-width:0}
 .os-actions__heading>button{font-size:14px;background:transparent;color:var(--os-paper);padding:6px 8px}
-.os-actions__body{display:block!important;flex-shrink:1;min-height:0;overflow:auto;overscroll-behavior:contain;max-height:25dvh}
+.os-actions .os-actions__content{display:flex;flex-direction:column;flex-wrap:nowrap;gap:8px;flex:0 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin}
+.os-actions__body{display:block!important;flex:none;overflow:visible}
 .os-actions__body:empty{display:none!important}
 .os-actions .os-turn{margin:0}
 .os-actions .os-turn__speech{padding:8px 10px;border-radius:4px}
