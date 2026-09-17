@@ -1,5 +1,16 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 显影台操作与版本保持（2026-09-17）
+
+新建 v3 campaign 写入可选 `photoMethod: develop-v1`，请求创建时将它复制到唯一扩展意图。旧 campaign / request 缺字段则继续拼图，升级不回填；head 校验两处方法一致。原 `expansion-photo-match` 行动继续承载提交，方法由权威请求决定，不由客户端随意切换。新方法验证照片hash及焦距/曝光；旧方法仍验证半片与旋转。完成发现、keep/leave、当前目标、库存与结局继续走原 Story Session，不增加一套进度。
+
+`old-street-developing-puzzle.ts` 从同一照片hash得到稳定校准，两个控制各为0–6；只有预览 blur=0 且 brightness=1时接受。`old-street-developing-view.tsx` 只对正在显示的图像应用CSS滤镜，不改媒体文件。档位草稿存入按旅程ID及hash区分的 `alteruSessionStorage`，同标签刷新/再开保持，跨设备仅同步已经确认的照片结果，不承诺未提交试调同步。
+
+`requestExpansion` 原先把 RecoverableSessionClient 返回的确定拒绝当作成功关窗，现先更新读回的head，再根据 rejectionCode 保留失败状态。拼图与调焦都维持面板供纠正。控件调整会清除已过期的失败提示。
+
+本地媒体复用已有平台照片：`_qa/archive-photo-playtest-server.ts` 可显式配置 `OLDSTREET_PHOTO_QA_REPLAY`，与 --live-media 互斥。`_qa/commission-playtest-progress.ts` 在隔离QA库内通过正常权威行动准备前段，可在显影台前停住；不是浏览器全程步行或新模型生成证据。详情见 `developing-review-20260917.md`。
+
+
 ## 连续生成的题材与照片核对（2026-09-17）
 
 `compileTraceDraft` 现在分别抽取题材与界面行序，三条模型主题都可能成为实际调查对象；结果仍保存为原 `TraceContent`，旧存档读取不重抽。独立的 `subjectVariant` 只用于可复现测试。

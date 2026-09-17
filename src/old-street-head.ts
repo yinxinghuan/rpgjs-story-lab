@@ -18,6 +18,7 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
   try {
     bindOldStreet(s.locale,s).locate(s,h.sceneId);assertOldStreetExpansions(h.expansions);assertOldStreetCampaign(h.campaign)
     if(h.expansions?.[0]?.archiveSource&&JSON.stringify(h.expansions[0].archiveSource)!==JSON.stringify(archivePhotoSource(h.campaign)))throw Error('ARCHIVE_PHOTO_SOURCE_MISMATCH')
+    if(h.expansions?.[0]&&h.expansions[0].photoMethod!==h.campaign?.photoMethod)throw Error('PHOTO_METHOD_MISMATCH')
     if(h.campaign?.version===3){
       const request=h.expansions?.[0],matched=s.facts['darkroom-photo-matched'],linked=s.facts['campaign-photo-archive']
       if(request&&!request.archiveSource||s.facts['darkroom-ready']===true&&!request||matched!==undefined&&(!request||linked!==h.campaign.archive?.id)||linked!==undefined&&(typeof matched!=='string'||!matched||linked!==request?.archiveSource?.archiveId||typeof s.facts['darkroom-photo-discovery']!=='string')||s.facts['darkroom-photo-choice']!==undefined&&(!matched||!['keep','leave'].includes(String(s.facts['darkroom-photo-choice']))))throw Error('CAMPAIGN_PHOTO_STATE_INVALID')

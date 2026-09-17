@@ -56,7 +56,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
   const events=[...new Set(save.relationships.filter(r=>r.characterId===c.id&&r.delta>0&&encounters[r.axis]?.character===c.id).map(r=>encounters[r.axis].text))]
   return {id:c.id,title:c.name,text:[c.role,...events].filter(Boolean).join(' · ')}
  })
- if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:f['darkroom-photo-choice']==='keep'?t('你把拼好的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('拼好的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('屋檐与石板路已拼合成完整的街景。','The rooflines and paving join into a complete street view.')})
+ if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:f['darkroom-photo-choice']==='keep'?t('你把看清细节的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('看清细节的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('照片里的街景细节已看清。','The details of the street photograph are now clear.')})
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
  note('clock-mark-known',['钟底的刻记','Mark beneath the clock'],['放大镜下能看见一对燕子。','Two swallows are engraved beneath the clock.'])
  note('clock-returned',['旧钟的来历','The clock’s history'],['洗衣店主说，这是母亲留下的钟。','The laundry owner said the clock belonged to her mother.'])

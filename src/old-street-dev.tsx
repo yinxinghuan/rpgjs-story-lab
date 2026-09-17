@@ -373,6 +373,10 @@ export default function OldStreetDev() {
       serverHead.current=nextHead
       const next={save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current=next;setHead(next)
+      // RecoverableSessionClient settles a definite refusal with the current
+      // head. It is not a successful puzzle submission and must keep the view
+      // open for correction instead of closing it as if the photograph cleared.
+      if(result.rejectionCode)throw Error(result.rejectionCode)
     }catch(e){if(connection.client.hasPending())setError(e instanceof Error?e.message:'SESSION_REQUEST_FAILED');throw e}
     finally{busyRef.current=false;setBusy(false);runtime.current?.pause(connection.client.hasPending())}
   }
@@ -591,7 +595,7 @@ export default function OldStreetDev() {
         </div>}
       </>}
       {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&!conversationOpen&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} commission={serverHead.current.campaign?.version===3} archiveTitle={serverHead.current.campaign?.archive?.order?serverHead.current.campaign.archive.content.title:undefined} submit={(input,follow)=>requestExpansion(input,false,undefined,undefined,follow)} activate={()=>requestExpansion('',true)}/>}
-      {showExpansionPhoto&&serverHead.current&&<OldStreetExpansionPhotoView nearby={nearbyDarkroom} requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
+      {showExpansionPhoto&&serverHead.current&&<OldStreetExpansionPhotoView photoMethod={serverHead.current.expansions?.[0]?.photoMethod} nearby={nearbyDarkroom} requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
       </div>
     </section>
     <footer>

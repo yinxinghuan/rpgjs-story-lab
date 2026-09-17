@@ -28,7 +28,7 @@ export function campaignPhotoPurpose(save:Pick<StorySave,'facts'|'locale'>,campa
  if(save.facts.departed===true||campaign?.version!==3||!campaign.archive?.order||!campaign.parcel?.disposition)return undefined
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
  if(typeof f['darkroom-photo-matched']!=='string')return f['darkroom-ready']===true
-  ?t('从照相馆后门进入暗房，在显影台拼合相关旧照。','Enter the darkroom through the studio’s back door and match the related photograph at the developing bench.')
+  ?(campaign.photoMethod?t('从照相馆后门进入暗房，在显影台调焦与曝光，看清相关旧照。','Enter the darkroom through the studio’s back door. Adjust focus and exposure at the bench to reveal the related photograph.'):t('从照相馆后门进入暗房，在显影台拼合相关旧照。','Enter the darkroom through the studio’s back door and match the related photograph at the developing bench.'))
   :t('旧事已经查清。到照相馆寻找与记录有关的旧照片。','The history is reconstructed. Look for a related photograph at the photo studio.')
  if(!['keep','leave'].includes(String(f['darkroom-photo-choice'])))return t('看清照片后，决定把它带回家，还是留在暗房、转述发现。','Decide whether to bring the photograph home or leave it in the darkroom and describe what you saw.')
  return t('信、记录与照片里的发现都已备好。可以从街口回家，也可以继续探索。','The letter, history and photographic findings are ready. Go home from the street, or keep exploring.')

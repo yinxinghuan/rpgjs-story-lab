@@ -1,0 +1,10 @@
+.os-developing__print{width:min(100%,38dvh);aspect-ratio:4/3;margin-inline:auto;background:var(--os-ink);border:2px solid var(--os-accent);overflow:hidden}
+.os-developing__print img{width:100%;height:100%;object-fit:contain;pointer-events:none;image-rendering:pixelated}
+.os-developing__control{margin-block:8px}
+.os-developing__control label{display:flex;justify-content:space-between;font-size:16px}
+.os-developing__control>div{display:flex;align-items:center;gap:8px}
+.os-developing__control button{min-width:44px;min-height:44px;font-size:22px;padding:4px}
+.os-developing__control input{flex:1;min-width:0;height:44px;accent-color:var(--os-accent);touch-action:pan-y}
+.os-developing .os-photo__content>p{margin-block:8px;font-size:16px;line-height:1.4}
+
+@media(max-height:650px){.os-developing__print{width:min(100%,27dvh)}.os-developing__control{margin-block:4px}.os-developing .os-photo__content>p{margin-block:4px}.os-developing header{gap:8px}.os-developing header h2{font-size:18px}}

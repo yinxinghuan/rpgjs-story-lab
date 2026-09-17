@@ -3,7 +3,7 @@ import {originalActionIntentIssues} from './original-action-intent'
 export const oldStreetActionNames: Record<string, [string, string]> = {
  'keep-darkroom-photo':['带走照片','Take the photograph'],
  'leave-darkroom-photo':['留在暗房','Leave it here'],
- 'match-darkroom-photo':['拼合照片','Match photograph'],
+ 'match-darkroom-photo':['看清照片','Examine photograph'],
  'observe-darkroom':['查看显影台','Examine developing bench'],
   'greet-watchmaker':['打个招呼','Say hello'], 'greet-laundry':['打个招呼','Say hello'], 'greet-photographer':['打个招呼','Say hello'],
   'move-box': ['移开空盒', 'Move box'], 'take-lens': ['拿放大镜', 'Take lens'], 'borrow-trolley': ['借推车', 'Borrow trolley'],
@@ -22,7 +22,7 @@ const aliases:Record<string,readonly string[]>={
  'observe-darkroom':['看看显影台','查看工作台','examine the developing bench'],
  'keep-darkroom-photo':['把照片带走','收起这张照片','拿走旧街照片','take this photograph','put the photograph in my bag'],
  'leave-darkroom-photo':['把照片留在这里','照片留在暗房','leave the photograph here','leave it on the bench'],
- 'match-darkroom-photo':['把照片拼起来','拼好这张照片','比对照片','match the photograph','join the photo halves'],
+ 'match-darkroom-photo':['调焦与曝光','调焦','调整曝光','focus and expose','adjust the exposure','focus the photograph','把照片拼起来','拼好这张照片','比对照片','match the photograph','join the photo halves'],
  'move-box':['把空盒移开','挪开空盒','move the empty box','move the box aside'],
  'take-lens':['拿起放大镜','拿走放大镜','pick up the magnifying glass','take the magnifying glass'],
  'borrow-trolley':['借一下推车','借用推车','borrow the trolley'],

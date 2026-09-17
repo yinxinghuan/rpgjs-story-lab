@@ -9,6 +9,7 @@ import {campaignInputActions,resolveCampaignInput} from '../src/old-street-campa
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import type {ExpansionPlan} from '../src/old-street-expansion-plan'
 import {oldStreetClockObserved} from '../src/old-street-clock-puzzle'
+import {developingMatches} from '../src/old-street-developing-puzzle'
 import {oldStreetPhotoMatches} from '../src/old-street-photo-puzzle'
 import {oldStreetAuthoredTalkReply,oldStreetTalkReply,oldStreetTalkBlocks} from '../src/old-street-conversation'
 import {oldStreetDialogueContext,type OldStreetDialogueGenerator} from './old-street-dialogue'
@@ -65,7 +66,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2','letter-trail-v3'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         const name=(options as {campaign:string}).campaign
         if(name==='letter-trail-v3'&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
-        h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1}
+        h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1,...(name==='letter-trail-v3'?{photoMethod:'develop-v1' as const}:{})}
         if(h.campaign.version!==1)introduceCampaignCommission(h.save,h.campaign.version)
       }
       check(h);return h
@@ -126,7 +127,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const save=structuredClone(h.save),keep=body.decision==='keep'
         save.facts['darkroom-photo-choice']=body.decision
         if(keep)save.inventory.push({id:'darkroom-print',label:save.locale==='zh'?'旧街照片':'Old street photograph',count:1,rarity:'common'})
-        const text=save.locale==='zh'?(keep?'你把拼好的旧街照片收进随身行囊。':'你把照片平整地留在显影台上。'):(keep?'You tuck the completed street photograph into your bag.':'You leave the photograph flat on the developing bench.')
+        const text=save.locale==='zh'?(keep?'你把看清细节的旧街照片收进随身行囊。':'你把照片平整地留在显影台上。'):(keep?'You tuck the completed street photograph into your bag.':'You leave the photograph flat on the developing bench.')
         recordOldStreetInteraction(save,'developing-bench','expansion-photo-decision',text,body.action_id)
         const next={...h,version:h.version+1,position:pos,save};finish(next,h)
         return {head:next,kind:'expansion-photo-decision',accepted:true,text}
@@ -135,7 +136,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(h.save.facts['darkroom-photo-matched'])throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)
         const hash=expansionPhoto?.(h)
         if(h.sceneId!=='darkroom'||!h.save.facts['darkroom-ready']||!hash||!binding.canInteract('developing-bench',h.sceneId,pos))throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
-        if(!oldStreetPhotoMatches(body.photoMatch,hash))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
+        if(!(h.expansions?.[0]?.photoMethod==='develop-v1'?developingMatches(body.photoMatch,hash):oldStreetPhotoMatches(body.photoMatch,hash)))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
         const save=structuredClone(h.save);save.facts['darkroom-photo-matched']=hash
         const prepared=expansionPlan?.(h),content=prepared?.content
         if(h.campaign?.version===3){
@@ -163,7 +164,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const followArchive=h.campaign?.version===3||body.followArchive===true
         const archiveSource=followArchive?archivePhotoSource(h.campaign):undefined
         if(followArchive&&!archiveSource)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
-        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:h.campaign?.version===3?archivePhotoSuggestion(h.save.locale):body.text.trim(),status:'requested',requestedAtVersion:h.version,...(archiveSource?{archiveSource}:{})}]}
+        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:h.campaign?.version===3?archivePhotoSuggestion(h.save.locale):body.text.trim(),status:'requested',requestedAtVersion:h.version,...(h.campaign?.photoMethod?{photoMethod:h.campaign.photoMethod}:{}),...(archiveSource?{archiveSource}:{})}]}
         finish(next,h)
         return {head:next,kind:'expansion-request',accepted:true,text:h.save.locale==='zh'?'已记下你想探索的新去处。准备好后才能进入；现在可以继续逛。':'Your exploration idea is saved. You can keep exploring while the new area is prepared.'}
       }
@@ -229,7 +230,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       let next:OldStreetHead, text=resolution.successText
       if(body.action==='oldstreet:take-letter'&&h.campaign)text=h.save.locale==='zh'?'你收好密封信，信旁另有一张寄存条。先到铺里的记录册比对标记，找出还在旧街的材料。':'You secure the sealed letter. A separate filing slip beside it points to papers still on the street. Compare its marks with the shop record book.'
       if(body.action==='oldstreet:take-letter'&&campaignCommission(h.save))text=h.save.locale==='zh'?'你收好密封信，没有拆开。旁边的寄存条指向家人托你查清的旧街记录，铺里的记录册能帮你找到它。':'You put away the letter without opening it. The filing slip points to the street records your family asked about; the shop ledger can help you locate them.'
-      if(body.action==='oldstreet:observe-darkroom'&&h.save.facts['darkroom-photo-matched']){const keep=h.save.facts['darkroom-photo-choice']==='keep';text=h.save.locale==='zh'?(keep?'拼好的旧街照片已在你的行囊里。':'拼好的旧街照片平放在显影台上。'):(keep?'The completed street photograph is in your bag.':'The completed street photograph lies flat on the developing bench.')}
+      if(body.action==='oldstreet:observe-darkroom'&&h.save.facts['darkroom-photo-matched']){const keep=h.save.facts['darkroom-photo-choice']==='keep';text=h.save.locale==='zh'?(keep?'看清细节的旧街照片已在你的行囊里。':'看清细节的旧街照片平放在显影台上。'):(keep?'The completed street photograph is in your bag.':'The completed street photograph lies flat on the developing bench.')}
       if(oldStreetDoors().some(d=>d.actionId===body.action)) {
         const result=prepareDoorTravel(h.save,c,binding,{scene:h.sceneId,target:body.target,position:pos,actionId:body.action})
         next={...h,version:h.version+1,save:result.save,sceneId:result.scene,position:result.position}

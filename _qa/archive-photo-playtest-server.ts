@@ -1,18 +1,21 @@
 /** Local renderer + normal authority. Historical text is replayed; only photo media is live. */
 import {createServer,type ConfigEnv,type UserConfig} from 'vite'
 import {createServer as portProbe} from 'node:net'
-import {mkdirSync,appendFileSync,writeFileSync} from 'node:fs'
+import {mkdirSync,appendFileSync,writeFileSync,readFileSync} from 'node:fs'
 import base from '../vite.config'
 import {oldStreetDevPlugin} from '../server/old-street-dev-plugin'
 import {expansionPhotoProducer} from '../server/old-street-expansion-media'
 import {photoCampaignFixture,photoPlanReplay} from './archive-photo-fixture'
-if(!process.argv.includes('--live-media'))throw Error('Explicit --live-media required for this authorized synthetic photo test')
+const replayMedia=process.env.OLDSTREET_PHOTO_QA_REPLAY
+if(!process.argv.includes('--live-media')&&!replayMedia)throw Error('Explicit --live-media or existing media replay required')
+if(process.argv.includes('--live-media')&&replayMedia)throw Error('Choose live media or replay, not both')
 process.env.OLDSTREET_MODEL_TEST_BUDGET='0'
-process.env.OLDSTREET_DEV_DATA='.data/archive-photo-playtest-20260917'
+process.env.OLDSTREET_DEV_DATA??='.data/archive-photo-playtest-20260917'
 const out=process.env.OLDSTREET_PHOTO_QA_OUTPUT??'doc/archive-photo-media-20260917';mkdirSync(out,{recursive:true})
 const produce=expansionPhotoProducer()
 const config=await (base as (e:ConfigEnv)=>UserConfig)({command:'serve',mode:'oldstreet-dev'})
 config.plugins=(config.plugins??[]).map(p=>p&&typeof p==='object'&&'name' in p&&p.name==='oldstreet-loopback-session'?oldStreetDevPlugin(photoCampaignFixture,{plan:photoPlanReplay,photo:async(job,onTask)=>{
+ if(replayMedia)return new Uint8Array(readFileSync(replayMedia))
  appendFileSync(out+'/requests.jsonl',JSON.stringify({requestId:job.requestId,taskId:job.taskId??null,prompt:job.prompt,startedAt:new Date().toISOString()})+'\n')
  const bytes=await produce(job,id=>{appendFileSync(out+'/requests.jsonl',JSON.stringify({requestId:job.requestId,taskId:id})+'\n');onTask(id)})
  writeFileSync(out+'/candidate.png',bytes)

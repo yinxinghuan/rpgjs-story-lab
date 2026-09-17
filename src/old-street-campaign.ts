@@ -10,6 +10,7 @@ export type CampaignContext={locale:'zh'|'en';stage:'field';account:string;event
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
  version:1|2|3;
+ photoMethod?:'develop-v1';
  trace?:CampaignInstance<TraceContent>&{selected?:number};
  parcel?:CampaignInstance<ParcelContent>&{disposition?:'take'|'leave'};
  archive?:ArchiveProgress;
@@ -75,7 +76,8 @@ export function campaignComplete(c:OldStreetCampaign,facts?:StorySave['facts']){
 export function campaignPhotoComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return !!c.archive?.order&&facts?.['campaign-photo-archive']===c.archive.id&&typeof facts['darkroom-photo-matched']==='string'&&typeof facts['darkroom-photo-discovery']==='string'&&['keep','leave'].includes(String(facts['darkroom-photo-choice']))}
 export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCampaign|undefined{
  if(raw===undefined)return
- const c=object(raw,['version','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
+ const c=object(raw,['version','photoMethod','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
+ if(c.photoMethod!==undefined&&(c.version!==3||c.photoMethod!=='develop-v1'))throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.trace!==undefined){
   const trace=object(c.trace,['id','content','observed','selected']);instance(trace);const content=readTraceContent(trace.content)
   if(trace.selected!==undefined&&(!trace.observed||!campaignRecordMatches(content,trace.selected as number)))throw Error('CAMPAIGN_SAVE_INVALID')

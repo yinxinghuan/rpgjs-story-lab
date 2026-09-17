@@ -1,3 +1,4 @@
+import {developingTarget} from '../src/old-street-developing-puzzle'
 import {assertOldStreetHead} from '../src/old-street-head'
 import {fieldChoices,fieldKnowledge} from '../src/old-street-field-inquiry'
 import {evidenceChoices,sharedEvidence,sharedEvidenceKnowledge} from '../src/old-street-shared-evidence'
@@ -259,7 +260,13 @@ for(const readingMode of ['direct','lens','table','commission'] as const)test(`c
    await send('viewing-table',{type:'expansion-activate'})
    assert.equal(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='darkroom-photo-discovery'),false,'preparation does not reveal the photograph')
    await steps(['darkroom'])
-   const matched=await send('developing-bench',{type:'expansion-photo-match',photoMatch:{version:'synthetic-photo-hash',piece:'piece-river',rotation:0}})
+   const proof=fullCommission?{version:'synthetic-photo-hash',method:'develop-v1',...developingTarget('synthetic-photo-hash')}:{version:'synthetic-photo-hash',piece:'piece-river',rotation:0}
+   if(fullCommission){
+    assert.equal(h.expansions![0].photoMethod,'develop-v1')
+    await assert.rejects(s.action('synthetic',h.id,input('developing-bench',{type:'expansion-photo-match',photoMatch:{version:'synthetic-photo-hash',piece:'piece-river',rotation:0}})),/PHOTO_ALIGNMENT_REQUIRED/)
+    assert.equal(s.get('synthetic',h.id).save.facts['darkroom-photo-matched'],undefined)
+   }
+   const matched=await send('developing-bench',{type:'expansion-photo-match',photoMatch:proof})
    if(fullCommission){
     assert.equal(h.save.facts['campaign-photo-archive'],source.archiveId)
     assert.equal(campaignComplete(h.campaign!,h.save.facts),false,'observing the image does not choose its destination')
