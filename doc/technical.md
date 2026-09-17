@@ -1,5 +1,13 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 完整委托默认入口（2026-09-17，待整合发布）
+
+`OLD_STREET_CAMPAIGN_RELEASED`开启完整委托的试玩能力，`OLD_STREET_RELEASED`仍为false。`oldStreetNewJourneyOptions`在cloud/cloud-preflight为新登记选择`letter-trail-v4`，oldstreet-dev仍沿用显式开发开关，Pages不开户。前端首次bootstrap与菜单新建共用该函数；已有或待确认登记优先于新默认值，不迁移旧旅程。
+
+正式Worker按既有默认presentation gate启用campaign planner，本地Worker适配器同步使用该能力开关。生成仍由已提交的探索节点或玩家现场操作触发，新建／续玩不会调用模型。
+
+`_qa/old-street-campaign-release.test.ts`加载`build:worker`生成的真实bundle，再通过正式session客户端、health握手、Worker路由及SQLite边界验证：旧档原样续玩、完整新档、持久重开、响应丢失后恢复同一开户、无重复旅程、零模型调用。运行前须`npm run build:worker`，现有CI已满足此顺序。该检查不等于线上部署或真机验证。
+
 ## 调查回看与动态障碍绕行（2026-09-17）
 
 `OldStreetCampaignView`以已提交的`campaign.archive.order`区分待调查与已查明：完成后显示同一archive的discovery，原寄存条折叠保留，移除重复追查按钮；原件去向提交后显示共用`oldStreetCurrentPurpose`，不新增存档或目标真源。
@@ -12,9 +20,9 @@
 
 ## 本地完整委托入口与确认拒绝（2026-09-17）
 
-`npm run dev:campaign` 启动127.0.0.1:55677的现有主游戏，使用`.data/oldstreet-campaign`持久数据库。两个显式开发开关分别开启服务端真实campaign生成能力与前端默认v4新旅程。`oldStreetNewJourneyOptions`仅在DEV、oldstreet-dev模式及对应开关同时满足时生效；正式cloud/Pages构建不会因此开启campaign。前端bootstrap与普通“另开探索”共享选项；RecoverableSessionClient已有续玩／开户回执逻辑仍优先已有旅程和待确认开户，不对旧档补新目标。
+`npm run dev:campaign` 启动127.0.0.1:55677的现有主游戏，使用`.data/oldstreet-campaign`持久数据库。两个显式开发开关分别开启本地服务端真实campaign生成能力与前端默认v4新旅程。前端bootstrap与普通“另开探索”共享选项；RecoverableSessionClient已有续玩／开户回执逻辑仍优先已有旅程和待确认开户，不对旧档补新目标。cloud/cloud-preflight的后续默认策略见上方最新条目。
 
-本地适配器沿用现有平台叙事和媒体服务；必要文字材料在已提交节点提前准备，媒体仍在对应阶段请求。入口检查没有调用生成。不是合成内容夹具或新的游戏UUID。生产开关仍关闭。
+本地适配器沿用现有平台叙事和媒体服务；必要文字材料在已提交节点提前准备，媒体仍在对应阶段请求。入口检查没有调用生成。不是合成内容夹具或新的游戏UUID；线上状态以实际部署为准。
 
 `OLD_STREET_NEGATIVE_REQUIRED`、`OLD_STREET_TARGET_TOO_FAR`进入旧街session的已确认拒绝列表，恢复只重读权威head，不重复提交已拒绝操作；界面给出取底片／走近放大台的具体说明。网络结果未确认的pending规则不变。
 

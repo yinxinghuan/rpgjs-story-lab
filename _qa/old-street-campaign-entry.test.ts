@@ -41,8 +41,9 @@ test('normal local campaign entry creates the complete trail, resumes old journe
   assert.notEqual(again.id,fresh.id);assert.equal(again.campaign?.photoSource,'roof-negative-v1')
   assert.equal(s.authority.get('synthetic-campaign-entry',old.id).campaign,undefined)
   assert.equal(s.authority.get('synthetic-campaign-entry',fresh.id).campaign?.photoSource,'roof-negative-v1')
-  assert.equal(OLD_STREET_CAMPAIGN_RELEASED,false)
-  for(const mode of ['cloud','pages','cloud-preflight'])assert.equal(oldStreetNewJourneyOptions(mode,true,'1'),undefined)
+  assert.equal(OLD_STREET_CAMPAIGN_RELEASED,true)
+  for(const mode of ['cloud','cloud-preflight'])assert.deepEqual(oldStreetNewJourneyOptions(mode,false,undefined),options)
+  assert.equal(oldStreetNewJourneyOptions('pages',true,'1'),undefined)
   assert.equal(oldStreetNewJourneyOptions('oldstreet-dev',false,'1'),undefined)
  }finally{s.close()}
 })
