@@ -15,11 +15,13 @@ import {archiveOrders} from '../src/old-street-archive'
 import {campaignRecordMatches} from '../src/old-street-campaign'
 import {photoCampaignFixture} from './archive-photo-fixture'
 if(!process.argv.includes('--seed-synthetic'))throw Error('Explicit synthetic QA setup required')
+const stopBeforePhoto=process.argv.includes('--before-photo')
 const replay=process.env.OLDSTREET_PHOTO_QA_REPLAY
 const raw=new DatabaseSync((process.env.OLDSTREET_DEV_DATA??'.data/archive-photo-playtest-20260917')+'/journeys.sqlite')
 const contentReport=process.env.OLDSTREET_QA_CAMPAIGN_REPORT
 const plannedRoute=contentReport?JSON.parse(readFileSync(contentReport,'utf8')).cases.find((r:any)=>r.chain===Number(process.env.OLDSTREET_QA_CAMPAIGN_CHAIN??1)&&r.stage==='parcel')?.context.route:undefined
-const rows=(raw.prepare("SELECT owner,id,json_extract(data,'$.campaign.explorationRoute') AS route FROM journeys WHERE json_extract(data,'$.campaign.version')=3 AND json_extract(data,'$.version')=0 ORDER BY updated DESC").all() as Array<{owner:string;id:string;route?:string}>).filter(row=>!plannedRoute||row.route===plannedRoute)
+const requestedJourney=process.argv.find(value=>value.startsWith('--journey='))?.slice('--journey='.length)
+const rows=(raw.prepare("SELECT owner,id,json_extract(data,'$.campaign.explorationRoute') AS route FROM journeys WHERE json_extract(data,'$.campaign.version')=3 AND json_extract(data,'$.version')=0 ORDER BY updated DESC").all() as Array<{owner:string;id:string;route?:string}>).filter(row=>(!requestedJourney||row.id===requestedJourney)&&(!plannedRoute||row.route===plannedRoute))
 if(rows.length!==1)throw Error('Expected exactly one untouched synthetic commission journey')
 const {owner,id}=rows[0]
 const db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:work=>{raw.exec('BEGIN IMMEDIATE');try{const r=work();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
@@ -47,23 +49,30 @@ try{
   }else await act('archive-'+source,{type:'campaign-observe',stage:'archive'})
  }
  const loanSite=h.campaign!.archive!.content.ledgerSite
- if(loanSite){
+ if(loanSite&&!stopBeforePhoto){
   const shelf=oldStreetSpatialPlan(h.save).entities.find(e=>e.id==='archive-ledger')!
   authority.checkpoint(owner,id,{sceneId:h.sceneId,expected_version:h.version,position:shelf.approach})
   console.log(JSON.stringify({scene:h.sceneId,version:h.version,ledgerSite:loanSite,content:process.env.OLDSTREET_QA_CAMPAIGN_REPORT??'synthetic',setup:'Normal authority actions; renderer begins at the loan slip, before visiting the off-site log.'}))
   process.exitCode=0
- }else if(replay){
+ }else if(replay||stopBeforePhoto){
+  if(loanSite){
+   await walk(loanSite==='photo'?['cellar','yard','street','photo']:['cellar','yard','laundry'])
+   await act(loanSite==='photo'?'viewing-table':'clock-display',{type:'campaign-observe',stage:'archive'})
+   await walk(loanSite==='photo'?['street','yard','cellar','archive']:['yard','cellar','archive'])
+  }
   const a=h.campaign!.archive!
   await act('archive-desk',{type:'campaign-decide',stage:'archive',order:archiveOrders([...a.content.sources.index,...a.content.sources.ledger])[0]})
   await walk(['cellar','yard','street','photo'])
+  if(!stopBeforePhoto){
   await act('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'Find the related photograph',followArchive:true})
   expansions.enqueue(owner,id);await expansions.run(owner,id)
   await act('viewing-table',{type:'expansion-activate'});await walk(['darkroom'])
-  media.start(owner,id);await media.run(owner,id,async()=>new Uint8Array(readFileSync(replay)))
+  media.start(owner,id);await media.run(owner,id,async()=>new Uint8Array(readFileSync(replay!)))
+  }
  }
- if(!loanSite){
- const desk=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===(replay?'developing-bench':'archive-desk'))!
+ if(!loanSite||stopBeforePhoto){
+ const desk=oldStreetSpatialPlan(h.save).entities.find(e=>e.id===(stopBeforePhoto?'viewing-table':replay?'developing-bench':'archive-desk'))!
  authority.checkpoint(owner,id,{sceneId:h.sceneId,expected_version:h.version,position:desk.approach})
- console.log(JSON.stringify({scene:h.sceneId,version:h.version,archiveObserved:h.campaign?.archive?.examined,archiveSolved:!!h.campaign?.archive?.order,setup:replay?'Normal authority actions to the developing bench; archived photo replay; no model or media calls':'Normal authority actions; renderer walkthrough begins at the sorting table; no model or media calls'}))
+ console.log(JSON.stringify({scene:h.sceneId,version:h.version,archiveObserved:h.campaign?.archive?.examined,archiveSolved:!!h.campaign?.archive?.order,setup:stopBeforePhoto?'Normal authority setup; renderer begins before requesting related photos; no model or media calls':replay?'Normal authority actions to the developing bench; archived photo replay; no model or media calls':'Normal authority actions; renderer walkthrough begins at the sorting table; no model or media calls'}))
  }
 }finally{raw.close()}
