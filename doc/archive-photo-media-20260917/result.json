@@ -1,0 +1,33 @@
+{
+  "source": "local actual renderer + authority + platform media",
+  "archiveSource": {
+    "archiveId": "2fe2ac35-3d97-467e-bc8e-a516cf1aac83",
+    "title": "The footbridge repairs",
+    "events": [
+      "The worn boards were measured",
+      "Replacement boards were cut",
+      "Three new boards were fitted",
+      "The footbridge reopened"
+    ],
+    "account": "The footbridge reopened after the three replacement boards were fitted."
+  },
+  "photo": {
+    "sha256": "c72e4710487dcbf4d87e6ea7b84f80db7e12dfdffaf85353f5e7b3337932d86f",
+    "bytes": 642282,
+    "width": 768,
+    "height": 576
+  },
+  "requestId": "d6f1d484-c120-423d-a52c-10cfe628011c",
+  "taskId": "mt_34bbfcc5e1647dd6802a18132d94eda4",
+  "generationRequests": 1,
+  "uniqueRequests": 1,
+  "choice": "leave",
+  "discovery": {
+    "id": "darkroom-photo-discovery",
+    "title": "What the photograph shows",
+    "text": "Three pale boards interrupt the dark, weathered planks."
+  },
+  "hasPrintInInventory": false,
+  "browserEvidence": "_qa/ui/archive-photo-media-20260917/notes-restored-320-platform-layout.png",
+  "modelText": "Replay of previously generated accepted bridge proposal; synthetic matching archive, no new narrative request"
+}

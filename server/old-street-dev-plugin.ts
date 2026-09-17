@@ -7,7 +7,7 @@ import {createOldStreetDialogueGenerator} from './old-street-dialogue'
 import {OldStreetExpansionJobs} from './old-street-expansion-jobs'
 import {createOldStreetExpansionPlanner} from './old-street-expansion-planner'
 import {oldStreetExpansionOperation,oldStreetExpansionPhotoOperation,oldStreetCampaignOperation} from './old-street-http'
-import {OldStreetExpansionMedia,expansionPhotoProducer} from './old-street-expansion-media'
+import {OldStreetExpansionMedia,expansionPhotoProducer,type ExpansionPhotoProducer} from './old-street-expansion-media'
 import {originalPreflightModels} from './original-preflight-model'
 import {DatabaseSync} from 'node:sqlite'
 import {mkdirSync} from 'node:fs'
@@ -18,9 +18,10 @@ import {OldStreetAuthority} from './old-street-runtime'
 import type {AuthorityStorage} from './session-authority'
 import {GAME_ID} from '../src/game-id'
 /** Loopback authoring adapter only. Not platform identity or a production route. */
-export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator){
+export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,qaExpansion?:{plan:ReturnType<typeof createOldStreetExpansionPlanner>;photo:ExpansionPhotoProducer}){
  // Only a local QA launcher can inject this dependency. No query/body flag can
- // select a fixture, and fixture mode cannot fall through to remote generation.
+ // select a fixture. Narrative fixtures never fall through to remote generation;
+ // an explicit QA media producer may independently exercise the platform service.
  const models=offlineCampaign?undefined:originalPreflightModels(process.env.OLDSTREET_MODEL_TEST_BUDGET,undefined,Number(process.env.OLDSTREET_MODEL_TEST_USED??0)) ?? (process.env.OLDSTREET_MODEL_TEST_BUDGET==='0'?undefined:{request:chatModel,interpreter:createOriginalActionInterpreter(chatModel)})
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
  let expansions:OldStreetExpansionJobs|undefined
@@ -37,8 +38,8 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator){
   const storage:AuthorityStorage={all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const result=work();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}}
   service=new OldStreetAuthority(storage,()=>true,models?.interpreter,models?createOldStreetDialogueGenerator(models.request):undefined,h=>expansions?.candidateFor(h),h=>expansionMedia?.candidateFor(h),models?createOldStreetAttemptGenerator(models.request):undefined,undefined,campaignEnabled?(h,stage)=>campaignJobs?.candidateFor(h,stage):undefined)
   if(campaignEnabled)campaignJobs=new OldStreetCampaignJobs(storage,(owner,id)=>service!.get(owner,id),offlineCampaign??createOldStreetCampaignPlanner(models!.request))
-  if(models)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),createOldStreetExpansionPlanner(models.request))
-  if(models)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
+  if(models||qaExpansion)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),qaExpansion?.plan??createOldStreetExpansionPlanner(models!.request))
+  if(models||qaExpansion)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
   return service
  }
  async function handle(req:IncomingMessage,res:ServerResponse,next:()=>void){
@@ -72,7 +73,7 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator){
    if(operation==='campaign-trace'||operation==='campaign-parcel'||operation==='campaign-archive'){
     return send(200,oldStreetCampaignOperation(req.method!,owner,id,operation==='campaign-trace'?'trace':operation==='campaign-parcel'?'parcel':'archive',campaignJobs,body,p=>{void p.catch(()=>{})}))
    }
-   if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
+   if(operation==='expansion-photo')return send(200,oldStreetExpansionPhotoOperation(req.method!,owner,id,expansionMedia,qaExpansion?.photo??expansionPhotoProducer(),body,p=>{void p.catch(()=>{})}))
    if(operation==='expansion-photo-file'&&req.method==='GET'){
     if(!expansionMedia)return send(503,{error:'EXPANSION_MEDIA_NOT_READY'})
     const bytes=await expansionMedia.file(owner,id);res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'private, no-store'});res.end(bytes);return

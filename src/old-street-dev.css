@@ -86,3 +86,5 @@
 .os-journal>header,.os-journal>p,.os-journal>nav{flex-shrink:0}
 .os-journal nav button{min-width:0;padding-inline:8px}
 .os-journal__entries{min-height:0;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere}
+
+.os-photo__print{display:block;width:100%;height:auto;object-fit:contain;image-rendering:pixelated;filter:grayscale(1);pointer-events:none}

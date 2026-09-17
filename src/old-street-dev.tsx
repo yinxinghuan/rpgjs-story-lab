@@ -366,6 +366,7 @@ export default function OldStreetDev() {
       const result=await connection.client.send(h,{type:decision?'expansion-photo-decision':photoMatch?'expansion-photo-match':activate?'expansion-activate':'expansion-request',...(photoMatch?{photoMatch}:{}),...(decision?{decision}:{}),template:'photo-darkroom-v1',text:input,...(followArchive?{followArchive:true}:{}),position:{...position.current}})
       const nextHead=result.head as OldStreetHead
       if(!nextHead.expansions?.length)throw Error('EXPANSION_NOT_SAVED')
+      if(photoMatch||decision){setNotice('');setTurn([]);setPendingSpeech(null)}
       serverHead.current=nextHead
       const next={save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
       current.current=next;setHead(next)
@@ -575,7 +576,7 @@ export default function OldStreetDev() {
         </div>}
       </>}
       {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&!conversationOpen&&<OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} archiveTitle={serverHead.current.campaign?.archive?.order?serverHead.current.campaign.archive.content.title:undefined} submit={(input,follow)=>requestExpansion(input,false,undefined,undefined,follow)} activate={()=>requestExpansion('',true)}/>}
-      {expansionCapabilities.media&&head.scene==='darkroom'&&serverHead.current&&<OldStreetExpansionPhotoView requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
+      {expansionCapabilities.media&&head.scene==='darkroom'&&serverHead.current&&<OldStreetExpansionPhotoView nearby={bindOldStreet(locale,head.save).canInteract('developing-bench',head.scene,feet)} requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/>}
     </section>
     <footer>
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||(!!campaignOpen||!!archiveOpen)} move={(x,y)=>runtime.current?.move(x,y)}/>
