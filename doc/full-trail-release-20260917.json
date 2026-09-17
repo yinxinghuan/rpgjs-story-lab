@@ -1,0 +1,837 @@
+{
+  "sourceCommit": "dd75ee528cf028a14f95939ba5d4947d8677176a",
+  "marker": "oldstreet-preview-full-trail-20260917",
+  "main": {
+    "sourceCommit": "dd75ee528cf028a14f95939ba5d4947d8677176a",
+    "site": "main",
+    "base": "https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/",
+    "checkedAt": "2026-09-17T12:11:57.764Z",
+    "marker": "oldstreet-preview-full-trail-20260917",
+    "scope": "All built JS/CSS plus 29 existing local media references from the active old-street bundle, entry documents, poster, notices and storage helper. No player data.",
+    "results": [
+      {
+        "asset": "index.html",
+        "status": 200,
+        "bytes": 1696,
+        "sha256": "90f438ebc031c5e78400d26fcbaa82c65e17d77a90f7a46bbb5a1bc8aeeab947",
+        "matchesLocal": true
+      },
+      {
+        "asset": "creator.html",
+        "status": 200,
+        "bytes": 1658,
+        "sha256": "34d589af8791966135bf02bf53b312b20331fba3ac97c5d6d5debf215dbbffa0",
+        "matchesLocal": true
+      },
+      {
+        "asset": "alteru-storage-scope.js",
+        "status": 200,
+        "bytes": 2136,
+        "sha256": "7dc73a406c88605cab3b3a06d99380a638d7218d652f4b26b10c86bab2cd54bc",
+        "matchesLocal": true
+      },
+      {
+        "asset": "THIRD_PARTY_NOTICES.txt",
+        "status": 200,
+        "bytes": 107869,
+        "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/browser-journey-C9mAoZFC.js",
+        "status": 200,
+        "bytes": 3737,
+        "sha256": "258a477de1bbbfb0484d1059e91615f0ebb84a86e8882d6c609b957fd3e0b112",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/creator-BTHba6TF.css",
+        "status": 200,
+        "bytes": 6247,
+        "sha256": "5d32e93a51c9c8de2fc19c9cafc394aafed65abcb8ec0732502d547364c6fa50",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/actor-sheet-B08ZKgKP.js",
+        "status": 200,
+        "bytes": 1097276,
+        "sha256": "a50fa9a7ebf0f79818a4c516156c31bd4e3ebd30b00cf6c240eaf8eefc505af3",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/creator-CbJReYUV.js",
+        "status": 200,
+        "bytes": 154952,
+        "sha256": "663c3df03156888c098ee4333affd29f2d54b53371f151a5a2ff93bdeff50116",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/device-map-candidate-uLxBn18X.js",
+        "status": 200,
+        "bytes": 152503,
+        "sha256": "8287700f655f997873070ba2198aff6d6ee05b85b9af0616bfb5e1d7c915ae34",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/canvasengine-CCC-_bmI.js",
+        "status": 200,
+        "bytes": 1504206,
+        "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/index-Do82-OG-.css",
+        "status": 200,
+        "bytes": 2968,
+        "sha256": "471bd6473429eae743e6d81077e10af6afa48e48b8587bb49105af7ddbf74ebf",
+        "matchesLocal": true
+      },
+      {
+        "asset": "poster.png",
+        "status": 200,
+        "bytes": 1501900,
+        "sha256": "ebf6f6e160d9ba8b4abef707ed0cc464c5e1cfb955abe63ba7d7661b1f882e5e",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/index-BXUk12jJ.js",
+        "status": 200,
+        "bytes": 75088,
+        "sha256": "21ce7869168af27fc0c2563e8ebcbb123979d48a6793914d5c69dc562b92b4b3",
+        "matchesLocal": true,
+        "marker": true
+      },
+      {
+        "asset": "assets/old-street-dev-CfzxxkgN.css",
+        "status": 200,
+        "bytes": 27864,
+        "sha256": "079c8e39b38681570318007c358f6e18565b5d8d034c65f33bfbe2d262380132",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/old-street-dev-BCC89e5v.js",
+        "status": 200,
+        "bytes": 244516,
+        "sha256": "bf37295b947de71cd8df60e2ae1663f5db59b343507ab197eeffc655dc38d15c",
+        "matchesLocal": true,
+        "objectCloseup": true
+      },
+      {
+        "asset": "assets/original-action-intent-ApWr5iTw.js",
+        "status": 200,
+        "bytes": 1162,
+        "sha256": "303a248764de55a5ad1a9f4f356e97165ca33c794970166d63e28f9e8f7c5ce5",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/pixi-DMXpPjpr.js",
+        "status": 200,
+        "bytes": 276,
+        "sha256": "b40374f74b87273ee81651c63bdcaf2bd60c5950180c599081d08088a52c624d",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/reducer-Be2oj2DN.js",
+        "status": 200,
+        "bytes": 5404,
+        "sha256": "542db808b30a9e005d53666e39232ceca2b50e8c2290650cb6f36ef052d3d964",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/original-game-hucheqzP.css",
+        "status": 200,
+        "bytes": 9755,
+        "sha256": "0994cd66413d6ff15d0a841375d37a19f6be304057ceddbc622e8eed5111097b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/space-DMttg3ss.js",
+        "status": 200,
+        "bytes": 1451,
+        "sha256": "2ca8e109c2d7e86970b52a35e1391d1ca7c6a8dc04dc396a8a0ba153d93f242d",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/sprite-config-Bx0BPd8y.js",
+        "status": 200,
+        "bytes": 295,
+        "sha256": "4af1d486aea6da38552765f1e1cdc27c9a0c29333f79132fc6d1d8164fe8fcfb",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/rolldown-runtime-QTnfLwEv.js",
+        "status": 200,
+        "bytes": 694,
+        "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/original-game-D_GkLIhu.js",
+        "status": 200,
+        "bytes": 137568,
+        "sha256": "3e9f7702902030050cf7940d15646f867079b520f0e30d506a28068bc48d406f",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/sprite-preparation.worker-6PDCvCv8.js",
+        "status": 200,
+        "bytes": 4381,
+        "sha256": "23b305d970117b098694d773acee406b17256c4bfbfc30b08a86ff771637dc25",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/style-CCYPPWCw.js",
+        "status": 200,
+        "bytes": 359220,
+        "sha256": "ec64c67ce2bf10be71691fb300b3f75180be3e3d714a9530cecc61f850a1a76b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/style-NUDpuPK2.css",
+        "status": 200,
+        "bytes": 26711,
+        "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-D0u-ODSR.png",
+        "status": 200,
+        "bytes": 82569,
+        "sha256": "5745fbe4ee5928f94effeca4239be1c082e00743f27a565e377db8804a9bdfc3",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-CcmnNgqq.png",
+        "status": 200,
+        "bytes": 124172,
+        "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-vUXoK7g8.png",
+        "status": 200,
+        "bytes": 287366,
+        "sha256": "265dab01d2000400b27240ad7a4569113fa25905fabe38e0a992a2d7fa0fe892",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-Dx54r33X.png",
+        "status": 200,
+        "bytes": 1603429,
+        "sha256": "1996056c4995b53f327becfa71e624d9144c4dbe44198ff5b2e7ef52e34e9acf",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-BFgxB6WH.png",
+        "status": 200,
+        "bytes": 825118,
+        "sha256": "5d97590561468e635e7b67ab52643680c92f823fe2da4401a720fc3e21c5a82c",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-CvKq6ayX.png",
+        "status": 200,
+        "bytes": 1442049,
+        "sha256": "4957a5d53b3e03df5bd81315b285838f6aded3d3c5526971bbfc14853fded53b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-w-nZI_co.png",
+        "status": 200,
+        "bytes": 226422,
+        "sha256": "cbc82ef03012fd2a2c362fde6ccaf64de3e0e54ea2bdfed31ef3c53decb9f097",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-C4NoaVOX.png",
+        "status": 200,
+        "bytes": 243373,
+        "sha256": "ed396532632f1610458f2a4d110e77c641a4d75f65f64b70e04f5b51125deb00",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-D84gp_4I.png",
+        "status": 200,
+        "bytes": 939764,
+        "sha256": "e4bef9c709f9da9e2db5d9bcbcc3ecbbda91af81cd082552f508e75ae65870af",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-D1S5jbBr.png",
+        "status": 200,
+        "bytes": 726652,
+        "sha256": "4666f29bb91b0c49cef3981872a9a09fd698d8df729a2f323ca34c69432a8601",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-4l6dkyvt.png",
+        "status": 200,
+        "bytes": 168887,
+        "sha256": "79d87757b3e9d3af9c9de99a53a76aa49ba10cf57976ad95942bbcecd19dbec5",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-BZEfYVu8.png",
+        "status": 200,
+        "bytes": 1027957,
+        "sha256": "4254fa6d6379ac0018fdd6f202c1623bbd11772adccc7ffce5031ab124028132",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-2Tfv8UFx.png",
+        "status": 200,
+        "bytes": 1041143,
+        "sha256": "2dd7ffa17140584d7fce7f8a8f1af9018b86de5126a859be1e246b28b9f77988",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-JGIVqWQG.png",
+        "status": 200,
+        "bytes": 250418,
+        "sha256": "3b2918e108cadcb03cf536e6c8ffb6114340a7f72ab029865897d883659e7533",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-Bgs_Lr-C.png",
+        "status": 200,
+        "bytes": 896477,
+        "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-Bibbj1iy.png",
+        "status": 200,
+        "bytes": 198108,
+        "sha256": "379adfc71cd0641a6972c5a6a8cec4f06f692518705ba85797a29dfc6f58300c",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-actual-DJV_mvu8.png",
+        "status": 200,
+        "bytes": 1704995,
+        "sha256": "b44ffa60efbe8ae1f8245d571e3d0ba7df56ec87f555d1a4d686a4b9ded7d271",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-C_E419rW.png",
+        "status": 200,
+        "bytes": 253359,
+        "sha256": "d1a00193c6b6ae918b6c5a3eb43548137c366b71d96ad0374baedd67236a291f",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-DGqIbAFJ.png",
+        "status": 200,
+        "bytes": 65325,
+        "sha256": "ac5ade35027d4b1ff7ae8a49c00cfcd3710f2a7441dd82d2b04a2d6a29284778",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-BW_myfX9.png",
+        "status": 200,
+        "bytes": 112239,
+        "sha256": "40442c75f8d917823f79adf4ded71500d486e6c613e4f515d4d11c71ea9ac0a0",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-h3UpCtkf.png",
+        "status": 200,
+        "bytes": 391838,
+        "sha256": "c98bc239ce66c1ae8720f016d44c9704ad7b244a5f3d97f50358b5415247d2ef",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-BcewpqEK.png",
+        "status": 200,
+        "bytes": 220291,
+        "sha256": "3e9816d21b61486b1ff43f7daccae5af698a2c92f2314a725c4c0fcff120d220",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-D6S-SCEu.png",
+        "status": 200,
+        "bytes": 2424351,
+        "sha256": "a8f7a811da3cd69be3dabd03d6d62498b0f925fdea8446488cc237621102da71",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-t8SeP4xq.png",
+        "status": 200,
+        "bytes": 104757,
+        "sha256": "ebafab291a7730ef65ce818354b305e3196e0da2d587c3d3d74fdabc666c6b36",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/standing-DbOl76CJ.png",
+        "status": 200,
+        "bytes": 193574,
+        "sha256": "004dc0d9959da5cb124348ab5e7c503492849bf8c24a505ffbe10221320ee3d9",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-zDXrcTTV.png",
+        "status": 200,
+        "bytes": 1348961,
+        "sha256": "f8af78a695ec3749f81c8954ca962fdeea2f6426fc11da8c99b3f9417e0fb5ac",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/standing-BcZ9Ettq.png",
+        "status": 200,
+        "bytes": 196486,
+        "sha256": "dfc33ddc2ea1ef3130b210c7fe850ae2cd040ee318ac7f3c66c1d12570b02416",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/actor-atlas-CAE0cqpH.png",
+        "status": 200,
+        "bytes": 529701,
+        "sha256": "669e0256ffbdf4cbfdcb2c51ef02a17e9e1f2c911c03e494beb0cc239a7d0475",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/actor-atlas-BweSacP8.png",
+        "status": 200,
+        "bytes": 536323,
+        "sha256": "ef62d57b07de415effc024a0d2c17d166920c4743eca57396a603e0edad221cf",
+        "matchesLocal": true
+      }
+    ],
+    "health": {
+      "status": 200,
+      "ok": true,
+      "production": false,
+      "preview": true,
+      "previewVersion": "oldstreet-preview-full-trail-20260917",
+      "identityMode": "anonymous-capability-v1",
+      "runtimeContract": "oldstreet-session-1.map-2"
+    },
+    "ok": true
+  },
+  "pages": {
+    "sourceCommit": "dd75ee528cf028a14f95939ba5d4947d8677176a",
+    "site": "pages",
+    "base": "https://yinxinghuan.github.io/rpgjs-story-lab/",
+    "checkedAt": "2026-09-17T12:19:11.766Z",
+    "marker": "oldstreet-preview-full-trail-20260917",
+    "scope": "All built JS/CSS plus 29 existing local media references from the active old-street bundle, entry documents, poster, notices and storage helper. No player data.",
+    "results": [
+      {
+        "asset": "THIRD_PARTY_NOTICES.txt",
+        "status": 200,
+        "bytes": 107869,
+        "sha256": "27d9e1a8363ef6de163cacbeb8c2535c4dda000f2bc25bff4f910cde256a8168",
+        "matchesLocal": true
+      },
+      {
+        "asset": "index.html",
+        "status": 200,
+        "bytes": 1696,
+        "sha256": "90f438ebc031c5e78400d26fcbaa82c65e17d77a90f7a46bbb5a1bc8aeeab947",
+        "matchesLocal": true
+      },
+      {
+        "asset": "creator.html",
+        "status": 200,
+        "bytes": 1658,
+        "sha256": "34d589af8791966135bf02bf53b312b20331fba3ac97c5d6d5debf215dbbffa0",
+        "matchesLocal": true
+      },
+      {
+        "asset": "alteru-storage-scope.js",
+        "status": 200,
+        "bytes": 2136,
+        "sha256": "7dc73a406c88605cab3b3a06d99380a638d7218d652f4b26b10c86bab2cd54bc",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/browser-journey-C9mAoZFC.js",
+        "status": 200,
+        "bytes": 3737,
+        "sha256": "258a477de1bbbfb0484d1059e91615f0ebb84a86e8882d6c609b957fd3e0b112",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/creator-BTHba6TF.css",
+        "status": 200,
+        "bytes": 6247,
+        "sha256": "5d32e93a51c9c8de2fc19c9cafc394aafed65abcb8ec0732502d547364c6fa50",
+        "matchesLocal": true
+      },
+      {
+        "asset": "poster.png",
+        "status": 200,
+        "bytes": 1501900,
+        "sha256": "ebf6f6e160d9ba8b4abef707ed0cc464c5e1cfb955abe63ba7d7661b1f882e5e",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/canvasengine-CCC-_bmI.js",
+        "status": 200,
+        "bytes": 1504206,
+        "sha256": "f9cb4a41d0d53debeca8faa9442e38a74b303145441841b67615b25a82f8b6a3",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/device-map-candidate-uLxBn18X.js",
+        "status": 200,
+        "bytes": 152503,
+        "sha256": "8287700f655f997873070ba2198aff6d6ee05b85b9af0616bfb5e1d7c915ae34",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/creator-CbJReYUV.js",
+        "status": 200,
+        "bytes": 154952,
+        "sha256": "663c3df03156888c098ee4333affd29f2d54b53371f151a5a2ff93bdeff50116",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/index-Do82-OG-.css",
+        "status": 200,
+        "bytes": 2968,
+        "sha256": "471bd6473429eae743e6d81077e10af6afa48e48b8587bb49105af7ddbf74ebf",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/actor-sheet-B08ZKgKP.js",
+        "status": 200,
+        "bytes": 1097276,
+        "sha256": "a50fa9a7ebf0f79818a4c516156c31bd4e3ebd30b00cf6c240eaf8eefc505af3",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/index-BXUk12jJ.js",
+        "status": 200,
+        "bytes": 75088,
+        "sha256": "21ce7869168af27fc0c2563e8ebcbb123979d48a6793914d5c69dc562b92b4b3",
+        "matchesLocal": true,
+        "marker": true
+      },
+      {
+        "asset": "assets/original-action-intent-ApWr5iTw.js",
+        "status": 200,
+        "bytes": 1162,
+        "sha256": "303a248764de55a5ad1a9f4f356e97165ca33c794970166d63e28f9e8f7c5ce5",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/old-street-dev-CfzxxkgN.css",
+        "status": 200,
+        "bytes": 27864,
+        "sha256": "079c8e39b38681570318007c358f6e18565b5d8d034c65f33bfbe2d262380132",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/original-game-D_GkLIhu.js",
+        "status": 200,
+        "bytes": 137568,
+        "sha256": "3e9f7702902030050cf7940d15646f867079b520f0e30d506a28068bc48d406f",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/pixi-DMXpPjpr.js",
+        "status": 200,
+        "bytes": 276,
+        "sha256": "b40374f74b87273ee81651c63bdcaf2bd60c5950180c599081d08088a52c624d",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/original-game-hucheqzP.css",
+        "status": 200,
+        "bytes": 9755,
+        "sha256": "0994cd66413d6ff15d0a841375d37a19f6be304057ceddbc622e8eed5111097b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/old-street-dev-BCC89e5v.js",
+        "status": 200,
+        "bytes": 244516,
+        "sha256": "bf37295b947de71cd8df60e2ae1663f5db59b343507ab197eeffc655dc38d15c",
+        "matchesLocal": true,
+        "objectCloseup": true
+      },
+      {
+        "asset": "assets/reducer-Be2oj2DN.js",
+        "status": 200,
+        "bytes": 5404,
+        "sha256": "542db808b30a9e005d53666e39232ceca2b50e8c2290650cb6f36ef052d3d964",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/sprite-config-Bx0BPd8y.js",
+        "status": 200,
+        "bytes": 295,
+        "sha256": "4af1d486aea6da38552765f1e1cdc27c9a0c29333f79132fc6d1d8164fe8fcfb",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/space-DMttg3ss.js",
+        "status": 200,
+        "bytes": 1451,
+        "sha256": "2ca8e109c2d7e86970b52a35e1391d1ca7c6a8dc04dc396a8a0ba153d93f242d",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/rolldown-runtime-QTnfLwEv.js",
+        "status": 200,
+        "bytes": 694,
+        "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/sprite-preparation.worker-6PDCvCv8.js",
+        "status": 200,
+        "bytes": 4381,
+        "sha256": "23b305d970117b098694d773acee406b17256c4bfbfc30b08a86ff771637dc25",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/style-NUDpuPK2.css",
+        "status": 200,
+        "bytes": 26711,
+        "sha256": "d08fb48a20ff6745f489e12905fe66f172e1b709086eb0c38cde4b11b4df731d",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-D0u-ODSR.png",
+        "status": 200,
+        "bytes": 82569,
+        "sha256": "5745fbe4ee5928f94effeca4239be1c082e00743f27a565e377db8804a9bdfc3",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-CcmnNgqq.png",
+        "status": 200,
+        "bytes": 124172,
+        "sha256": "e0b3935bd36ebde34f75ac3b3b30d8ce5db12d18c9b38dd283144a7518d17c4f",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/style-CCYPPWCw.js",
+        "status": 200,
+        "bytes": 359220,
+        "sha256": "ec64c67ce2bf10be71691fb300b3f75180be3e3d714a9530cecc61f850a1a76b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-vUXoK7g8.png",
+        "status": 200,
+        "bytes": 287366,
+        "sha256": "265dab01d2000400b27240ad7a4569113fa25905fabe38e0a992a2d7fa0fe892",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-Dx54r33X.png",
+        "status": 200,
+        "bytes": 1603429,
+        "sha256": "1996056c4995b53f327becfa71e624d9144c4dbe44198ff5b2e7ef52e34e9acf",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-w-nZI_co.png",
+        "status": 200,
+        "bytes": 226422,
+        "sha256": "cbc82ef03012fd2a2c362fde6ccaf64de3e0e54ea2bdfed31ef3c53decb9f097",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-D1S5jbBr.png",
+        "status": 200,
+        "bytes": 726652,
+        "sha256": "4666f29bb91b0c49cef3981872a9a09fd698d8df729a2f323ca34c69432a8601",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-BFgxB6WH.png",
+        "status": 200,
+        "bytes": 825118,
+        "sha256": "5d97590561468e635e7b67ab52643680c92f823fe2da4401a720fc3e21c5a82c",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-D84gp_4I.png",
+        "status": 200,
+        "bytes": 939764,
+        "sha256": "e4bef9c709f9da9e2db5d9bcbcc3ecbbda91af81cd082552f508e75ae65870af",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-BZEfYVu8.png",
+        "status": 200,
+        "bytes": 1027957,
+        "sha256": "4254fa6d6379ac0018fdd6f202c1623bbd11772adccc7ffce5031ab124028132",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-4l6dkyvt.png",
+        "status": 200,
+        "bytes": 168887,
+        "sha256": "79d87757b3e9d3af9c9de99a53a76aa49ba10cf57976ad95942bbcecd19dbec5",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-C4NoaVOX.png",
+        "status": 200,
+        "bytes": 243373,
+        "sha256": "ed396532632f1610458f2a4d110e77c641a4d75f65f64b70e04f5b51125deb00",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-2Tfv8UFx.png",
+        "status": 200,
+        "bytes": 1041143,
+        "sha256": "2dd7ffa17140584d7fce7f8a8f1af9018b86de5126a859be1e246b28b9f77988",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-Bgs_Lr-C.png",
+        "status": 200,
+        "bytes": 896477,
+        "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-CvKq6ayX.png",
+        "status": 200,
+        "bytes": 1442049,
+        "sha256": "4957a5d53b3e03df5bd81315b285838f6aded3d3c5526971bbfc14853fded53b",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-JGIVqWQG.png",
+        "status": 200,
+        "bytes": 250418,
+        "sha256": "3b2918e108cadcb03cf536e6c8ffb6114340a7f72ab029865897d883659e7533",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-C_E419rW.png",
+        "status": 200,
+        "bytes": 253359,
+        "sha256": "d1a00193c6b6ae918b6c5a3eb43548137c366b71d96ad0374baedd67236a291f",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-D6S-SCEu.png",
+        "status": 200,
+        "bytes": 2424351,
+        "sha256": "a8f7a811da3cd69be3dabd03d6d62498b0f925fdea8446488cc237621102da71",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-DGqIbAFJ.png",
+        "status": 200,
+        "bytes": 65325,
+        "sha256": "ac5ade35027d4b1ff7ae8a49c00cfcd3710f2a7441dd82d2b04a2d6a29284778",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-actual-DJV_mvu8.png",
+        "status": 200,
+        "bytes": 1704995,
+        "sha256": "b44ffa60efbe8ae1f8245d571e3d0ba7df56ec87f555d1a4d686a4b9ded7d271",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-BW_myfX9.png",
+        "status": 200,
+        "bytes": 112239,
+        "sha256": "40442c75f8d917823f79adf4ded71500d486e6c613e4f515d4d11c71ea9ac0a0",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-zDXrcTTV.png",
+        "status": 200,
+        "bytes": 1348961,
+        "sha256": "f8af78a695ec3749f81c8954ca962fdeea2f6426fc11da8c99b3f9417e0fb5ac",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-BcewpqEK.png",
+        "status": 200,
+        "bytes": 220291,
+        "sha256": "3e9816d21b61486b1ff43f7daccae5af698a2c92f2314a725c4c0fcff120d220",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-h3UpCtkf.png",
+        "status": 200,
+        "bytes": 391838,
+        "sha256": "c98bc239ce66c1ae8720f016d44c9704ad7b244a5f3d97f50358b5415247d2ef",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/actor-atlas-BweSacP8.png",
+        "status": 200,
+        "bytes": 536323,
+        "sha256": "ef62d57b07de415effc024a0d2c17d166920c4743eca57396a603e0edad221cf",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/cutout-t8SeP4xq.png",
+        "status": 200,
+        "bytes": 104757,
+        "sha256": "ebafab291a7730ef65ce818354b305e3196e0da2d587c3d3d74fdabc666c6b36",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/standing-DbOl76CJ.png",
+        "status": 200,
+        "bytes": 193574,
+        "sha256": "004dc0d9959da5cb124348ab5e7c503492849bf8c24a505ffbe10221320ee3d9",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/candidate-Bibbj1iy.png",
+        "status": 200,
+        "bytes": 198108,
+        "sha256": "379adfc71cd0641a6972c5a6a8cec4f06f692518705ba85797a29dfc6f58300c",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/standing-BcZ9Ettq.png",
+        "status": 200,
+        "bytes": 196486,
+        "sha256": "dfc33ddc2ea1ef3130b210c7fe850ae2cd040ee318ac7f3c66c1d12570b02416",
+        "matchesLocal": true
+      },
+      {
+        "asset": "assets/actor-atlas-CAE0cqpH.png",
+        "status": 200,
+        "bytes": 529701,
+        "sha256": "669e0256ffbdf4cbfdcb2c51ef02a17e9e1f2c911c03e494beb0cc239a7d0475",
+        "matchesLocal": true
+      }
+    ],
+    "ok": true
+  },
+  "pagesRun": {
+    "id": 35219565953,
+    "conclusion": "success",
+    "headSha": "dd75ee528cf028a14f95939ba5d4947d8677176a"
+  },
+  "local": {
+    "tests": 1110,
+    "passed": 1110,
+    "build": "cloud + worker pass",
+    "apiBase": "pass",
+    "storageScope": "pass",
+    "uuid": "pass",
+    "publicSecrets": "pass"
+  },
+  "liveBrowser": {
+    "environment": "Codex in-app browser, desktop 1280x720, external URL",
+    "oldJourneyResumed": "shop",
+    "objectCloseupOpenedAndReturned": true,
+    "newFullTrailCommissionVisible": true,
+    "refreshRestoredNewJourney": true,
+    "oldAndNewJourneysBothListed": true,
+    "newModelOrMediaRequests": 0,
+    "fullPlatformPlaythrough": false
+  },
+  "pause": {
+    "requestedByUser": true,
+    "next": "Wait for user playtest feedback before skill production or further development."
+  }
+}
