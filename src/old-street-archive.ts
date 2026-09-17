@@ -14,6 +14,7 @@ const object=(raw:unknown,keys:string[])=>{
  return raw as Record<string,unknown>
 }
 const line=(raw:unknown,max:number)=>{
+ if(typeof raw==='string'&&raw.length>max)throw Error(`ARCHIVE_CONTENT_INVALID: text has ${raw.length} characters; maximum ${max}. Shorten this field.`)
  if(typeof raw!=='string'||!raw.trim()||raw.length>max||/[<>\u0000-\u001f]/.test(raw))throw Error('ARCHIVE_CONTENT_INVALID')
  return raw.trim()
 }
@@ -44,11 +45,15 @@ export function archiveOrderMatches(content:ArchiveContent,value:unknown):value 
  * the written evidence and derives the conclusion from that same evidence. */
 export function compileInquiryArchive(raw:unknown,focus:InquiryFocus,locale:'zh'|'en',variant=Math.floor(Math.random()*24)):ArchiveContent{
  const r=object(raw,['title','layout','room','middleEvents','earlier']),inquiry=readInquiryFocus(focus)
+ if(r.layout!=='west-index'&&r.layout!=='east-index')throw Error('ARCHIVE_CONTENT_INVALID: layout must be the string west-index or east-index; the floor grid belongs in room.')
  if(!Array.isArray(r.middleEvents)||r.middleEvents.length!==2||!['first','second'].includes(String(r.earlier))||!Number.isInteger(variant)||variant<0||variant>=24)throw Error('ARCHIVE_CONTENT_INVALID')
  const middle=r.middleEvents.map(v=>line(v,90))
  const order:ArchiveCardId[]=r.earlier==='first'?['a','c','d','b']:['b','c','d','a']
  const byId={a:inquiry.first,b:inquiry.second,c:middle[0],d:middle[1]}
- const content=readArchiveContent({title:r.title,layout:r.layout,...(r.room===undefined?{}:{room:r.room}),cards:permutations(archiveCardIds)[variant].map(id=>({id,label:byId[id]})),sources:{index:[{before:order[0],after:order[1]}],ledger:[{before:order[1],after:order[2]},{before:order[2],after:order[3]}]},discovery:inquiryConclusion(inquiry,r.earlier==='first',locale)})
+ // A newline grid is an equivalent authoring serialization, not geometry repair.
+ // It still passes the same full validator; persisted content always uses rows.
+ const room=typeof r.room==='string'?r.room.trim().split(/\r?\n/):r.room
+ const content=readArchiveContent({title:r.title,layout:r.layout,...(room===undefined?{}:{room}),cards:permutations(archiveCardIds)[variant].map(id=>({id,label:byId[id]})),sources:{index:[{before:order[0],after:order[1]}],ledger:[{before:order[1],after:order[2]},{before:order[2],after:order[3]}]},discovery:inquiryConclusion(inquiry,r.earlier==='first',locale)})
  assertArchiveInquiry(content,inquiry)
  return content
 }
@@ -56,7 +61,7 @@ export function assertArchiveInquiry(content:ArchiveContent,focus:InquiryFocus){
  if(content.cards.find(c=>c.id==='a')?.label!==focus.first||content.cards.find(c=>c.id==='b')?.label!==focus.second)throw Error('ARCHIVE_QUESTION_EVENTS_MISSING')
  // Also check cached candidates at admission; checking only fresh compilation
  // would let a previously prepared leaking card bypass the updated contract.
- if(content.cards.filter(c=>c.id==='c'||c.id==='d').some(c=>/\b(?:before|after|prior to|earlier than|later than|preceded|followed)\b|之前|之后|早于|晚于|先于|随后|然后/i.test(c.label)))throw Error('ARCHIVE_EVENT_LEAKS_ORDER')
+ if(content.cards.filter(c=>c.id==='c'||c.id==='d').some(c=>/\b(?:before|after|prior to|earlier than|later than|preceded|followed)\b|之前|之后|早于|晚于|先于|随后|然后/i.test(c.label)))throw Error('ARCHIVE_EVENT_LEAKS_ORDER: middleEvents must describe standalone events without before/after or any relative-timing clause. The game supplies the ordering evidence separately.')
  const direction=(order:ArchiveCardId[])=>order.indexOf('a')<order.indexOf('b')
  const all=archiveOrders([...content.sources.index,...content.sources.ledger])
  if(all.length!==1)throw Error('ARCHIVE_ORDER_AMBIGUOUS')

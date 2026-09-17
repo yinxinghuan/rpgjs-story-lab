@@ -16,7 +16,7 @@ test('fresh inquiry generation requires reachable physical content without rewri
  const signal=new AbortController().signal
  await assert.rejects(createOldStreetCampaignPlanner(async()=>draft)(context,signal),/ARCHIVE_ROOM_REQUIRED/)
  await assert.rejects(createOldStreetCampaignPlanner(async()=>({...draft,room:['I...L','.....','SSSSS','.....','.....','.Tt..','.....','.....','.....']}))(context,signal),/ARCHIVE_ROOM_UNREACHABLE/)
- const content=await createOldStreetCampaignPlanner(async()=>({...draft,room:roomA}))(context,signal) as {room:string[]}
+ const content=await createOldStreetCampaignPlanner(async(_system,user)=>'candidate' in JSON.parse(user)?{valid:true,issues:[]}:{...draft,room:roomA})(context,signal) as {room:string[]}
  assert.deepEqual(content.room,roomA)
  assert.equal(archiveLayoutFromFacts({'archive-layout':'west-index'}).props.length,3)
 })

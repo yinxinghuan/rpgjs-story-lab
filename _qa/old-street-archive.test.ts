@@ -51,6 +51,7 @@ test('new campaign enters its generated archive through the real door, gathers e
  let jobs:OldStreetCampaignJobs,calls=0
  const planner=createOldStreetCampaignPlanner(async(_system,user)=>{
   calls++;const context=JSON.parse(user)
+  if('candidate' in context)return {valid:true,issues:[]}
   if(context.stage==='trace')return trace
   if(context.stage==='parcel')return parcelDraft
   assert.deepEqual(context.previous,trace.records[0]);assert.deepEqual(context.papers,parcel)
@@ -127,6 +128,6 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('public record book')))
-  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,3)
+  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,5)
  }finally{raw.close()}
 })

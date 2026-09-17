@@ -36,6 +36,6 @@ test('new investigation asks a concrete question; older complete paper instances
  await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/CONTENT_INVALID/)
  assert.match(prompt,/timing relative to that subject/)
  const draft={...old,otherEvent:'The delivery arrived'}
- const accepted=createOldStreetCampaignPlanner(async()=>draft)
+ const accepted=createOldStreetCampaignPlanner(async(_system,user)=>'candidate' in JSON.parse(user)?{valid:true,issues:[]}:draft)
  assert.deepEqual(await accepted({stage:'parcel',locale:'en',previous,investigation:true},signal),compileLinkedParcel(draft,previous,'en'))
 })

@@ -11,17 +11,23 @@ if(process.env.OLDSTREET_LIVE_TRIAL!=='1')throw Error('EXPLICIT_SYNTHETIC_TRIAL_
 const output=process.argv[2]
 if(!output||existsSync(output))throw Error('NEW_REPORT_PATH_REQUIRED')
 const usedAtStart=Number(process.env.OLDSTREET_MODEL_TEST_USED??0)
-const models=originalPreflightModels('6',undefined,usedAtStart)!
-const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,scope:'Two new English synthetic content chains. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment.',limit:6,usedAtStart,usage:models.usage(),cases:[] as Array<{chain:number;stage:CampaignContext['stage'];context:CampaignContext;raw?:unknown;accepted?:unknown;error?:string;elapsedMs?:number;system?:string}>,chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
+const models=originalPreflightModels('12',undefined,usedAtStart)!
+type RequestRecord={system:string;input:unknown;raw?:unknown;error?:string}
+type CaseRecord={chain:number;stage:CampaignContext['stage'];context:CampaignContext;requests:RequestRecord[];raw?:unknown;accepted?:unknown;error?:string;elapsedMs?:number;system?:string}
+const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,scope:'Two new English synthetic content chains, including semantic review and at most one correction per stage. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment.',limit:12,usedAtStart,usage:models.usage(),cases:[] as CaseRecord[],chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
 const persist=()=>{report.usage=models.usage();writeFileSync(output,JSON.stringify(report,null,2)+'\n')}
 persist()
 try{
  for(let chain=1;chain<=2;chain++){
   const result:{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}={chain,complete:false};report.chains.push(result)
   const generate=async(context:CampaignContext)=>{
-   const record:{chain:number;stage:CampaignContext['stage'];context:CampaignContext;raw?:unknown;accepted?:unknown;error?:string;elapsedMs?:number;system?:string}={chain,stage:context.stage,context}
+   const record:CaseRecord={chain,stage:context.stage,context,requests:[]}
    report.cases.push(record);persist();const started=Date.now()
-   const planner=createOldStreetCampaignPlanner(async(system,user,options)=>{record.system=system;persist();const raw=await models.request(system,user,options);record.raw=raw;persist();return raw})
+   const planner=createOldStreetCampaignPlanner(async(system,user,options)=>{
+    const request:RequestRecord={system,input:JSON.parse(user)};record.requests.push(request);persist()
+    try{const raw=await models.request(system,user,options);request.raw=raw;if(!('candidate' in (request.input as Record<string,unknown>))){record.system=system;record.raw=raw}return raw}
+    catch(error){request.error=error instanceof Error?error.message:String(error);throw error}finally{persist()}
+   })
    try{record.accepted=await planner(context,AbortSignal.timeout(22000));return record.accepted}
    catch(error){record.error=error instanceof Error?error.message:String(error);throw error}
    finally{record.elapsedMs=Date.now()-started;persist();console.log(JSON.stringify({chain,stage:context.stage,accepted:record.accepted!==undefined,error:record.error,elapsedMs:record.elapsedMs,usage:models.usage()}))}

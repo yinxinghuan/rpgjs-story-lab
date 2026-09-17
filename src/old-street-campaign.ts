@@ -16,7 +16,8 @@ const object=(raw:unknown,keys:string[])=>{
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).some(k=>!keys.includes(k)))throw Error('CAMPAIGN_CONTENT_INVALID')
  return raw as Record<string,unknown>
 }
-const line=(value:unknown,max:number)=>{
+const line=(value:unknown,max:number,field='text')=>{
+ if(typeof value==='string'&&value.length>max)throw Error(`CAMPAIGN_CONTENT_INVALID: ${field} has ${value.length} characters; maximum ${max}. Shorten this field.`)
  if(typeof value!=='string'||!value.trim()||value.length>max||/[<>\u0000-\u001f]/.test(value))throw Error('CAMPAIGN_CONTENT_INVALID')
  return value.trim()
 }
@@ -24,7 +25,7 @@ const signature=(record:Pick<TraceRecord,'mark'|'wrapping'>)=>[record.mark,recor
 export function readTraceContent(raw:unknown):TraceContent{
  const r=object(raw,['title','clue','records']),clue=object(r.clue,['mark','wrapping'])
  if(!Array.isArray(r.records)||r.records.length!==3)throw Error('CAMPAIGN_CONTENT_INVALID')
- const content={title:line(r.title,60),clue:{mark:line(clue.mark,60),wrapping:line(clue.wrapping,60)},records:r.records.map(raw=>{
+ const content={title:line(r.title,60,'title'),clue:{mark:line(clue.mark,60),wrapping:line(clue.wrapping,60)},records:r.records.map(raw=>{
   const row=object(raw,['label','mark','wrapping']);return {label:line(row.label,70),mark:line(row.mark,60),wrapping:line(row.wrapping,60)}
  })}
  if(new Set(content.records.map(r=>r.label.normalize('NFKC').toLowerCase())).size!==3||new Set(content.records.map(signature)).size!==3||content.records.filter(r=>signature(r)===signature(content.clue)).length!==1)throw Error('CAMPAIGN_PUZZLE_AMBIGUOUS')
@@ -46,16 +47,16 @@ export function compileTraceDraft(raw:unknown,variant=Math.floor(Math.random()*6
  const marks=pair(r.marks),wrappings=pair(r.wrappings),subjects=r.subjects.map(v=>line(v,70))
  const records=[{label:subjects[0],mark:marks[0],wrapping:wrappings[0]},{label:subjects[1],mark:marks[0],wrapping:wrappings[1]},{label:subjects[2],mark:marks[1],wrapping:wrappings[0]}]
  const order=[[0,1,2],[0,2,1],[1,0,2],[2,0,1],[1,2,0],[2,1,0]][variant]
- return readTraceContent({title:line(r.title,60),clue:{mark:marks[0],wrapping:wrappings[0]},records:order.map(i=>records[i])})
+ return readTraceContent({title:line(r.title,60,'title'),clue:{mark:marks[0],wrapping:wrappings[0]},records:order.map(i=>records[i])})
 }
 export function readParcelContent(raw:unknown):ParcelContent{
  const r=object(raw,['title','fragment','question','inquiry']),inquiry=r.inquiry===undefined?undefined:readInquiryFocus(r.inquiry)
  if(inquiry&&![inquiryQuestion(inquiry,'zh'),inquiryQuestion(inquiry,'en')].includes(String(r.question)))throw Error('CAMPAIGN_INQUIRY_QUESTION_MISMATCH')
- return {title:line(r.title,60),fragment:line(r.fragment,420),...(r.question===undefined?{}:{question:line(r.question,inquiry?180:140)}),...(inquiry?{inquiry}:{})}
+ return {title:line(r.title,60,'title'),fragment:line(r.fragment,420,'fragment'),...(r.question===undefined?{}:{question:line(r.question,inquiry?180:140,'question')}),...(inquiry?{inquiry}:{})}
 }
 export function compileInquiryParcel(raw:unknown,locale:'zh'|'en'):ParcelContent{
  const r=object(raw,['title','fragment','inquiry']),inquiry=readInquiryFocus(r.inquiry)
- return readParcelContent({title:r.title,fragment:line(r.fragment,240),inquiry,question:inquiryQuestion(inquiry,locale)})
+ return readParcelContent({title:r.title,fragment:line(r.fragment,240,'fragment'),inquiry,question:inquiryQuestion(inquiry,locale)})
 }
 /** The selected record is always one endpoint, not a suggestion to the model. */
 export function compileLinkedParcel(raw:unknown,record:TraceRecord,locale:'zh'|'en'):ParcelContent{
