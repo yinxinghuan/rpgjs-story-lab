@@ -2,12 +2,15 @@ import {useId} from 'react'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
 import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
-import {oldStreetRoomWalls,roomWallSize,oldStreetWallReveal} from './old-street-room-walls'
+import {oldStreetRoomWalls,oldStreetWallReveal} from './old-street-room-walls'
 import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import {OldStreetPhotoEnvironment} from './old-street-photo-environment'
 import {OldStreetShedEnvironment} from './old-street-shed-environment'
 import {oldStreetShopWallRegions} from './old-street-shop-environment-layout'
 const palettes:Record<string,{face:string;cap:string;edge:string;trim:string}>={
+ street:{face:'#8e8d75',cap:'#b4ac8e',edge:'#545f4d',trim:'#6d7159'},
+ yard:{face:'#8f9075',cap:'#b9b195',edge:'#555f4d',trim:'#6c745d'},
+ roof:{face:'#7d8981',cap:'#aeb4a4',edge:'#45564f',trim:'#606e65'},
  shop:{face:'#797660',cap:'#b2a586',edge:'#514b3d',trim:'#67533a'},
  laundry:{face:'#8b957e',cap:'#b1b59a',edge:'#58614f',trim:'#69765f'},
  photo:{face:'#929881',cap:'#b8b49b',edge:'#565e50',trim:'#6a563e'},
@@ -20,10 +23,11 @@ type Props={room:OldStreetRoom;facts:StorySave['facts'];art?:OldStreetEnvironmen
 /** Static north/side architecture is behind the sortable RPG scene. */
 export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compositeShop=false}:Props){
  const walls=oldStreetRoomWalls(room,facts);if(!walls)return null
- const {floor:f,north,west,east}=walls,s=roomWallSize,p=palettes[room]
+ const {floor:f,north,west,east}=walls,s=walls.size,p=palettes[room]
  return <g data-room-walls={room}>
   {north.map((r,i)=><g key={i}>
    <rect x={r.start} y={f.y-s.back} width={r.length} height={s.back} fill={p.face}/>
+   {walls.outdoor&&<OutdoorMasonry x={r.start} y={f.y-s.back+s.thickness} width={r.length} height={s.back-s.thickness} image={art.stoneStair}/>}
    {/* Only the undecorated left strip of the admitted plaster sheet; no copied camera/tool fixtures. */}
    {['laundry','cellar','darkroom','archive'].includes(room)&&<svg x={r.start} y={f.y-s.back} width={r.length} height={s.back} viewBox="8 16 30 216" preserveAspectRatio="none" overflow="hidden" opacity=".28"><image href={art.photoWall} width="768" height="256" style={{imageRendering:'pixelated'}}/></svg>}
   </g>)}
@@ -48,13 +52,13 @@ export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compo
 export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt,actor}:Props){
  const id=useId().replace(/:/g,''),reveal=oldStreetWallReveal(room,facts,actor)
  const walls=oldStreetRoomWalls(room,facts);if(!walls)return null
- const {floor:f,south}=walls,s=roomWallSize,p=palettes[room],top=f.y+f.h-s.foreground
+ const {floor:f,south}=walls,s=walls.size,p=palettes[room],top=f.y+f.h-s.foreground
  return <g data-room-foreground={room}>
   <defs><radialGradient id={id+'fade'}><stop offset="0" stopColor="black" stopOpacity=".8"/><stop offset=".58" stopColor="black" stopOpacity=".8"/><stop offset="1" stopColor="black" stopOpacity="0"/></radialGradient><mask id={id+'mask'} maskUnits="userSpaceOnUse" x="0" y="0" width="384" height="576"><rect width="384" height="576" fill="white"/>{reveal&&<circle cx={reveal.x} cy={reveal.y} r={reveal.radius} fill={`url(#${id}fade)`}/>}</mask></defs>
   <g mask={`url(#${id}mask)`}>{south.map((r,i)=><g key={i}>
   <rect x={r.start} y={top} width={r.length} height={s.foreground+s.thickness} fill={p.face}/>
   <rect x={r.start} y={top} width={r.length} height={s.thickness} fill={p.cap}/>
-  <svg x={r.start} y={top+s.thickness} width={r.length} height={s.foreground} viewBox="8 176 236 56" preserveAspectRatio="none" overflow="hidden" opacity=".2"><image href={art.photoWall} width="768" height="256" style={{imageRendering:'pixelated'}}/></svg>
+  {walls.outdoor?<OutdoorMasonry x={r.start} y={top+s.thickness} width={r.length} height={s.foreground} image={art.stoneStair}/>:<svg x={r.start} y={top+s.thickness} width={r.length} height={s.foreground} viewBox="8 176 236 56" preserveAspectRatio="none" overflow="hidden" opacity=".2"><image href={art.photoWall} width="768" height="256" style={{imageRendering:'pixelated'}}/></svg>}
   <path d={`M${r.start} ${top}h${r.length}M${r.start} ${f.y+f.h+s.thickness}h${r.length}`} stroke={p.edge} strokeWidth="2"/>
   <path d={`M${r.start+1} ${top+2}h${Math.max(0,r.length-2)}`} stroke="#d0c6a4" opacity=".5"/>
   <path d={`M${r.start} ${top+s.thickness}h${r.length}`} stroke={p.edge}/>
@@ -62,4 +66,13 @@ export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt,
   {/* Short end faces make a doorway read as a cut through a wall. */}
   <path d={`M${r.start} ${top}v${s.foreground+s.thickness}M${r.start+r.length} ${top}v${s.foreground+s.thickness}`} stroke={p.edge} strokeWidth="2"/>
  </g>)}</g></g>
+}
+
+/** A clean stone patch already admitted with the stairs; no pink backdrop or stair silhouette. */
+function OutdoorMasonry({x,y,width,height,image}:{x:number;y:number;width:number;height:number;image:string}){
+ const id='os-masonry-'+useId().replace(/:/g,'')
+ return <g><defs><pattern id={id} width="48" height="24" x={x} y={y} patternUnits="userSpaceOnUse">
+  {[0,12].map(row=><svg key={row} x="0" y={row} width="48" height="12" viewBox="170 62 160 40" preserveAspectRatio="none" overflow="hidden" opacity=".55"><image href={image} width="512" height="512" style={{imageRendering:'pixelated'}}/></svg>)}
+  <path d="M0 0H48M0 12H48M24 0V12M0 12V24" stroke="#555e4d" strokeWidth=".8" opacity=".45"/>
+ </pattern></defs><rect x={x} y={y} width={width} height={height} fill={`url(#${id})`}/></g>
 }

@@ -2598,7 +2598,7 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ## 室内墙体的统一投射（2026-09-17）
 
-`old-street-room-walls.ts` 从既有 `oldStreetFloors`、`oldStreetDoors()` 和动态入口准入事实计算七个室内的上/下/左右墙段。北墙高64、墙厚8、南侧剖面投影56（加墙厚后总高64）、门洞半宽28，静态与动态门洞使用同一坐标。室外三处不生成房间外壳。旧的三个装饰墙区函数改为消费该几何结果；工作棚仍保持素材等比，不采到品红占位。
+`old-street-room-walls.ts` 从既有 `oldStreetFloors`、`oldStreetDoors()` 和动态入口准入事实计算七个室内的上/下/左右墙段。北墙高64、墙厚8、南侧剖面投影56（加墙厚后总高64）、门洞半宽28，静态与动态门洞使用同一坐标。室外三处现在生成32单位院墙/女儿墙边界，不复制室内64单位围墙。旧的三个装饰墙区函数改为消费该几何结果；工作棚仍保持素材等比，不采到品红占位。
 
 `OldStreetFloor` 只负责地面，北墙/侧墙由 `OldStreetRoomWalls` 在背景 SVG 绘制；`OldStreetRoomForeground` 放在 RPG canvas 上方、互动目标下方，`pointer-events:none`。南墙是固定前景：可行走角色都在墙后，不需要修改角色排序；门洞通过实际拆分墙段留空，没有透明矩形遮住角色。独立家具继续走已有引擎深度排序。本轮未改变地图版本、碰撞、路径、落点、故事状态或存档。
 
@@ -2614,3 +2614,6 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ### 地面枢纽的完整建筑边界
 `old-street-boundary-layout.ts` 新增 `oldStreetBuildingRoofs(room)`，与可指定room的立面段函数配合，统一服务street/yard。两侧完整屋面属于前景，带侧门开槽的立面属于背景；门、碰撞和camera不变。`OldStreetBuildingEdges` 在所有场景挂载，但只对两个地面枢纽返回内容；其他房间返回null。后院原门口短屋檐已由全边界屋顶替换。适用判断、十场景检查和证据见 `building-roof-coverage-20260917.md`。
+
+### 全场景上下墙
+`oldStreetRoomWalls` 现在为全部十个场景返回墙段与size/outdoor标记。室外`outdoorWallSize`为back32/foreground24/thickness8，室内仍为64/56/8。前景局部mask的范围读取当前场景size。`OutdoorMasonry` 复用已加载stoneStair的纯石面区域（170,62,160,40），按固定48×24纹理周期绘制，不新增下载；室内仍用photoWall。街口南开口读取真实`street-exit`位置，其他开口继续读oldStreetDoors。所有墙仅呈现，不修改移动和存档。

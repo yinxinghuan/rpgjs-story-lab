@@ -12,7 +12,7 @@ import {OldStreetDoorways} from '../src/old-street-door-view'
 import {oldStreetEnvironmentArt as art} from '../src/old-street-environment-art'
 import {findGridPath} from '../src/grid-path'
 import type {OldStreetRoom} from '../src/old-street-cartridge'
-const reviewRooms:OldStreetRoom[]=['street','yard',...oldStreetInteriorRooms]
+const reviewRooms:OldStreetRoom[]=['street','yard','roof',...oldStreetInteriorRooms]
 const facts={'darkroom-ready':true,'archive-ready':true},save={facts},initial='laundry',foot=(room:OldStreetRoom)=>{const f=oldStreetFloors[room];return{x:f.x+40,y:f.y+f.h-oldStreetBody.h-2}}
 function Review(){
  const [room,setRoom]=useState<OldStreetRoom>(initial),[walls,setWalls]=useState(true),[ready,setReady]=useState(false),[pos,setPos]=useState(foot(initial)),[width,setWidth]=useState(Math.min(innerWidth,440)),runtime=useRef<RpgRendererRuntime>()
