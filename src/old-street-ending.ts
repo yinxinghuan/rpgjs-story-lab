@@ -14,6 +14,7 @@ export function completeOldStreetEnding(save:StorySave,cartridge:StoryCartridge)
  if(save.facts['campaign-enclosure-disposition']==='leave')preserved.push(t('你向家人转述了材料里的发现，原件仍留在旧街。','You told your family what you found in the papers. The original remains on the old street.'))
  if(commission)preserved.push(t('你也把核对过的旧街记录讲给家人听，完成了这次委托。','You shared the account you reconstructed from the street records, completing your family’s request.'))
  if(flag('archive-reconstructed')){const record=save.blocks.find(b=>b.data?.archiveReconstructed===1);if(record)preserved.push(record.text)}
+ if(flag('archive-published'))preserved.push(t('核对过的调查摘要留在修表铺的公共记录册里，供后来的人阅读。','Your verified summary remains in the watch shop public record book for later visitors.'))
  if(flag('clock-returned'))preserved.push(t('旧钟回到了洗衣店。','The old clock is back at the laundry.'))
  if(flag('photos-returned'))preserved.push(t('照片夹回到了照相馆。','The photo folder is back at the studio.'))
  if(flag('clock-recorded')&&flag('clock-consent'))preserved.push(t('旧钟的来历留在记录册里。','The clock’s history remains in the record book.'))

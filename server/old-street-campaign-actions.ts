@@ -45,11 +45,19 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
   }
  }else if(body.type==='campaign-decide'){
   if(body.stage==='trace'){
+   if(body.selection==='share'||body.selection==='withdraw'){
+    if(!campaign.archive?.order)throw new LabError('CAMPAIGN_OBSERVATION_REQUIRED',409)
+    const publish=body.selection==='share'
+    if((save.facts['archive-published']===true)===publish)throw new LabError('CAMPAIGN_ALREADY_RESOLVED',409)
+    save.facts['archive-published']=publish
+    text=publish?t('你把核对过的经过抄进记录册，给后来的人留下一页。原件和密封信仍按原来的去向保存。','You copy the verified account into the record book for later visitors. The original papers and sealed letter stay where you chose to keep them.'):t('你从公共记录册撤下这页摘要。已经查清的经过仍记在自己的发现里。','You remove your summary from the public record book. What you learned remains in your own discoveries.')
+   }else{
    if(!campaign.trace?.observed||campaign.trace.selected!==undefined)throw new LabError('CAMPAIGN_OBSERVATION_REQUIRED',409)
    if(!campaignRecordMatches(campaign.trace.content,body.selection))throw new LabError('CAMPAIGN_RECORD_MISMATCH',409)
    campaign.trace.selected=body.selection
    text=t('两处特征都对上了。对应的纸袋在地下储物室的旧资料架上。','Both details match. The packet is on the old paper shelf in the cellar.')
    save.objective=t('到地下储物室查看对应的寄存材料。','Find the matching packet on the cellar shelf.')
+   }
   }else{
    if(!campaign.parcel?.observed||campaign.parcel.disposition||!['take','leave'].includes(body.selection))throw new LabError('CAMPAIGN_OBSERVATION_REQUIRED',409)
    campaign.parcel.disposition=body.selection

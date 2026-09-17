@@ -11,6 +11,10 @@ import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-plan
 import {campaignInputKnowledge} from '../src/old-street-campaign-interaction'
 import {oldStreetJournal} from '../src/old-street-journal'
 import type {AuthorityStorage} from '../server/session-authority'
+import {publicRecordAction,publicRecordKnowledge} from '../src/old-street-public-record'
+import {oldStreetRecordBookPose} from '../src/old-street-record-book'
+import {completeOldStreetEnding} from '../src/old-street-ending'
+import {oldStreetCartridge} from '../src/old-street-cartridge'
 const archive={title:'The footbridge work',layout:'west-index',cards:[{id:'a',label:'The new boards were fitted'},{id:'b',label:'Replacement boards were cut'},{id:'c',label:'The footbridge reopened'},{id:'d',label:'The damaged boards were surveyed'}],sources:{index:[{before:'d',after:'b'},{before:'a',after:'c'}],ledger:[{before:'b',after:'a'}]},discovery:'Neighbors measured the damage before cutting replacement boards. The path reopened only after the boards were fitted.'}
 const trace={title:'Filed packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[{label:'Bridge repairs',mark:'two notches',wrapping:'linen cord'},{label:'Roof repairs',mark:'two notches',wrapping:'folded flap'},{label:'Workshop repairs',mark:'one notch',wrapping:'linen cord'}]}
 const parcel={title:'A repaired path',fragment:'A note records three new boards on the old footbridge.',question:'Was the damage measured before replacement boards were cut?'}
@@ -62,6 +66,7 @@ test('new campaign enters its generated archive through the real door, gathers e
  try{
   await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
   await prepare('trace');await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:0})
+  await assert.rejects(s.action('synthetic',h.id,input('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})),/OBSERVATION_REQUIRED/)
   await steps(['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar'])
   await prepare('parcel')
   assert.ok(!campaignInputKnowledge(h).some(k=>k.id==='learned:campaign-question'),'a prepared draft is not player knowledge')
@@ -86,10 +91,31 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.deepEqual(await s.action('synthetic',h.id,completed.b),completed.r)
   assert.equal(campaignComplete(h.campaign!),true);assertOldStreetCampaign(h.campaign)
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.text===archive.discovery))
-  await steps(['cellar','yard','street','oldstreet:leave'])
+  await steps(['cellar','yard','shop'])
+  const inventory=structuredClone(h.save.inventory),relationships=structuredClone(h.save.relationships)
+  assert.deepEqual(publicRecordKnowledge(h),[],'private discovery is not an NPC public record')
+  const published=await send('record-book',{type:'free-input',text:publicRecordAction(false,'en'),mode:'local'})
+  assert.equal(h.save.facts['archive-published'],true)
+  assert.equal(oldStreetRecordBookPose(h.save),'stand-summary')
+  assert.ok(publicRecordKnowledge(h)[0].text.includes(archive.discovery))
+  assert.deepEqual(await s.action('synthetic',h.id,published.b),published.r,'lost receipt replay does not publish twice')
+  await steps(['street','shop']);s=authority();h=s.get('synthetic',h.id)
+  assert.equal(h.save.facts['archive-published'],true)
+  await send('record-book',{type:'campaign-decide',stage:'trace',selection:'withdraw'})
+  assert.equal(oldStreetRecordBookPose(h.save),'stand')
+  assert.ok(publicRecordKnowledge(h)[0].text.includes('no longer public'))
+  assert.ok(campaignInputKnowledge(h).some(n=>n.text===archive.discovery),'withdrawal does not erase the discovery')
+  assert.deepEqual(h.save.inventory,inventory);assert.deepEqual(h.save.relationships,relationships)
+  assert.equal(campaignComplete(h.campaign!),true,'publishing is optional')
+  const privateEnding=structuredClone(h.save);privateEnding.facts.departed=true;completeOldStreetEnding(privateEnding,oldStreetCartridge('en'))
+  assert.ok(!privateEnding.finale.ending?.preserved.some(p=>p.includes('public record book')),'withdrawn summary is absent from ending')
+  await send('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})
+  assert.ok(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='campaign-public-summary')?.text.includes('public record book'))
+  await steps(['street','oldstreet:leave'])
   assert.equal(h.save.finale.status,'complete');assert.ok(h.save.finale.ending?.preserved.includes(archive.discovery))
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
+  assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('public record book')))
   s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,3)
  }finally{raw.close()}
 })

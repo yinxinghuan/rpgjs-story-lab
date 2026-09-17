@@ -7,6 +7,7 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
   const f = save.facts
   switch (id) {
     case 'record-book': {
+      if(f['archive-published']===true)return ['记录册 · 调查摘要','Record book · investigation summary']
       const pose=oldStreetRecordBookPose(save)
       return pose==='both'?['记录册 · 旧钟与旧照','Record book · clock and photograph']:pose==='photo'?['记录册 · 旧照','Record book · photograph']:pose==='clock'?['记录册 · 旧钟','Record book · clock']:['记录册 · 空白','Record book · blank']
     }

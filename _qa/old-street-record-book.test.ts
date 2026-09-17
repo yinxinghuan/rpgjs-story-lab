@@ -33,3 +33,20 @@ test('all states keep the same book body and explicitly restore each illustratio
   assert.ok(f.y-height/2>=-7.75);assert.ok(f.y+height/2<=7.75)
  }
 })
+
+test('public summary is an independent paper layer, preserving both existing illustrations on withdrawal',()=>{
+ const [base,photo,clock,summary]=oldStreetRecordBookSheets('book','photo','clock','papers')
+ for(const state of ['stand','photo','clock','both']){
+  for(const published of [false,true]){
+   const pose=published?state+'-summary':state
+   assert.deepEqual(base.textures[pose].animations(),base.textures.stand.animations())
+   assert.equal(summary.textures[pose].animations()[0][0].opacity,Number(published))
+   assert.equal(photo.textures[pose].animations()[0][0].opacity,Number(state==='photo'||state==='both'))
+   assert.equal(clock.textures[pose].animations()[0][0].opacity,Number(state==='clock'||state==='both'))
+  }
+ }
+ const facts={'photo-consent':true,'photo-recorded':true,'clock-consent':true,'clock-recorded':true,'archive-published':true}
+ assert.equal(oldStreetRecordBookPose({facts}),'both-summary')
+ facts['archive-published']=false
+ assert.equal(oldStreetRecordBookPose({facts}),'both')
+})
