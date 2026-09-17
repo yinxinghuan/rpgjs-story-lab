@@ -21,6 +21,8 @@ export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
 /** A confirmed refusal has no pending outcome; the player can continue in place. */
 export function oldStreetActionFailureMessage(code:string,locale:'zh'|'en'){
  const text=(zh:string,en:string)=>locale==='zh'?zh:en
+ if(code==='OLD_STREET_NEGATIVE_REQUIRED')return text('先按档案线索取回屋顶柜子的底片，再来冲印。','Recover the negative from the roof cabinet before preparing the print.')
+ if(code==='OLD_STREET_TARGET_TOO_FAR')return text('走近照相馆的放大台，再准备冲印。','Move closer to the studio viewing table to prepare the print.')
  if(code==='NARRATION_RATE_LIMIT')return text('先歇一会儿再聊吧。现在仍可走动或选择行动。','Try chatting again shortly. You can still walk around or choose an action.')
  if(code==='CAMPAIGN_READING_AID_REQUIRED')return text('字迹密集。可以用放大镜，或把夹页带到整理桌摊开。','Use a magnifying glass, or carry the insert to the sorting table.')
  if(code==='CAMPAIGN_RACK_SPACE_REQUIRED')return text('先退到储物架前方，再把它移开。','Step in front of the rack before sliding it.')

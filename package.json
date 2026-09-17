@@ -21,6 +21,7 @@
     "check:spatial": "node --import tsx scripts/check-spatial-cartridge.ts",
     "check:spatial-story": "node --import tsx scripts/check-original-branches.ts --spatial",
     "dev:playtest": "vite --mode cloud-preflight --host 127.0.0.1 --port 5455 --strictPort",
+    "dev:campaign": "OLDSTREET_CAMPAIGN_TRIAL=1 VITE_OLDSTREET_CAMPAIGN_PREVIEW=1 OLDSTREET_DEV_DATA=.data/oldstreet-campaign vite --mode oldstreet-dev --host 127.0.0.1 --port 55677 --strictPort",
     "test:exploration": "node --import tsx --test _qa/old-street-*.test.ts"
   },
   "keywords": [],

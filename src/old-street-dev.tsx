@@ -58,7 +58,7 @@ import {oldStreetCompartmentPose,oldStreetPixelLayeredSheets} from './old-street
 import {oldStreetCamera} from './old-street-camera'
 import {oldStreetContextAction} from './old-street-context-action'
 import {OldStreetDoorways} from './old-street-door-view'
-import {OLD_STREET_PREVIEW_VERSION} from './old-street-runtime-contract'
+import {OLD_STREET_PREVIEW_VERSION,oldStreetNewJourneyOptions} from './old-street-runtime-contract'
 import drawerStatesUrl from '../doc/oldstreet-drawer-guided/states.png'
 import {oldStreetDrawerPose,oldStreetDrawerSheet} from './old-street-prop-art'
 import {OldStreetJourneysView} from './old-street-journeys-view'
@@ -99,6 +99,7 @@ import type {LanVideoTrial} from './dev/lan-video-trial'
 
 const compositeShop=new URLSearchParams(location.search).get('shop_environment')!=='layered'
 const pixelShop=compositeShop||new URLSearchParams(location.search).get('shop_art')!=='legacy'
+const newJourneyOptions=oldStreetNewJourneyOptions(import.meta.env.MODE,import.meta.env.DEV,import.meta.env.VITE_OLDSTREET_CAMPAIGN_PREVIEW)
 const environmentDownloads=oldStreetEnvironmentDownloads(pixelShop,compositeShop)
 const renderedProps=['watchmaker','laundry-owner','photographer','trolley','drawer',...(pixelShop?['letter-compartment','record-book','photo-folder','viewing-table','clock-display','crates']:[])]
 const plan = oldStreetSpatialPlan()
@@ -225,7 +226,7 @@ export default function OldStreetDev() {
     let shedBenchBlob: string | undefined
     let trolleyBlob: string | undefined
     void (async () => {try {
-      let restored = await connection.client.enroll(locale)
+      let restored = await connection.client.enroll(locale,false,newJourneyOptions)
       const pendingInteraction=connection.client.pending().filter(p=>p.id===restored.id).at(-1)
       const recovered = await connection.client.recover()
       if (recovered) restored = recovered.head
@@ -374,7 +375,7 @@ export default function OldStreetDev() {
     setBusyActivity('journey')
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
-      const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v4'}:undefined)
+      const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v4'}:newJourneyOptions)
       if(oldStreetCastArtVersion(h.save)!==oldStreetCastArtVersion(current.current.save)||h.save.facts['archive-layout']!==current.current.save.facts['archive-layout']||h.save.facts['archive-room']!==current.current.save.facts['archive-room']){location.reload();return}
       serverHead.current=h
       const next={save:h.save,scene:h.sceneId,position:h.position}
