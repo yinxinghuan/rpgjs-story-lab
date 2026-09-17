@@ -24,7 +24,7 @@ export async function photoPlanReplay(intent:OldStreetExpansionRequest,locale:'z
  const source=intent.archiveSource
  if(process.env.OLDSTREET_QA_PHOTO_PLAN_REPORT){
   const report=JSON.parse(readFileSync(process.env.OLDSTREET_QA_PHOTO_PLAN_REPORT,'utf8'))
-  const row=report.cases.find((r:any)=>r.plan&&source&&isDeepStrictEqual({...source,archiveId:r.source.archiveId},r.source))
+  const row=(report.photos??report.cases).find((r:any)=>r.plan&&source&&isDeepStrictEqual({...source,archiveId:r.source.archiveId},r.source))
   if(!row||locale!=='en')throw Error('PHOTO_REPLAY_CONTEXT_MISMATCH')
   const {title,discovery,photograph}=row.plan.content
   return compileExpansionPlan(intent,{title,discovery,photograph},locale)

@@ -6,11 +6,24 @@ import street from '../doc/oldstreet-street-atmosphere/ground/candidate.png'
 import {actorArt} from './art-catalog'
 import {oldStreetPhotoPuzzle} from './old-street-photo-puzzle'
 import './old-street-ending-view.css'
-export function OldStreetEndingView({save,busy,onJourneys,onRestart,onReplay}:{save:StorySave;busy:boolean;onJourneys:()=>void;onRestart:()=>void;onReplay:()=>void}){
+export function OldStreetEndingView({save,busy,onJourneys,onRestart,onReplay,sessionId,api}:{sessionId?:string;api?:(path:string)=>Promise<any>;save:StorySave;busy:boolean;onJourneys:()=>void;onRestart:()=>void;onReplay:()=>void}){
  const zh=save.locale==='zh',t=(a:string,b:string)=>zh?a:b
  const beats=useMemo(()=>oldStreetEndingReel(save),[save]),[index,setIndex]=useState(0),[paused,setPaused]=useState(false)
  const [reduced,setReduced]=useState(()=>matchMedia('(prefers-reduced-motion: reduce)').matches)
  const [hidden,setHidden]=useState(document.hidden),[imageFailed,setImageFailed]=useState(false)
+ const photoHash=save.facts['darkroom-photo-matched']
+ const [journeyPhoto,setJourneyPhoto]=useState('')
+ useEffect(()=>{
+  let alive=true,url='';setJourneyPhoto('')
+  if(!api||!sessionId||typeof photoHash!=='string'||!beats.some(b=>b.art==='journey-photo'))return
+  // Only the already committed photograph may illustrate this ending.
+  void api('/sessions/'+sessionId+'/expansion-photo-file').then(async value=>{
+   const bytes=new Uint8Array(value),hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('')
+   if(!alive||hash!==photoHash)return
+   url=URL.createObjectURL(new Blob([bytes],{type:'image/png'}));setJourneyPhoto(url)
+  }).catch(()=>{/* The saved text remains playable when the image is unavailable. */})
+  return()=>{alive=false;if(url)URL.revokeObjectURL(url)}
+ },[api,sessionId,photoHash,beats])
  const root=useRef<HTMLDialogElement>(null),beat=beats[index],ended=!beat
  useEffect(()=>{root.current?.showModal();const query=matchMedia('(prefers-reduced-motion: reduce)'),change=()=>setReduced(query.matches),visibility=()=>setHidden(document.hidden);query.addEventListener('change',change);document.addEventListener('visibilitychange',visibility);return()=>{root.current?.close();query.removeEventListener('change',change);document.removeEventListener('visibilitychange',visibility)}},[])
  useEffect(()=>setImageFailed(false),[index])
@@ -20,8 +33,8 @@ export function OldStreetEndingView({save,busy,onJourneys,onRestart,onReplay}:{s
   <div className="os-ending__backdrop" style={{backgroundImage:`url("${street}")`}} aria-hidden="true"/>
   <header><span>{t('旧街最后一封信','THE LAST LETTER')}</span>{!ended&&<button onClick={()=>setIndex(beats.length)}>{t('跳过演出','Skip epilogue')}</button>}</header>
   <main key={beat?.id??'end'} className="os-ending__stage">
-   {(!beat||beat.art==='street')&&!imageFailed&&<svg className="os-ending__object" viewBox="362 0 362 362" aria-hidden="true"><defs><clipPath id="os-ending-hero-frame"><rect x="362" y="0" width="362" height="362"/></clipPath></defs><image clipPath="url(#os-ending-hero-frame)" href={actorArt.balanced.hero.path} width="1086" height="1448" onError={()=>setImageFailed(true)}/></svg>}
-   {beat&&beat.art!=='street'&&!imageFailed&&<img className={'os-ending__object os-ending__object--'+beat.art} src={beat.art==='clock'?clock:oldStreetPhotoPuzzle.image} alt="" draggable={false} onError={()=>setImageFailed(true)}/>}
+   {(!beat||beat.art==='street'||beat.art==='journey-photo'&&(!journeyPhoto||imageFailed))&&<svg className="os-ending__object" viewBox="362 0 362 362" aria-hidden="true"><defs><clipPath id="os-ending-hero-frame"><rect x="362" y="0" width="362" height="362"/></clipPath></defs><image clipPath="url(#os-ending-hero-frame)" href={actorArt.balanced.hero.path} width="1086" height="1448" onError={()=>setImageFailed(true)}/></svg>}
+   {beat&&beat.art!=='street'&&(beat.art!=='journey-photo'||journeyPhoto)&&!imageFailed&&<img className={'os-ending__object os-ending__object--'+(beat.art==='journey-photo'?'photo':beat.art)} src={beat.art==='journey-photo'?journeyPhoto:beat.art==='clock'?clock:oldStreetPhotoPuzzle.image} alt={beat.art==='journey-photo'?t('这次旅程显影的照片','The photograph developed during this journey'):''} draggable={false} onError={()=>setImageFailed(true)}/>}
    <div className="os-ending__caption" aria-live={paused||reduced?'polite':'off'}><small>{beat?.label??t('旅程结束','END OF THIS JOURNEY')}</small>{ended?<><h1>{save.finale.ending?.title??t('信已送到','The letter is home')}</h1><p>{save.finale.ending?.thesis}</p></>:<p>{beat.text}</p>}</div>
   </main>
   <footer>{ended?<><button onClick={onJourneys} disabled={busy}>{t('查看旅程','View journeys')}</button><button onClick={replay}>{t('重看尾声','Replay epilogue')}</button><button onClick={onRestart} disabled={busy}>{t('重新探索','Explore again')}</button></>:<><span className="os-ending__progress" aria-label={t('尾声段落','Epilogue passage')}>{index+1} / {beats.length}</span>{index>0&&<button onClick={()=>{setIndex(n=>n-1);setPaused(true)}}>{t('上一段','Previous')}</button>}{!reduced&&<button onClick={()=>setPaused(p=>!p)}>{paused?t('播放','Play'):t('暂停','Pause')}</button>}<button onClick={()=>setIndex(n=>n+1)}>{t('继续','Continue')}</button></>}</footer>

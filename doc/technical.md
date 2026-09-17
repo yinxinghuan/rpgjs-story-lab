@@ -2466,3 +2466,9 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ### 屋顶补给来源（2026-09-17）
 `old-street-roof-recovery.ts` 统一定义新旅程固定的长板来源、备用板占地、领取/消耗规则、可见知识及库存不变量。`old-street-runtime.ts` 仅新建完整旅程时赋值，旧档未定义来源时继续现场方案。`old-street-space.ts` 与 `old-street-roof-recovery-view.tsx` 共用占地，领取后同步移除碰撞和板图。两种搭板行动均进入原来的权威事务；`old-street-scene-knowledge.ts` 为自由输入/对白提供对应现场状态。证据见 `roof-supply-review-20260917.md`。
+
+### 2026-09-17 续玩语言、显影衔接与片尾照片
+
+`old-street-dev.tsx` 的界面 locale 由当前 `head.save.locale` 决定；首次建档仍用浏览器语言。启动恢复、错误提示、切换旅程及延迟准备场景的闭包读取对应的已恢复/当前旅程语言。照片去向决定后默认收起说明；再次点选显影台可回看。
+
+`old-street-ending-reel.ts` 将已提交暗房发现与暗房照片去向标记为 `journey-photo`。`OldStreetEndingView` 使用原 Session 的只读 `/expansion-photo-file`，SHA-256 与 `darkroom-photo-matched` 一致才创建 blob URL，卸载时回收。固定照片夹仍用其原美术；取图失败不阻断字幕、跳过和重看，不写存档、不新增生图。

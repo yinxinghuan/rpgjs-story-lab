@@ -1,0 +1,1517 @@
+{
+  "source": "doc/campaign-live-20260917/full-chain-after-roof.json",
+  "scope": "Two recorded real model stories, fresh synthetic authority journeys and live platform photographs. No browser/player data. Path checks are not rendered play or pacing evidence.",
+  "startedAt": "2026-09-17T06:35:33.271Z",
+  "finishedAt": "2026-09-17T06:37:58.630Z",
+  "runs": [
+    {
+      "chain": 1,
+      "actions": [
+        {
+          "version": 1,
+          "scene": "photo",
+          "target": "door:studio-front:street",
+          "type": "action",
+          "action": "oldstreet:through:studio-front:street",
+          "text": ""
+        },
+        {
+          "version": 2,
+          "scene": "roof",
+          "target": "door:studio-stairs:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-stairs:photo",
+          "text": ""
+        },
+        {
+          "version": 3,
+          "scene": "shed",
+          "target": "door:riverside-stairs:roof",
+          "type": "action",
+          "action": "oldstreet:through:riverside-stairs:roof",
+          "text": ""
+        },
+        {
+          "version": 4,
+          "scene": "shed",
+          "target": "watchmaker",
+          "type": "action",
+          "action": "oldstreet:borrow-key",
+          "text": "The gray-haired man looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”\nTake the key; bring it back when you’re done.\nHe hands it to you."
+        },
+        {
+          "version": 5,
+          "scene": "shed",
+          "target": "door:yard-latch:shed",
+          "type": "action",
+          "action": "oldstreet:lift-latch",
+          "text": "You lift the bolt on the workshop side. The courtyard gate opens, making a shortcut home."
+        },
+        {
+          "version": 6,
+          "scene": "yard",
+          "target": "door:yard-latch:shed",
+          "type": "action",
+          "action": "oldstreet:through:yard-latch:shed",
+          "text": ""
+        },
+        {
+          "version": 7,
+          "scene": "shop",
+          "target": "door:shop-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:shop-back:yard",
+          "text": ""
+        },
+        {
+          "version": 8,
+          "scene": "shop",
+          "target": "letter-compartment",
+          "type": "action",
+          "action": "oldstreet:unlock-letter",
+          "text": "The key turns and the compartment opens. Inside is a sealed letter addressed to your family."
+        },
+        {
+          "version": 9,
+          "scene": "shop",
+          "target": "letter-compartment",
+          "type": "action",
+          "action": "oldstreet:take-letter",
+          "text": "You put away the letter without opening it. The filing slip points to the street records your family asked about; the shop ledger can help you locate them."
+        },
+        {
+          "version": 10,
+          "scene": "shop",
+          "target": "record-book",
+          "type": "campaign-read",
+          "stage": "trace",
+          "text": "Filing slip: Stamped with 'Archival Dept.'; Folded twice with a thin twine tie.\nSidewalk slabs were leveled and reset: Stamped with 'Archival Dept.'; Folded twice with a thin twine tie\nFire hydrants were pressure-tested and certified: Faded ink notation on upper edge; Folded twice with a thin twine tie\nStreetlamp bulbs were replaced citywide: Stamped with 'Archival Dept.'; Sealed with a wax emblem imprint"
+        },
+        {
+          "version": 11,
+          "scene": "shop",
+          "target": "record-book",
+          "type": "campaign-decide",
+          "stage": "trace",
+          "selection": 0,
+          "text": "Both details match. The packet is on the old paper shelf in the cellar."
+        },
+        {
+          "version": 12,
+          "scene": "yard",
+          "target": "door:shop-back:shop",
+          "type": "action",
+          "action": "oldstreet:through:shop-back:shop",
+          "text": ""
+        },
+        {
+          "version": 13,
+          "scene": "laundry",
+          "target": "door:laundry-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:yard",
+          "text": ""
+        },
+        {
+          "version": 14,
+          "scene": "laundry",
+          "target": "trolley",
+          "type": "action",
+          "action": "oldstreet:borrow-trolley",
+          "text": "You borrow the trolley, leaving its parking bay empty."
+        },
+        {
+          "version": 15,
+          "scene": "yard",
+          "target": "door:laundry-back:laundry",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:laundry",
+          "text": ""
+        },
+        {
+          "version": 16,
+          "scene": "yard",
+          "target": "crates",
+          "type": "action",
+          "action": "oldstreet:clear-crates",
+          "text": "You wheel the crates into the clear space by the wall, revealing the steps down."
+        },
+        {
+          "version": 17,
+          "scene": "cellar",
+          "target": "door:cellar-steps:yard",
+          "type": "action",
+          "action": "oldstreet:through:cellar-steps:yard",
+          "text": ""
+        },
+        {
+          "version": 18,
+          "scene": "cellar",
+          "target": "photo-folder",
+          "type": "campaign-read",
+          "stage": "parcel",
+          "text": "Two entries were filed together: “Sidewalk slabs were leveled and reset” and “Complaints filed about uneven sidewalk hazards”. This filing slip does not explain their order."
+        },
+        {
+          "version": 19,
+          "scene": "cellar",
+          "target": "photo-folder",
+          "type": "campaign-decide",
+          "stage": "parcel",
+          "selection": "take",
+          "text": "You pack the papers to bring home with the sealed letter. The original is no longer on the shelf."
+        },
+        {
+          "version": 20,
+          "scene": "cellar",
+          "target": "photo-folder",
+          "type": "campaign-plan",
+          "stage": "archive",
+          "text": "The archive is through the cellar’s east doorway. Look for the index, work log and sorting table inside.A movable storage rack blocks the work index; an empty space beside it lets you slide it aside."
+        },
+        {
+          "version": 21,
+          "scene": "archive",
+          "target": "door:cellar-archive:cellar",
+          "type": "action",
+          "action": "oldstreet:through:cellar-archive:cellar",
+          "text": ""
+        },
+        {
+          "version": 22,
+          "scene": "archive",
+          "target": "archive-rack",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "selection": "slide",
+          "text": "The rack slides aside. You can now reach the work index."
+        },
+        {
+          "version": 23,
+          "scene": "archive",
+          "target": "archive-index",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "selection": "carry-sheet",
+          "text": "You take the insert. Spread it on the table to examine it, or return it to its shelf."
+        },
+        {
+          "version": 24,
+          "scene": "archive",
+          "target": "archive-desk",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "selection": "spread-sheet",
+          "text": "You spread out the insert and compare its lines.\n“Complaints filed about uneven sidewalk hazards” happened before “City council approved funds for sidewalk repairs”."
+        },
+        {
+          "version": 25,
+          "scene": "archive",
+          "target": "archive-ledger",
+          "type": "campaign-observe",
+          "stage": "archive",
+          "text": "Loan slip: the work log is at the photo studio viewing table. Read it there, then bring your notes back to compare."
+        },
+        {
+          "version": 26,
+          "scene": "cellar",
+          "target": "door:cellar-archive:archive",
+          "type": "action",
+          "action": "oldstreet:through:cellar-archive:archive",
+          "text": ""
+        },
+        {
+          "version": 27,
+          "scene": "yard",
+          "target": "door:cellar-steps:cellar",
+          "type": "action",
+          "action": "oldstreet:through:cellar-steps:cellar",
+          "text": ""
+        },
+        {
+          "version": 28,
+          "scene": "street",
+          "target": "door:yard-alley:yard",
+          "type": "action",
+          "action": "oldstreet:through:yard-alley:yard",
+          "text": ""
+        },
+        {
+          "version": 29,
+          "scene": "photo",
+          "target": "door:studio-front:street",
+          "type": "action",
+          "action": "oldstreet:through:studio-front:street",
+          "text": ""
+        },
+        {
+          "version": 30,
+          "scene": "photo",
+          "target": "viewing-table",
+          "type": "campaign-observe",
+          "stage": "archive",
+          "text": "“City council approved funds for sidewalk repairs” happened before “Contractors began leveling and resetting slabs”.\n“Contractors began leveling and resetting slabs” happened before “Sidewalk slabs were leveled and reset”."
+        },
+        {
+          "version": 31,
+          "scene": "street",
+          "target": "door:studio-front:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-front:photo",
+          "text": ""
+        },
+        {
+          "version": 32,
+          "scene": "yard",
+          "target": "door:yard-alley:street",
+          "type": "action",
+          "action": "oldstreet:through:yard-alley:street",
+          "text": ""
+        },
+        {
+          "version": 33,
+          "scene": "cellar",
+          "target": "door:cellar-steps:yard",
+          "type": "action",
+          "action": "oldstreet:through:cellar-steps:yard",
+          "text": ""
+        },
+        {
+          "version": 34,
+          "scene": "archive",
+          "target": "door:cellar-archive:cellar",
+          "type": "action",
+          "action": "oldstreet:through:cellar-archive:cellar",
+          "text": ""
+        },
+        {
+          "version": 35,
+          "scene": "archive",
+          "target": "archive-desk",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "order": [
+            "b",
+            "c",
+            "d",
+            "a"
+          ],
+          "text": "The two sources agree: “Complaints filed about uneven sidewalk hazards” happened before “Sidewalk slabs were leveled and reset”."
+        },
+        {
+          "version": 36,
+          "scene": "cellar",
+          "target": "door:cellar-archive:archive",
+          "type": "action",
+          "action": "oldstreet:through:cellar-archive:archive",
+          "text": ""
+        },
+        {
+          "version": 37,
+          "scene": "yard",
+          "target": "door:cellar-steps:cellar",
+          "type": "action",
+          "action": "oldstreet:through:cellar-steps:cellar",
+          "text": ""
+        },
+        {
+          "version": 38,
+          "scene": "laundry",
+          "target": "door:laundry-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:yard",
+          "text": ""
+        },
+        {
+          "version": 39,
+          "scene": "laundry",
+          "target": "trolley",
+          "type": "action",
+          "action": "oldstreet:return-trolley",
+          "text": "The trolley is back in its place."
+        },
+        {
+          "version": 40,
+          "scene": "yard",
+          "target": "door:laundry-back:laundry",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:laundry",
+          "text": ""
+        },
+        {
+          "version": 41,
+          "scene": "shop",
+          "target": "door:shop-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:shop-back:yard",
+          "text": ""
+        },
+        {
+          "version": 42,
+          "scene": "shop",
+          "target": "record-book",
+          "type": "campaign-decide",
+          "stage": "trace",
+          "selection": "share",
+          "text": "You copy the verified account into the record book for later visitors. The original papers and sealed letter stay where you chose to keep them."
+        },
+        {
+          "version": 43,
+          "scene": "street",
+          "target": "door:shop-front:shop",
+          "type": "action",
+          "action": "oldstreet:through:shop-front:shop",
+          "text": ""
+        },
+        {
+          "version": 44,
+          "scene": "photo",
+          "target": "door:studio-front:street",
+          "type": "action",
+          "action": "oldstreet:through:studio-front:street",
+          "text": ""
+        },
+        {
+          "version": 45,
+          "scene": "photo",
+          "target": "viewing-table",
+          "type": "expansion-request",
+          "template": "photo-darkroom-v1",
+          "followArchive": true,
+          "text": "Your exploration idea is saved. You can keep exploring while the new area is prepared."
+        },
+        {
+          "version": 46,
+          "scene": "photo",
+          "target": "viewing-table",
+          "type": "expansion-activate",
+          "text": "The darkroom door can now be opened."
+        },
+        {
+          "version": 47,
+          "scene": "darkroom",
+          "target": "door:studio-darkroom:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-darkroom:photo",
+          "text": ""
+        },
+        {
+          "version": 48,
+          "scene": "darkroom",
+          "target": "developing-bench",
+          "type": "expansion-photo-match",
+          "photoMatch": {
+            "version": "4e9c9beedb1ce8d7ea89c9838e516ed6ab7584f96490902a460a896e5a82f6cb",
+            "method": "develop-v1",
+            "focus": 2,
+            "exposure": 4
+          },
+          "text": "The photograph shows a close-up of a sidewalk with clearly visible leveled and reset concrete slabs."
+        },
+        {
+          "version": 49,
+          "scene": "darkroom",
+          "target": "developing-bench",
+          "type": "expansion-photo-decision",
+          "decision": "keep",
+          "text": "You tuck the completed street photograph into your bag."
+        },
+        {
+          "version": 50,
+          "scene": "photo",
+          "target": "door:studio-darkroom:darkroom",
+          "type": "action",
+          "action": "oldstreet:through:studio-darkroom:darkroom",
+          "text": ""
+        },
+        {
+          "version": 51,
+          "scene": "roof",
+          "target": "door:studio-stairs:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-stairs:photo",
+          "text": ""
+        },
+        {
+          "version": 52,
+          "scene": "shed",
+          "target": "door:riverside-stairs:roof",
+          "type": "action",
+          "action": "oldstreet:through:riverside-stairs:roof",
+          "text": ""
+        },
+        {
+          "version": 53,
+          "scene": "shed",
+          "target": "watchmaker",
+          "type": "action",
+          "action": "oldstreet:return-key",
+          "text": "You return the key. The watchmaker smiles.\nYou kept your word. Thank you."
+        },
+        {
+          "version": 54,
+          "scene": "yard",
+          "target": "door:yard-latch:shed",
+          "type": "action",
+          "action": "oldstreet:through:yard-latch:shed",
+          "text": ""
+        },
+        {
+          "version": 55,
+          "scene": "street",
+          "target": "door:yard-alley:yard",
+          "type": "action",
+          "action": "oldstreet:through:yard-alley:yard",
+          "text": ""
+        },
+        {
+          "version": 56,
+          "scene": "street",
+          "target": "street-exit",
+          "type": "action",
+          "action": "oldstreet:leave",
+          "text": "You leave the old street and deliver the sealed letter to your family."
+        }
+      ],
+      "media": [
+        {
+          "requestId": "a751933a-f50e-4f45-b4b4-c5684cb62c56",
+          "prompt": "PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a strictly monochrome palette of black, charcoal, neutral gray and white. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject: A monochrome pixel art image depicts a narrow old street scene focusing on a section of sidewalk. The sidewalk consists of multiple rectangular concrete slabs, neatly aligned and flush with each other. The slabs have visible joints and slight texture variations indicating recent leveling. Surrounding the sidewalk are aged brick walls and a stone curb, with no people or vehicles present. The scene is quiet and still, emphasizing the detailed condition of the sidewalk slabs. One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No color, no tinted highlights. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.",
+          "startedAt": "2026-09-17T06:35:34.545Z"
+        },
+        {
+          "requestId": "a751933a-f50e-4f45-b4b4-c5684cb62c56",
+          "prompt": "PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a strictly monochrome palette of black, charcoal, neutral gray and white. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject: A monochrome pixel art image depicts a narrow old street scene focusing on a section of sidewalk. The sidewalk consists of multiple rectangular concrete slabs, neatly aligned and flush with each other. The slabs have visible joints and slight texture variations indicating recent leveling. Surrounding the sidewalk are aged brick walls and a stone curb, with no people or vehicles present. The scene is quiet and still, emphasizing the detailed condition of the sidewalk slabs. One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No color, no tinted highlights. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.",
+          "startedAt": "2026-09-17T06:37:04.584Z",
+          "taskId": "mt_37e901bf2be2dbd72a83caaf26a570e9",
+          "finishedAt": "2026-09-17T06:37:25.181Z"
+        }
+      ],
+      "complete": true,
+      "journey": "synthetic-route-trial-1",
+      "route": "studio-loan-v1",
+      "mediaState": {
+        "id": "1edc218b-11e6-4da8-8596-50201e54961d",
+        "state": "candidate",
+        "attempt": 1,
+        "recoverable": false,
+        "nextAt": 1789626942573,
+        "asset": {
+          "sha256": "4e9c9beedb1ce8d7ea89c9838e516ed6ab7584f96490902a460a896e5a82f6cb",
+          "bytes": 657403,
+          "width": 768,
+          "height": 576
+        }
+      },
+      "priorErrors": [
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'failed'\n- 'candidate'\n\n    at <anonymous> (/Users/yin/code/games/rpgjs-story-lab/scripts/test-oldstreet-recorded-journeys.ts:114:74)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)"
+      ],
+      "resumedAt": "2026-09-17T06:37:04.552Z",
+      "finalVersion": 56,
+      "ending": {
+        "status": "complete",
+        "reason": "oldstreet:letter-delivered",
+        "snapshot": {
+          "id": "ending-5xk6qb",
+          "scene": 0,
+          "location": "Street",
+          "time": "Afternoon",
+          "objective": "The letter, history and photographic findings are ready. Go home from the street, or keep exploring.",
+          "facts": {
+            "drawer-open": false,
+            "lens-taken": false,
+            "crates-cleared": true,
+            "yard-unlatched": true,
+            "letter-unlocked": true,
+            "letter-taken": true,
+            "clock-taken": false,
+            "clock-mark-known": false,
+            "clock-returned": false,
+            "photos-taken": false,
+            "photos-matched": false,
+            "photos-returned": false,
+            "clock-consent": false,
+            "photo-consent": false,
+            "clock-recorded": false,
+            "photo-recorded": false,
+            "departed": true,
+            "key-borrowed": false,
+            "trolley-borrowed": false,
+            "laundry-cast-v2": true,
+            "photographer-cast-v2": true,
+            "roof-recovery": true,
+            "roof-photo-ready": true,
+            "roof-index-read": false,
+            "roof-bridge-laid": false,
+            "roof-box-open": false,
+            "roof-negative-taken": false,
+            "roof-negative-returned": false,
+            "roof-plank-source": "shed",
+            "roof-plank-taken": false,
+            "campaign-commission": "street-memory",
+            "campaign-enclosure-disposition": "take",
+            "archive-ledger-site": "photo",
+            "archive-dense-source": "index",
+            "archive-ready": true,
+            "archive-layout": "west-index",
+            "archive-room": "[\"..L..\",\".....\",\"S.Tt.\",\".....\",\".....\",\"I.S..\",\"Mm...\",\".....\",\".....\"]",
+            "archive-rack-shifted": true,
+            "archive-reading-position": "desk",
+            "archive-loan-read": true,
+            "archive-reconstructed": true,
+            "archive-published": true,
+            "darkroom-ready": true,
+            "darkroom-photo-matched": "4e9c9beedb1ce8d7ea89c9838e516ed6ab7584f96490902a460a896e5a82f6cb",
+            "campaign-photo-archive": "c915cdf9-7de2-4cb5-97ce-111e19dbf6f1",
+            "darkroom-photo-discovery": "The photograph shows a close-up of a sidewalk with clearly visible leveled and reset concrete slabs.",
+            "darkroom-photo-choice": "keep"
+          },
+          "stats": {},
+          "inventory": [
+            {
+              "id": "letter-enclosure",
+              "label": "Archived street papers",
+              "count": 1
+            },
+            {
+              "id": "darkroom-print",
+              "label": "Old street photograph",
+              "count": 1
+            }
+          ],
+          "characters": [
+            {
+              "id": "zhou-watchmaker",
+              "name": "Zhou",
+              "status": "known"
+            }
+          ],
+          "partyMemberIds": [],
+          "relationships": [
+            {
+              "id": "fed9911d-773a-4d3d-8410-0cf2d8fea6fa:relationship",
+              "actor": "Zhou",
+              "characterId": "zhou-watchmaker",
+              "axis": "kept-promise",
+              "delta": 1,
+              "source": "oldstreet:return-key"
+            }
+          ],
+          "map": [
+            {
+              "id": "street",
+              "label": "Street",
+              "visited": true
+            },
+            {
+              "id": "shop",
+              "label": "Watch shop",
+              "visited": true
+            },
+            {
+              "id": "yard",
+              "label": "Courtyard",
+              "visited": true
+            },
+            {
+              "id": "laundry",
+              "label": "Laundry",
+              "visited": true
+            },
+            {
+              "id": "photo",
+              "label": "Photo studio",
+              "visited": true
+            },
+            {
+              "id": "cellar",
+              "label": "Cellar",
+              "visited": true
+            },
+            {
+              "id": "darkroom",
+              "label": "Darkroom",
+              "visited": true
+            },
+            {
+              "id": "archive",
+              "label": "Archive workroom",
+              "visited": true
+            },
+            {
+              "id": "roof",
+              "label": "Roof terrace",
+              "visited": true
+            },
+            {
+              "id": "shed",
+              "label": "Riverside workshop",
+              "visited": true
+            }
+          ],
+          "availableCapabilities": [],
+          "recentStory": [
+            {
+              "kind": "narration",
+              "text": "The watch shop is open, its counter empty. Your family asked for their sealed letter, the story behind the papers filed with it, and a glimpse of the old street. Start with the letter and filing slip in the compartment."
+            },
+            {
+              "kind": "narration",
+              "text": "The gray-haired man looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”"
+            },
+            {
+              "kind": "dialogue",
+              "speaker": "Zhou",
+              "text": "Take the key; bring it back when you’re done."
+            },
+            {
+              "kind": "narration",
+              "text": "He hands it to you."
+            },
+            {
+              "kind": "narration",
+              "text": "You lift the bolt on the workshop side. The courtyard gate opens, making a shortcut home."
+            },
+            {
+              "kind": "narration",
+              "text": "The key turns and the compartment opens. Inside is a sealed letter addressed to your family."
+            },
+            {
+              "kind": "narration",
+              "text": "You put away the letter without opening it. The filing slip points to the street records your family asked about; the shop ledger can help you locate them."
+            },
+            {
+              "kind": "narration",
+              "text": "Filing slip: Stamped with 'Archival Dept.'; Folded twice with a thin twine tie.\nSidewalk slabs were leveled and reset: Stamped with 'Archival Dept.'; Folded twice with a thin twine tie\nFire hydrants were pressure-tested and certified: Faded ink notation on upper edge; Folded twice with a thin twine tie\nStreetlamp bulbs were replaced citywide: Stamped with 'Archival Dept.'; Sealed with a wax emblem imprint"
+            },
+            {
+              "kind": "narration",
+              "text": "Both details match. The packet is on the old paper shelf in the cellar."
+            },
+            {
+              "kind": "narration",
+              "text": "You borrow the trolley, leaving its parking bay empty."
+            },
+            {
+              "kind": "narration",
+              "text": "You wheel the crates into the clear space by the wall, revealing the steps down."
+            },
+            {
+              "kind": "narration",
+              "text": "Two entries were filed together: “Sidewalk slabs were leveled and reset” and “Complaints filed about uneven sidewalk hazards”. This filing slip does not explain their order."
+            },
+            {
+              "kind": "narration",
+              "text": "You pack the papers to bring home with the sealed letter. The original is no longer on the shelf."
+            },
+            {
+              "kind": "narration",
+              "text": "The archive is through the cellar’s east doorway. Look for the index, work log and sorting table inside.A movable storage rack blocks the work index; an empty space beside it lets you slide it aside."
+            },
+            {
+              "kind": "narration",
+              "text": "The rack slides aside. You can now reach the work index."
+            },
+            {
+              "kind": "narration",
+              "text": "You take the insert. Spread it on the table to examine it, or return it to its shelf."
+            },
+            {
+              "kind": "narration",
+              "text": "You spread out the insert and compare its lines.\n“Complaints filed about uneven sidewalk hazards” happened before “City council approved funds for sidewalk repairs”."
+            },
+            {
+              "kind": "narration",
+              "text": "Loan slip: the work log is at the photo studio viewing table. Read it there, then bring your notes back to compare."
+            },
+            {
+              "kind": "narration",
+              "text": "“City council approved funds for sidewalk repairs” happened before “Contractors began leveling and resetting slabs”.\n“Contractors began leveling and resetting slabs” happened before “Sidewalk slabs were leveled and reset”."
+            },
+            {
+              "kind": "narration",
+              "text": "The two sources agree: “Complaints filed about uneven sidewalk hazards” happened before “Sidewalk slabs were leveled and reset”."
+            },
+            {
+              "kind": "narration",
+              "text": "The trolley is back in its place."
+            },
+            {
+              "kind": "narration",
+              "text": "You copy the verified account into the record book for later visitors. The original papers and sealed letter stay where you chose to keep them."
+            },
+            {
+              "kind": "narration",
+              "text": "The photograph shows a close-up of a sidewalk with clearly visible leveled and reset concrete slabs."
+            },
+            {
+              "kind": "narration",
+              "text": "You tuck the completed street photograph into your bag."
+            },
+            {
+              "kind": "narration",
+              "text": "You return the key. The watchmaker smiles."
+            },
+            {
+              "kind": "dialogue",
+              "speaker": "Zhou",
+              "text": "You kept your word. Thank you."
+            },
+            {
+              "kind": "narration",
+              "text": "You leave the old street and deliver the sealed letter to your family."
+            }
+          ]
+        },
+        "ending": {
+          "anchorFamily": "oldstreet-home",
+          "title": "A letter and an answer",
+          "thesis": "The letter reached its destination. Your visit left its mark on the old street.",
+          "capabilitiesUsed": [],
+          "irreversibleCosts": [],
+          "preserved": [
+            "The sealed letter is back with your family.",
+            "You also brought home the archived papers you traced. The original no longer remains on the shelf.",
+            "You shared both the history reconstructed from the records and the details visible in the photograph, completing the request that came with the letter.",
+            "The two sources agree: “Complaints filed about uneven sidewalk hazards” happened before “Sidewalk slabs were leveled and reset”.",
+            "Your verified summary remains in the watch shop public record book for later visitors.",
+            "You brought home the street photograph you revealed in the darkroom.",
+            "The photograph shows a close-up of a sidewalk with clearly visible leveled and reset concrete slabs."
+          ],
+          "lost": [],
+          "unresolved": [],
+          "finaleScenes": [
+            "You place the sealed letter in your family’s hands.",
+            "You also brought home the archived papers you traced. The original no longer remains on the shelf.",
+            "You shared both the history reconstructed from the records and the details visible in the photograph, completing the request that came with the letter.",
+            "The two sources agree: “Complaints filed about uneven sidewalk hazards” happened before “Sidewalk slabs were leveled and reset”.",
+            "Your verified summary remains in the watch shop public record book for later visitors.",
+            "You brought home the street photograph you revealed in the darkroom.",
+            "The photograph shows a close-up of a sidewalk with clearly visible leveled and reset concrete slabs."
+          ],
+          "characterEpilogues": [
+            {
+              "characterId": "zhou-watchmaker",
+              "text": "You returned the borrowed key to Zhou."
+            }
+          ],
+          "regionalEpilogues": [],
+          "finalImagePrompt": "",
+          "id": "ending-5xk6qb",
+          "snapshotId": "ending-5xk6qb",
+          "generated": false
+        }
+      }
+    },
+    {
+      "chain": 2,
+      "actions": [
+        {
+          "version": 1,
+          "scene": "photo",
+          "target": "door:studio-front:street",
+          "type": "action",
+          "action": "oldstreet:through:studio-front:street",
+          "text": ""
+        },
+        {
+          "version": 2,
+          "scene": "roof",
+          "target": "door:studio-stairs:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-stairs:photo",
+          "text": ""
+        },
+        {
+          "version": 3,
+          "scene": "shed",
+          "target": "door:riverside-stairs:roof",
+          "type": "action",
+          "action": "oldstreet:through:riverside-stairs:roof",
+          "text": ""
+        },
+        {
+          "version": 4,
+          "scene": "shed",
+          "target": "watchmaker",
+          "type": "action",
+          "action": "oldstreet:borrow-key",
+          "text": "The gray-haired man looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”\nTake the key; bring it back when you’re done.\nHe hands it to you."
+        },
+        {
+          "version": 5,
+          "scene": "shed",
+          "target": "door:yard-latch:shed",
+          "type": "action",
+          "action": "oldstreet:lift-latch",
+          "text": "You lift the bolt on the workshop side. The courtyard gate opens, making a shortcut home."
+        },
+        {
+          "version": 6,
+          "scene": "yard",
+          "target": "door:yard-latch:shed",
+          "type": "action",
+          "action": "oldstreet:through:yard-latch:shed",
+          "text": ""
+        },
+        {
+          "version": 7,
+          "scene": "shop",
+          "target": "door:shop-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:shop-back:yard",
+          "text": ""
+        },
+        {
+          "version": 8,
+          "scene": "shop",
+          "target": "letter-compartment",
+          "type": "action",
+          "action": "oldstreet:unlock-letter",
+          "text": "The key turns and the compartment opens. Inside is a sealed letter addressed to your family."
+        },
+        {
+          "version": 9,
+          "scene": "shop",
+          "target": "letter-compartment",
+          "type": "action",
+          "action": "oldstreet:take-letter",
+          "text": "You put away the letter without opening it. The filing slip points to the street records your family asked about; the shop ledger can help you locate them."
+        },
+        {
+          "version": 10,
+          "scene": "shop",
+          "target": "drawer",
+          "type": "action",
+          "action": "oldstreet:move-box",
+          "text": "With the empty box moved aside, the drawer opens. A magnifying glass lies beside a receipt."
+        },
+        {
+          "version": 11,
+          "scene": "shop",
+          "target": "drawer",
+          "type": "action",
+          "action": "oldstreet:take-lens",
+          "text": "You take the magnifying glass, leaving its place empty."
+        },
+        {
+          "version": 12,
+          "scene": "shop",
+          "target": "record-book",
+          "type": "campaign-read",
+          "stage": "trace",
+          "text": "Filing slip: Faint smudge near top edge; Folded in half with frayed string tie.\nCommunity garden fencing was repaired last spring: Faint smudge near top edge; Folded in half with frayed string tie\nSidewalk slabs were replaced along Main Street: Faint smudge near top edge; Creased paper secured by wax seal remnants\nOld street lamps were removed from Elm Avenue: Thin, broken ink line on left margin; Folded in half with frayed string tie"
+        },
+        {
+          "version": 13,
+          "scene": "shop",
+          "target": "record-book",
+          "type": "campaign-decide",
+          "stage": "trace",
+          "selection": 0,
+          "text": "Both details match. The packet is on the old paper shelf in the cellar."
+        },
+        {
+          "version": 14,
+          "scene": "yard",
+          "target": "door:shop-back:shop",
+          "type": "action",
+          "action": "oldstreet:through:shop-back:shop",
+          "text": ""
+        },
+        {
+          "version": 15,
+          "scene": "laundry",
+          "target": "door:laundry-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:yard",
+          "text": ""
+        },
+        {
+          "version": 16,
+          "scene": "laundry",
+          "target": "trolley",
+          "type": "action",
+          "action": "oldstreet:borrow-trolley",
+          "text": "You borrow the trolley, leaving its parking bay empty."
+        },
+        {
+          "version": 17,
+          "scene": "yard",
+          "target": "door:laundry-back:laundry",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:laundry",
+          "text": ""
+        },
+        {
+          "version": 18,
+          "scene": "yard",
+          "target": "crates",
+          "type": "action",
+          "action": "oldstreet:clear-crates",
+          "text": "You wheel the crates into the clear space by the wall, revealing the steps down."
+        },
+        {
+          "version": 19,
+          "scene": "cellar",
+          "target": "door:cellar-steps:yard",
+          "type": "action",
+          "action": "oldstreet:through:cellar-steps:yard",
+          "text": ""
+        },
+        {
+          "version": 20,
+          "scene": "cellar",
+          "target": "photo-folder",
+          "type": "campaign-read",
+          "stage": "parcel",
+          "text": "Two entries were filed together: “Community garden fencing was repaired last spring” and “Residents complained about broken garden fence”. This filing slip does not explain their order."
+        },
+        {
+          "version": 21,
+          "scene": "cellar",
+          "target": "photo-folder",
+          "type": "campaign-decide",
+          "stage": "parcel",
+          "selection": "leave",
+          "text": "You remember what you read and leave the original on the shelf. You can tell your family about it, but will not bring the papers."
+        },
+        {
+          "version": 22,
+          "scene": "cellar",
+          "target": "photo-folder",
+          "type": "campaign-plan",
+          "stage": "archive",
+          "text": "These papers came from the adjoining archive workroom. The cellar’s east doorway is accessible; inside are two sets of source records and a sorting table.A movable storage rack blocks the work index; an empty space beside it lets you slide it aside."
+        },
+        {
+          "version": 23,
+          "scene": "archive",
+          "target": "door:cellar-archive:cellar",
+          "type": "action",
+          "action": "oldstreet:through:cellar-archive:cellar",
+          "text": ""
+        },
+        {
+          "version": 24,
+          "scene": "archive",
+          "target": "archive-rack",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "selection": "slide",
+          "text": "The rack slides aside. You can now reach the work index."
+        },
+        {
+          "version": 25,
+          "scene": "archive",
+          "target": "archive-index",
+          "type": "campaign-observe",
+          "stage": "archive",
+          "text": "“Residents complained about broken garden fence” happened before “Local council approved funds for fence repair”."
+        },
+        {
+          "version": 26,
+          "scene": "archive",
+          "target": "archive-ledger",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "selection": "read-lens",
+          "text": "The tiny handwriting is legible through the lens.\n“Local council approved funds for fence repair” happened before “Contractor began replacing damaged fence sections”.\n“Contractor began replacing damaged fence sections” happened before “Community garden fencing was repaired last spring”."
+        },
+        {
+          "version": 27,
+          "scene": "archive",
+          "target": "archive-desk",
+          "type": "campaign-decide",
+          "stage": "archive",
+          "order": [
+            "b",
+            "c",
+            "d",
+            "a"
+          ],
+          "text": "The two sources agree: “Residents complained about broken garden fence” happened before “Community garden fencing was repaired last spring”."
+        },
+        {
+          "version": 28,
+          "scene": "cellar",
+          "target": "door:cellar-archive:archive",
+          "type": "action",
+          "action": "oldstreet:through:cellar-archive:archive",
+          "text": ""
+        },
+        {
+          "version": 29,
+          "scene": "yard",
+          "target": "door:cellar-steps:cellar",
+          "type": "action",
+          "action": "oldstreet:through:cellar-steps:cellar",
+          "text": ""
+        },
+        {
+          "version": 30,
+          "scene": "laundry",
+          "target": "door:laundry-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:yard",
+          "text": ""
+        },
+        {
+          "version": 31,
+          "scene": "laundry",
+          "target": "trolley",
+          "type": "action",
+          "action": "oldstreet:return-trolley",
+          "text": "The trolley is back in its place."
+        },
+        {
+          "version": 32,
+          "scene": "yard",
+          "target": "door:laundry-back:laundry",
+          "type": "action",
+          "action": "oldstreet:through:laundry-back:laundry",
+          "text": ""
+        },
+        {
+          "version": 33,
+          "scene": "shop",
+          "target": "door:shop-back:yard",
+          "type": "action",
+          "action": "oldstreet:through:shop-back:yard",
+          "text": ""
+        },
+        {
+          "version": 34,
+          "scene": "street",
+          "target": "door:shop-front:shop",
+          "type": "action",
+          "action": "oldstreet:through:shop-front:shop",
+          "text": ""
+        },
+        {
+          "version": 35,
+          "scene": "photo",
+          "target": "door:studio-front:street",
+          "type": "action",
+          "action": "oldstreet:through:studio-front:street",
+          "text": ""
+        },
+        {
+          "version": 36,
+          "scene": "photo",
+          "target": "viewing-table",
+          "type": "expansion-request",
+          "template": "photo-darkroom-v1",
+          "followArchive": true,
+          "text": "Your exploration idea is saved. You can keep exploring while the new area is prepared."
+        },
+        {
+          "version": 37,
+          "scene": "photo",
+          "target": "viewing-table",
+          "type": "expansion-activate",
+          "text": "The darkroom door can now be opened."
+        },
+        {
+          "version": 38,
+          "scene": "darkroom",
+          "target": "door:studio-darkroom:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-darkroom:photo",
+          "text": ""
+        },
+        {
+          "version": 39,
+          "scene": "darkroom",
+          "target": "developing-bench",
+          "type": "expansion-photo-match",
+          "photoMatch": {
+            "version": "d1d22625d6e0b8c03657ce69d2bf50002a92b8c7b74ba9e9cf2f934e928268bb",
+            "method": "develop-v1",
+            "focus": 3,
+            "exposure": 2
+          },
+          "text": "This photo shows a close-up of a weathered wooden garden fence with some sections patched, matching the repairs described."
+        },
+        {
+          "version": 40,
+          "scene": "darkroom",
+          "target": "developing-bench",
+          "type": "expansion-photo-decision",
+          "decision": "leave",
+          "text": "You leave the photograph flat on the developing bench."
+        },
+        {
+          "version": 41,
+          "scene": "photo",
+          "target": "door:studio-darkroom:darkroom",
+          "type": "action",
+          "action": "oldstreet:through:studio-darkroom:darkroom",
+          "text": ""
+        },
+        {
+          "version": 42,
+          "scene": "roof",
+          "target": "door:studio-stairs:photo",
+          "type": "action",
+          "action": "oldstreet:through:studio-stairs:photo",
+          "text": ""
+        },
+        {
+          "version": 43,
+          "scene": "shed",
+          "target": "door:riverside-stairs:roof",
+          "type": "action",
+          "action": "oldstreet:through:riverside-stairs:roof",
+          "text": ""
+        },
+        {
+          "version": 44,
+          "scene": "shed",
+          "target": "watchmaker",
+          "type": "action",
+          "action": "oldstreet:return-key",
+          "text": "You return the key. The watchmaker smiles.\nYou kept your word. Thank you."
+        },
+        {
+          "version": 45,
+          "scene": "yard",
+          "target": "door:yard-latch:shed",
+          "type": "action",
+          "action": "oldstreet:through:yard-latch:shed",
+          "text": ""
+        },
+        {
+          "version": 46,
+          "scene": "street",
+          "target": "door:yard-alley:yard",
+          "type": "action",
+          "action": "oldstreet:through:yard-alley:yard",
+          "text": ""
+        },
+        {
+          "version": 47,
+          "scene": "street",
+          "target": "street-exit",
+          "type": "action",
+          "action": "oldstreet:leave",
+          "text": "You leave the old street and deliver the sealed letter to your family."
+        }
+      ],
+      "media": [
+        {
+          "requestId": "cbd3d5f8-5eca-4580-ae77-25a8728863b9",
+          "prompt": "PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a strictly monochrome palette of black, charcoal, neutral gray and white. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject: A monochrome pixel art image of a quiet old street corner focusing on a wooden garden fence running along a cobblestone path. The fence is composed of vertical wooden slats, some visibly worn and patched with lighter wood pieces. Behind the fence, part of an overgrown garden is visible with bushes and a small tree. The street is empty, framed by aged brick buildings with shuttered windows. The scene is shaded, emphasizing the texture of the wood and the roughness of the cobblestones. One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No color, no tinted highlights. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.",
+          "startedAt": "2026-09-17T06:35:35.310Z"
+        },
+        {
+          "requestId": "cbd3d5f8-5eca-4580-ae77-25a8728863b9",
+          "prompt": "PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a strictly monochrome palette of black, charcoal, neutral gray and white. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject: A monochrome pixel art image of a quiet old street corner focusing on a wooden garden fence running along a cobblestone path. The fence is composed of vertical wooden slats, some visibly worn and patched with lighter wood pieces. Behind the fence, part of an overgrown garden is visible with bushes and a small tree. The street is empty, framed by aged brick buildings with shuttered windows. The scene is shaded, emphasizing the texture of the wood and the roughness of the cobblestones. One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No color, no tinted highlights. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.",
+          "startedAt": "2026-09-17T06:37:25.562Z",
+          "taskId": "mt_b87d1fa856cdbefebb72a99fcd873201",
+          "finishedAt": "2026-09-17T06:37:58.309Z"
+        }
+      ],
+      "complete": true,
+      "journey": "synthetic-route-trial-2",
+      "route": "on-site-v1",
+      "mediaState": {
+        "id": "812f12c3-fe7d-469e-a534-da302dd7bae6",
+        "state": "candidate",
+        "attempt": 1,
+        "recoverable": false,
+        "nextAt": 1789626943313,
+        "asset": {
+          "sha256": "d1d22625d6e0b8c03657ce69d2bf50002a92b8c7b74ba9e9cf2f934e928268bb",
+          "bytes": 800506,
+          "width": 768,
+          "height": 576
+        }
+      },
+      "priorErrors": [
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'failed'\n- 'candidate'\n\n    at <anonymous> (/Users/yin/code/games/rpgjs-story-lab/scripts/test-oldstreet-recorded-journeys.ts:114:74)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)"
+      ],
+      "resumedAt": "2026-09-17T06:37:25.547Z",
+      "finalVersion": 47,
+      "ending": {
+        "status": "complete",
+        "reason": "oldstreet:letter-delivered",
+        "snapshot": {
+          "id": "ending-jfrcd9",
+          "scene": 0,
+          "location": "Street",
+          "time": "Afternoon",
+          "objective": "The letter, history and photographic findings are ready. Go home from the street, or keep exploring.",
+          "facts": {
+            "drawer-open": true,
+            "lens-taken": true,
+            "crates-cleared": true,
+            "yard-unlatched": true,
+            "letter-unlocked": true,
+            "letter-taken": true,
+            "clock-taken": false,
+            "clock-mark-known": false,
+            "clock-returned": false,
+            "photos-taken": false,
+            "photos-matched": false,
+            "photos-returned": false,
+            "clock-consent": false,
+            "photo-consent": false,
+            "clock-recorded": false,
+            "photo-recorded": false,
+            "departed": true,
+            "key-borrowed": false,
+            "trolley-borrowed": false,
+            "laundry-cast-v2": true,
+            "photographer-cast-v2": true,
+            "roof-recovery": true,
+            "roof-photo-ready": true,
+            "roof-index-read": false,
+            "roof-bridge-laid": false,
+            "roof-box-open": false,
+            "roof-negative-taken": false,
+            "roof-negative-returned": false,
+            "roof-plank-source": "roof",
+            "roof-plank-taken": false,
+            "campaign-commission": "street-memory",
+            "campaign-enclosure-disposition": "leave",
+            "archive-dense-source": "ledger",
+            "archive-ready": true,
+            "archive-layout": "east-index",
+            "archive-room": "[\".....\",\".STt.\",\".....\",\".L...\",\".....\",\"....I\",\".S.mM\",\".....\",\".....\"]",
+            "archive-rack-shifted": true,
+            "archive-reconstructed": true,
+            "darkroom-ready": true,
+            "darkroom-photo-matched": "d1d22625d6e0b8c03657ce69d2bf50002a92b8c7b74ba9e9cf2f934e928268bb",
+            "campaign-photo-archive": "1e933ae0-d912-488a-a182-7c88b8636657",
+            "darkroom-photo-discovery": "This photo shows a close-up of a weathered wooden garden fence with some sections patched, matching the repairs described.",
+            "darkroom-photo-choice": "leave"
+          },
+          "stats": {},
+          "inventory": [
+            {
+              "id": "lens",
+              "label": "Magnifying glass",
+              "count": 1
+            }
+          ],
+          "characters": [
+            {
+              "id": "zhou-watchmaker",
+              "name": "Zhou",
+              "status": "known"
+            }
+          ],
+          "partyMemberIds": [],
+          "relationships": [
+            {
+              "id": "1d464d77-1ecb-4efa-9de7-418df6e2bc00:relationship",
+              "actor": "Zhou",
+              "characterId": "zhou-watchmaker",
+              "axis": "kept-promise",
+              "delta": 1,
+              "source": "oldstreet:return-key"
+            }
+          ],
+          "map": [
+            {
+              "id": "street",
+              "label": "Street",
+              "visited": true
+            },
+            {
+              "id": "shop",
+              "label": "Watch shop",
+              "visited": true
+            },
+            {
+              "id": "yard",
+              "label": "Courtyard",
+              "visited": true
+            },
+            {
+              "id": "laundry",
+              "label": "Laundry",
+              "visited": true
+            },
+            {
+              "id": "photo",
+              "label": "Photo studio",
+              "visited": true
+            },
+            {
+              "id": "cellar",
+              "label": "Cellar",
+              "visited": true
+            },
+            {
+              "id": "darkroom",
+              "label": "Darkroom",
+              "visited": true
+            },
+            {
+              "id": "archive",
+              "label": "Archive workroom",
+              "visited": true
+            },
+            {
+              "id": "roof",
+              "label": "Roof terrace",
+              "visited": true
+            },
+            {
+              "id": "shed",
+              "label": "Riverside workshop",
+              "visited": true
+            }
+          ],
+          "availableCapabilities": [],
+          "recentStory": [
+            {
+              "kind": "narration",
+              "text": "The watch shop is open, its counter empty. Your family asked for their sealed letter, the story behind the papers filed with it, and a glimpse of the old street. Start with the letter and filing slip in the compartment."
+            },
+            {
+              "kind": "narration",
+              "text": "The gray-haired man looks up. “Call me Zhou. I repair watches here. You must be here for the letter?”"
+            },
+            {
+              "kind": "dialogue",
+              "speaker": "Zhou",
+              "text": "Take the key; bring it back when you’re done."
+            },
+            {
+              "kind": "narration",
+              "text": "He hands it to you."
+            },
+            {
+              "kind": "narration",
+              "text": "You lift the bolt on the workshop side. The courtyard gate opens, making a shortcut home."
+            },
+            {
+              "kind": "narration",
+              "text": "The key turns and the compartment opens. Inside is a sealed letter addressed to your family."
+            },
+            {
+              "kind": "narration",
+              "text": "You put away the letter without opening it. The filing slip points to the street records your family asked about; the shop ledger can help you locate them."
+            },
+            {
+              "kind": "narration",
+              "text": "With the empty box moved aside, the drawer opens. A magnifying glass lies beside a receipt."
+            },
+            {
+              "kind": "narration",
+              "text": "You take the magnifying glass, leaving its place empty."
+            },
+            {
+              "kind": "narration",
+              "text": "Filing slip: Faint smudge near top edge; Folded in half with frayed string tie.\nCommunity garden fencing was repaired last spring: Faint smudge near top edge; Folded in half with frayed string tie\nSidewalk slabs were replaced along Main Street: Faint smudge near top edge; Creased paper secured by wax seal remnants\nOld street lamps were removed from Elm Avenue: Thin, broken ink line on left margin; Folded in half with frayed string tie"
+            },
+            {
+              "kind": "narration",
+              "text": "Both details match. The packet is on the old paper shelf in the cellar."
+            },
+            {
+              "kind": "narration",
+              "text": "You borrow the trolley, leaving its parking bay empty."
+            },
+            {
+              "kind": "narration",
+              "text": "You wheel the crates into the clear space by the wall, revealing the steps down."
+            },
+            {
+              "kind": "narration",
+              "text": "Two entries were filed together: “Community garden fencing was repaired last spring” and “Residents complained about broken garden fence”. This filing slip does not explain their order."
+            },
+            {
+              "kind": "narration",
+              "text": "You remember what you read and leave the original on the shelf. You can tell your family about it, but will not bring the papers."
+            },
+            {
+              "kind": "narration",
+              "text": "These papers came from the adjoining archive workroom. The cellar’s east doorway is accessible; inside are two sets of source records and a sorting table.A movable storage rack blocks the work index; an empty space beside it lets you slide it aside."
+            },
+            {
+              "kind": "narration",
+              "text": "The rack slides aside. You can now reach the work index."
+            },
+            {
+              "kind": "narration",
+              "text": "“Residents complained about broken garden fence” happened before “Local council approved funds for fence repair”."
+            },
+            {
+              "kind": "narration",
+              "text": "The tiny handwriting is legible through the lens.\n“Local council approved funds for fence repair” happened before “Contractor began replacing damaged fence sections”.\n“Contractor began replacing damaged fence sections” happened before “Community garden fencing was repaired last spring”."
+            },
+            {
+              "kind": "narration",
+              "text": "The two sources agree: “Residents complained about broken garden fence” happened before “Community garden fencing was repaired last spring”."
+            },
+            {
+              "kind": "narration",
+              "text": "The trolley is back in its place."
+            },
+            {
+              "kind": "narration",
+              "text": "This photo shows a close-up of a weathered wooden garden fence with some sections patched, matching the repairs described."
+            },
+            {
+              "kind": "narration",
+              "text": "You leave the photograph flat on the developing bench."
+            },
+            {
+              "kind": "narration",
+              "text": "You return the key. The watchmaker smiles."
+            },
+            {
+              "kind": "dialogue",
+              "speaker": "Zhou",
+              "text": "You kept your word. Thank you."
+            },
+            {
+              "kind": "narration",
+              "text": "You leave the old street and deliver the sealed letter to your family."
+            }
+          ]
+        },
+        "ending": {
+          "anchorFamily": "oldstreet-home",
+          "title": "A letter and an answer",
+          "thesis": "The letter reached its destination. Your visit left its mark on the old street.",
+          "capabilitiesUsed": [],
+          "irreversibleCosts": [],
+          "preserved": [
+            "The sealed letter is back with your family.",
+            "You told your family what you found in the papers. The original remains on the old street.",
+            "You shared both the history reconstructed from the records and the details visible in the photograph, completing the request that came with the letter.",
+            "The two sources agree: “Residents complained about broken garden fence” happened before “Community garden fencing was repaired last spring”.",
+            "The completed street photograph remains in the darkroom for another visitor.",
+            "This photo shows a close-up of a weathered wooden garden fence with some sections patched, matching the repairs described."
+          ],
+          "lost": [],
+          "unresolved": [],
+          "finaleScenes": [
+            "You place the sealed letter in your family’s hands.",
+            "You told your family what you found in the papers. The original remains on the old street.",
+            "You shared both the history reconstructed from the records and the details visible in the photograph, completing the request that came with the letter.",
+            "The two sources agree: “Residents complained about broken garden fence” happened before “Community garden fencing was repaired last spring”.",
+            "The completed street photograph remains in the darkroom for another visitor.",
+            "This photo shows a close-up of a weathered wooden garden fence with some sections patched, matching the repairs described."
+          ],
+          "characterEpilogues": [
+            {
+              "characterId": "zhou-watchmaker",
+              "text": "You returned the borrowed key to Zhou."
+            }
+          ],
+          "regionalEpilogues": [],
+          "finalImagePrompt": "",
+          "id": "ending-jfrcd9",
+          "snapshotId": "ending-jfrcd9",
+          "generated": false
+        }
+      }
+    }
+  ]
+}

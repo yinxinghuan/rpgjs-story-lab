@@ -67,7 +67,7 @@ import {photographerActorUrl,photographerActorSheet} from './old-street-photogra
 import {oldStreetSession,oldStreetSessionHttp} from './old-street-session'
 import type {OldStreetHead} from './old-street-head'
 import {loadSpatialArtTexture} from './spatial-art-texture'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
 import {actorSheet,standingActorSheet} from './actor-sheet'
 import {oldStreetTrolleyPose,oldStreetTrolleySheet} from './old-street-prop-art'
@@ -98,7 +98,11 @@ const propNames: Record<string, [string, string]> = {
   'viewing-table': ['放大台', 'Viewing table'], 'street-exit': ['回家', 'Home'],
 }
 export default function OldStreetDev() {
-  const locale = navigator.language.startsWith('zh') ? 'zh' : 'en'
+  const initialLocale = navigator.language.startsWith('zh') ? 'zh' : 'en'
+  const [head, setHead] = useState(() => ({save: createInitialSave(oldStreetCartridge(initialLocale)), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}))
+  // A restored journey owns its language, including HUD and action reasons.
+  const locale = head.save.locale
+  const cartridge = useMemo(() => oldStreetCartridge(locale), [locale])
   const text = (pair: readonly [string, string]) => pair[locale === 'zh' ? 0 : 1]
   const audio=useRef<OldStreetAudio>(),footsteps=useRef(new StreetFootsteps())
   const [soundEnabled,setSoundEnabled]=useState(()=>{try{return window.alteruLocalStorage.getItem('oldstreet-sound')!=='off'}catch{return true}})
@@ -110,8 +114,6 @@ export default function OldStreetDev() {
     return()=>{window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);document.removeEventListener('visibilitychange',quiet);sound.dispose()}
   },[])
   const toggleSound=()=>setSoundEnabled(value=>{audio.current?.setEnabled(!value);if(!value)audio.current?.unlock();try{window.alteruLocalStorage.setItem('oldstreet-sound',value?'off':'on')}catch{};return !value})
-  const [cartridge] = useState(() => oldStreetCartridge(locale))
-  const [head, setHead] = useState(() => ({save: createInitialSave(cartridge), scene: 'street', position: plan.scenes.find(s => s.id === 'street')!.spawn}))
   const debug = new URLSearchParams(location.search).get('debug') === '1'
   const lanTrialKind=new URLSearchParams(location.search).get('npc_gait_trial')||''
   const lanTrialEnabled=import.meta.env.DEV&&import.meta.env.MODE==='oldstreet-dev'&&debug&&['lan-left','lan-four','lan-platform'].includes(lanTrialKind)
@@ -212,9 +214,9 @@ export default function OldStreetDev() {
       const restoredView = {save:restored.save,scene:restored.sceneId,position:restored.position}
       current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
       resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
-      setNotice(restored.version===0?campaignOpening(restored.save,cartridge.opening.blocks[0].text):text(['已恢复旅程。', 'Journey restored.']))
+      setNotice(restored.version===0?campaignOpening(restored.save,oldStreetCartridge(restored.save.locale).opening.blocks[0].text):(restored.save.locale==='zh'?'已恢复旅程。':'Journey restored.'))
       if(recovered?.rejectionCode){
-        setNotice(oldStreetActionFailureMessage(recovered.rejectionCode,locale))
+        setNotice(oldStreetActionFailureMessage(recovered.rejectionCode,restored.save.locale))
         const body=pendingInteraction?.body
         if(body&&['free-input','dialogue'].includes(body.type)&&typeof body.text==='string'&&body.sceneId===restored.sceneId){
           setTyped(body.text);setSelected(body.target)
@@ -241,7 +243,7 @@ export default function OldStreetDev() {
       const pendingEnvironment=new Map<string,Promise<void>>()
       prepareEnvironment.current=async room=>{
         const missing=oldStreetEnvironmentDownloads(pixelShop,compositeShop,room).filter(e=>!loadedEnvironment.has(e.id))
-        if(missing.length){setBusyActivity('area');setNotice(text(['正在展开前方的场景…','Preparing the next area…']))}
+        if(missing.length){setBusyActivity('area');setNotice(current.current.save.locale==='zh'?'正在展开前方的场景…':'Preparing the next area…')}
         await Promise.all(missing.map(entry=>{
           const existing=pendingEnvironment.get(entry.id);if(existing)return existing
           const task=(async()=>{
@@ -342,7 +344,7 @@ export default function OldStreetDev() {
       const next={save:h.save,scene:h.sceneId,position:h.position};current.current=next
       await prepareEnvironment.current(h.sceneId)
       await runtime.current!.restore(h.position,h.sceneId)
-      setHead(next);position.current=h.position;setFeet(h.position);setSelected(null);setError('');setNotice(text(['已继续这段旅程。','Journey resumed.']));setJourneysOpen(false)
+      setHead(next);position.current=h.position;setFeet(h.position);setSelected(null);setError('');setNotice(h.save.locale==='zh'?'已继续这段旅程。':'Journey resumed.');setJourneysOpen(false)
       runtime.current!.pause(Boolean(h.save.facts.departed))
     }catch(e){setJourneysOpen(false);setError(String(e))}finally{busyRef.current=false;setBusy(false)}
   }
@@ -554,7 +556,7 @@ export default function OldStreetDev() {
   }
   const inspectionHint=inspectionOpen&&!loanTarget&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
   const nearbyDarkroom=head.scene==='darkroom'&&bindOldStreet(locale,head.save).canInteract('developing-bench',head.scene,feet)
-  const showExpansionPhoto=expansionCapabilities.media&&head.scene==='darkroom'&&(!head.save.facts['darkroom-photo-choice']||nearbyDarkroom)
+  const showExpansionPhoto=expansionCapabilities.media&&head.scene==='darkroom'&&(!head.save.facts['darkroom-photo-choice']||(nearbyDarkroom&&selected==='developing-bench'))
   const outcome = oldStreetOutcome(head.save)
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
@@ -620,6 +622,6 @@ export default function OldStreetDev() {
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p>{borrowedItems.length>0&&<p>{text(['还带着待归还的物品：','You still have items to return: '])}{borrowedItems.map(i=>i.label).join(' · ')}{text(['。可以再逛逛，先把它们送回去。','. You can stay and return them first.'])}</p>}<button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}
-    {outcome && <OldStreetEndingView key={serverHead.current?.id} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)} onReplay={()=>audio.current?.play('ending')}/>}
+    {outcome && <OldStreetEndingView key={serverHead.current?.id} sessionId={serverHead.current?.id} api={connection.api} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)} onReplay={()=>audio.current?.play('ending')}/>}
   </main>
 }
