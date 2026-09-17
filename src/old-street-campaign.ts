@@ -72,7 +72,7 @@ export function compileInquiryParcel(raw:unknown,locale:'zh'|'en'):ParcelContent
 /** The selected record is always one endpoint, not a suggestion to the model. */
 export function compileLinkedParcel(raw:unknown,record:TraceRecord,locale:'zh'|'en'):ParcelContent{
  const r=object(raw,['title','fragment','otherEvent'])
- return compileInquiryParcel({title:r.title,fragment:r.fragment,inquiry:{first:record.label,second:line(r.otherEvent,50)}},locale)
+ return compileInquiryParcel({title:r.title,fragment:r.fragment,inquiry:{first:record.label,second:line(r.otherEvent,50,'otherEvent')}},locale)
 }
 export function campaignRecordMatches(content:TraceContent,index:number){return Number.isInteger(index)&&!!content.records[index]&&signature(content.records[index])===signature(content.clue)}
 export function campaignComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)&&(c.version!==3||campaignPhotoComplete(c,facts))}

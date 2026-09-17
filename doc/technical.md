@@ -1,5 +1,11 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 调查生成实验隔离与错误反馈（2026-09-17）
+
+`createOldStreetCampaignPlanner`可选的`recordDrivenInquiry`仅由合成试验脚本`--record-driven`传入；生产与本地游戏调用均保持默认，现有已跑通生成合同不变。候选要求三条其他事件由引擎插入固定事件，并增加非显然端点的复核；22次真实请求显示仍有重复、长度与语义误判，因此未准入默认。详见`record-driven-inquiry-review-20260917.md`。
+
+`compilePreparedInvestigation`在固定事件位置／重复错误中提供具体数组位置与事件；`compileLinkedParcel`的长度错误命名`otherEvent`。只改纠错反馈，不修补或重排候选，不改变合法存档格式。12项定向检查通过。
+
 ## 完整委托默认入口（2026-09-17，待整合发布）
 
 `OLD_STREET_CAMPAIGN_RELEASED`开启完整委托的试玩能力，`OLD_STREET_RELEASED`仍为false。`oldStreetNewJourneyOptions`在cloud/cloud-preflight为新登记选择`letter-trail-v4`，oldstreet-dev仍沿用显式开发开关，Pages不开户。前端首次bootstrap与菜单新建共用该函数；已有或待确认登记优先于新默认值，不迁移旧旅程。

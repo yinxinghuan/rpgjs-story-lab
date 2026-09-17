@@ -16,6 +16,7 @@ const output=process.argv[2]
 if(!output||existsSync(output))throw Error('NEW_REPORT_PATH_REQUIRED')
 const usedAtStart=Number(process.env.OLDSTREET_MODEL_TEST_USED??0)
 const plannedRoutes=process.argv.includes('--planned-routes')
+const recordDrivenInquiry=process.argv.includes('--record-driven')
 const withPhoto=process.argv.includes('--with-photo')
 // The older three-stage probe retains its shared 12-call budget. A complete
 // commission gets two independent 9-call synthetic budgets (trace <=2,
@@ -25,7 +26,7 @@ const budgets=withPhoto?[originalPreflightModels('9')!,originalPreflightModels('
 const usage=()=>({used:budgets.reduce((n,b)=>n+b.usage().used,0),limit:withPhoto?18:12})
 type RequestRecord={system:string;input:unknown;raw?:unknown;error?:string}
 type CaseRecord={chain:number;stage:CampaignContext['stage'];context:CampaignContext;requests:RequestRecord[];raw?:unknown;accepted?:unknown;preparedArchive?:unknown;source?:string;error?:string;elapsedMs?:number;system?:string}
-const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,scope:`Two new English synthetic content chains${withPhoto?' through archive-linked photograph planning':''}, ${plannedRoutes?'with a stable pre-generation route per synthetic journey, ':''}including semantic review and at most one correction per campaign stage. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment. Content acceptance is not a rendered gameplay or length verdict.`,limit:usage().limit,usedAtStart,usage:usage(),cases:[] as CaseRecord[],photos:[] as Array<{chain:number;source:ArchivePhotoSource;requests:RequestRecord[];plan?:unknown;error?:string}>,chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
+const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,recordDrivenInquiry,scope:`Two new English synthetic content chains${withPhoto?' through archive-linked photograph planning':''}, ${plannedRoutes?'with a stable pre-generation route per synthetic journey, ':''}including semantic review and at most one correction per campaign stage. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment. Content acceptance is not a rendered gameplay or length verdict.`,limit:usage().limit,usedAtStart,usage:usage(),cases:[] as CaseRecord[],photos:[] as Array<{chain:number;source:ArchivePhotoSource;requests:RequestRecord[];plan?:unknown;error?:string}>,chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
 const persist=()=>{report.usage=usage();writeFileSync(output,JSON.stringify(report,null,2)+'\n')}
 persist()
 try{
@@ -41,7 +42,7 @@ try{
     const request:RequestRecord={system,input:JSON.parse(user)};record.requests.push(request);persist()
     try{const raw=await models.request(system,user,options);request.raw=raw;if('stage' in (request.input as Record<string,unknown>)){record.system=system;record.raw=raw}return raw}
     catch(error){request.error=error instanceof Error?error.message:String(error);throw error}finally{persist()}
-   })
+   },{recordDrivenInquiry})
    try{
     if(context.stage==='archive'&&preparedArchive){record.accepted=preparedArchive;record.source='prepared-with-parcel'}
     else {

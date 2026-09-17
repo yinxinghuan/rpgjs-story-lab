@@ -86,3 +86,11 @@ test('a prepared loan fixes one real source site while preserving the generated 
  assert.equal(compilePreparedInvestigation({...draft,ledgerSite:'archive'},record,'en',42).archive.ledgerSite,undefined)
  assert.throws(()=>compilePreparedInvestigation({...draft,ledgerSite:'unbuilt-library'},record,'en',42),/LEDGER_SITE_INVALID/)
 })
+
+test('real malformed draft shapes get actionable correction locations without changing known content',()=>{
+ const before=structuredClone(record)
+ assert.throws(()=>compilePreparedInvestigation({...draft,recordAt:'end',events:[record.label,...draft.events]},record,'en'),/events\[3\].*footbridge reopened/)
+ assert.throws(()=>compilePreparedInvestigation({...draft,events:[draft.events[0],record.label,draft.events[2]]},record,'en'),/duplicate.*three OTHER events/)
+ assert.throws(()=>compilePreparedInvestigation({...draft,events:['A'.repeat(51),...draft.events.slice(1)]},record,'en'),/otherEvent has 51 characters; maximum 50/)
+ assert.deepEqual(record,before)
+})

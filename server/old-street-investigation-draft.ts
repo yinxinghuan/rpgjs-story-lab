@@ -20,9 +20,9 @@ export function compilePreparedInvestigation(raw:unknown,record:TraceRecord,loca
  const atStart=r.recordAt==='start',all=r.events as string[]
  // Accept the earlier three-other-events author format as well. A full account
  // is valid only when the supplied fixed event is retained verbatim at its end.
- if(all.length===4&&all[atStart?0:3]!==record.label)throw Error('CAMPAIGN_INVESTIGATION_INVALID: the fixed event must appear verbatim at recordAt.')
+ if(all.length===4&&all[atStart?0:3]!==record.label)throw Error(`CAMPAIGN_INVESTIGATION_INVALID: recordAt=${r.recordAt} requires events[${atStart?0:3}] to equal ${JSON.stringify(record.label)}. Alternatively return exactly three OTHER events; the engine inserts the fixed event.`)
  const events=all.length===4?(atStart?all.slice(1):all.slice(0,3)):all
- if(events.includes(record.label))throw Error('CAMPAIGN_INVESTIGATION_INVALID: the fixed event must occur exactly once.')
+ if(events.includes(record.label))throw Error(`CAMPAIGN_INVESTIGATION_INVALID: remove the duplicate ${JSON.stringify(record.label)} from the three OTHER events; it is inserted by the engine at recordAt.`)
  const otherEvent=atStart?events[2]:events[0]
  // The opening is an undated pair of actual entries, not a model-written
  // synopsis that can accidentally disclose the solution of its own puzzle.
