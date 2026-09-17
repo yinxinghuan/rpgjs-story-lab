@@ -2611,3 +2611,6 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 `old-street-room-walls.ts` 将前墙投影改为56，加8厚度后与上墙64一致。`oldStreetWallReveal` 根据真实主角脚点及墙段决定局部可见窗口；`OldStreetRoomForeground` 使用SVG渐变mask，半径40地图单位，中心墙体保留20%不透明度，边缘恢复完整墙面。站在门洞或离开墙边不会开启窗口。仍是同一camera transform下的前景层，pointer-events为none，碰撞和门端点不变。
 
 `old-street-door-frame.tsx` 独立处理正面门与侧面凹口，正面门高度与墙对齐；门扇开闭直接读权威gate fact。`old-street-boundaries.tsx` 的 `OldStreetEntranceEaves` 在人物画布上方绘制街口两侧连续40单位屋顶，旧边界层改作檐下立面；后院修表铺后门和工作棚门增加短屋檐段。街口与后院复用streetEdges图片，后院依赖清单同步加入该图。阶梯与布帘保持既有表现。
+
+### 地面枢纽的完整建筑边界
+`old-street-boundary-layout.ts` 新增 `oldStreetBuildingRoofs(room)`，与可指定room的立面段函数配合，统一服务street/yard。两侧完整屋面属于前景，带侧门开槽的立面属于背景；门、碰撞和camera不变。`OldStreetBuildingEdges` 在所有场景挂载，但只对两个地面枢纽返回内容；其他房间返回null。后院原门口短屋檐已由全边界屋顶替换。适用判断、十场景检查和证据见 `building-roof-coverage-20260917.md`。
