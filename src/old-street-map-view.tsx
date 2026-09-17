@@ -1,11 +1,11 @@
 import {useEffect,useRef,useState} from 'react'
 import {oldStreetKnownMap,oldStreetKnownRoute} from './old-street-map'
 import {oldStreetDoors} from './old-street-space'
+import {oldStreetLocalMap} from './old-street-map-layout'
 import {oldStreetRooms,type OldStreetRoom} from './old-street-cartridge'
 import type {StorySave,Locale} from './vendor/original-train/types'
 import './old-street-map-view.css'
 
-const positions:Record<OldStreetRoom,[number,number]>={archive:[60,40],cellar:[60,165],shed:[180,110],roof:[300,110],laundry:[60,295],yard:[180,295],photo:[300,295],shop:[60,440],street:[180,440],darkroom:[300,445]}
 const marks:Record<OldStreetRoom,string>={
  street:'M12 21V3M5 5H19V10H5ZM8 21H16',shop:'M12 4A8 8 0 1 0 12 20A8 8 0 1 0 12 4M12 7V12L16 14',
  photo:'M3 7H7L9 4H15L17 7H21V20H3ZM12 10A4 4 0 1 0 12 18A4 4 0 1 0 12 10',
@@ -22,7 +22,7 @@ function Passage({kind,locked=false}:{kind:string;locked?:boolean}){return <svg 
 
 export function OldStreetMapView({save,room,locale,onClose}:{save:StorySave;room:OldStreetRoom;locale:Locale;onClose:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,label=(id:OldStreetRoom)=>oldStreetRooms[id][locale==='zh'?0:1]
- const [destination,setDestination]=useState(room),dialog=useRef<HTMLDialogElement>(null),scroll=useRef<HTMLDivElement>(null)
+ const [destination,setDestination]=useState(room),dialog=useRef<HTMLDialogElement>(null),scroll=useRef<HTMLDivElement>(null),picker=useRef<HTMLDetailsElement>(null)
  useEffect(()=>{const node=dialog.current;node?.showModal();return()=>node?.close()},[])
  useEffect(()=>{
   const area=scroll.current,current=area?.querySelector('[aria-current="location"]')
@@ -30,12 +30,10 @@ export function OldStreetMapView({save,room,locale,onClose}:{save:StorySave;room
   const a=area.getBoundingClientRect(),b=current.getBoundingClientRect()
   if(b.top<a.top||b.bottom>a.bottom)area.scrollTop+=b.top-a.top-(a.height-b.height)/2
  },[room])
+ const choose=(id:OldStreetRoom)=>{setDestination(id);if(picker.current)picker.current.open=false;scroll.current?.scrollTo({top:0})}
  const close=()=>{dialog.current?.close();onClose()}
  const map=oldStreetKnownMap(save),route=oldStreetKnownRoute(save,room,destination)
- const points=map.rooms.map(r=>positions[r.id]),xs=points.map(p=>p[0]),ys=points.map(p=>p[1])
- const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2
- const width=Math.max(270,Math.max(...xs)-Math.min(...xs)+120),height=Math.max(200,Math.max(...ys)-Math.min(...ys)+120)
- const left=cx-width/2,top=cy-height/2
+ const exits=oldStreetLocalMap(room,new Set(map.rooms.map(r=>r.id)))
  const steps=route?.slice(1).map((to,i)=>({from:route[i],to,door:oldStreetDoors().find(d=>d.room===route[i]&&d.destination.room===to)}))??[]
  const instruction=(step:typeof steps[number])=>{
   const side=step.door?.side,kind=step.door?.kind
@@ -44,23 +42,25 @@ export function OldStreetMapView({save,room,locale,onClose}:{save:StorySave;room
   return t(`从场景${direction[0]}的${via}前往${label(step.to)}`,`In the scene, take the ${direction[1]} ${via} to ${label(step.to)}.`)
  }
  return <dialog className="os-map os-neighbourhood" ref={dialog} aria-labelledby="os-map-title" onCancel={e=>{e.preventDefault();close()}}>
-  <header><div><span className="os-neighbourhood__eyebrow">{t('探索手记','EXPLORER’S NOTES')}</span><h2 id="os-map-title">{t('旧街导览','Neighbourhood')}</h2></div><button onClick={close} autoFocus aria-label={t('收起地图','Close map')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M6 6L18 18M6 18L18 6"/></svg></button></header>
+  <header><div><h2 id="os-map-title">{t('地图','Map')}</h2></div><button onClick={close} autoFocus aria-label={t('收起地图','Close map')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M6 6L18 18M6 18L18 6"/></svg></button></header>
   <div className="os-neighbourhood__location"><span className="os-neighbourhood__pin" aria-hidden="true"/><span>{t('你在这里','YOU ARE HERE')}</span><strong>{label(room)}</strong></div>
   <div className="os-neighbourhood__scroll" ref={scroll}>
-   <p className="os-neighbourhood__hint">{t('点一个地点，看看怎么走。','Choose a place to see the way there.')}</p>
-   <div className="os-neighbourhood__plan" style={{aspectRatio:`${width}/${height}`}}>
-    <svg className="os-neighbourhood__roads" viewBox={`${left} ${top} ${width} ${height}`} aria-hidden="true">
-     {map.connections.map(e=>{const a=positions[e.a],b=positions[e.b],active=route?.some((id,i)=>i>0&&((route[i-1]===e.a&&id===e.b)||(route[i-1]===e.b&&id===e.a)));return <g key={e.id} className={'os-neighbourhood__road'+(!e.open?' is-closed':'')+(active?' is-route':'')}><path className="os-neighbourhood__road-bed" d={`M${a}L${b}`}/><path className="os-neighbourhood__road-line" d={`M${a}L${b}`}/></g>})}
+   <p className="os-neighbourhood__hint">{t('附近地点 · 方向与当前场景一致','Nearby · Same directions as your current scene')}</p>
+   <div className={"os-neighbourhood__plan os-neighbourhood__local"+(exits.filter(e=>e.door.side==='W').length>1||exits.filter(e=>e.door.side==='E').length>1?' has-many-exits':'')}>
+    <svg className="os-neighbourhood__roads" viewBox="0 0 340 460" preserveAspectRatio="none" aria-hidden="true">
+     <rect className="os-neighbourhood__floor" x="116" y="110" width="108" height="230" rx="8"/>
+     {exits.map(e=>{const open=!e.door.gate||save.facts[e.door.gate]===true,active=route?.[1]===e.door.destination.room;return <g key={e.door.id} className={'os-neighbourhood__road'+(!open?' is-closed':'')+(active?' is-route':'')}><path className="os-neighbourhood__road-bed" d={`M${e.point}L${e.label}`}/><path className="os-neighbourhood__road-line" d={`M${e.point}L${e.label}`}/><circle cx={e.point[0]} cy={e.point[1]} r="5" fill={active?'#335b4a':'#967653'}/></g>})}
     </svg>
-    {map.connections.map(e=>{const a=positions[e.a],b=positions[e.b];return <span className={'os-neighbourhood__passage'+(!e.open?' is-closed':'')} key={e.id} style={{left:`${((a[0]+b[0])/2-left)/width*100}%`,top:`${((a[1]+b[1])/2-top)/height*100}%`}} aria-label={t(e.open?(e.kind==='stairs'?'楼梯':e.kind==='door'?'门':'通路'):'暂不通行',e.open?e.kind:'Blocked')}><Passage kind={e.kind} locked={!e.open}/></span>})}
-    {map.rooms.map(r=>{const current=room===r.id,chosen=destination===r.id,step=route?.indexOf(r.id)??-1;return <button className={'os-neighbourhood__place'+(current?' is-current':'')+(chosen&&!current?' is-destination':'')+(step>0?' is-route':'')} data-room={r.id} key={r.id} aria-label={label(r.id)} aria-pressed={chosen} aria-current={current?'location':undefined} onClick={()=>setDestination(r.id)} style={{left:`${(positions[r.id][0]-left)/width*100}%`,top:`${(positions[r.id][1]-top)/height*100}%`,width:`${104/width*100}%`}}><Landmark room={r.id}/><span>{locale==='en'&&r.id==='archive'?'Archive':locale==='en'&&r.id==='shed'?'Workshop':label(r.id)}</span>{current?<span className="os-neighbourhood__here">{t('当前位置','YOU')}</span>:step>0?<span className="os-neighbourhood__step">{step}</span>:null}</button>})}
+    <div className="os-neighbourhood__origin" aria-current="location"><Landmark room={room}/><strong>{label(room)}</strong><span>{t('你在这里','You are here')}</span></div>
+    {exits.map(e=>{const id=e.door.destination.room,chosen=destination===id,step=route?.indexOf(id)??-1,open=!e.door.gate||save.facts[e.door.gate]===true;return <button className={'os-neighbourhood__place'+(chosen?' is-destination':'')+(step===1?' is-route':'')} data-room={id} data-side={e.door.side} key={e.door.id} aria-label={label(id)} aria-pressed={chosen} onClick={()=>choose(id)} style={{left:`${e.label[0]/340*100}%`,top:`${e.label[1]/460*100}%`,width:'27%'}}><Landmark room={id}/><span>{label(id)}</span><small className="os-neighbourhood__exit-kind"><Passage kind={e.door.kind} locked={!open}/>{!open?t('未通','Blocked'):e.door.kind==='stairs'?t('楼梯','Stairs'):e.door.kind==='door'?t('门','Door'):t('通路','Path')}</small>{step===1?<span className="os-neighbourhood__step">1</span>:null}</button>})}
    </div>
+   <details ref={picker} className="os-neighbourhood__destinations"><summary>{t('选择目的地','Choose destination')}</summary><div>{map.rooms.filter(r=>r.id!==room).map(r=><button key={r.id} aria-pressed={destination===r.id} onClick={()=>choose(r.id)}>{label(r.id)}</button>)}</div></details>
    <div className="os-neighbourhood__legend"><span><i/>{t('可通行','Open')}</span><span><i className="is-route"/>{t('所选路线','Your route')}</span><span><i className="is-closed"/>{t('暂不通行','Blocked')}</span></div>
-   {map.connections.filter(e=>!e.open).map(e=><p className="os-neighbourhood__blocked" key={e.id}><Passage kind={e.kind} locked/><span>{label(e.a)} — {label(e.b)}<small>{t(e.gate==='crates-cleared'?'旧箱挡路':e.gate==='yard-unlatched'?'门闩未打开':'通道尚未开放',e.gate==='crates-cleared'?'Crates block the way':e.gate==='yard-unlatched'?'The door is latched':'Passage not open yet')}</small></span></p>)}
-   <small className="os-neighbourhood__note">{t('只记下走过的地方 · 连接示意，非等比例','Visited places only · Connections, not to scale')}</small>
+   {map.connections.filter(e=>!e.open&&(e.a===room||e.b===room)).map(e=><p className="os-neighbourhood__blocked" key={e.id}><Passage kind={e.kind} locked/><span>{label(e.a)} — {label(e.b)}<small>{t(e.gate==='crates-cleared'?'旧箱挡路':e.gate==='yard-unlatched'?'门闩未打开':'通道尚未开放',e.gate==='crates-cleared'?'Crates block the way':e.gate==='yard-unlatched'?'The door is latched':'Passage not open yet')}</small></span></p>)}
+   <small className="os-neighbourhood__note">{t('只显示到过的地点；远处地点可在“选择目的地”中查找。','Visited places only. Find more places under “Choose destination”.')}</small>
   </div>
   <section className="os-neighbourhood__directions" aria-label={t('路线指引','Directions')}>
-   <div role="status"><span className="os-neighbourhood__eyebrow">{destination===room?t('从这里出发','START HERE'):t('前往','DESTINATION')}</span><strong>{label(destination)}</strong><p>{destination===room?t('选择另一处已到访地点，查看路线。','Select another visited place for directions.'):steps[0]?instruction(steps[0]):t('已知通道暂时无法到达这里。','No known open route reaches this place yet.')}</p></div>
+   <div role="status"><span className="os-neighbourhood__eyebrow">{destination===room?t('当前位置','CURRENT LOCATION'):t('前往','DESTINATION')}</span><strong>{label(destination)}</strong><p>{destination===room?t('选择另一处已到访地点，查看路线。','Select another visited place for directions.'):steps[0]?instruction(steps[0]):t('已知通道暂时无法到达这里。','No known open route reaches this place yet.')}</p></div>
    {steps.length>1&&<details key={destination}><summary>{t(`完整路线 · ${steps.length} 段路`,`Full route · ${steps.length} passages`)}</summary><ol>{steps.map((s,i)=><li key={s.from}><span>{i+1}</span><div><strong>{label(s.from)}</strong><p>{instruction(s)}</p></div></li>)}</ol></details>}
   </section>
  </dialog>
