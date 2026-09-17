@@ -6,7 +6,7 @@ import type {OldStreetCampaign} from './old-street-campaign'
 import type {CampaignJob} from '../server/old-street-campaign-jobs'
 import './old-street-campaign-view.css'
 type Stage='trace'|'parcel'
-export function OldStreetCampaignView({campaign,save,photoImage,stage,published=false,locale,sessionId,api,busy,feedback,act,archive,close}:{campaign:OldStreetCampaign;save?:StorySave;photoImage?:string;stage:Stage;published?:boolean;locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;busy:boolean;feedback:string;act:(type:'read'|'observe'|'decide',selection?:number|string)=>Promise<void>;archive?:()=>void;close:()=>void}){
+export function OldStreetCampaignView({campaign,save,photoImage,stage,published=false,locale,sessionId,api,busy,feedback,act,archive,close,nextPurpose}:{nextPurpose?:string;campaign:OldStreetCampaign;save?:StorySave;photoImage?:string;stage:Stage;published?:boolean;locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;busy:boolean;feedback:string;act:(type:'read'|'observe'|'decide',selection?:number|string)=>Promise<void>;archive?:()=>void;close:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,root=useRef<HTMLDialogElement>(null),instance=campaign[stage]
  const [job,setJob]=useState<CampaignJob|null>(null),[waiting,setWaiting]=useState(false),[reading,setReading]=useState(true),[failed,setFailed]=useState(false),[refresh,setRefresh]=useState(0)
  const path='/sessions/'+sessionId+'/campaign-'+stage
@@ -68,12 +68,13 @@ export function OldStreetCampaignView({campaign,save,photoImage,stage,published=
     </details>
    </>:parcel?<>
     {trace?.selected!==undefined&&<p className="os-campaign__clue">{trace.content.records[trace.selected].label} · {trace.content.records[trace.selected].mark}</p>}
-    <p>{parcel.content.fragment}</p>{parcel.content.question&&<p className="os-campaign__clue">{parcel.content.question}</p>}{campaign.version>=2&&!campaign.archive?.order&&<p>{t('隔壁档案间保存着原始记录。核对它们，才能把这段经过讲清楚。','The adjoining archive holds the source records. Compare them to piece together what happened.')}</p>}
+    {campaign.archive?.order?<><p className="os-campaign__clue">{campaign.archive.content.discovery}</p><details><summary>{t('回看原始寄存条','Review the original filing slip')}</summary><p>{parcel.content.fragment}</p></details></>:<><p>{parcel.content.fragment}</p>{parcel.content.question&&<p className="os-campaign__clue">{parcel.content.question}</p>}{campaign.version>=2&&<p>{t('隔壁档案间保存着原始记录。核对它们，才能把这段经过讲清楚。','The adjoining archive holds the source records. Compare them to piece together what happened.')}</p>}</>}
     {!parcel.disposition?<p>{t('带走可交给家人；留下则保留在这里，回家转述内容。','Take it to show your family, or leave it here and tell them what you read.')}</p>:<p>{t(parcel.disposition==='take'?'原件已收进你的行囊。':'原件仍留在架上，你记下了它的内容。',parcel.disposition==='take'?'The original is in your bag.':'The original remains on the shelf. You remember what it says.')}</p>}
+    {parcel.disposition&&nextPurpose&&<p className="os-campaign__clue">{nextPurpose}</p>}
    </>:null}
   </div>
   <footer>
-   {stage==='parcel'&&archive&&<button disabled={busy} onClick={archive}>{t('追查原始记录','Follow the source records')}</button>}
+   {stage==='parcel'&&archive&&!campaign.archive?.order&&<button disabled={busy} onClick={archive}>{t('追查原始记录','Follow the source records')}</button>}
    {feedback&&<p role="status">{feedback}</p>}
    {!instance?(failed?<button disabled={busy||waiting} onClick={reconnect}>{t('重新连接','Reconnect')}</button>:job?.state==='ready'?<button disabled={busy||reading} onClick={()=>void act('read')}>{t('阅读材料','Read the papers')}</button>:<button disabled={busy||waiting||reading||job?.state==='queued'||job?.state==='planning'} onClick={()=>void prepare()}>{reading?t('正在连接…','Connecting…'):waiting||job?.state==='queued'||job?.state==='planning'?t('正在准备…','Preparing…'):job?.state==='failed'?t('重新展开','Try again'):t('展开材料','Lay out the papers')}</button>):!instance.observed?<button disabled={busy} onClick={()=>void act('observe')}>{t('阅读线索','Read the clues')}</button>:stage==='parcel'&&!parcel?.disposition?<><button disabled={busy} onClick={()=>void act('decide','take')}>{t('带走原件','Take the original')}</button><button disabled={busy} onClick={()=>void act('decide','leave')}>{t('记下内容，留下原件','Remember it and leave it')}</button></>:<button disabled={busy} onClick={dismiss}>{t('回到街区','Return to exploring')}</button>}
   </footer>

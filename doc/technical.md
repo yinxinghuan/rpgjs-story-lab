@@ -1,5 +1,11 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 调查回看与动态障碍绕行（2026-09-17）
+
+`OldStreetCampaignView`以已提交的`campaign.archive.order`区分待调查与已查明：完成后显示同一archive的discovery，原寄存条折叠保留，移除重复追查按钮；原件去向提交后显示共用`oldStreetCurrentPurpose`，不新增存档或目标真源。
+
+旧街显式开启renderer的`replanBlockedRoute`。`advanceRoute`遇阻后，`recoverBlockedRoute`用当前位置、原终点及最新碰撞重新寻路，并验证第一步；每个用户目的地最多两次重算。重新规划不移动人物、不调用到达回调；后续tick仍按原速度和距离步态执行。不可行时取消并显示路径受阻说明。其他renderer消费者保持原行为，原有`canWaitForRoute`优先。10项居民／绕行测试与完整构建通过，实际工作棚同一路线到屋顶入口复验通过；不能由此声称所有动态碰撞情况或iPhone已验收。
+
 ## 已提交节点的后台准备（2026-09-17）
 
 `server/old-street-prefetch.ts`由正式HTTP适配器及本地适配器在行动成功后调用，仅v4取信后准备trace、选定记录后准备parcel及同一事件的配套archive。复用campaign jobs的幂等排队与候选存储，后台完成不改权威head；仍在实际物件前阅读才准入。失败不自动重试，原材料入口保留显式重试。准备异常不影响已提交行动的成功回执。HTTP集成测试覆盖等待中探索、候选不提前揭示、成对材料、失败与旧旅程。
