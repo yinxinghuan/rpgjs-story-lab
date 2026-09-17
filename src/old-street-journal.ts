@@ -25,6 +25,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  const details:Record<string,string>={
   'field-note-copy':f['field-note-disposition']==='take'?t('在照相馆抄录的副本。原件也在行囊里。','A written copy made at the studio. You also carry the original.'):t('在照相馆抄录的副本。原件留在原处。','A written copy made at the studio. The original remains where you found it.'),
   'field-note':t('从交叉索引找到的补充便笺原件。','The original supplementary note found through the cross-reference.'),
+  'street-negative':t('从屋顶北侧柜子取出的底片，可以带回家，也可以交回照相馆。','A negative recovered from the north roof cabinet. Bring it home or return it to the studio.'),
   'darkroom-print':t('在暗房拼合的旧街照片。','The old street photograph you matched in the darkroom.'),
   lens:t('可以看清细小的刻记。','Useful for examining tiny marks.'),
   trolley:t('从洗衣店借来，用完可以放回原处。','Borrowed from the laundry; return it to its bay when finished.'),
@@ -49,6 +50,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  for(const note of fieldKnowledge({save,campaign}))notes.push({...note,title:t(note.id==='field-lead'?'补充便笺的线索':note.id==='field-finding'?'便笺里的发现':note.id==='field-copy'?'抄录的副本':note.id==='field-handling'?'原件与副本':'便笺去向',note.id==='field-lead'?'Follow-up lead':note.id==='field-finding'?'The note’s finding':note.id==='field-copy'?'A written copy':note.id==='field-handling'?'Original and copy':'Where the note remains')})
  if(archiveLoanKnown(campaign?.archive,f))notes.push({id:'archive-loan',title:t('工作日志的去向','Where to find the work log'),text:archiveLoanLead(campaign!.archive!.content,save.locale)})
  const encounters:Record<string,{character:string;text:string}>={
+  'recovered-negative':{character:'xu-photographer',text:t('你把屋顶找回的底片交给了她保存。','You entrusted her with the negative recovered from the roof.')},
   'kept-promise':{character:'zhou-watchmaker',text:t('你已把借来的钥匙交还给他。','You returned the key he lent you.')},
   'returned-family-clock':{character:'lan-laundry',text:t('你帮她送回了母亲留下的旧钟。','You brought back the clock that belonged to her mother.')},
   'returned-photographs':{character:'xu-photographer',text:t('你帮她找回并交还了旧照片。','You found and returned her old photographs.')},
@@ -61,6 +63,9 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  })
  if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:f['darkroom-photo-choice']==='keep'?t('你把看清细节的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('看清细节的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('照片里的街景细节已看清。','The details of the street photograph are now clear.')})
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
+ note('roof-index-read',['照片背面的标记','Filing mark on the print'],['对应底片在屋顶北侧柜子的双缺口纸套里。破损处需要木板跨过去。','The matching negative is in a double-notched sleeve in the north roof cabinet. A plank is needed to cross the damaged decking.'])
+ note('roof-bridge-laid',['屋顶的通路','Roof crossing'],['长板搭住破损处两侧，可以走到北边的柜子旁。','The long plank spans the damaged decking, giving access to the north cabinet.'])
+ note('roof-negative-returned',['底片回到照相馆','Negative returned'],['摄影师把找回的底片收在放大台旁。','The photographer has stored the recovered negative beside the viewing table.'])
  note('clock-mark-known',['钟底的刻记','Mark beneath the clock'],['放大镜下能看见一对燕子。','Two swallows are engraved beneath the clock.'])
  note('clock-returned',['旧钟的来历','The clock’s history'],['洗衣店主说，这是母亲留下的钟。','The laundry owner said the clock belonged to her mother.'])
  note('photos-matched',['拼合的旧照','The matched photograph'],['窗沿和晾衣绳接上后，是洗衣店的旧店面。','The window sill and clothesline form an old view of the laundry.'])

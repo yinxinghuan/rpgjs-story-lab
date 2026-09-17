@@ -5,12 +5,29 @@ import {bindOldStreet, oldStreetSpatialPlan, oldStreetDoors, oldStreetPath, oldS
 import {createInitialSave} from '../src/vendor/original-train/engine/reducer'
 import {resolveDomainAction, applyDomainResolution} from '../src/vendor/original-train/engine/domainRules'
 import {prepareDoorTravel} from '../src/spatial-door-travel'
+import {roofRecoveryInitial} from '../src/old-street-roof-recovery'
+
+test('optional roof crossing leaves both normal exits reachable and admits every enabled rule',()=>{
+ const save=createInitialSave(oldStreetCartridge('en'))
+ Object.assign(save.facts,roofRecoveryInitial)
+ for(const laid of [false,true]){
+  save.facts['roof-bridge-laid']=laid
+  const plan=oldStreetSpatialPlan(save),start=plan.scenes.find(s=>s.id==='roof')!.spawn
+  assert.equal(bindOldStreet('en',save).actionIds().length,oldStreetCartridge('en').domainRules!.rules.length)
+  for(const door of oldStreetDoors().filter(d=>d.room==='roof'))assert.ok(oldStreetPath('roof',start,door.approach,save).length,door.id)
+  const cabinet=plan.entities.find(e=>e.id==='roof-cache')!
+  assert.equal(oldStreetPath('roof',start,cabinet.approach,save).length>0,laid)
+ }
+})
 
 for (const cleared of [false, true]) test(`every authored interaction can be approached in blockout, crates cleared=${cleared}`, () => {
   const cartridge = oldStreetCartridge('zh'), save = createInitialSave(cartridge)
   save.facts['crates-cleared'] = cleared
   const plan = oldStreetSpatialPlan(save), binding = bindOldStreet('zh', save)
-  assert.equal(binding.actionIds().length, cartridge.domainRules!.rules.length)
+  const absent=cartridge.domainRules!.rules.filter(rule=>!binding.actionIds().includes(rule.id))
+  assert.equal(absent.length,6)
+  assert.ok(absent.every(rule=>rule.requirements.some(q=>q.type==='fact'&&q.id==='roof-recovery'&&q.equals===true)))
+  assert.ok(!plan.entities.some(entity=>entity.id.startsWith('roof-')),'historical journeys retain the empty roof')
   for (const entity of plan.entities) {
     const start = plan.scenes.find(s => s.id === entity.scene)!.spawn
     const route = oldStreetPath(entity.scene, start, entity.approach, save)

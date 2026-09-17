@@ -1,5 +1,11 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 2026-09-17 屋顶底片的空间后果
+
+`old-street-roof-recovery.ts` 定义六个领域动作、归档标记前置、纸套占有不变量与缺口／桥板几何。仅新建 v3 旅程写入 roof-recovery 功能事实；旧旅程升级不回填。`bindOldStreet` 对未开启旅程移除六条不可用的可选规则，保持完整动作绑定校验，而非把实体硬塞进旧屋顶。`oldStreetProjectedProps` 随搭板收缩木板堆的碰撞；正常两个出口保持可达。
+
+显影提交开启读背面标记；按钮与精确自由输入共用领域动作，暗房输入白名单包含该动作。底片交还写入摄影师关系、笔记与结局，原件库存相应移除。`old-street-roof-recovery-view.tsx` 投射柜门及地面状态；归还纸套使用 `old-street-photo-table.ts` 的独立精灵和桌子占地坐标。没有新增模型调用、媒体调用、后台或线上开关。定向测试和实际小屏联测范围见 `roof-recovery-review-20260917.md`。
+
 ## 2026-09-17 借阅日志的空间落地
 
 `ArchiveContent.ledgerSite` 可选 photo/laundry；缺省保留架上原件。准备编译器接收 archive/photo/laundry，拒绝未支持地点及外放日志搭配 denseSource=ledger；后者只能把密集夹页放在 index。`archive-ledger-site` 是同一内容的图层投影，head 校验两者相等。`archive-loan-read` 只保存可见借阅信息，不授予 ledger 证据。

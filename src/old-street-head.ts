@@ -1,3 +1,4 @@
+import {assertRoofRecovery} from './old-street-roof-recovery'
 import {archivePhotoSource} from './old-street-archive-photo'
 import {archiveReadingItem} from './old-street-archive-reading'
 import {archiveRackState} from './old-street-archive'
@@ -16,6 +17,7 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     || !Array.isArray(s.blocks) || !Array.isArray(s.characters) || !Array.isArray(s.relationships)
     || !h.position || !oldStreetWalkable(h.sceneId,h.position,s,h.mapVersion==='oldstreet-blockout-1'?{w:9,h:15}:undefined,undefined,[plan.mapVersion,'oldstreet-furniture-3'].includes(h.mapVersion),undefined,h.mapVersion!==plan.mapVersion)) throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)
   try {
+    assertRoofRecovery(s)
     bindOldStreet(s.locale,s).locate(s,h.sceneId);assertOldStreetExpansions(h.expansions);assertOldStreetCampaign(h.campaign)
     if(h.expansions?.[0]?.archiveSource&&JSON.stringify(h.expansions[0].archiveSource)!==JSON.stringify(archivePhotoSource(h.campaign)))throw Error('ARCHIVE_PHOTO_SOURCE_MISMATCH')
     if(h.expansions?.[0]&&h.expansions[0].photoMethod!==h.campaign?.photoMethod)throw Error('PHOTO_METHOD_MISMATCH')

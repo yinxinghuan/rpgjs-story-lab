@@ -1,3 +1,4 @@
+import {roofRecoveryProps,roofRecoveryObstacles} from './old-street-roof-recovery'
 import {oldStreetFurniture} from './old-street-furniture'
 import {archiveLayout,archiveLayoutFromFacts,archiveRackState} from './old-street-archive'
 import {oldStreetCrateFootprint} from './old-street-crate-layout'
@@ -85,8 +86,10 @@ export const oldStreetProps = [
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates=false) {
   const archive=save.facts['archive-ready']===true?archiveLayoutFromFacts(save.facts).props:[]
-  return [...oldStreetProps,...archive].map(p => {
+  return [...oldStreetProps,...archive,...(save.facts['roof-recovery']===true?roofRecoveryProps:[])].map(original => {
+    const p=save.facts['roof-recovery']===true&&['developing-bench','photographer'].includes(original.id)?{...original,actions:[...original.actions,original.id==='developing-bench'?'oldstreet:read-photo-index':'oldstreet:return-roof-negative']}:original
     const resident=residents[p.id]
+    if(p.id==='roof-planks'&&save.facts['roof-bridge-laid'])return {...p,position:{x:296,y:400},approach:{x:252,y:400},body:{x:276,y:378,w:40,h:30}}
     if(resident&&['watchmaker','laundry-owner','photographer'].includes(p.id)){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
     if(p.id==='crates'&&legacyCrates){
       const old=prop('crates','yard',.3,.13,['clear-crates'])
@@ -105,7 +108,7 @@ export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySav
   // and the bounded authored interaction area, never a stale NPC home hitbox.
   // The live client supplies the actual resident positions for solid collision.
   const closedStairs=room==='cellar'&&!legacyCrates&&!save.facts['crates-cleared']?oldStreetDoors().filter(d=>d.room===room&&d.gate==='crates-cleared').map(d=>({x:d.position.x-oldStreetCrateFootprint.width/2,y:d.position.y-oldStreetCrateFootprint.depth,w:oldStreetCrateFootprint.width,h:oldStreetCrateFootprint.depth})):[]
-  return [...closedStairs,...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents,legacyCrates).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
+  return [...(room==='roof'?roofRecoveryObstacles(save):[]),...closedStairs,...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents,legacyCrates).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
     && (p.id!=='laundry-owner'||!usesCurrentLaundryCast(save)||!!residents?.['laundry-owner'])
     && (p.id!=='photographer'||!usesCurrentPhotographerCast(save)||!!residents?.photographer)
     && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))]
@@ -140,7 +143,11 @@ export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}
   }
 }
 export function bindOldStreet(locale: Locale, save: Pick<StorySave, 'facts'>) {
-  return compileSpatialBinding(oldStreetCartridge(locale), oldStreetSpatialPlan(save), (room, p) => oldStreetWalkable(room, p, save))
+  const cartridge=oldStreetCartridge(locale)
+  // Optional geometry has optional rules; historical journeys must not gain
+  // entities simply to satisfy the compiler's complete-binding contract.
+  if(save.facts['roof-recovery']!==true)cartridge.domainRules!.rules=cartridge.domainRules!.rules.filter(r=>!r.requirements.some(q=>q.type==='fact'&&q.id==='roof-recovery'))
+  return compileSpatialBinding(cartridge, oldStreetSpatialPlan(save), (room, p) => oldStreetWalkable(room, p, save))
 }
 
 /** RPG-JS requires a Tiled object layer for its character/event layer. Export

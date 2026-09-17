@@ -1,3 +1,4 @@
+import {roofRecoveryInitial} from '../src/old-street-roof-recovery'
 import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {evidenceChoices} from '../src/old-street-shared-evidence'
 import {prepareEvidenceShare} from './old-street-shared-evidence'
@@ -68,6 +69,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const name=(options as {campaign:string}).campaign
         if(name==='letter-trail-v3'&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1,...(name==='letter-trail-v3'?{photoMethod:'develop-v1' as const,explorationRoute:chooseInvestigationRoute(id)}:{})}
+        if(name==='letter-trail-v3')Object.assign(h.save.facts,roofRecoveryInitial)
         if(h.campaign.version!==1)introduceCampaignCommission(h.save,h.campaign.version)
       }
       check(h);return h
@@ -105,6 +107,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         if(!binding.canInteract(body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
         const allowed=['oldstreet:observe-darkroom',...(!h.save.facts['darkroom-photo-matched']?(expansionPhoto?.(h)?['oldstreet:match-darkroom-photo']:[]):!h.save.facts['darkroom-photo-choice']?['oldstreet:keep-darkroom-photo','oldstreet:leave-darkroom-photo']:[])]
+        if(h.save.facts['roof-recovery']&&resolveDomainAction(h.save,oldStreetCartridge(h.save.locale),'oldstreet:read-photo-index')?.status==='accepted')allowed.push('oldstreet:read-photo-index')
         let action=resolveOldStreetInput(body.text,h.save.locale,allowed)
         if(!action&&attempt&&body.mode!=='local'){
           const actions=allowed.map(id=>({id,label:oldStreetActionNames[id.replace('oldstreet:','')][h.save.locale==='zh'?0:1]}))
@@ -139,6 +142,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(h.sceneId!=='darkroom'||!h.save.facts['darkroom-ready']||!hash||!binding.canInteract('developing-bench',h.sceneId,pos))throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         if(!(h.expansions?.[0]?.photoMethod==='develop-v1'?developingMatches(body.photoMatch,hash):oldStreetPhotoMatches(body.photoMatch,hash)))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
         const save=structuredClone(h.save);save.facts['darkroom-photo-matched']=hash
+        if(save.facts['roof-recovery'])save.facts['roof-photo-ready']=true
         const prepared=expansionPlan?.(h),content=prepared?.content
         if(h.campaign?.version===3){
           if(!h.campaign.archive?.order||!content||prepared?.requestId!==h.expansions?.[0]?.id||h.expansions?.[0]?.archiveSource?.archiveId!==h.campaign.archive.id)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)

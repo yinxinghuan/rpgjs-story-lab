@@ -1,6 +1,8 @@
+import {roofRecoveryNames} from './old-street-roof-recovery'
 import type {Locale} from './vendor/original-train/types'
 import {originalActionIntentIssues} from './original-action-intent'
 export const oldStreetActionNames: Record<string, [string, string]> = {
+ ...roofRecoveryNames,
  'keep-darkroom-photo':['带走照片','Take the photograph'],
  'leave-darkroom-photo':['留在暗房','Leave it here'],
  'match-darkroom-photo':['看清照片','Examine photograph'],

@@ -48,7 +48,7 @@ export function recordOldStreetInteraction(save:StorySave,entity:string,action:s
   const content=(spoken?part.replace(/^“|”$/gu,''):part.replace(/[：:]\s*$/u,'')).trim()
   if(content)blocks.push({id:receipt+':result'+(index?':'+index:''),kind:spoken?'dialogue':'narration',...(spoken?{speaker}:{}),text:content})
  }
- const relationship = ({'oldstreet:return-key':['zhou-watchmaker','kept-promise'],'oldstreet:return-clock':['lan-laundry','returned-family-clock'],'oldstreet:return-photos':['xu-photographer','returned-photographs']} as Record<string,[string,string]>)[action]
+ const relationship = ({'oldstreet:return-key':['zhou-watchmaker','kept-promise'],'oldstreet:return-clock':['lan-laundry','returned-family-clock'],'oldstreet:return-photos':['xu-photographer','returned-photographs'],'oldstreet:return-roof-negative':['xu-photographer','recovered-negative']} as Record<string,[string,string]>)[action]
  if(relationship){
   const [characterId,axis]=relationship,person=save.characters.find(c=>c.id===characterId)
   if(person&&!save.relationships.some(r=>r.characterId===characterId&&r.axis===axis))save.relationships.push({id:receipt+':relationship',actor:person.name,characterId,axis,delta:1,source:action})

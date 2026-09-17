@@ -1,3 +1,4 @@
+import {roofRecoveryRules,roofRecoveryActionRooms} from './old-street-roof-recovery'
 import {oldStreetCharacterDefinitions,currentOldStreetCastFacts} from './old-street-characters'
 import type {DomainActionRule, DomainEffect, DomainRequirement, Locale, StoryCartridge, StorySave} from './vendor/original-train/types'
 
@@ -31,6 +32,7 @@ export const oldStreetConnections: ReadonlyArray<{
 export const oldStreetTravelId = (edge: string, from: OldStreetRoom) => `oldstreet:through:${edge}:${from}`
 export const oldStreetActionId = (name: string) => `oldstreet:${name}`
 export const oldStreetActionRooms: Record<string, OldStreetRoom> = {
+  ...roofRecoveryActionRooms,
   'observe-darkroom':'darkroom',
   'greet-watchmaker':'shed', 'greet-laundry':'laundry', 'greet-photographer':'photo',
   'move-box': 'shop', 'take-lens': 'shop', 'borrow-trolley': 'laundry', 'clear-crates': 'yard',
@@ -98,7 +100,7 @@ export function oldStreetRules(locale: Locale): DomainActionRule[] {
       ...(edge.gate ? [need(edge.gate, true, edge.gate === 'crates-cleared' ? '旧箱挡住了台阶。' : from==='shed' ? '门还插着，抬起插销就能打开。' : '插销在工作棚那一侧。', edge.gate === 'crates-cleared' ? 'Crates block the steps.' : from==='shed' ? 'The gate is bolted. Lift the bolt to open it.' : 'The bolt is on the workshop side.')] : []),
     ], effects: [{type: 'map', nodeId: to}], successText: '', successChoices: ['', '', '']})
   }
-  return rules
+  return [...rules,...roofRecoveryRules(locale)]
 }
 
 export function oldStreetCartridge(locale: Locale): StoryCartridge {

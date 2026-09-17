@@ -1,0 +1,33 @@
+- main:
+  - heading "街口 试玩" [level=1]:
+    - text: 街口
+    - generic: 试玩
+  - navigation:
+    - button "街区" [disabled]:
+      - generic: 街区
+    - button "随身与发现" [disabled]:
+      - generic: 随身
+    - button "旅程":
+      - generic: 旅程
+  - button "修表铺" [disabled]:
+    - generic: 修表铺
+  - button "照相馆" [disabled]:
+    - generic: 照相馆
+  - button "合住院" [disabled]:
+    - generic: 合住院
+  - button "回家" [disabled]
+  - region "当前行动":
+    - status: You leave the old street and deliver the sealed letter to your family.
+  - group "移动摇杆" [disabled]
+  - button "查看" [disabled]
+  - generic "Renderer diagnostics"
+  - dialog "Journey epilogue":
+    - generic: THE LAST LETTER
+    - button "Skip epilogue"
+    - main:
+      - generic: A letter and an answer
+      - paragraph: The recovered negative remains at the studio, ready for future prints.
+    - generic "Epilogue passage": 7 / 13
+    - button "Previous"
+    - button "Play"
+    - button "Continue" [active]

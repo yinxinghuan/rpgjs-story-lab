@@ -1,0 +1,69 @@
+- main:
+  - heading "照相馆 试玩" [level=1]:
+    - text: 照相馆
+    - generic: 试玩
+  - navigation:
+    - button "街区":
+      - generic: 街区
+    - button "随身与发现":
+      - generic: 随身
+    - button "旅程":
+      - generic: 旅程
+  - button "暗房":
+    - generic: 暗房
+  - button "街口":
+    - generic: 街口
+  - button "屋顶":
+    - generic: 屋顶
+  - button "放大台 · 已收存的底片"
+  - button "Nora"
+  - group "移动摇杆" [disabled]
+  - button "交谈"
+  - generic "Renderer diagnostics"
+  - dialog "Items & discoveries":
+    - heading "Items & discoveries" [level=2]
+    - button "Close"
+    - paragraph: The letter, history and photographic findings are ready. Go home from the street, or keep exploring.
+    - navigation "View":
+      - button "Items"
+      - button "Notes" [active] [pressed]
+      - button "People"
+    - list:
+      - strong: What the photograph shows
+      - paragraph: Three newer boards interrupt the worn planks of the footbridge.
+      - strong: Your family’s request
+      - paragraph: Your family asked for the sealed letter, an account of the filed street history, and a related photograph. Bring the originals home or leave them here and describe what you found. Do not open the letter.
+      - strong: Filing slip
+      - paragraph: two notches; linen cord
+      - strong: Bridge repairs
+      - paragraph: two notches; linen cord · Confirmed; this record points to the cellar shelf.
+      - strong: Roof repairs
+      - paragraph: two notches; folded flap
+      - strong: Workshop repairs
+      - paragraph: one notch; linen cord
+      - strong: The footbridge note
+      - paragraph: "Two entries were filed together: “Bridge repairs” and “The footbridge reopened”. This filing slip does not explain their order."
+      - strong: The unanswered question
+      - paragraph: "Which came first: “Bridge repairs” or “The footbridge reopened”?"
+      - strong: The original papers
+      - paragraph: The original remains on the shelf; you remember its contents.
+      - strong: A record for others
+      - paragraph: Your summary is in the watch shop public record book. The original stays where you chose; you can remove the summary before leaving.
+      - strong: Work index
+      - paragraph: “Bridge repairs” happened before “Replacement boards were cut”.
+      - strong: Work log
+      - paragraph: “Replacement boards were cut” happened before “The new boards were fitted”. “The new boards were fitted” happened before “The footbridge reopened”.
+      - strong: The footbridge note
+      - paragraph: "The two sources agree: “Bridge repairs” happened before “The footbridge reopened”."
+      - strong: Old street photograph
+      - paragraph: You carry the completed photograph.
+      - strong: Filing mark on the print
+      - paragraph: The matching negative is in a double-notched sleeve in the north roof cabinet. A plank is needed to cross the damaged decking.
+      - strong: Roof crossing
+      - paragraph: The long plank spans the damaged decking, giving access to the north cabinet.
+      - strong: Negative returned
+      - paragraph: The photographer has stored the recovered negative beside the viewing table.
+      - strong: Steps uncovered
+      - paragraph: The crates are beside the wall. The courtyard steps lead down to the cellar.
+      - strong: Courtyard shortcut
+      - paragraph: The bolt is open. The workshop and courtyard now connect directly.

@@ -7,5 +7,6 @@ export function oldStreetPhotoTableSheets(table:string,folder:string){
  return [
   {id:'oldstreet-viewing-table',image:table,width:512,height:512,framesWidth:1,framesHeight:1,textures:{stand:base(),returned:base()}},
   {id:'oldstreet-returned-photos',image:folder,width:1024,height:512,framesWidth:2,framesHeight:1,textures:{stand:top(0),returned:top(1)}},
+  {id:'oldstreet-returned-negative',image:folder,width:1024,height:512,framesWidth:2,framesHeight:1,textures:Object.fromEntries(['stand','returned'].map(pose=>[pose,{animations:()=>[[{frameX:1,frameY:0,time:0,anchor:[.5,310/512],scale:[.035,.025],x:7,y:8,opacity:pose==='returned'?1:0}]]}]))},
  ]
 }

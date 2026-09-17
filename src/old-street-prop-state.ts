@@ -7,6 +7,8 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
   const f = save.facts
   if(id.startsWith('archive-storage-'))return ['固定储物架 · 需要绕行','Fixed storage shelf · walk around it']
   switch (id) {
+    case 'roof-planks':return f['roof-bridge-laid']===true?['剩下的短木板','Short plank left behind']:['长短两块木板','Long and short planks']
+    case 'roof-cache':return f['roof-negative-taken']===true?['屋顶柜子 · 空格','Roof cabinet · empty compartment']:f['roof-box-open']===true?['屋顶柜子 · 底片套','Roof cabinet · negative sleeve']:['屋顶柜子','Roof cabinet']
     case 'archive-rack':return f['archive-rack-shifted']===true?['移到一旁的储物架','Storage rack moved aside']:['挡住索引的储物架','Storage rack blocking the index']
     case 'record-book': {
       if(f['archive-published']===true)return ['记录册 · 调查摘要','Record book · investigation summary']
@@ -15,7 +17,7 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
     }
     case 'clock-display': return f['clock-returned'] === true ? ['柜台 · 已归还的旧钟', 'Counter · returned clock'] : ['柜台', 'Counter']
     case 'trolley': return f['trolley-borrowed'] === true ? ['推车停放处 · 空', 'Trolley bay · empty'] : ['推车', 'Trolley']
-    case 'viewing-table': return f['photos-returned'] === true ? ['放大台 · 已归还的照片夹', 'Viewing table · returned photo folder'] : ['放大台', 'Viewing table']
+    case 'viewing-table': if(f['roof-negative-returned'])return ['放大台 · 已收存的底片','Viewing table · recovered negative']; return f['photos-returned'] === true ? ['放大台 · 已归还的照片夹', 'Viewing table · returned photo folder'] : ['放大台', 'Viewing table']
     case 'photo-folder': return f['photos-taken'] === true ? ['空搁架', 'Empty shelf'] : ['照片夹', 'Photo folder']
     case 'drawer': return f['lens-taken'] === true ? ['抽屉 · 收据', 'Drawer · receipt'] : f['drawer-open'] === true ? ['抽屉 · 放大镜', 'Drawer · lens'] : ['被空盒挡住的抽屉', 'Drawer behind box']
     case 'letter-compartment': return f['letter-taken'] === true ? ['小格 · 空', 'Compartment · empty'] : f['letter-unlocked'] === true ? ['小格 · 密封信', 'Compartment · letter'] : ['锁着的小格', 'Locked compartment']
