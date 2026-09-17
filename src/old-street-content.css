@@ -14,3 +14,14 @@
 @media(max-height:480px) {
  .os-actions--composing .os-conversation-choices { display:none; }
 }
+
+.os-actions .os-actions__options { display:flex;flex-direction:column;gap:8px;min-width:0; }
+@media(min-width:540px) and (max-height:480px) {
+ .os-dev.os-dev--immersive > .os-actions { max-width:680px;max-height:calc(100dvh - var(--os-sheet-bottom) - 12px); }
+ .os-dev--immersive:has(> .os-actions:not([hidden])) > header { visibility:hidden; }
+ .os-dev .os-actions .os-actions__content { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-items:stretch;overflow:hidden; }
+ .os-actions .os-actions__body { grid-column:1;min-height:0;max-height:100%;overflow:auto;overscroll-behavior:contain; }
+ .os-actions .os-actions__options { grid-column:2;min-height:0;max-height:100%;overflow:auto;overscroll-behavior:contain; }
+ .os-actions__content:has(> .os-actions__body:empty) > .os-actions__options,
+ .os-actions--composing .os-actions__content > .os-actions__options { grid-column:1/-1; }
+}
