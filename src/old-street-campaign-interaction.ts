@@ -1,3 +1,4 @@
+import {archiveReadingChoices,archiveReadingStatus,type ArchiveReadingAction} from './old-street-archive-reading'
 import {campaignCommission} from './old-street-campaign-story'
 import {campaignAnchor} from './old-street-campaign'
 import type {OldStreetHead} from './old-street-head'
@@ -5,7 +6,7 @@ import {originalActionIntentIssues} from './original-action-intent'
 import {archiveEvidence,archiveRackState,archiveRackLabel} from './old-street-archive'
 import {publicRecordAction,publicRecordKnowledge} from './old-street-public-record'
 
-type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive';selection?:number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'}
+type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive';selection?:number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction}
 /** Labels describe every visible choice, never which one is correct. The model
  * proposes an ID; the existing campaign authority still evaluates the choice. */
 export function campaignInputActions(h:OldStreetHead,target:string):CampaignAction[]{
@@ -13,7 +14,7 @@ export function campaignInputActions(h:OldStreetHead,target:string):CampaignActi
  if(!c||!h.save.facts['letter-taken'])return []
  if(h.sceneId==='archive'&&c.archive&&target==='archive-rack'&&archiveRackState(h.save.facts)?.slide)return [{id:'campaign:move-rack',label:archiveRackLabel(h.save.facts,h.save.locale),type:'campaign-decide',stage:'archive',selection:h.save.facts['archive-rack-shifted']===true?'restore':'slide'}]
  if(target==='archive-index'&&archiveRackState(h.save.facts)?.indexBlocked)return []
- if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
+ if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [...archiveReadingChoices(c.archive,h.save,target,h.save.locale).map(a=>({id:'campaign:'+a.selection,label:a.label,type:'campaign-decide' as const,stage:'archive' as const,selection:a.selection})),{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
  if(h.sceneId===campaignAnchor.trace.scene&&target===campaignAnchor.trace.target)return [
   ...(c.archive?.order?[{id:h.save.facts['archive-published']===true?'campaign:withdraw-summary':'campaign:share-summary',label:publicRecordAction(h.save.facts['archive-published']===true,h.save.locale),type:'campaign-decide' as const,stage:'trace' as const,selection:h.save.facts['archive-published']===true?'withdraw' as const:'share' as const}]:[]),
   {id:'campaign:read-trace',label:t('查阅寄存记录','Read the filing records'),type:'campaign-read',stage:'trace'},
@@ -56,6 +57,7 @@ export function campaignInputKnowledge(h:OldStreetHead){
  if(c.trace?.selected!==undefined)knowledge.push({id:'learned:campaign-match',text:t(`已确认记录：${c.trace.content.records[c.trace.selected].label}。这条记录指向地下储物室的旧资料架。`,`Confirmed record: ${c.trace.content.records[c.trace.selected].label}. This record points to the old paper shelf in the cellar.`)})
  if(c.parcel?.observed){knowledge.push({id:'learned:campaign-papers',text:c.parcel.content.fragment});if(c.parcel.content.question)knowledge.push({id:'learned:campaign-question',text:c.parcel.content.question})}
  if(c.archive){
+  const reading=archiveReadingStatus(c.archive,h.save,'archive-'+c.archive.content.denseSource,h.save.locale);if(reading)knowledge.push({id:'learned:archive-reading-status',text:reading})
   for(const source of c.archive.examined)knowledge.push({id:'learned:archive-'+source,text:archiveEvidence(c.archive.content,source,h.save.locale).join(' ')})
   if(c.archive.order)knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery})
  }

@@ -1,3 +1,4 @@
+import {applyArchiveReading} from './old-street-archive-reading'
 import {archiveEvidence,archiveOrderMatches,readArchiveContent,assertArchiveInquiry,archiveRackState,type ArchiveSource} from '../src/old-street-archive'
 import {bindOldStreet,oldStreetWalkable} from '../src/old-street-space'
 import type {OldStreetHead} from '../src/old-street-head'
@@ -15,6 +16,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
   if(c.archive)throw new LabError('CAMPAIGN_ALREADY_PREPARED',409)
   const raw=candidate?.(head,'archive');if(raw===undefined)throw new LabError('CAMPAIGN_NOT_PREPARED',409)
   try{const content=readArchiveContent(raw);if(c.parcel?.content.inquiry)assertArchiveInquiry(content,c.parcel.content.inquiry);c.archive={id:body.action_id,content,examined:[]}}catch{throw new LabError('CAMPAIGN_PLAN_REJECTED',409)}
+  if(c.archive.content.denseSource)save.facts['archive-dense-source']=c.archive.content.denseSource
   save.facts['archive-ready']=true;save.facts['archive-layout']=c.archive.content.layout
   if(c.archive.content.room)save.facts['archive-room']=JSON.stringify(c.archive.content.room)
   if(!save.map.some(n=>n.id==='archive'))save.map.push({id:'archive',label:t('档案工作间','Archive workroom'),current:false,visited:false})
@@ -24,7 +26,9 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
  }else{
   const archive=c.archive;if(!archive)throw new LabError('CAMPAIGN_NOT_PREPARED',409)
   const source=body.target==='archive-index'?'index':body.target==='archive-ledger'?'ledger':undefined
-  if(body.type==='campaign-decide'&&body.target==='archive-rack'){
+  if(body.type==='campaign-decide'&&['read-lens','carry-sheet','spread-sheet','return-sheet'].includes(body.selection)){
+   text=applyArchiveReading(next,body.target,body.selection)
+  }else if(body.type==='campaign-decide'&&body.target==='archive-rack'){
    if(!archiveRackState(save.facts)?.slide||!['slide','restore'].includes(body.selection))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
    const shifted=body.selection==='slide'
    if((save.facts['archive-rack-shifted']===true)===shifted)throw new LabError('CAMPAIGN_ALREADY_RESOLVED',409)
@@ -32,6 +36,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
    if(!oldStreetWalkable('archive',position,save))throw new LabError('CAMPAIGN_RACK_SPACE_REQUIRED',409)
    text=shifted?t('储物架移开了，现在可以走近索引。','The rack slides aside. You can now reach the work index.'):t('储物架回到原位，已读线索仍然保留。','The rack is back. Your notes are still saved.')
   }else if(body.type==='campaign-observe'&&source){
+   if(archive.content.denseSource===source&&!archive.examined.includes(source))throw new LabError('CAMPAIGN_READING_AID_REQUIRED',409)
    if(!archive.examined.includes(source))archive.examined.push(source as ArchiveSource)
    text=archiveEvidence(archive.content,source,save.locale).join('\n')
   }else if(body.type==='campaign-observe'&&body.target==='archive-desk'){
@@ -46,6 +51,6 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
   }else throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  }
  next.version++;next.position=position
- save.blocks.push({id:body.action_id+':campaign',kind:'narration',text,data:{oldStreetCampaignStage:'archive',archiveReconstructed:body.type==='campaign-decide'&&body.target==='archive-desk'?1:0}})
+ save.blocks.push({id:body.action_id+':campaign',kind:'narration',text,data:{oldStreetCampaignStage:'archive',archiveReconstructed:body.type==='campaign-decide'&&body.target==='archive-desk'&&body.order?1:0}})
  return {head:next,kind:body.type,accepted:true,text}
 }

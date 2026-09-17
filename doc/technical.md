@@ -1,5 +1,14 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 密集档案夹页的替代辨读（2026-09-17）
+
+新 `ArchiveContent.denseSource` 可指定 index 或 ledger，编译/持久读取验证枚举，旧实例没有该字段保持原行为。`archive-dense-source` 是场景投影，与内容严格一致；`archive-reading-position` 为 carried/desk 或省略（原架），head校验行囊 `archive-reading-sheet` 恰与 carried 对应。
+
+`old-street-archive-reading.ts` 提供当前物品/位置允许的按钮与自由输入动作，服务端 `applyArchiveReading` 在原空间接近验证之后执行：read-lens 要求 lens，carry-sheet 只在原架/桌面取纸，spread-sheet 只在桌边阅读，return-sheet 只在原来源归还。普通 observe 不绕过未辨读的 denseSource；仅真实读成功才记 examined。归还不移除证据，prepareArchiveAction 的 archiveReconstructed 只对真正提交顺序计1。
+
+UI不自动 observe 密集来源，直接给两条可用操作和当前纸页位置；实际事件三种pose由同一facts驱动，基础家具始终保持，纸层隐藏或摊开。已完成录入/拿起不会使共享库存多一份。新真实生成可指定密集来源，本地QA有独立明确的来源覆盖便于核心机制测试，不进入生产入口。证据与范围见 `archive-reading-review-20260917.md`。
+
+
 ## 成套调查准备（2026-09-17）
 
 `server/old-street-investigation-draft.ts` 将完整四事件稿编译为 `PreparedInvestigation`：固定记录保留在指定端点，同一 chronology 分发为纸袋、证据和结论，房间仍交给现有 composer。兼容此前三个补充事件的未准入稿格式；不迁移已保存文本。纸袋只列出实际端点记录与未明的先后，不接受生成摘要泄露答案。语义复核读取精简后的固定事件、开场、顺序和结论，不把家具网格传入判断。

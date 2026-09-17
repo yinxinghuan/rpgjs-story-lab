@@ -44,8 +44,8 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
  assert.equal(oldStreetWalkable('archive',{x:plan.props[0].body.x+4,y:plan.props[0].body.y+4},save),false,'furniture blocks passage')
 })
 
-test('new campaign enters its generated archive through the real door, gathers evidence and persists the reconstructed ending',async()=>{
- const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'}}
+for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async()=>{
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(readingMode==='direct'?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0
@@ -65,6 +65,7 @@ test('new campaign enters its generated archive through the real door, gathers e
  const prepare=async(stage:'trace'|'parcel'|'archive')=>{jobs.enqueue('synthetic',h.id,stage);await jobs.run('synthetic',h.id,stage)}
  try{
   await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
+  if(readingMode==='lens')await steps(['oldstreet:move-box','oldstreet:take-lens'])
   await prepare('trace');await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:0})
   await assert.rejects(s.action('synthetic',h.id,input('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})),/OBSERVATION_REQUIRED/)
   await steps(['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar'])
@@ -95,7 +96,31 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.deepEqual(await s.action('synthetic',h.id,shifted.b),shifted.r,'lost response replays without moving twice')
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)
   assert.ok(!JSON.stringify(campaignInputKnowledge(h)).includes(archive.discovery))
-  await send('archive-index',{type:'free-input',text:'Examine the work index',mode:'local'})
+  if(readingMode!=='direct'){
+   await assert.rejects(s.action('synthetic',h.id,input('archive-index',{type:'campaign-observe',stage:'archive'})),/READING_AID_REQUIRED/)
+   const initialEvidence=[...h.campaign!.archive!.examined]
+   if(readingMode==='lens'){
+    await send('archive-index',{type:'free-input',text:'Read with the magnifying glass',mode:'local'})
+    assert.equal(h.save.facts['archive-reading-position'],undefined)
+    assert.ok(h.save.inventory.some(i=>i.id==='lens'))
+   }else{
+    await assert.rejects(s.action('synthetic',h.id,input('archive-index',{type:'campaign-decide',stage:'archive',selection:'read-lens'})),/ACTION_UNAVAILABLE/)
+    const taken=await send('archive-index',{type:'free-input',text:'Carry the insert to the table',mode:'local'})
+    assert.deepEqual(await s.action('synthetic',h.id,taken.b),taken.r)
+    assert.deepEqual(h.campaign!.archive!.examined,initialEvidence,'carrying does not read evidence')
+    assert.equal(h.save.inventory.find(i=>i.id==='archive-reading-sheet')?.count,1)
+    s=authority();h=s.get('synthetic',h.id)
+    assert.equal(h.save.facts['archive-reading-position'],'carried')
+    await send('archive-desk',{type:'free-input',text:'Spread out and examine the insert',mode:'local'})
+    assert.equal(h.save.facts['archive-reading-position'],'desk')
+    assert.equal(h.save.inventory.some(i=>i.id==='archive-reading-sheet'),false)
+    assert.equal(h.save.blocks.at(-1)?.data?.archiveReconstructed,0)
+    await send('archive-desk',{type:'campaign-decide',stage:'archive',selection:'carry-sheet'})
+    await send('archive-index',{type:'campaign-decide',stage:'archive',selection:'return-sheet'})
+    assert.equal(h.save.facts['archive-reading-position'],undefined)
+    assert.deepEqual(h.campaign!.archive!.examined,['index'],'returning never erases evidence')
+   }
+  }else await send('archive-index',{type:'free-input',text:'Examine the work index',mode:'local'})
   assert.equal(campaignInputKnowledge(h).filter(k=>k.id.startsWith('learned:archive-')).length,1)
   await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'restore'})
   assert.equal(h.save.facts['archive-rack-shifted'],false)

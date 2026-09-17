@@ -3,6 +3,9 @@ import {readFileSync} from 'node:fs'
 import {isDeepStrictEqual} from 'node:util'
 // Optional immutable provider-output replay for UI inspection only. This can
 // include a semantically rejected candidate; it must never be production art.
+const denseSource=process.env.OLDSTREET_QA_DENSE_SOURCE
+if(denseSource&&!['index','ledger'].includes(denseSource))throw Error('INVALID_DENSE_SOURCE')
+const readingVariant=(content:any)=>({...structuredClone(content),...(denseSource?{denseSource}:{})})
 const replayPath=process.env.OLDSTREET_QA_CAMPAIGN_REPORT
 const replay=replayPath?JSON.parse(readFileSync(replayPath,'utf8')):undefined
 // Optional separate real geometry sample, overlaid only in this local harness.
@@ -14,7 +17,7 @@ if(roomPath&&!Array.isArray(roomReplay))throw Error('ROOM_REPLAY_NOT_ACCEPTED')
 /** Synthetic by default; explicit report replay never makes network calls.
  * Neither mode is installed by a production entry. */
 export const campaignFixture:OldStreetCampaignGenerator=async(context)=>{
- if(replay){const row=replay.cases.find((r:any)=>r.chain===Number(process.env.OLDSTREET_QA_CAMPAIGN_CHAIN??1)&&r.stage===context.stage&&r.accepted!==undefined);if(!row||!isDeepStrictEqual(row.context,context))throw Error('REPLAY_CONTEXT_MISMATCH');if(context.stage==='parcel'&&row.preparedArchive)return {kind:'prepared-investigation',parcel:structuredClone(row.accepted),archive:structuredClone(row.preparedArchive)};return {...structuredClone(row.accepted),...(context.stage==='archive'&&(rackTrial??roomReplay)?{room:structuredClone(rackTrial??roomReplay)}:{})}}
+ if(replay){const row=replay.cases.find((r:any)=>r.chain===Number(process.env.OLDSTREET_QA_CAMPAIGN_CHAIN??1)&&r.stage===context.stage&&r.accepted!==undefined);if(!row||!isDeepStrictEqual(row.context,context))throw Error('REPLAY_CONTEXT_MISMATCH');if(context.stage==='parcel'&&row.preparedArchive)return {kind:'prepared-investigation',parcel:structuredClone(row.accepted),archive:readingVariant(row.preparedArchive)};return {...structuredClone(row.accepted),...(context.stage==='archive'&&denseSource?{denseSource}:{}),...(context.stage==='archive'&&(rackTrial??roomReplay)?{room:structuredClone(rackTrial??roomReplay)}:{})}}
  if(context.stage==='archive')return {
   title:context.locale==='zh'?'小桥维修记录':'Footbridge work records',layout:'east-index',
   cards:context.locale==='zh'?[{id:'a',label:'装好新木板'},{id:'b',label:'裁切替换木板'},{id:'c',label:'重新开放小桥'},{id:'d',label:'测量损坏的木板'}]:[{id:'a',label:'New boards were fitted'},{id:'b',label:'Replacement boards were cut'},{id:'c',label:'The footbridge reopened'},{id:'d',label:'Damaged boards were measured'}],
