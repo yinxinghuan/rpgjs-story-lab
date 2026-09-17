@@ -4,7 +4,9 @@ import {oldStreetEnvironmentKeys} from '../src/old-street-environment-dependenci
 test('initial street does not wait for indoor environments and shared layers are reused',()=>{
  const street=oldStreetEnvironmentKeys('street',true,true),shed=oldStreetEnvironmentKeys('shed',true,true),cellar=oldStreetEnvironmentKeys('cellar',true,true)
  assert.deepEqual(street,['doorWood','stoneStair','debris','streetGround','streetEdges'])
- assert.deepEqual(shed.filter(k=>!street.includes(k)),['shedFloor','shedWall'])
+ // The recovery plank in the shed uses the shared wood sheet, also consumed
+ // by the roof crossing; it is deliberately not loaded on the initial street.
+ assert.deepEqual(shed.filter(k=>!street.includes(k)),['shedFloor','shedWall','wood'])
  assert.deepEqual(cellar.filter(k=>!shed.includes(k)),['cellarFloor'])
  assert.ok(!street.includes('shopComposite'));assert.ok(!street.includes('photoFloor'))
 })
