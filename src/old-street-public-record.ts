@@ -1,3 +1,4 @@
+import {photoDisplayed} from './old-street-photo-display'
 import type {OldStreetHead} from './old-street-head'
 
 /** Public summary and private possession are separate choices. */
@@ -10,5 +11,5 @@ export function publicRecordKnowledge(h:OldStreetHead){
  if(h.save.facts['archive-published']!==true)return []
  return [{id:'learned:public-archive',text:h.save.locale==='zh'
   ?`玩家已把以下摘要抄入修表铺的公共记录册：${h.campaign.archive.content.discovery} 这是玩家留下的记录，不代表你亲历该事件或已经读过册页。未公开密封家书，原件去向另计。`
-  :`The player copied this summary into the watch shop's public record book: ${h.campaign.archive.content.discovery} This is a record left by the player, not proof that you witnessed the event or already read the book. The sealed family letter was not published; possession of the original papers is separate.`}]
+  :`The player copied this summary into the watch shop's public record book: ${h.campaign.archive.content.discovery} This is a record left by the player, not proof that you witnessed the event or already read the book. The sealed family letter was not published; possession of the original papers is separate.`},...(photoDisplayed(h.save)?[{id:'public-photo-placement',text:h.save.locale==='zh'?'玩家把暗房完成的旧街照片留在修表铺的公共记录册旁，照片不在玩家行囊中。这只说明照片的位置；不代表你亲眼看过照片或知道其中细节。':'The completed street photograph is beside the watch shop public record, not in the player’s bag. This states its location only; it does not mean you have seen the print or know its details.'}]:[])]
 }

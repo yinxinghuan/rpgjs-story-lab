@@ -1,10 +1,12 @@
+import {photoDisplayed,photoDisplayLabel,photoDisplayDescription} from './old-street-photo-display'
+import type {StorySave} from './vendor/original-train/types'
 import {publicRecordAction} from './old-street-public-record'
 import {useEffect,useRef,useState} from 'react'
 import type {OldStreetCampaign} from './old-street-campaign'
 import type {CampaignJob} from '../server/old-street-campaign-jobs'
 import './old-street-campaign-view.css'
 type Stage='trace'|'parcel'
-export function OldStreetCampaignView({campaign,stage,published=false,locale,sessionId,api,busy,feedback,act,archive,close}:{campaign:OldStreetCampaign;stage:Stage;published?:boolean;locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;busy:boolean;feedback:string;act:(type:'read'|'observe'|'decide',selection?:number|string)=>Promise<void>;archive?:()=>void;close:()=>void}){
+export function OldStreetCampaignView({campaign,save,photoImage,stage,published=false,locale,sessionId,api,busy,feedback,act,archive,close}:{campaign:OldStreetCampaign;save?:StorySave;photoImage?:string;stage:Stage;published?:boolean;locale:'zh'|'en';sessionId:string;api:(path:string,body?:unknown)=>Promise<any>;busy:boolean;feedback:string;act:(type:'read'|'observe'|'decide',selection?:number|string)=>Promise<void>;archive?:()=>void;close:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,root=useRef<HTMLDialogElement>(null),instance=campaign[stage]
  const [job,setJob]=useState<CampaignJob|null>(null),[waiting,setWaiting]=useState(false),[reading,setReading]=useState(true),[failed,setFailed]=useState(false),[refresh,setRefresh]=useState(0)
  const path='/sessions/'+sessionId+'/campaign-'+stage
@@ -53,6 +55,11 @@ export function OldStreetCampaignView({campaign,stage,published=false,locale,ses
     <p role="status">{failed?t('暂时连不上。重新连接即可查看准备进度，也可以先收起。','Connection interrupted. Reconnect to check progress, or close this for now.'):reading?t('正在查看材料的准备进度…','Checking the papers…'):job?.state==='failed'?t('材料暂时没能展开。进度已保存，可以重试。','The papers could not be prepared. Your progress is safe; you can retry.'):job?.state==='ready'?t('材料已经准备好。','The papers are ready.'):job?.state==='planning'||job?.state==='queued'?t('正在展开材料。可以收起，先去街上看看，回来继续。','Preparing the papers. You can close this, explore the street, and return later.'):t('展开材料，查看里面的线索。','Lay out the papers to examine the clues.')}</p>
    </>:!instance.observed?<p>{t('仔细看看纸面上的内容。','Take a closer look at what is on the paper.')}</p>:stage==='trace'&&trace?<>
     {campaign.archive?.order&&<section><p className="os-campaign__clue">{campaign.archive.content.discovery}</p><p>{published?t('摘要已留在册页上，供后来的人阅读。可以撤下，不影响你已查明的发现。','Your summary is on the page for later visitors. You can remove it without losing your discoveries.'):t('可以把核对过的经过留给后来的人，也可以只带回家。这里只抄摘要，不公开密封信，也不改变原件的去向。','Leave the verified account for later visitors, or keep it for your family. Only the summary is copied; your sealed letter and original papers are unchanged.')}</p></section>}
+    {save&&campaign.archive?.order&&save.facts['darkroom-photo-choice']==='keep'&&<section><p>{photoDisplayDescription(save)}</p>{photoDisplayed(save)&&(photoImage?<img className="os-record-photo-preview" src={photoImage} alt={t('记录册旁展出的本次旅程照片','This journey’s photograph beside the public record')} draggable={false}/>:<p>{t('照片暂时未载入，展出位置与进度已保留。','The image is unavailable; its placement and your progress are saved.')}</p>)}</section>}
+    <div className="os-campaign__record-actions">
+   {stage==='trace'&&campaign.archive?.order&&published&&save?.facts['darkroom-photo-choice']==='keep'&&<button disabled={busy} onClick={()=>void act('decide',photoDisplayed(save)?'retrieve-photo':'display-photo')}>{photoDisplayLabel(photoDisplayed(save),locale)}</button>}
+   {stage==='trace'&&campaign.archive?.order&&<button disabled={busy} onClick={()=>void act('decide',published?'withdraw':'share')}>{publicRecordAction(published,locale)}</button>}
+    </div>
     <details open={!campaign.archive?.order}><summary>{t('查看寄存条与匹配记录','Review the filing slip and records')}</summary>
     <section className="os-campaign__clue"><strong>{t('信旁的寄存条','The filing slip')}</strong><p>{trace.content.clue.mark} · {trace.content.clue.wrapping}</p></section>
     <p>{t('哪条记录同时符合这两处特征？','Which record matches both details?')}</p>
@@ -67,7 +74,6 @@ export function OldStreetCampaignView({campaign,stage,published=false,locale,ses
   </div>
   <footer>
    {stage==='parcel'&&archive&&<button disabled={busy} onClick={archive}>{t('追查原始记录','Follow the source records')}</button>}
-   {stage==='trace'&&campaign.archive?.order&&<button disabled={busy} onClick={()=>void act('decide',published?'withdraw':'share')}>{publicRecordAction(published,locale)}</button>}
    {feedback&&<p role="status">{feedback}</p>}
    {!instance?(failed?<button disabled={busy||waiting} onClick={reconnect}>{t('重新连接','Reconnect')}</button>:job?.state==='ready'?<button disabled={busy||reading} onClick={()=>void act('read')}>{t('阅读材料','Read the papers')}</button>:<button disabled={busy||waiting||reading||job?.state==='queued'||job?.state==='planning'} onClick={()=>void prepare()}>{reading?t('正在连接…','Connecting…'):waiting||job?.state==='queued'||job?.state==='planning'?t('正在准备…','Preparing…'):job?.state==='failed'?t('重新展开','Try again'):t('展开材料','Lay out the papers')}</button>):!instance.observed?<button disabled={busy} onClick={()=>void act('observe')}>{t('阅读线索','Read the clues')}</button>:stage==='parcel'&&!parcel?.disposition?<><button disabled={busy} onClick={()=>void act('decide','take')}>{t('带走原件','Take the original')}</button><button disabled={busy} onClick={()=>void act('decide','leave')}>{t('记下内容，留下原件','Remember it and leave it')}</button></>:<button disabled={busy} onClick={dismiss}>{t('回到街区','Return to exploring')}</button>}
   </footer>

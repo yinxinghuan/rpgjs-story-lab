@@ -1,3 +1,4 @@
+import {oldStreetAttemptContext} from '../server/old-street-attempt'
 import {roofRecoveryForJourney,roofSpareVisible,roofStockVisible} from '../src/old-street-roof-recovery'
 import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {archiveLoanAt,archiveLoanLead} from '../src/old-street-archive-loan'
@@ -22,7 +23,7 @@ import {OldStreetAuthority,oldStreetRuntime,type OldStreetHead} from '../server/
 import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
 import {compilePreparedInvestigation} from '../server/old-street-investigation-draft'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
-import {campaignInputKnowledge} from '../src/old-street-campaign-interaction'
+import {campaignInputActions,campaignInputKnowledge} from '../src/old-street-campaign-interaction'
 import {oldStreetJournal,oldStreetCurrentPurpose} from '../src/old-street-journal'
 import type {AuthorityStorage} from '../server/session-authority'
 import {publicRecordAction,publicRecordKnowledge} from '../src/old-street-public-record'
@@ -401,9 +402,42 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
    assert.equal(oldStreetDialogueContext(h,'watchmaker').knowledge.filter(k=>k.id.startsWith('received:')).length,0)
    await steps(['roof','photo'])
    assert.equal(sharedEvidence(h.save,'photographer').length,3,'leaving and returning preserves the recipient memory')
+   if(readingMode==='commission'){
+    await steps(['street','shop'])
+    const action=()=>campaignInputActions(h,'record-book').find(a=>a.id==='campaign:display-photo')!
+    const originalLetter=structuredClone(h.save.inventory.find(i=>i.id==='letter'))
+    assert.ok(originalLetter)
+    const shown=await send('record-book',{type:'free-input',text:action().label,mode:'local'})
+    assert.equal(h.save.facts['darkroom-photo-exhibited'],true)
+    assert.equal(h.save.inventory.some(i=>i.id==='darkroom-print'),false)
+    assert.deepEqual(h.save.inventory.find(i=>i.id==='letter'),originalLetter)
+    assert.deepEqual(await s.action('synthetic',h.id,shown.b),shown.r,'retry does not transfer the print twice')
+    s=authority();h=s.get('synthetic',h.id);assertOldStreetHead(h)
+    assert.equal(h.save.facts['darkroom-photo-exhibited'],true,'placement survives authority restart')
+    assert.match(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='darkroom-photo')!.text,/not in your bag/)
+    assert.ok(campaignInputActions(h,'record-book').some(a=>a.id==='campaign:retrieve-photo'))
+    const darkroom={...h,sceneId:'darkroom'}
+    const knowledge=oldStreetAttemptContext(darkroom,'developing-bench',[]).knowledge
+    assert.ok(!knowledge.some(k=>k.id==='visible:developing-bench'&&/is in your bag/.test(k.text)))
+    assert.match(knowledge.find(k=>k.id==='visible:developing-bench')!.text,/public record/)
+    const npc={...h,sceneId:'photo'}
+    assert.ok(!evidenceChoices(npc,'photographer').some(a=>a.kind==='photo-shown'))
+    assert.match(oldStreetDialogueContext(npc,'photographer').knowledge.find(k=>k.id==='public-photo-placement')!.text,/does not mean you have seen/)
+    await assert.rejects(s.action('synthetic',h.id,input('record-book',{type:'campaign-decide',stage:'trace',selection:'display-photo'})),/UNAVAILABLE/)
+    await send('record-book',{type:'campaign-decide',stage:'trace',selection:'retrieve-photo'})
+    assert.equal(h.save.inventory.filter(i=>i.id==='darkroom-print').length,1)
+    await send('record-book',{type:'campaign-decide',stage:'trace',selection:'display-photo'})
+    await send('record-book',{type:'campaign-decide',stage:'trace',selection:'withdraw'})
+    assert.equal(h.save.facts['darkroom-photo-exhibited'],false)
+    assert.equal(h.save.inventory.filter(i=>i.id==='darkroom-print').length,1,'withdrawing the account also returns the print')
+    await send('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})
+    await send('record-book',{type:'campaign-decide',stage:'trace',selection:'display-photo'})
+    await steps(['street','photo'])
+   }
   }
   await steps(['street','oldstreet:leave'])
   if(photoPlan)assert.ok(h.save.finale.ending?.preserved.includes(photoPlan.content.discovery))
+  if(readingMode==='commission'){assert.ok(h.save.finale.ending?.preserved.some(p=>p.includes('remains by the watch shop public record')));assert.ok(!h.save.finale.ending?.preserved.some(p=>p.includes('brought home the street photograph')))}
   assert.equal(h.save.finale.status,'complete');assert.ok(h.save.finale.ending?.preserved.includes(archive.discovery))
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes(fullCommission?'request that came with the letter':'family’s request')))

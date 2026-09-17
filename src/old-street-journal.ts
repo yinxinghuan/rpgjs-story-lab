@@ -1,3 +1,4 @@
+import {photoDisplayed,photoDisplayDescription} from './old-street-photo-display'
 import {archiveLoanKnown,archiveLoanLead} from './old-street-archive-loan'
 import {fieldKnowledge} from './old-street-field-inquiry'
 import {campaignCommission,campaignPhotoPurpose} from './old-street-campaign-story'
@@ -27,7 +28,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
   'field-note':t('从交叉索引找到的补充便笺原件。','The original supplementary note found through the cross-reference.'),
   'roof-plank':t('从河边工作棚领取的备用长板，可以搭过屋顶的破损处。','A spare plank from the riverside workshop, long enough to span the damaged roof decking.'),
   'street-negative':t('从屋顶北侧柜子取出的底片，可以带回家，也可以交回照相馆。','A negative recovered from the north roof cabinet. Bring it home or return it to the studio.'),
-  'darkroom-print':t('在暗房拼合的旧街照片。','The old street photograph you matched in the darkroom.'),
+  'darkroom-print':t('在暗房看清细节的旧街照片。','The street photograph you revealed in the darkroom.'),
   lens:t('可以看清细小的刻记。','Useful for examining tiny marks.'),
   trolley:t('从洗衣店借来，用完可以放回原处。','Borrowed from the laundry; return it to its bay when finished.'),
   'letter-key':t('修表师借给你的小格钥匙，用完要交还。','The watchmaker lent you this compartment key. Bring it back when finished.'),
@@ -62,7 +63,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
   const events=[...new Set(save.relationships.filter(r=>r.characterId===c.id&&r.delta>0&&encounters[r.axis]?.character===c.id).map(r=>encounters[r.axis].text))]
   return {id:c.id,title:c.name,text:[c.role,...events].filter(Boolean).join(' · ')}
  })
- if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:f['darkroom-photo-choice']==='keep'?t('你把看清细节的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('看清细节的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('照片里的街景细节已看清。','The details of the street photograph are now clear.')})
+ if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:photoDisplayed(save)?photoDisplayDescription(save):f['darkroom-photo-choice']==='keep'?t('你把看清细节的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('看清细节的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('照片里的街景细节已看清。','The details of the street photograph are now clear.')})
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
  note('roof-index-read',['照片背面的标记','Filing mark on the print'],['对应底片在屋顶北侧柜子的双缺口纸套里。破损处需要木板跨过去。','The matching negative is in a double-notched sleeve in the north roof cabinet. A plank is needed to cross the damaged decking.'])
  note('roof-plank-taken',['屋顶的备用板','Spare roof plank'],['你已从河边工作棚领取屋顶修补用的长板。','You collected a roof repair plank from the riverside workshop.'])

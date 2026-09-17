@@ -24,7 +24,7 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     if(h.campaign?.version===3){
       const request=h.expansions?.[0],matched=s.facts['darkroom-photo-matched'],linked=s.facts['campaign-photo-archive']
       if(request&&!request.archiveSource||s.facts['darkroom-ready']===true&&!request||matched!==undefined&&(!request||linked!==h.campaign.archive?.id)||linked!==undefined&&(typeof matched!=='string'||!matched||linked!==request?.archiveSource?.archiveId||typeof s.facts['darkroom-photo-discovery']!=='string')||s.facts['darkroom-photo-choice']!==undefined&&(!matched||!['keep','leave'].includes(String(s.facts['darkroom-photo-choice']))))throw Error('CAMPAIGN_PHOTO_STATE_INVALID')
-      const kept=s.facts['darkroom-photo-choice']==='keep'
+      const kept=s.facts['darkroom-photo-choice']==='keep'&&s.facts['darkroom-photo-exhibited']!==true
       if(s.inventory.filter(i=>i.id==='darkroom-print').length!==(kept?1:0)||s.inventory.some(i=>i.id==='darkroom-print'&&i.count!==1))throw Error('CAMPAIGN_PHOTO_POSSESSION_INVALID')
     }
     if(s.facts['darkroom-photo-discovery']!==undefined&&(typeof s.facts['darkroom-photo-matched']!=='string'||typeof s.facts['darkroom-photo-discovery']!=='string'||!s.facts['darkroom-photo-discovery'].trim()||s.facts['darkroom-photo-discovery'].length>220))throw Error('PHOTO_DISCOVERY_NOT_OBSERVED')
@@ -33,6 +33,7 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     if(s.inventory.filter(i=>i.id==='field-note').length!==(h.campaign?.field?.disposition==='take'?1:0)||s.inventory.some(i=>i.id==='field-note'&&i.count!==1))throw Error('FIELD_NOTE_POSSESSION_INVALID')
     if(s.facts['archive-ready']===true&&(!h.campaign?.archive||s.facts['archive-layout']!==h.campaign.archive.content.layout)||h.campaign?.archive&&s.facts['archive-ready']!==true||h.sceneId==='archive'&&!h.campaign?.archive)throw Error('ARCHIVE_NOT_ADMITTED')
     if(h.campaign&&s.facts.departed&&!campaignComplete(h.campaign,s.facts))throw Error('CAMPAIGN_INCOMPLETE')
+    if(s.facts['darkroom-photo-exhibited']!==undefined&&(typeof s.facts['darkroom-photo-exhibited']!=='boolean'||s.facts['darkroom-photo-choice']!=='keep'||!s.facts['darkroom-photo-matched']||s.facts['darkroom-photo-exhibited']===true&&(s.facts['archive-published']!==true||s.inventory.some(i=>i.id==='darkroom-print'))))throw Error('PHOTO_DISPLAY_INVALID')
     if(s.facts['archive-published']===true&&!h.campaign?.archive?.order)throw Error('ARCHIVE_NOT_RECONSTRUCTED')
     if(s.facts['archive-room']!==undefined&&s.facts['archive-room']!==JSON.stringify(h.campaign?.archive?.content.room)||h.campaign?.archive?.content.room&&s.facts['archive-room']!==JSON.stringify(h.campaign.archive.content.room))throw Error('ARCHIVE_ROOM_MISMATCH')
     if(s.facts['archive-ledger-site']!==h.campaign?.archive?.content.ledgerSite||s.facts['archive-loan-read']!==undefined&&(s.facts['archive-loan-read']!==true||!h.campaign?.archive?.content.ledgerSite))throw Error('ARCHIVE_LOAN_STATE_INVALID')

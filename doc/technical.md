@@ -2509,3 +2509,6 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ### 附近目标稳定选择
 `stableInteraction` 仅从当前已揭示实体投影中选择严格小于 `oldStreetInteractionDistance` 的目标；原目标与最近对象距离差小于8时保持原目标，显式点击优先在有效范围内的目标。组件在切场景/实体消失时失效，不修改已打开互动的selected。共享54半径用于空间绑定与UI，保存结构和服务端行动规则不变。
+
+### 生成照片展示与取回
+`photoDisplayed`为展示态投影；campaign-decide的display-photo/retrieve-photo由同一会话权威校验及提交，withdraw摘要连带回收。`assertOldStreetHead`将v3的darkroom-print计数与展示事实对应，兼容无新字段旧旅程。`useCommittedStreetPhoto`仅读取该旅程已准入图片并校验SHA，清理BlobURL与过期异步响应。场景纸张、记录册、发现、暗房观察、行动知识和结局共用事实；publicRecordKnowledge明确位置不等于NPC读过图片。见 `photo-display-review-20260917.md`。

@@ -1,3 +1,4 @@
+import {photoDisplayed,photoDisplayLabel,photoDisplayDescription} from './old-street-photo-display'
 import {archiveLoanAt,archiveLoanKnown,archiveLoanLead} from './old-street-archive-loan'
 import {fieldChoices,fieldKnowledge,type FieldSelection} from './old-street-field-inquiry'
 import {archiveReadingChoices,archiveReadingStatus,type ArchiveReadingAction} from './old-street-archive-reading'
@@ -8,7 +9,7 @@ import {originalActionIntentIssues} from './original-action-intent'
 import {archiveEvidence,archiveRackState,archiveRackLabel} from './old-street-archive'
 import {publicRecordAction,publicRecordKnowledge} from './old-street-public-record'
 
-type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive'|'field';selection?:FieldSelection|number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction}
+type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive'|'field';selection?:FieldSelection|number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction|'display-photo'|'retrieve-photo'}
 /** Labels describe every visible choice, never which one is correct. The model
  * proposes an ID; the existing campaign authority still evaluates the choice. */
 export function campaignInputActions(h:OldStreetHead,target:string):CampaignAction[]{
@@ -21,6 +22,7 @@ export function campaignInputActions(h:OldStreetHead,target:string):CampaignActi
  if(target==='archive-index'&&archiveRackState(h.save.facts)?.indexBlocked)return []
  if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [...archiveReadingChoices(c.archive,h.save,target,h.save.locale).map(a=>({id:'campaign:'+a.selection,label:a.label,type:'campaign-decide' as const,stage:'archive' as const,selection:a.selection})),{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
  if(h.sceneId===campaignAnchor.trace.scene&&target===campaignAnchor.trace.target)return [
+  ...(c.archive?.order&&h.save.facts['archive-published']===true&&h.save.facts['darkroom-photo-choice']==='keep'?[{id:'campaign:'+ (photoDisplayed(h.save)?'retrieve-photo':'display-photo'),label:photoDisplayLabel(photoDisplayed(h.save),h.save.locale),type:'campaign-decide' as const,stage:'trace' as const,selection:photoDisplayed(h.save)?'retrieve-photo' as const:'display-photo' as const}]:[]),
   ...(c.archive?.order?[{id:h.save.facts['archive-published']===true?'campaign:withdraw-summary':'campaign:share-summary',label:publicRecordAction(h.save.facts['archive-published']===true,h.save.locale),type:'campaign-decide' as const,stage:'trace' as const,selection:h.save.facts['archive-published']===true?'withdraw' as const:'share' as const}]:[]),
   {id:'campaign:read-trace',label:t('查阅寄存记录','Read the filing records'),type:'campaign-read',stage:'trace'},
   ...(c.trace?.observed&&c.trace.selected===undefined?c.trace.content.records.map((r,selection)=>({
@@ -46,6 +48,7 @@ export function resolveCampaignInput(text:string,actions:ReadonlyArray<{id:strin
 export function campaignPropTitle(h:Pick<OldStreetHead,'save'|'campaign'>,target:string):readonly [string,string]|undefined{
  if(!h.campaign||!h.save.facts['letter-taken'])return
  if(h.campaign.archive&&archiveLoanAt(h.campaign.archive.content,target))return ['桌面 · 借放的工作日志','Table · work log on loan']
+ if(target==='record-book'&&photoDisplayed(h.save))return ['记录册 · 展出的旧街照片','Record book · displayed photograph']
  if(target==='record-book')return h.campaign.archive?.order?(h.save.facts['archive-published']===true?['记录册 · 已留下调查摘要','Record book · your findings']:['记录册 · 可留下调查摘要','Record book · share your findings']):['记录册 · 寄存记录','Record book · filing records']
  if(target==='photo-folder'&&h.campaign.trace?.selected!==undefined)return ['旧资料架','Old paper shelf']
 }
@@ -69,5 +72,6 @@ export function campaignInputKnowledge(h:OldStreetHead){
   if(c.archive.order)knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery})
  }
  if(c.parcel?.disposition)knowledge.push({id:'learned:campaign-disposition',text:c.parcel.disposition==='take'?t('寄存材料原件已在行囊里，不在架上。','The original archived papers are in your bag, no longer on the shelf.'):t('你已选择把寄存材料原件留在架上，记住内容。','You chose to leave the original archived papers on the shelf and remember their contents.')})
+ if(photoDisplayed(h.save))knowledge.push({id:'learned:displayed-photo',text:photoDisplayDescription(h.save)})
  return [...knowledge,...publicRecordKnowledge(h),...fieldKnowledge(h).map(k=>({...k,id:'learned:'+k.id}))]
 }

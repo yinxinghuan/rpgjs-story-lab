@@ -8,3 +8,5 @@
 .os-dev .os-campaign footer{align-items:stretch;gap:8px}
 .os-campaign .os-campaign__document-title{font:600 18px/1.35 "Songti SC",Georgia,serif;margin:8px 0 12px;overflow-wrap:anywhere}
 .os-campaign summary{min-height:44px;padding:12px 0;box-sizing:border-box;cursor:pointer}
+
+.os-campaign__record-actions{display:grid;gap:8px;margin:12px 0}.os-campaign__record-actions:empty{display:none}.os-dev .os-campaign__record-actions button{width:100%;max-width:none;min-height:44px;text-align:left;overflow-wrap:normal}

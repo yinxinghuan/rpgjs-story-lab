@@ -1,3 +1,4 @@
+import {photoDisplayed,photoDisplayDescription} from '../src/old-street-photo-display'
 import {oldStreetJournal} from '../src/old-street-journal'
 import {oldStreetAttemptHistory,oldStreetConversation} from '../src/old-street-conversation'
 import type {ModelRequest} from './model'
@@ -23,7 +24,7 @@ export function oldStreetAttemptContext(h:OldStreetHead,target:string,actions:Ar
  if(h.sceneId==='darkroom'&&target==='developing-bench'){
   const choice=h.save.facts['darkroom-photo-choice'],matched=!!h.save.facts['darkroom-photo-matched'],ready=actions.some(a=>a.id==='oldstreet:match-darkroom-photo')
   const developing=h.expansions?.[0]?.photoMethod==='develop-v1'
-  const text=h.save.locale==='zh'
+  const text=photoDisplayed(h.save)?photoDisplayDescription(h.save):h.save.locale==='zh'
    ?choice==='keep'?'完成的旧街照片已放进行囊，显影台上不再留有这张照片。':matched?'完成的旧街照片平放在显影台上。':ready?(developing?'显影台上的旧街照片需要调整焦距与曝光，使细节清晰、明暗合适。':'显影台上的旧街照片还需要手动拼合。'):'旧街照片尚未准备好，现在可以先观察显影台。'
    :choice==='keep'?'The completed street photograph is in your bag, no longer on the bench.':matched?'The completed street photograph lies on the developing bench.':ready?(developing?'The street photograph needs its focus and exposure adjusted until details are sharp and balanced.':'The street photograph on the bench still needs to be assembled by hand.'):'The street photograph is not ready yet; you can examine the developing bench.'
   knowledge.push({id:'visible:developing-bench',text})

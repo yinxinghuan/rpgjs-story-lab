@@ -1,3 +1,4 @@
+import {photoDisplayed} from '../src/old-street-photo-display'
 import {campaignPhotoPurpose} from '../src/old-street-campaign-story'
 import {prepareFieldAction} from './old-street-field-actions'
 import {campaignAnchor,campaignRecordMatches,readParcelContent,readTraceContent,type CampaignContext} from '../src/old-street-campaign'
@@ -48,12 +49,24 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
   }
  }else if(body.type==='campaign-decide'){
   if(body.stage==='trace'){
-   if(body.selection==='share'||body.selection==='withdraw'){
+   if(body.selection==='display-photo'||body.selection==='retrieve-photo'){
+    const displaying=body.selection==='display-photo'
+    if(!campaign.archive?.order||save.facts['archive-published']!==true||save.facts['darkroom-photo-choice']!=='keep'||typeof save.facts['darkroom-photo-matched']!=='string'||photoDisplayed(save)===displaying)throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
+    if(displaying){
+     const print=save.inventory.find(i=>i.id==='darkroom-print');if(!print||print.count!==1)throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
+     save.inventory=save.inventory.filter(i=>i.id!=='darkroom-print')
+    }else save.inventory.push({id:'darkroom-print',label:t('旧街照片','Old street photograph'),count:1,rarity:'common'})
+    save.facts['darkroom-photo-exhibited']=displaying
+    text=displaying?t('你把照片平放在公共记录册旁，供后来的人对照阅读。照片不在行囊里了；离开前仍可回来取走。','You lay the photograph beside the public record for later visitors to compare. It is no longer in your bag; you may take it back before leaving.'):t('你把记录册旁的照片收回行囊，调查摘要仍留在册页上。','You put the displayed photograph back in your bag. The written summary remains in the book.')
+   }else if(body.selection==='share'||body.selection==='withdraw'){
     if(!campaign.archive?.order)throw new LabError('CAMPAIGN_OBSERVATION_REQUIRED',409)
     const publish=body.selection==='share'
     if((save.facts['archive-published']===true)===publish)throw new LabError('CAMPAIGN_ALREADY_RESOLVED',409)
+    const recoverPhoto=!publish&&photoDisplayed(save)
+    if(recoverPhoto){save.facts['darkroom-photo-exhibited']=false;save.inventory.push({id:'darkroom-print',label:t('旧街照片','Old street photograph'),count:1,rarity:'common'})}
     save.facts['archive-published']=publish
     text=publish?t('你把核对过的经过抄进记录册，给后来的人留下一页。原件和密封信仍按原来的去向保存。','You copy the verified account into the record book for later visitors. The original papers and sealed letter stay where you chose to keep them.'):t('你从公共记录册撤下这页摘要。已经查清的经过仍记在自己的发现里。','You remove your summary from the public record book. What you learned remains in your own discoveries.')
+    if(recoverPhoto)text+=t(' 照片也一并收回行囊。',' The photograph is also returned to your bag.')
    }else{
    if(!campaign.trace?.observed||campaign.trace.selected!==undefined)throw new LabError('CAMPAIGN_OBSERVATION_REQUIRED',409)
    if(!campaignRecordMatches(campaign.trace.content,body.selection))throw new LabError('CAMPAIGN_RECORD_MISMATCH',409)

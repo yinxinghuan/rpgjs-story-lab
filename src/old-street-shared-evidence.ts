@@ -17,7 +17,7 @@ export function evidenceChoices(h:OldStreetHead,entity:string){
  const choices:Array<{id:string;kind:EvidenceKind;label:string;text:string}>=[]
  const photo=h.save.facts['darkroom-photo-discovery']
  if(typeof photo==='string'&&typeof h.save.facts['darkroom-photo-matched']==='string'){
-  if(!has('photo-shown')&&h.save.inventory.some(i=>i.id==='darkroom-print'&&i.count>0))choices.push({id:'evidence:show-photo',kind:'photo-shown',label:t('给你看我拼好的旧照','Show the photograph I pieced together'),text:photo})
+  if(!has('photo-shown')&&h.save.inventory.some(i=>i.id==='darkroom-print'&&i.count>0))choices.push({id:'evidence:show-photo',kind:'photo-shown',label:t('给你看这张旧街照片','Show this street photograph'),text:photo})
   if(!has('photo-shown')&&!has('photo-described'))choices.push({id:'evidence:describe-photo',kind:'photo-described',label:t('说说我在旧照里的发现','Describe what I found in the photograph'),text:photo})
  }
  if(h.campaign?.archive?.order&&!has('archive-account'))choices.push({id:'evidence:share-account',kind:'archive-account',label:t('告诉你我查清的记录','Share the account I reconstructed'),text:h.campaign.archive.content.discovery})
@@ -27,7 +27,7 @@ export function evidenceChoices(h:OldStreetHead,entity:string){
 export function sharedEvidenceKnowledge(save:StorySave,entity:string){
  const shown=sharedEvidence(save,entity).some(e=>e.kind==='photo-shown'),zh=save.locale==='zh'
  return sharedEvidence(save,entity).filter(e=>!shown||e.kind!=='photo-described').map(e=>({id:'received:'+e.kind,text:
-  (e.kind==='photo-shown'?(zh?'玩家曾在你面前出示拼好的照片，你能看见：':'The player showed you the completed photograph. You could see: '):e.kind==='photo-described'?(zh?'玩家曾向你转述照片里的发现；你没有看过照片原图：':'The player described a finding in a photograph; you have not seen the print: '):e.kind==='field-note'?(zh?'玩家曾向你转述补充便笺里的发现，你没有亲眼读过原件：':'The player told you what a supplementary note said; you have not read the original: '):(zh?'玩家曾告诉你以下档案调查结果；这是对方查明后分享的内容，不代表你亲历事件：':'The player shared this reconstructed archive account with you; it does not mean you witnessed the events: '))+e.text}))
+  (e.kind==='photo-shown'?(zh?'玩家曾在你面前出示这张照片，你能看见：':'The player showed you the completed photograph. You could see: '):e.kind==='photo-described'?(zh?'玩家曾向你转述照片里的发现；你没有看过照片原图：':'The player described a finding in a photograph; you have not seen the print: '):e.kind==='field-note'?(zh?'玩家曾向你转述补充便笺里的发现，你没有亲眼读过原件：':'The player told you what a supplementary note said; you have not read the original: '):(zh?'玩家曾告诉你以下档案调查结果；这是对方查明后分享的内容，不代表你亲历事件：':'The player shared this reconstructed archive account with you; it does not mean you witnessed the events: '))+e.text}))
 }
 export function evidenceRecallTopics(save:StorySave,entity:string){
  const zh=save.locale==='zh',entries=sharedEvidence(save,entity),shown=entries.find(e=>e.kind==='photo-shown'),described=entries.find(e=>e.kind==='photo-described'),account=entries.find(e=>e.kind==='archive-account'),note=entries.find(e=>e.kind==='field-note'),photo=shown??described
