@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {archiveRoomLayout,readArchiveRoom} from '../src/old-street-archive-room'
-import {archiveLayoutFromFacts,archiveEventSlots} from '../src/old-street-archive'
+import {archiveLayoutFromFacts,archiveEventSlots,readArchiveContent} from '../src/old-street-archive'
 import {oldStreetSpatialPlan,oldStreetPath,oldStreetWalkable,bindOldStreet} from '../src/old-street-space'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 import {compileLinkedParcel} from '../src/old-street-campaign'
@@ -70,4 +70,29 @@ test('moving a rack opens the actual index approach, changes collision and prese
  }
  assert.throws(()=>readArchiveRoom(['..I..','..M..','..m..','....L','.....','.Tt..','.....','.....','.....']),/INVALID/,'parking is horizontal and adjacent')
  assert.throws(()=>readArchiveRoom(['I....','..Mm.','.....','....L','.....','.Tt..','.....','.....','.....']),/NOT_BLOCKING/,'rack must create real access work')
+})
+
+
+test('alternating access requires actual movement and keeps a route back in each configuration',()=>{
+ const room=['.IL..','.Mm..','.....','.....','...S.','.Tt..','.....','.....','.....']
+ for(const shifted of [false,true]){
+  const state=archiveRoomLayout(room,shifted),facts={'archive-ready':true,'archive-room':JSON.stringify(room),'archive-rack-shifted':shifted}
+  const blocked=shifted?'archive-ledger':'archive-index',open=shifted?'archive-index':'archive-ledger'
+  assert.equal(state.alternating,true)
+  assert.ok(!oldStreetSpatialPlan({facts}).entities.some(e=>e.id===blocked))
+  const openProp=state.props.find(p=>p.id===open)!,blockedProp=state.props.find(p=>p.id===blocked)!,rack=state.props.find(p=>p.id==='archive-rack')!
+  assert.equal(oldStreetWalkable('archive',blockedProp.approach,{facts}),false)
+  assert.ok(oldStreetPath('archive',state.arrival,openProp.approach,{facts}).length)
+  assert.ok(oldStreetPath('archive',openProp.approach,rack.approach,{facts}).length)
+  const reversed={...facts,'archive-rack-shifted':!shifted}
+  assert.ok(oldStreetPath('archive',rack.approach,state.arrival,{facts:reversed}).length,'operator can still leave after reversing')
+ }
+})
+
+
+test('alternating shelf access cannot conceal an off-site loan behind an empty shelf',()=>{
+ const room=['.IL..','.Mm..','.....','.....','...S.','.Tt..','.....','.....','.....']
+ const content={title:'Archive',layout:'west-index',room,cards:[{id:'a',label:'Survey'},{id:'b',label:'Boards cut'},{id:'c',label:'Boards fitted'},{id:'d',label:'Bridge open'}],sources:{index:[{before:'a',after:'b'}],ledger:[{before:'b',after:'c'},{before:'c',after:'d'}]},discovery:'The bridge was surveyed and repaired.'}
+ assert.ok(readArchiveContent(content))
+ for(const ledgerSite of ['photo','laundry'])assert.throws(()=>readArchiveContent({...content,ledgerSite}),/alternating access requires/)
 })

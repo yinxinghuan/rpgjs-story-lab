@@ -1,3 +1,4 @@
+import {archiveRackState} from './old-street-archive'
 import type {StorySave} from './vendor/original-train/types'
 import {oldStreetRecordBookPose} from './old-street-record-book'
 
@@ -9,7 +10,7 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
   switch (id) {
     case 'roof-planks':return f['roof-bridge-laid']===true?['剩下的短木板','Short plank left behind']:f['roof-plank-source']==='shed'?['短木板与修补牌','Short plank and repair notice']:['长短两块木板','Long and short planks']
     case 'roof-cache':return f['roof-negative-taken']===true?['屋顶柜子 · 空格','Roof cabinet · empty compartment']:f['roof-box-open']===true?['屋顶柜子 · 底片套','Roof cabinet · negative sleeve']:['屋顶柜子','Roof cabinet']
-    case 'archive-rack':return f['archive-rack-shifted']===true?['移到一旁的储物架','Storage rack moved aside']:['挡住索引的储物架','Storage rack blocking the index']
+    case 'archive-rack':if(archiveRackState(f)?.ledgerBlocked)return ['挡住日志的储物架','Storage rack blocking the log'];return f['archive-rack-shifted']===true?['移到一旁的储物架','Storage rack moved aside']:['挡住索引的储物架','Storage rack blocking the index']
     case 'record-book': {
       if(f['archive-published']===true)return ['记录册 · 调查摘要','Record book · investigation summary']
       const pose=oldStreetRecordBookPose(save)

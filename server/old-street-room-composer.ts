@@ -1,10 +1,10 @@
 import {archiveRoomLayout,readArchiveRoom} from '../src/old-street-archive-room'
-type RoomPlan={indexSide:'left'|'right';storageShelves:number;rack:'none'|'left'|'right'}
+type RoomPlan={indexSide:'left'|'right';storageShelves:number;rack:'none'|'left'|'right'|'switch-left'|'switch-right'}
 type Cell={r:number;c:number;value:string}
 function readPlan(raw:unknown):RoomPlan{
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('ARCHIVE_ROOM_PLAN_INVALID')
  const r=raw as Record<string,unknown>
- if(Object.keys(r).some(k=>!['indexSide','storageShelves','rack'].includes(k))||!['left','right'].includes(String(r.indexSide))||!Number.isInteger(r.storageShelves)||Number(r.storageShelves)<0||Number(r.storageShelves)>3||!['none','left','right'].includes(String(r.rack)))throw Error('ARCHIVE_ROOM_PLAN_INVALID: use {indexSide:left|right, storageShelves:integer 0-3, rack:none|left|right}.')
+ if(Object.keys(r).some(k=>!['indexSide','storageShelves','rack'].includes(k))||!['left','right'].includes(String(r.indexSide))||!Number.isInteger(r.storageShelves)||Number(r.storageShelves)<0||Number(r.storageShelves)>3||!['none','left','right','switch-left','switch-right'].includes(String(r.rack)))throw Error('ARCHIVE_ROOM_PLAN_INVALID: use {indexSide:left|right, storageShelves:integer 0-3, rack:none|left|right|switch-left|switch-right}.')
  return r as RoomPlan
 }
 /** Model chooses spatial intent, a seeded constructor chooses actual cells.
@@ -24,10 +24,10 @@ export function composeArchiveRoom(raw:unknown,seed=Math.floor(Math.random()*0x1
    for(let c=0;c<5;c++)clear.add(standingRow*5+c)
    return true
   }
-  const direction=plan.rack==='left'?-1:1
+  const alternating=plan.rack.startsWith('switch-'),direction=plan.rack.endsWith('left')?-1:1
   const indexes=shuffled(starts.filter(p=>(plan.indexSide==='left'?p.c<=1:p.c>=3)&&(plan.rack==='none'||p.r<=6&&p.c+direction>=0&&p.c+direction<=4)))
-  if(!indexes.some(p=>place([{...p,value:'I'},...(plan.rack==='none'?[]:[{r:p.r+1,c:p.c,value:'M'},{r:p.r+1,c:p.c+direction,value:'m'}])],p.r+(plan.rack==='none'?1:2))))continue
-  if(!shuffled(starts).some(p=>place([{...p,value:'L'}],p.r+1)))continue
+  if(!indexes.some(p=>place([{...p,value:'I'},...(alternating?[{r:p.r,c:p.c+direction,value:'L'}]:[]),...(plan.rack==='none'?[]:[{r:p.r+1,c:p.c,value:'M'},{r:p.r+1,c:p.c+direction,value:'m'}])],p.r+(plan.rack==='none'?1:2))))continue
+  if(!alternating&&!shuffled(starts).some(p=>place([{...p,value:'L'}],p.r+1)))continue
   if(!shuffled(starts.filter(p=>p.c<4)).some(p=>place([{...p,value:'T'},{r:p.r,c:p.c+1,value:'t'}],p.r+1)))continue
   const empty=shuffled(starts.filter(p=>rows[p.r][p.c]==='.'&&!clear.has(p.r*5+p.c)))
   if(empty.length<plan.storageShelves)continue

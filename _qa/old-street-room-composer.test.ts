@@ -6,7 +6,7 @@ import {oldStreetPath,oldStreetWalkable} from '../src/old-street-space'
 
 test('spatial intent produces varied real rooms with exact furniture count, clear approaches and saved geometry',()=>{
  const distinct=new Set<string>()
- for(const indexSide of ['left','right'] as const)for(const rack of ['none','left','right'] as const)for(const storageShelves of [0,1,2,3])for(const seed of [0,1,17,4294967295]){
+ for(const indexSide of ['left','right'] as const)for(const rack of ['none','left','right','switch-left','switch-right'] as const)for(const storageShelves of [0,1,2,3])for(const seed of [0,1,17,4294967295]){
   const plan={indexSide,rack,storageShelves},result=composeArchiveRoom(plan,seed)
   assert.deepEqual(composeArchiveRoom(plan,seed),result,'seeded generation is repeatable, not repeated at load')
   distinct.add(result.room.join('/'))
@@ -15,11 +15,12 @@ test('spatial intent produces varied real rooms with exact furniture count, clea
   const index=initial.props.find(p=>p.id==='archive-index')!
   assert.equal(indexSide==='left'?index.body.x<172:index.body.x>172,true)
   assert.equal(!!initial.slide,rack!=='none')
-  if(initial.slide)assert.equal(initial.slide.to.x<initial.slide.from.x,rack==='left')
+  assert.equal(initial.alternating,rack.startsWith('switch-'))
+  if(initial.slide)assert.equal(initial.slide.to.x<initial.slide.from.x,rack.endsWith('left'))
   for(const shifted of [false,true]){
    const facts={'archive-ready':true,'archive-room':JSON.stringify(result.room),'archive-rack-shifted':shifted}
    const placed=archiveRoomLayout(result.room,shifted)
-   for(const p of placed.props.filter(p=>!p.id.startsWith('archive-storage-')&&!(placed.indexBlocked&&p.id==='archive-index'))){
+   for(const p of placed.props.filter(p=>!p.id.startsWith('archive-storage-')&&!(placed.indexBlocked&&p.id==='archive-index')&&!(placed.ledgerBlocked&&p.id==='archive-ledger'))){
     assert.equal(oldStreetWalkable('archive',p.approach,{facts}),true)
     assert.ok(oldStreetPath('archive',placed.arrival,p.approach,{facts}).length)
    }

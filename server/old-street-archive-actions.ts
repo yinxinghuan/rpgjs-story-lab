@@ -1,7 +1,7 @@
 import {archiveLoanAt,archiveLoanLead} from '../src/old-street-archive-loan'
 import {campaignPhotoPurpose} from '../src/old-street-campaign-story'
 import {applyArchiveReading} from './old-street-archive-reading'
-import {archiveEvidence,archiveOrderMatches,readArchiveContent,assertArchiveInquiry,archiveRackState,type ArchiveSource} from '../src/old-street-archive'
+import {archiveEvidence,archiveRackDescription,archiveOrderMatches,readArchiveContent,assertArchiveInquiry,archiveRackState,type ArchiveSource} from '../src/old-street-archive'
 import {bindOldStreet,oldStreetWalkable} from '../src/old-street-space'
 import type {OldStreetHead} from '../src/old-street-head'
 import type {CampaignCandidate} from './old-street-campaign-actions'
@@ -27,7 +27,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
   text=t('这些材料来自隔壁档案工作间。地下室东侧的门已可通行，里面有两处原始记录和一张整理桌。','These papers came from the adjoining archive workroom. The cellar’s east doorway is accessible; inside are two sets of source records and a sorting table.')
   if(c.archive.content.ledgerSite)text=t('档案工作间在地下室东侧门后。进去查找施工索引、工作日志和整理桌。','The archive is through the cellar’s east doorway. Look for the index, work log and sorting table inside.')
   save.objective=t('从地下室侧门进入档案工作间，调查两处记录，在桌面还原先后顺序。','Enter the archive through the cellar side door. Examine both sources and reconstruct the order at the table.')
-  if(archiveRackState(save.facts)?.slide)text+=t('施工索引前挡着一座可以挪开的储物架，旁边留着空位。','A movable storage rack blocks the work index; an empty space beside it lets you slide it aside.')
+  if(archiveRackState(save.facts)?.slide)text+=' '+archiveRackDescription(save.facts,save.locale)
  }else{
   const archive=c.archive;if(!archive)throw new LabError('CAMPAIGN_NOT_PREPARED',409)
   const source=body.target==='archive-index'?'index':body.target==='archive-ledger'||offSite?'ledger':undefined
@@ -42,7 +42,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
    if((save.facts['archive-rack-shifted']===true)===shifted)throw new LabError('CAMPAIGN_ALREADY_RESOLVED',409)
    save.facts['archive-rack-shifted']=shifted
    if(!oldStreetWalkable('archive',position,save))throw new LabError('CAMPAIGN_RACK_SPACE_REQUIRED',409)
-   text=shifted?t('储物架移开了，现在可以走近索引。','The rack slides aside. You can now reach the work index.'):t('储物架回到原位，已读线索仍然保留。','The rack is back. Your notes are still saved.')
+   text=archiveRackDescription(save.facts,save.locale)
   }else if(body.type==='campaign-observe'&&source){
    if(archive.content.denseSource===source&&!archive.examined.includes(source))throw new LabError('CAMPAIGN_READING_AID_REQUIRED',409)
    if(!archive.examined.includes(source))archive.examined.push(source as ArchiveSource)

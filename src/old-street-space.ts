@@ -1,6 +1,7 @@
+import {archiveSourceBlocked} from './old-street-archive'
 import {roofRecoveryProps,roofRecoveryObstacles,roofStockVisible,roofSpareVisible,roofSpareBoard} from './old-street-roof-recovery'
 import {oldStreetFurniture} from './old-street-furniture'
-import {archiveLayout,archiveLayoutFromFacts,archiveRackState} from './old-street-archive'
+import {archiveLayout,archiveLayoutFromFacts} from './old-street-archive'
 import {oldStreetCrateFootprint} from './old-street-crate-layout'
 import {oldStreetCharacterBindings,usesCurrentLaundryCast,usesCurrentPhotographerCast} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
@@ -139,7 +140,7 @@ export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn:id==='archive'?archiveLayout('west-index').arrival:pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),
-      ...oldStreetProjectedProps(save).filter(p=>!p.id.startsWith('archive-storage-')&&!(p.id==='archive-index'&&archiveRackState(save.facts)?.indexBlocked)).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
+      ...oldStreetProjectedProps(save).filter(p=>!p.id.startsWith('archive-storage-')&&!archiveSourceBlocked(save.facts,p.id)).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
     ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: oldStreetCharacterBindings,
   }
 }

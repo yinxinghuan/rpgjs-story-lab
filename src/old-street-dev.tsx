@@ -1,3 +1,4 @@
+import {archiveRackDescription} from './old-street-archive'
 import {stableInteraction} from './nearby-interaction'
 import {oldStreetInteractionDistance} from './old-street-space'
 import {OldStreetConversationChoices} from './old-street-conversation-choices'
@@ -594,7 +595,7 @@ export default function OldStreetDev() {
     const clockAvailable=entity.id==='drawer'&&oldStreetContextAction(head.save,entity).actions.includes('oldstreet:inspect-clock')
     return clockAvailable?text(['抽屉旁 · 检查钟底','By the drawer · inspect clock']):known?.name??(door?text(oldStreetRooms[door.destination.room]):text(oldStreetPerson(entity.id,head.save)?.appearance??oldStreetPropState(entity.id,head.save)??propNames[entity.id]??[entity.id,entity.id]))
   }
-  const inspectionHint=inspectionOpen&&!loanTarget&&!expansionTarget&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
+  const inspectionHint=inspectionOpen&&chosen?.id==='archive-rack'?archiveRackDescription(head.save.facts,locale):inspectionOpen&&!loanTarget&&!expansionTarget&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
   const nearbyDarkroom=head.scene==='darkroom'&&bindOldStreet(locale,head.save).canInteract('developing-bench',head.scene,feet)
   const showExpansionPhoto=expansionCapabilities.media&&head.scene==='darkroom'
   const displayedPhoto=useCommittedStreetPhoto(connection.api,serverHead.current?.id,head.save.facts['darkroom-photo-matched'],head.scene==='shop'&&photoDisplayed(head.save))

@@ -2512,3 +2512,9 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ### 生成照片展示与取回
 `photoDisplayed`为展示态投影；campaign-decide的display-photo/retrieve-photo由同一会话权威校验及提交，withdraw摘要连带回收。`assertOldStreetHead`将v3的darkroom-print计数与展示事实对应，兼容无新字段旧旅程。`useCommittedStreetPhoto`仅读取该旅程已准入图片并校验SHA，清理BlobURL与过期异步响应。场景纸张、记录册、发现、暗房观察、行动知识和结局共用事实；publicRecordKnowledge明确位置不等于NPC读过图片。见 `photo-display-review-20260917.md`。
+
+### 档案间交替通路
+
+`composeArchiveRoom` 新增 `switch-left/switch-right` 摆放意图：把日志放在索引相邻位置，储物架的两种实体站位分别阻挡一处记录。`archiveRoomLayout` 用现有碰撞及路径算法分别验证两种布局，允许唯一受架子阻挡的记录暂不可达，要求架子、整理桌、出口和另一记录均可达；`archiveSourceBlocked` 同时约束空间实体与自由输入行动。使用既有 `archive-rack-shifted` 权威状态，不改旧旅程结构或已保存的布局。外借日志与交替通路组合在内容准入时拒绝。
+
+机关提示由同一实际布局计算，地图只显示短目标名，具体说明在主动互动出现；模型上下文可获知当前可见的通路状态，不能凭生成文字越过家具取得证据。档案完成结果出现时，面板正文回到顶部。核心验证包括房间生成、两种读取顺序、幂等操作与刷新恢复；专用 `_qa/alternating-archive-playtest-server.ts` 只用内存合成旅程和普通权威行动预备未查阅的档案，重启后不保留该测试旅程，不能当生产存档服务。

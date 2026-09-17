@@ -5,7 +5,7 @@ export const archiveRoomArrival={x:184,y:456}
 type Point={x:number;y:number}
 type Body=Point&{w:number;h:number}
 type ArchiveProp={id:string;room:'archive';body:Body;position:Point;approach:Point;actions:string[]}
-type Room={floor:Body;arrival:Point;props:ArchiveProp[];indexBlocked:boolean;slide?:{from:Body;to:Body}}
+type Room={floor:Body;arrival:Point;props:ArchiveProp[];indexBlocked:boolean;ledgerBlocked:boolean;alternating:boolean;slide?:{from:Body;to:Body}}
 const cache=new Map<string,[Room,Room]>()
 const overlaps=(a:Body,b:Body)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y
 
@@ -38,15 +38,17 @@ export function archiveRoomLayout(raw:unknown,shifted=false):Room{
  const make=(moved:boolean):Room=>{
   const placed=props.map(p=>p.id!=='archive-rack'||!moved||!slide?p:{...p,body:slide.to,position:{x:slide.to.x+20,y:slide.to.y+40},approach:{x:slide.to.x+12,y:slide.to.y+44}})
   const index=placed.find(p=>p.id==='archive-index')!
-  const indexBlocked=!!slide&&!moved
+  const ledger=placed.find(p=>p.id==='archive-ledger')!
+  const alternating=!!slide&&overlaps({...ledger.approach,w:16,h:26},slide.to)
+  const indexBlocked=!!slide&&!moved,ledgerBlocked=alternating&&moved
   // A movable rack must really obstruct the index, not manufacture a story
   // gate in an otherwise clear room. Parking it must expose the real approach.
   if(indexBlocked&&!overlaps({...index.approach,w:16,h:26},slide!.from))throw Error('ARCHIVE_RACK_NOT_BLOCKING: put M in the cell directly below I, with m adjacent horizontally.')
   const canWalk=(p:Point)=>walkable(placed,p)
   if(!canWalk(archiveRoomArrival))throw Error('ARCHIVE_ROOM_UNREACHABLE: the bottom entrance is blocked.')
-  const blocked=placed.filter(p=>!p.id.startsWith('archive-storage-')&&!(indexBlocked&&p.id==='archive-index')).filter(p=>!findGridPath(archiveRoomArrival,p.approach,canWalk).length)
+  const blocked=placed.filter(p=>!p.id.startsWith('archive-storage-')&&!(indexBlocked&&p.id==='archive-index')&&!(ledgerBlocked&&p.id==='archive-ledger')).filter(p=>!findGridPath(archiveRoomArrival,p.approach,canWalk).length)
   if(blocked.length)throw Error('ARCHIVE_ROOM_UNREACHABLE: '+blocked.map(p=>p.id).join(', ')+' cannot be reached from the bottom '+(moved?'after moving the rack':'in the initial state')+'. Leave clear standing floor directly below each item and a connected path to it.')
-  return {floor:archiveRoomFloor,arrival:archiveRoomArrival,props:placed,indexBlocked,...(slide?{slide}:{})}
+  return {floor:archiveRoomFloor,arrival:archiveRoomArrival,props:placed,indexBlocked,ledgerBlocked,alternating,...(slide?{slide}:{})}
  }
  const states:[Room,Room]=[make(false),make(true)]
  if(slide){

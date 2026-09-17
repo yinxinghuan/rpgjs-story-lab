@@ -1,3 +1,4 @@
+import {archiveSourceBlocked,archiveRackDescription} from './old-street-archive'
 import {photoDisplayed,photoDisplayLabel,photoDisplayDescription} from './old-street-photo-display'
 import {archiveLoanAt,archiveLoanKnown,archiveLoanLead} from './old-street-archive-loan'
 import {fieldChoices,fieldKnowledge,type FieldSelection} from './old-street-field-inquiry'
@@ -19,7 +20,7 @@ export function campaignInputActions(h:OldStreetHead,target:string):CampaignActi
  if(c.archive&&archiveLoanAt(c.archive.content,target)&&h.sceneId===c.archive.content.ledgerSite)return [{id:'campaign:read-loaned-log',label:t('查阅借放的工作日志','Read the work log on loan'),type:'campaign-observe',stage:'archive'},...field]
  if(field.length)return field
  if(h.sceneId==='archive'&&c.archive&&target==='archive-rack'&&archiveRackState(h.save.facts)?.slide)return [{id:'campaign:move-rack',label:archiveRackLabel(h.save.facts,h.save.locale),type:'campaign-decide',stage:'archive',selection:h.save.facts['archive-rack-shifted']===true?'restore':'slide'}]
- if(target==='archive-index'&&archiveRackState(h.save.facts)?.indexBlocked)return []
+ if(archiveSourceBlocked(h.save.facts,target))return []
  if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [...archiveReadingChoices(c.archive,h.save,target,h.save.locale).map(a=>({id:'campaign:'+a.selection,label:a.label,type:'campaign-decide' as const,stage:'archive' as const,selection:a.selection})),{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
  if(h.sceneId===campaignAnchor.trace.scene&&target===campaignAnchor.trace.target)return [
   ...(c.archive?.order&&h.save.facts['archive-published']===true&&h.save.facts['darkroom-photo-choice']==='keep'?[{id:'campaign:'+ (photoDisplayed(h.save)?'retrieve-photo':'display-photo'),label:photoDisplayLabel(photoDisplayed(h.save),h.save.locale),type:'campaign-decide' as const,stage:'trace' as const,selection:photoDisplayed(h.save)?'retrieve-photo' as const:'display-photo' as const}]:[]),
@@ -66,6 +67,7 @@ export function campaignInputKnowledge(h:OldStreetHead){
  if(c.trace?.selected!==undefined)knowledge.push({id:'learned:campaign-match',text:t(`已确认记录：${c.trace.content.records[c.trace.selected].label}。这条记录指向地下储物室的旧资料架。`,`Confirmed record: ${c.trace.content.records[c.trace.selected].label}. This record points to the old paper shelf in the cellar.`)})
  if(c.parcel?.observed){knowledge.push({id:'learned:campaign-papers',text:c.parcel.content.fragment});if(c.parcel.content.question)knowledge.push({id:'learned:campaign-question',text:c.parcel.content.question})}
  if(c.archive){
+  if(h.sceneId==='archive'&&archiveRackState(h.save.facts)?.slide)knowledge.push({id:'visible:archive-access',text:archiveRackDescription(h.save.facts,h.save.locale)})
   if(archiveLoanKnown(c.archive,h.save.facts))knowledge.push({id:'learned:archive-loan',text:archiveLoanLead(c.archive.content,h.save.locale)})
   const reading=archiveReadingStatus(c.archive,h.save,'archive-'+c.archive.content.denseSource,h.save.locale);if(reading)knowledge.push({id:'learned:archive-reading-status',text:reading})
   for(const source of c.archive.examined)knowledge.push({id:'learned:archive-'+source,text:archiveEvidence(c.archive.content,source,h.save.locale).join(' ')})

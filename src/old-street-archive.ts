@@ -35,6 +35,7 @@ export function readArchiveContent(raw:unknown):ArchiveContent{
  if(r.ledgerSite!==undefined&&!['photo','laundry'].includes(String(r.ledgerSite)))throw Error('ARCHIVE_LEDGER_SITE_INVALID')
  if(r.ledgerSite&&r.denseSource==='ledger')throw Error('ARCHIVE_LEDGER_SITE_INVALID: an off-site log is readable directly; choose denseSource index instead.')
  const content:ArchiveContent={...(r.ledgerSite===undefined?{}:{ledgerSite:r.ledgerSite as 'photo'|'laundry'}),...(r.denseSource===undefined?{}:{denseSource:r.denseSource as ArchiveSource}),title:line(r.title,60),layout:r.layout as ArchiveContent['layout'],...(r.room===undefined?{}:{room:readArchiveRoom(r.room)}),cards,sources:{index:evidence(sources.index),ledger:evidence(sources.ledger)},discovery:line(r.discovery,300)}
+ if(content.ledgerSite&&content.room&&archiveRoomLayout(content.room).alternating)throw Error('ARCHIVE_LEDGER_SITE_INVALID: alternating access requires the work log in this room, not on loan.')
  const all=[...content.sources.index,...content.sources.ledger]
  if(all.length!==3||new Set(all.map(r=>r.before+':'+r.after)).size!==3||archiveOrders(all).length!==1)throw Error('ARCHIVE_ORDER_AMBIGUOUS')
  if(archiveOrders(content.sources.index).length<=1||archiveOrders(content.sources.ledger).length<=1)throw Error('ARCHIVE_EVIDENCE_REDUNDANT')
@@ -101,4 +102,19 @@ export function archiveRackLabel(facts:Record<string,unknown>,locale:'zh'|'en'){
  * onInit places/hides them using the admitted room, never the placeholders. */
 export function archiveEventSlots(){
  return [...archiveLayout('west-index').props,...[...Array.from({length:6},(_,i)=>`archive-storage-${i}`),'archive-rack'].map(id=>({id,room:'archive' as const,body:{x:92,y:96,w:40,h:40},position:{x:112,y:136},approach:{x:104,y:140},actions:[] as string[]}))]
+}
+
+/** Visible obstructed shelves remain scenery, not remote action targets. */
+export function archiveSourceBlocked(facts:Record<string,unknown>,target:string){
+ if(target!=='archive-index'&&target!=='archive-ledger')return false
+ const state=archiveRackState(facts)
+ return target==='archive-index'?!!state?.indexBlocked:!!state?.ledgerBlocked
+}
+export function archiveRackDescription(facts:Record<string,unknown>,locale:'zh'|'en'){
+ const state=archiveRackState(facts),zh=locale==='zh'
+ if(!state?.slide)return ''
+ if(state.alternating)return state.indexBlocked
+  ?(zh?'架子挡在施工索引前，旁边的工作日志可以查阅。移架后会露出索引、挡住日志；读过的内容会保留在发现中。':'The rack blocks the index; the work log beside it is reachable. Sliding it exposes the index and blocks the log. Evidence you read stays in your discoveries.')
+  :(zh?'索引已经露出来，工作日志被架子挡住。可以把架子移回去查日志，读过的内容不会丢失。':'The index is exposed, but the rack now blocks the work log. Slide it back to reach the log; evidence you have read is kept.')
+ return state.indexBlocked?(zh?'储物架挡住了施工索引，旁边有空位可以移开。':'The rack blocks the work index. An empty space beside it lets you slide it aside.'):(zh?'储物架已移到一旁，施工索引可以查阅。':'The rack is aside and the work index is reachable.')
 }

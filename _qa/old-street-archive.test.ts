@@ -58,10 +58,11 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
  assert.equal(oldStreetWalkable('archive',{x:plan.props[0].body.x+4,y:plan.props[0].body.y+4},save),false,'furniture blocks passage')
 })
 
-for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async(t)=>{
+for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan','switch-index-first','switch-log-first'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async(t)=>{
  const loanSite=readingMode==='photo-loan'?'photo':readingMode==='laundry-loan'?'laundry':undefined
- const fullCommission=readingMode==='commission'||!!loanSite,direct=readingMode==='direct'||fullCommission
- const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(loanSite?{ledgerSite:loanSite}:{}),...(direct&&!loanSite?{}:{denseSource:'index'})}
+ const alternating=readingMode.startsWith('switch-'),logFirst=readingMode==='switch-log-first'
+ const fullCommission=readingMode==='commission'||!!loanSite,direct=readingMode==='direct'||fullCommission||alternating
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:alternating?'switch-left':'left'},...(loanSite?{ledgerSite:loanSite}:{}),...(direct&&!loanSite?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0,interpretationCalls=0,photoPlan:ExpansionPlan|undefined
@@ -117,8 +118,17 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
   s=authority();assert.deepEqual(await s.action('synthetic',h.id,admitted.b),admitted.r)
   await steps(['archive'])
   assert.ok(!oldStreetSpatialPlan(h.save).entities.some(e=>e.id==='archive-index'),'blocked source is not an available remote read')
+  if(logFirst)await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
   const shifted=await send('archive-rack',{type:'free-input',text:archiveRackLabel(h.save.facts,'en'),mode:'local'})
   assert.equal(h.save.facts['archive-rack-shifted'],true)
+  if(alternating){
+   assert.ok(!oldStreetSpatialPlan(h.save).entities.some(e=>e.id==='archive-ledger'))
+   assert.deepEqual(campaignInputActions(h,'archive-ledger'),[])
+   const body={...input('archive-rack',{type:'campaign-observe',stage:'archive'}),target:'archive-ledger'}
+   await assert.rejects(s.action('synthetic',h.id,body),/ACTION_UNAVAILABLE/)
+   s=authority();h=s.get('synthetic',h.id)
+   assert.equal(h.save.facts['archive-rack-shifted'],true,'restart keeps the selected physical configuration')
+  }
   assert.equal(h.save.facts['archive-reconstructed'],undefined,'moving furniture is not solving the investigation')
   assert.equal(h.save.blocks.at(-1)?.data?.archiveReconstructed,0,'ending cannot cite a movement as the reconstruction')
   assert.deepEqual(await s.action('synthetic',h.id,shifted.b),shifted.r,'lost response replays without moving twice')
@@ -149,11 +159,11 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
     assert.deepEqual(h.campaign!.archive!.examined,['index'],'returning never erases evidence')
    }
   }else await send('archive-index',{type:'free-input',text:'Examine the work index',mode:'local'})
-  assert.equal(campaignInputKnowledge(h).filter(k=>k.id.startsWith('learned:archive-')).length,1)
+  assert.equal(campaignInputKnowledge(h).filter(k=>k.id.startsWith('learned:archive-')).length,logFirst?2:1)
   await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'restore'})
   assert.equal(h.save.facts['archive-rack-shifted'],false)
-  assert.deepEqual(h.campaign?.archive?.examined,['index'],'putting it back never erases learned evidence')
-  await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'slide'})
+  assert.deepEqual(h.campaign?.archive?.examined,logFirst?['ledger','index']:['index'],'putting it back never erases learned evidence')
+  if(!alternating)await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'slide'})
   await steps(['cellar','archive'])
   await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
   if(loanSite){
