@@ -23,6 +23,22 @@ export function OldStreetCampaignView({campaign,stage,published=false,locale,ses
   void poll();return()=>{active=false;if(timer)clearTimeout(timer)}
  },[path,api,refresh,Boolean(instance)])
  const prepare=async()=>{if(waiting)return;setWaiting(true);setFailed(false);try{const r=await api(path,{retry:job?.state==='failed'});setJob(r.job);setRefresh(n=>n+1)}catch{setFailed(true)}finally{setWaiting(false)}}
+ // Opening this view follows the normal walk-to-anchor action. Preparation
+ // may continue after closing, but observation is committed only while open.
+ // Latches prevent rerenders/StrictMode from retrying a rejected operation.
+ const started=useRef<string>(),readAttempt=useRef<string>()
+ useEffect(()=>{
+  if(busy||waiting||(!instance&&reading)||failed||feedback)return
+  if(instance?.observed)return
+  if(instance||job?.state==='ready'){
+   if(readAttempt.current===path)return
+   readAttempt.current=path
+   void act(instance?'observe':'read')
+  }else if(!job&&started.current!==path){
+   started.current=path
+   void prepare()
+  }
+ },[path,instance,job,reading,waiting,failed,busy,feedback,act])
  const reconnect=()=>{setReading(true);setFailed(false);setRefresh(n=>n+1)}
  const trace=campaign.trace,parcel=campaign.parcel
  const heading=stage==='trace'&&campaign.archive?.order?t('记录册','Record book'):t(stage==='trace'?'寄存记录':'寄存材料',stage==='trace'?'Filing records':'Filed papers')
@@ -41,7 +57,7 @@ export function OldStreetCampaignView({campaign,stage,published=false,locale,ses
     <section className="os-campaign__clue"><strong>{t('信旁的寄存条','The filing slip')}</strong><p>{trace.content.clue.mark} · {trace.content.clue.wrapping}</p></section>
     <p>{t('哪条记录同时符合这两处特征？','Which record matches both details?')}</p>
     <div className="os-campaign__records">{trace.content.records.map((r,index)=><button key={index} disabled={busy||trace.selected!==undefined} onClick={()=>void act('decide',index)} aria-pressed={trace.selected===index}><strong>{r.label}</strong><span>{r.mark}</span><span>{r.wrapping}</span></button>)}</div>
-    {trace.selected!==undefined&&!campaign.archive?.order&&<p>{t('记录对上了。沿合住院的台阶到地下储物室，找资料架。','The record matches. Take the courtyard steps down to the cellar and find the paper shelf.')}</p>}
+    {trace.selected!==undefined&&!campaign.archive?.order&&<p>{t('记录对上了。对应的纸袋在地下储物室的资料架上。','The record matches. The packet is on the paper shelf in the cellar.')}</p>}
     </details>
    </>:parcel?<>
     {trace?.selected!==undefined&&<p className="os-campaign__clue">{trace.content.records[trace.selected].label} · {trace.content.records[trace.selected].mark}</p>}

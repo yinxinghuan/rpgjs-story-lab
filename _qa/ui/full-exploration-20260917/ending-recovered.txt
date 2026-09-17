@@ -1,0 +1,15 @@
+Browser tab: 19, Title: "旧街探索 · 试玩", URL: "http://127.0.0.1:55673/?debug=1&shop_art=pixel&shop_environment=whole".
+1 AXWebArea 旧街探索 · 试玩, URL: 127.0.0.1:55673/?debug=1&shop_art=pixel&shop_environment=whole
+	2 container Journey epilogue
+		12 text THE LAST LETTER
+		13 container
+			14 text END OF THIS JOURNEY
+			15 heading A letter and an answer, Value: 1
+				16 text A letter and an answer
+			17 text The letter reached its destination. Your visit left its mark on the old street.
+		8 container
+			18 button View journeys
+			19 button Replay epilogue
+			11 button Explore again
+
+The focused UI element is 1 AXWebArea 旧街探索 · 试玩, URL: 127.0.0.1:55673/?debug=1&shop_art=pixel&shop_environment=whole
