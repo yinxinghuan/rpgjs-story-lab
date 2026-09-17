@@ -1,3 +1,4 @@
+import {journalArtOperation,prepareJournalArt,type JournalArtRuntime} from './old-street-journal-media'
 import {prepareNextStreetContent} from './old-street-prefetch'
 import {LabError} from '../src/journey-runtime'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
@@ -42,7 +43,7 @@ export function oldStreetExpansionOperation(method:string,owner:string,id:string
 
 export const oldStreetJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
 /** Owner is supplied exclusively by the Worker's capability boundary. */
-export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void},campaign?:{jobs:OldStreetCampaignJobs;background:(p:Promise<unknown>)=>void}){
+export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void},campaign?:{jobs:OldStreetCampaignJobs;background:(p:Promise<unknown>)=>void},journalArt?:JournalArtRuntime){
  try{
   if(request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(OLD_STREET_API_PATH.length)
@@ -55,8 +56,13 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive|campaign-field))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(journal-art|journal-art-file|actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive|campaign-field))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
+  if(m[2]==='journal-art')return oldStreetJson(journalArtOperation(request.method,owner,m[1],request.method==='POST'?await readBody(request):undefined,journalArt))
+  if(m[2]==='journal-art-file'&&request.method==='GET'){
+   if(!journalArt)throw new LabError('ART_NOT_AVAILABLE',503)
+   return new Response(new Uint8Array(await journalArt.media.file(owner,m[1],url.searchParams.get('asset')??'')),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
+  }
   if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion,campaign:!!campaign})}
   if(m[2]==='campaign-trace'||m[2]==='campaign-parcel'||m[2]==='campaign-archive'||m[2]==='campaign-field')return oldStreetJson(oldStreetCampaignOperation(request.method,owner,m[1],m[2]==='campaign-trace'?'trace':m[2]==='campaign-parcel'?'parcel':m[2]==='campaign-field'?'field':'archive',campaign?.jobs,request.method==='POST'?await readBody(request):undefined,campaign?.background??(()=>{})))
   if(m[2]==='expansion-photo'){
@@ -72,6 +78,7 @@ export async function handleOldStreetSession(request:Request,owner:string,author
   if(request.method==='GET'&&m[2]==='events')return oldStreetJson({events:authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
   if(request.method==='POST'&&m[2]==='actions'){
    const result=await authority.action(owner,m[1],await readBody(request))
+   prepareJournalArt(owner,m[1],journalArt)
    prepareNextStreetContent(owner,result,campaign?.jobs,campaign?.background??(()=>{}))
    return oldStreetJson(result)
   }

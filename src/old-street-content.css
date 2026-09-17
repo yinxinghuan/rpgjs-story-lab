@@ -50,3 +50,5 @@
 .os-journal__collection details>p{padding:0 0 14px;margin:0;font-size:16px;line-height:1.6}
 .os-journal__empty{padding:24px 12px;text-align:center;color:#5a6453}.os-journal__empty>svg{width:48px;height:48px;margin:0 auto}
 @media(max-width:360px){.os-journal__thumb{width:56px;height:64px}.os-journal__item,.os-journal__collection summary{gap:10px}.os-journal__overview{gap:6px}}
+.os-journal p.os-journal__media-status{font:13px/1.5 system-ui;color:#5a6453;margin:8px 0}
+.os-dev .os-journal__media-retry{min-height:44px;width:100%;margin:4px 0 8px;background:transparent;border:1px solid #bcb29f;color:#354b3d;font:14px/1.4 system-ui;padding:8px}

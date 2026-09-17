@@ -27,7 +27,7 @@ const paths:Record<Kind,string>={
 }
 export function JournalSymbol({kind}:{kind:Kind}){return <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[kind]}/></svg>}
 /** Display-only registry. Eligibility comes from oldStreetJournal, never this catalog. */
-export function OldStreetJournalArt({id,category,save,photoImage}:{id:string;category:'items'|'notes'|'people';save:Pick<StorySave,'facts'>;photoImage?:string}){
+export function OldStreetJournalArt({id,category,save,photoImage,generatedImage}:{id:string;category:'items'|'notes'|'people';save:Pick<StorySave,'facts'>;photoImage?:string;generatedImage?:string}){
  let src='',crop='',width=0,height=0,kind:Kind='paper'
  if(category==='people'){
   kind='person'
@@ -46,6 +46,7 @@ export function OldStreetJournalArt({id,category,save,photoImage}:{id:string;cat
  else if(id.includes('negative')||id==='roof-index-read')kind='film'
  else if((id==='photos'||id==='photos-matched'||id==='photos-returned')){src=save.facts['photos-matched']===true?oldStreetPhotoPuzzle.image:'';kind='photo'}
  else if(id==='darkroom-print'||id.startsWith('darkroom-photo')){src=photoImage??'';kind='photo'}
+ if(generatedImage){src=generatedImage;crop=''}
  const [failed,setFailed]=useState(false)
  useEffect(()=>setFailed(false),[src])
  return <span className={'os-journal__thumb'+(category==='people'?' is-person':'')} aria-hidden="true">

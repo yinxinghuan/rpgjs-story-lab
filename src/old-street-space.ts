@@ -1,3 +1,4 @@
+import {oldStreetMediatedCast,type JournalCastSnapshot} from './old-street-mediated-cast'
 import {archiveSourceBlocked} from './old-street-archive'
 import {roofRecoveryProps,roofRecoveryObstacles,roofStockVisible,roofSpareVisible,roofSpareBoard} from './old-street-roof-recovery'
 import {oldStreetFurniture} from './old-street-furniture'
@@ -141,15 +142,17 @@ export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),
       ...oldStreetProjectedProps(save).filter(p=>!p.id.startsWith('archive-storage-')&&!archiveSourceBlocked(save.facts,p.id)).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
-    ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: oldStreetCharacterBindings,
+    ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: oldStreetCharacterBindings.map(c=>({...c,entities:[...c.entities]})),
   }
 }
-export function bindOldStreet(locale: Locale, save: Pick<StorySave, 'facts'>) {
+export function bindOldStreet(locale: Locale, save: JournalCastSnapshot) {
   const cartridge=oldStreetCartridge(locale)
   // Optional geometry has optional rules; historical journeys must not gain
   // entities simply to satisfy the compiler's complete-binding contract.
   if(save.facts['roof-recovery']!==true)cartridge.domainRules!.rules=cartridge.domainRules!.rules.filter(r=>!r.requirements.some(q=>q.type==='fact'&&q.id==='roof-recovery'))
-  return compileSpatialBinding(cartridge, oldStreetSpatialPlan(save), (room, p) => oldStreetWalkable(room, p, save))
+  const world=oldStreetSpatialPlan(save)
+  for(const {character,entity} of oldStreetMediatedCast(save)){cartridge.characters.push(character);world.characters.push({id:character.id,kind:'mediated',entities:[entity]})}
+  return compileSpatialBinding(cartridge, world, (room, p) => oldStreetWalkable(room, p, save))
 }
 
 /** RPG-JS requires a Tiled object layer for its character/event layer. Export

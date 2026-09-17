@@ -7,7 +7,7 @@ import {allowedImageUrl,inspectSizedPng} from './journal-image'
 import {generateImageMedia,waitForMediaTask,MediaServiceError} from '../src/vendor/media/client'
 
 const size={width:768,height:576} as const
-type Asset=Awaited<ReturnType<typeof inspectPhoto>>
+type Asset={sha256:string;bytes:number;width:number;height:number}
 const inspectPhoto=(bytes:Uint8Array)=>inspectSizedPng(bytes,size)
 export type ExpansionPhotoJob={id:string;requestId:string;prompt:string;attempt:number;state:'preparing'|'failed'|'candidate';recoverable:boolean;nextAt:number;lease?:string;leaseUntil:number;taskId?:string;asset?:Asset;error?:'PHOTO_UNAVAILABLE'|'PHOTO_INVALID'}
 export type ExpansionPhotoProducer=(job:ExpansionPhotoJob,onTask:(id:string)=>void)=>Promise<Uint8Array>
@@ -64,7 +64,9 @@ export class OldStreetExpansionMedia{
  }
 }
 
-export const expansionPhotoProducer=(request:typeof fetch=fetch):ExpansionPhotoProducer=>async(job,onTask)=>{
+export const expansionPhotoProducer=(request:typeof fetch=fetch):ExpansionPhotoProducer=>imageMediaProducer(size,request)
+/** Same durable platform transport for square backpack art and landscape photographs. */
+export const imageMediaProducer=(size:{width:number;height:number},request:typeof fetch=fetch):ExpansionPhotoProducer=>async(job,onTask)=>{
  const signal=AbortSignal.timeout(90000)
  const options={signal,pollIntervalMs:8000,fetchImpl:async(input:RequestInfo|URL,init?:RequestInit)=>{
   const r=await request(input,init)

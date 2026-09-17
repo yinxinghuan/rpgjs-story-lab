@@ -188,10 +188,9 @@ export default function OldStreetDev() {
   const [clockOpen,setClockOpen]=useState(false),[clockMessage,setClockMessage]=useState('')
   const [expansionPhotoRequest,setExpansionPhotoRequest]=useState(0)
   const [expansionPhotoOpen,setExpansionPhotoOpen]=useState(false)
-  const [objectDetailOpen,setObjectDetailOpen]=useState(false)
   const modalControls=useRef(false)
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
-  useEffect(()=>{if(error){setObjectDetailOpen(false);setPhotoOpen(false);setClockOpen(false);setCampaignOpen(null);setArchiveOpen(null);runtime.current?.pause(true)}},[error])
+  useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);setCampaignOpen(null);setArchiveOpen(null);runtime.current?.pause(true)}},[error])
   const [typed, setTyped] = useState('')
   const [inputOpen,setInputOpen]=useState(false)
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
@@ -202,7 +201,7 @@ export default function OldStreetDev() {
   const overview=debug&&new URLSearchParams(location.search).get('camera')==='overview'
   const camera=oldStreetCamera(viewport,feet,overview)
   useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
-  const modalOpen=journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||expansionPhotoOpen||objectDetailOpen||!!campaignOpen||!!archiveOpen||leaving
+  const modalOpen=journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||expansionPhotoOpen||!!campaignOpen||!!archiveOpen||leaving
   modalControls.current=modalOpen
   residentControls.current={paused:busy||!!error||modalOpen||!!head.save.facts.departed,selected:selected==='watchmaker',laundrySelected:selected==='laundry-owner',photographerSelected:selected==='photographer'}
   const [diagnostic, setDiagnostic] = useState('')
@@ -574,7 +573,6 @@ export default function OldStreetDev() {
   const secondaryActions=chosen?.id==='developing-bench'&&expansionCapabilities.media?[]:actions
   useEffect(()=>{setInputOpen(false);setTyped('')},[chosen?.id])
   function closeInteraction(){
-    setObjectDetailOpen(false)
     setSelected(null);setOpeningOpen(false);setNotice('');setTurn([]);setInputOpen(false);setExpansionPhotoRequest(0)
     runtime.current?.pause(Boolean(error||outcome||busyRef.current))
   }
@@ -656,7 +654,7 @@ export default function OldStreetDev() {
       <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong>{!error&&<button disabled={busy} onClick={closeInteraction}>{text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])}</button>}</div>
       <div className="os-actions__content">
       <div className="os-actions__body">
-        {pixelShop&&selected&&!error&&!inputOpen&&<OldStreetObjectPreview key={selected} target={selected} save={head.save} drawer={pixelDrawerUrl} cabinet={pixelPropsUrl} disabled={busy} onOpenChange={open=>{setObjectDetailOpen(open);runtime.current?.pause(open||!!error||busyRef.current)}}/>}
+        {pixelShop&&selected&&!error&&!inputOpen&&<OldStreetObjectPreview key={selected} target={selected} save={head.save} drawer={pixelDrawerUrl} cabinet={pixelPropsUrl}/>}
         {busy&&!error?<section className="os-turn os-turn--waiting" aria-label={text(['互动回应','Interaction'])} aria-busy="true">{pendingSpeech&&<div className="os-turn__speech os-turn__speech--player"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div>}<p className="os-turn__waiting" role="status">{busyLabel}</p>{slowOperation&&<p>{text(['还在等待确认，请稍候，不必重复操作。','Still waiting for confirmation. There is no need to repeat the action.'])}</p>}</section>:page&&!error?<section key={replyKey} className="os-turn os-turn--arrived" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice||inspectionHint)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice||inspectionHint}</p>}
       </div>
       <div className={'os-actions__options'+(conversationOpen&&!morePages?' os-actions__options--reply':'')} data-awaiting={!error&&conversationOpen&&(busy||(!morePages&&awaitingChoices))?'true':undefined} aria-hidden={!error&&conversationOpen&&(busy||(!morePages&&awaitingChoices))||undefined}>
@@ -695,7 +693,7 @@ export default function OldStreetDev() {
     {archiveOpen&&campaign&&serverHead.current&&<OldStreetArchiveView nextPurpose={campaign.version===3&&campaign.archive?.order?oldStreetCurrentPurpose(head.save,campaign):undefined} field={campaign.field} fieldAdmit={()=>archiveAct('plan',undefined,'archive-desk',undefined,'field')} save={head.save} readingAct={selection=>archiveAct('decide',undefined,archiveOpen,selection)} archive={campaign.archive} target={archiveOpen} question={campaign.parcel?.observed?campaign.parcel.content.question:undefined} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={archiveAct} tryAnother={()=>{const target=archiveOpen;setArchiveOpen(null);setSelected(target);setNotice('');runtime.current?.pause(false);requestAnimationFrame(()=>setInputOpen(true))}} close={()=>{setArchiveOpen(null);closeInteraction()}}/>}
     {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView nextPurpose={campaign.version===3?oldStreetCurrentPurpose(head.save,campaign):undefined} campaign={campaign} save={head.save} photoImage={displayedPhoto} published={head.save.facts['archive-published']===true} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} archive={campaign.version>=2&&campaign.parcel?.observed?()=>openArchive('photo-folder'):undefined} close={()=>{setCampaignOpen(null);closeInteraction()}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);closeInteraction()}}/>}
-    {journalOpen&&<OldStreetJournalView photoImage={displayedPhoto} preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
+    {journalOpen&&<OldStreetJournalView api={connection.api} sessionId={serverHead.current?.id} photoImage={displayedPhoto} preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);closeInteraction()}}/>}
     {leaving&&<OldStreetLeaveView locale={locale} borrowed={borrowedItems.map(i=>i.label)} close={()=>setLeaving(false)} confirm={()=>{setLeaving(false);request('oldstreet:leave',true)}}/>}

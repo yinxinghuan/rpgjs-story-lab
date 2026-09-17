@@ -1,3 +1,4 @@
+import {OldStreetJournalMedia,journalArtProducer,journalArtOperation,prepareJournalArt} from './old-street-journal-media'
 import {prepareNextStreetContent} from './old-street-prefetch'
 import {OldStreetCampaignJobs} from './old-street-campaign-jobs'
 import {createOldStreetCampaignPlanner,type OldStreetCampaignGenerator} from './old-street-campaign-planner'
@@ -19,7 +20,7 @@ import {OldStreetAuthority} from './old-street-runtime'
 import type {AuthorityStorage} from './session-authority'
 import {GAME_ID} from '../src/game-id'
 /** Loopback authoring adapter only. Not platform identity or a production route. */
-export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,qaExpansion?:{plan:ReturnType<typeof createOldStreetExpansionPlanner>;photo:ExpansionPhotoProducer}){
+export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,qaExpansion?:{plan:ReturnType<typeof createOldStreetExpansionPlanner>;photo:ExpansionPhotoProducer},qaJournalArt?:ExpansionPhotoProducer){
  // Only a local QA launcher can inject this dependency. No query/body flag can
  // select a fixture. Narrative fixtures never fall through to remote generation;
  // an explicit QA media producer may independently exercise the platform service.
@@ -27,6 +28,7 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,q
  let raw:DatabaseSync|undefined,service:OldStreetAuthority|undefined
  let expansions:OldStreetExpansionJobs|undefined
  let expansionMedia:OldStreetExpansionMedia|undefined
+ let journalMedia:OldStreetJournalMedia|undefined
  let campaignJobs:OldStreetCampaignJobs|undefined
  const campaignEnabled=!!offlineCampaign||process.env.OLDSTREET_CAMPAIGN_TRIAL==='1'&&!!models
  const prefix='/'+GAME_ID+'/api/oldstreet-dev'
@@ -41,6 +43,7 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,q
   if(campaignEnabled)campaignJobs=new OldStreetCampaignJobs(storage,(owner,id)=>service!.get(owner,id),offlineCampaign??createOldStreetCampaignPlanner(models!.request))
   if(models||qaExpansion)expansions=new OldStreetExpansionJobs(storage,(owner,id)=>service!.get(owner,id),qaExpansion?.plan??createOldStreetExpansionPlanner(models!.request))
   if(models||qaExpansion)expansionMedia=new OldStreetExpansionMedia(storage,(owner,id)=>service!.get(owner,id),h=>expansions?.candidateFor(h))
+  journalMedia=new OldStreetJournalMedia(storage,(o,id)=>service!.get(o,id))
   return service
  }
  async function handle(req:IncomingMessage,res:ServerResponse,next:()=>void){
@@ -67,9 +70,14 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,q
     if(!['zh','en'].includes(body?.locale))return send(400,{error:'INVALID_LOCALE'})
     return send(200,s.create(owner,body.enrollment_id,body.locale,body.options))
    }
-   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive|campaign-field))?$/.exec(route)
+   const match=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(journal-art|journal-art-file|actions|position|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive|campaign-field))?$/.exec(route)
    if(!match)return send(404,{error:'NOT_FOUND'})
    const [,id,operation]=match
+   const artRuntime=journalMedia&&(models||qaJournalArt)?{media:journalMedia,produce:qaJournalArt??journalArtProducer(),background:(p:Promise<unknown>)=>{void p.catch(()=>{})}}:undefined
+   if(operation==='journal-art')return send(200,journalArtOperation(req.method!,owner,id,body,artRuntime))
+   if(operation==='journal-art-file'&&req.method==='GET'){
+    const bytes=await journalMedia!.file(owner,id,url.searchParams.get('asset')??'');res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'private, no-store'});res.end(bytes);return
+   }
    if(operation==='expansion-capabilities'&&req.method==='GET'){s.get(owner,id);return send(200,{planning:!!expansions,media:!!expansionMedia,campaign:!!campaignJobs})}
    if(operation==='campaign-trace'||operation==='campaign-parcel'||operation==='campaign-archive'||operation==='campaign-field'){
     return send(200,oldStreetCampaignOperation(req.method!,owner,id,operation==='campaign-trace'?'trace':operation==='campaign-parcel'?'parcel':operation==='campaign-field'?'field':'archive',campaignJobs,body,p=>{void p.catch(()=>{})}))
@@ -83,6 +91,7 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,q
    if(req.method==='GET'&&!operation)return send(200,s.get(owner,id))
    if(req.method==='POST'&&operation==='actions'){
     const result=await s.action(owner,id,body)
+    prepareJournalArt(owner,id,artRuntime)
     prepareNextStreetContent(owner,result,campaignJobs,p=>{void p.catch(()=>{})})
     return send(200,result)
    }

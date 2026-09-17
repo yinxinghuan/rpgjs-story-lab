@@ -1,3 +1,4 @@
+import {OldStreetJournalMedia,journalArtProducer} from '../server/old-street-journal-media'
 import {createOldStreetAttemptGenerator,type OldStreetAttemptGenerator} from '../server/old-street-attempt'
 import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
 import {createOldStreetCampaignPlanner,type OldStreetCampaignGenerator} from '../server/old-street-campaign-planner'
@@ -92,6 +93,7 @@ export class CarriageJourneyAuthority{
  private authority:ProductionAuthority
  private expansions?:OldStreetExpansionJobs
  private campaignJobs?:OldStreetCampaignJobs
+ private journalMedia?:OldStreetJournalMedia
  private expansionMedia?:OldStreetExpansionMedia
  private oldstreet?:OldStreetAuthority
  private original?:OriginalTrainAuthority
@@ -243,7 +245,8 @@ export class CarriageJourneyAuthority{
     this.expansions??=new OldStreetExpansionJobs(this.db,(o,id)=>this.oldstreet!.get(o,id),createOldStreetExpansionPlanner(this.expansionProviders.model))
     this.expansionMedia??=new OldStreetExpansionMedia(this.db,(o,id)=>this.oldstreet!.get(o,id),h=>this.expansions?.candidateFor(h))
    }
-   return handleOldStreetSession(request,owner,this.oldstreet,body,this.expansions&&this.expansionMedia&&this.expansionProviders?{jobs:this.expansions,media:this.expansionMedia,produce:this.expansionProviders.photo,background:this.background}:undefined,this.campaignJobs?{jobs:this.campaignJobs,background:this.background}:undefined)
+   this.journalMedia??=new OldStreetJournalMedia(this.db,(o,id)=>this.oldstreet!.get(o,id))
+   return handleOldStreetSession(request,owner,this.oldstreet,body,this.expansions&&this.expansionMedia&&this.expansionProviders?{jobs:this.expansions,media:this.expansionMedia,produce:this.expansionProviders.photo,background:this.background}:undefined,this.campaignJobs?{jobs:this.campaignJobs,background:this.background}:undefined,{media:this.journalMedia,produce:journalArtProducer(),background:this.background})
   }
   if(url.pathname.startsWith(ORIGINAL_API_PATH+'/')){
    this.original??=new OriginalTrainAuthority(this.db,this.originalGate,undefined,undefined,this.originalInterpreter,this.originalDialogue)

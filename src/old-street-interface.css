@@ -76,8 +76,23 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-/* The light outline and primary button refer to the same nearby target. */
-.os-target[data-targeted=true] { outline: 1px solid #d5c79e99; outline-offset: 3px; }
+/* A small diamond and the primary action refer to the same target. The hit
+   area stays large, but no rectangle surrounds a prop or a character. */
+.os-dev .os-target { overflow: visible; }
+.os-dev .os-target:focus-visible { outline: none; }
+.os-target--actor > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.os-target::after {
+  content: ""; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px;
+  background: #d6c7a4; border: 1px solid #38423c; border-radius: 1px;
+  transform: rotate(45deg); opacity: .55; pointer-events: none;
+  transition: opacity 140ms ease, background-color 140ms ease;
+}
+.os-target--door::after { opacity: 0; }
+.os-target[data-targeted=true]::after, .os-target:focus-visible::after {
+  background: #f3dfaf; opacity: 1; box-shadow: 0 0 3px #1a2525aa;
+}
+.os-target:focus-visible::after { outline: 2px solid #f3dfaf; outline-offset: 2px; }
+@media(prefers-reduced-motion:reduce) { .os-target::after { transition: none; } }
 /* Consistent exit access for longer map, inventory and document content. */
 .os-map > header { position: sticky; top: -1px; z-index: 2; background: var(--os-paper); padding-bottom: 8px; }
 .os-map > header h2 { min-width: 0; overflow-wrap: anywhere; }
