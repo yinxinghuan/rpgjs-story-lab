@@ -87,3 +87,15 @@
 }
 
 .os-map__diagram button { width: 30%; overflow-wrap: normal; }
+
+.os-controls-help { font: 14px/1.5 system-ui; opacity: .85; }
+.os-preparations { flex: none; border-top: 1px solid #a69c88; padding: 8px 0; }
+.os-preparations summary { cursor: pointer; min-height:44px; display:flex; align-items:center; font:600 14px/1.4 system-ui; }
+.os-preparations[open] { max-height: 28dvh; overflow:auto; overscroll-behavior:contain; }
+.os-preparations ul { list-style:none; margin:0; padding:0; }
+.os-preparations li+li { border-top:1px solid #a69c8860; padding-top:8px; }
+.os-preparations p { margin:6px 0 10px; font-size:14px; }
+
+.os-preparations summary { justify-content:space-between; gap:8px; }
+.os-preparations summary svg { flex:none; }
+.os-preparations[open] summary svg { transform:rotate(90deg); }

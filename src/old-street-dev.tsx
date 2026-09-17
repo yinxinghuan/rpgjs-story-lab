@@ -1,3 +1,4 @@
+import {useOldStreetPreparations} from './use-old-street-preparations'
 import {OldStreetRoofRecovery} from './old-street-roof-recovery-view'
 import {roofRecoveryObstacles,roofSpareBoard,roofSpareVisible} from './old-street-roof-recovery'
 import {archiveLoanAt,archiveLoanPaperSheet} from './old-street-archive-loan'
@@ -522,6 +523,7 @@ export default function OldStreetDev() {
   const campaign=serverHead.current?.campaign
   const loanTarget=!!campaign?.archive&&!!chosen&&archiveLoanAt(campaign.archive.content,chosen.id)
   const campaignTarget=campaign&&head.save.facts['letter-taken']&&chosen?(chosen.id==='record-book'?'trace':chosen.id==='photo-folder'&&campaign.trace?.selected!==undefined?'parcel':null):null
+  const expansionTarget=chosen?.id==='viewing-table'&&expansionCapabilities.planning&&!head.save.facts['darkroom-ready']
   const chosenAction = chosen?oldStreetContextAction(head.save,chosen):undefined
   const actions = chosenAction?.actions??[]
   const pages=oldStreetDialogueBeats(turn,head.save.locale)
@@ -553,11 +555,11 @@ export default function OldStreetDev() {
     const door=oldStreetDoors().find(d=>d.id===chosen.id)
     if(door){request(door.actionId);return}
     setSelected(chosen.id)
-    if(loanTarget){openArchive(chosen.id);return}
+    if(loanTarget&&!campaign?.archive?.examined.includes('ledger')){openArchive(chosen.id);return}
     if(chosen.id.startsWith('archive-')){if(chosen.id!=='archive-rack')openArchive(chosen.id);return}
     if(campaignTarget){openCampaign(campaignTarget);return}
     if(oldStreetPerson(chosen.id)&&!knownSpeaker&&chosenAction.primary.kind==='action')request(chosenAction.primary.id)
-    else if(chosenAction.primary.kind==='inspect')setNotice(chosenAction.reason)
+    else if(chosenAction.primary.kind==='inspect'&&!loanTarget&&!expansionTarget)setNotice(chosenAction.reason)
   }
   const label = (id: string) => {
     const door = oldStreetDoors().find(d => d.actionId === id)
@@ -573,9 +575,10 @@ export default function OldStreetDev() {
     const clockAvailable=entity.id==='drawer'&&oldStreetContextAction(head.save,entity).actions.includes('oldstreet:inspect-clock')
     return clockAvailable?text(['抽屉旁 · 检查钟底','By the drawer · inspect clock']):known?.name??(door?text(oldStreetRooms[door.destination.room]):text(oldStreetPerson(entity.id,head.save)?.appearance??oldStreetPropState(entity.id,head.save)??propNames[entity.id]??[entity.id,entity.id]))
   }
-  const inspectionHint=inspectionOpen&&!loanTarget&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
+  const inspectionHint=inspectionOpen&&!loanTarget&&!expansionTarget&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
   const nearbyDarkroom=head.scene==='darkroom'&&bindOldStreet(locale,head.save).canInteract('developing-bench',head.scene,feet)
   const showExpansionPhoto=expansionCapabilities.media&&head.scene==='darkroom'
+  const {preparations,announcement}=useOldStreetPreparations(serverHead.current,expansionCapabilities,connection.api,`${head.scene}:${serverHead.current?.version}:${selected}:${campaignOpen}:${archiveOpen}:${journalOpen}`)
   const outcome = oldStreetOutcome(head.save)
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
@@ -604,11 +607,12 @@ export default function OldStreetDev() {
     </div>
     </div>
     <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')+(inputOpen?' os-actions--composing':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!ready||(!selected&&!openingOpen&&!error)||!!archiveOpen||!!campaignOpen||clockOpen||photoOpen}>
-      <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong><button disabled={busy||!!error} onClick={closeInteraction}>{text(['继续探索','Back to exploring'])}</button></div>
+      <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong><button disabled={busy||!!error} onClick={closeInteraction}>{text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])}</button></div>
       <div className="os-actions__content">
       <div className="os-actions__body">
         {busy&&pendingSpeech&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true"><div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div><p role="status">{notice}</p></section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice||inspectionHint)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice||inspectionHint}</p>}
       </div>
+      {openingOpen&&!error&&<p className="os-controls-help">{text(['点击地面或拖动摇杆行走。走近物件后，按右下按钮互动；委托和发现保存在上方“随身”中。','Tap the ground or use the stick to move. Approach an object, then use the lower-right button. Your errand and discoveries are kept in Items.'])}</p>}
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
       {!error&&morePages?<button className="os-dialogue-continue" disabled={busy} onClick={()=>setTurnPage(n=>n+1)}>{text(['继续','Continue'])}</button>:<>
         {inspectionOpen&&loanTarget&&chosen&&<div className="os-choices"><button disabled={!ready||busy||!!error||!!outcome} onClick={()=>openArchive(chosen.id)}>{text(['查阅借放的工作日志','Read the work log on loan'])}</button></div>}
@@ -627,7 +631,7 @@ export default function OldStreetDev() {
       {showExpansionPhoto&&serverHead.current&&<div hidden={selected!=='developing-bench'}><OldStreetExpansionPhotoView interrupted={!!error} onClose={closeInteraction} photoMethod={serverHead.current.expansions?.[0]?.photoMethod} nearby={nearbyDarkroom} requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} pause={open=>runtime.current?.pause(open||!!error||!!outcome||busyRef.current)}/></div>}
       </div>
     </section>
-    {ready&&notice&&!selected&&!openingOpen&&!error&&!outcome&&<p className="os-feedback" role="status">{notice}</p>}
+    {ready&&(notice||announcement)&&!busy&&!selected&&!openingOpen&&!error&&!outcome&&!journalOpen&&!mapOpen&&!journeysOpen&&<p className="os-feedback" role="status">{notice||announcement}</p>}
     <footer>
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||(!!campaignOpen||!!archiveOpen)} move={(x,y)=>runtime.current?.move(x,y)}/>
       <button className="os-primary" aria-busy={busy} disabled={!ready||(busy&&busyActivity!=='approach')||(!chosen&&!selected)||!!outcome||!!error} onPointerDown={busy?stopApproaching:useNearby} onClick={e=>{if(e.detail===0)(busy?stopApproaching:useNearby)()}}>
@@ -642,7 +646,7 @@ export default function OldStreetDev() {
     {archiveOpen&&campaign&&serverHead.current&&<OldStreetArchiveView nextPurpose={campaign.version===3&&campaign.archive?.order?oldStreetCurrentPurpose(head.save,campaign):undefined} field={campaign.field} fieldAdmit={()=>archiveAct('plan',undefined,'archive-desk',undefined,'field')} save={head.save} readingAct={selection=>archiveAct('decide',undefined,archiveOpen,selection)} archive={campaign.archive} target={archiveOpen} question={campaign.parcel?.observed?campaign.parcel.content.question:undefined} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={archiveAct} tryAnother={()=>{const target=archiveOpen;setArchiveOpen(null);setSelected(target);setNotice('');runtime.current?.pause(false);requestAnimationFrame(()=>setInputOpen(true))}} close={()=>{setArchiveOpen(null);closeInteraction()}}/>}
     {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView campaign={campaign} published={head.save.facts['archive-published']===true} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} archive={campaign.version>=2&&campaign.parcel?.observed?()=>openArchive('photo-folder'):undefined} close={()=>{setCampaignOpen(null);closeInteraction()}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);closeInteraction()}}/>}
-    {journalOpen&&<OldStreetJournalView save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
+    {journalOpen&&<OldStreetJournalView preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);closeInteraction()}}/>}
     {leaving && <div className="os-modal" role="dialog" aria-modal="true"><section><p>{text(['带着信回家？离开后这次探索结束。', 'Take the letter home? This ends the exploration.'])}</p>{borrowedItems.length>0&&<p>{text(['还带着待归还的物品：','You still have items to return: '])}{borrowedItems.map(i=>i.label).join(' · ')}{text(['。可以再逛逛，先把它们送回去。','. You can stay and return them first.'])}</p>}<button onClick={() => {setLeaving(false); request('oldstreet:leave', true)}}>{text(['回家', 'Go home'])}</button><button onClick={() => setLeaving(false)}>{text(['再逛逛', 'Stay'])}</button></section></div>}

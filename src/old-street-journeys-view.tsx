@@ -16,6 +16,7 @@ export function OldStreetJourneysView({locale,current,api,busy,select,create,clo
   <button disabled={busy} onClick={create}>{t('另开一段探索','Start another exploration')}</button>
   {createCampaign&&<button disabled={busy} onClick={createCampaign}>{t('试跑新的探索主线','Test the new exploration trail')}</button>}
   {toggleSound&&<button aria-pressed={soundEnabled} onClick={toggleSound}>{soundEnabled?t('声音：开','Sound: on'):t('声音：关','Sound: off')}</button>}
+  <details><summary>{t('操作方法','Controls')}</summary><p>{t('点击地面、拖动左下摇杆，或用方向键/WASD行走。点击物件只会走近；按右下按钮查看、交谈或通过出入口。','Tap the ground, use the lower-left stick, or move with arrow keys/WASD. Tapping an object walks closer; the lower-right button examines, talks or enters.')}</p><p>{t('预设选项可以直接执行；也可以展开自由输入。收起或走开后回到探索，委托和已发现线索保存在“随身”中。','Choose a suggested action or expand the text input. Close the panel or walk away to explore. Items keeps your errand and discoveries.')}</p></details>
   <details><summary>{t('旧版参考','Previous version')}</summary><p>{t('之前的列车故事，单独保留原有进度。','The earlier train story retains its separate progress.')}</p><a href="?story=original">{t('打开旧版参考','Open previous version')}</a></details>
   </div>
  </dialog>
