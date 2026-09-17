@@ -16,6 +16,10 @@ import {createOldStreetAttemptGenerator,oldStreetAttemptContext,type OldStreetAt
 import {oldStreetTurn,oldStreetRecoveredTurn} from '../src/old-street-turn'
 import {oldStreetJournal} from '../src/old-street-journal'
 import {oldStreetPhotoShelfPose} from '../src/old-street-photo-shelf'
+import {handleOldStreetSession} from '../server/old-street-http'
+import {OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
+import {compilePreparedInvestigation} from '../server/old-street-investigation-draft'
+import {investigationRoutePlan} from '../src/old-street-investigation-route'
 const trace={title:'The paper packets',clue:{mark:'two notches',wrapping:'linen cord'},records:[
  {label:'Workshop repairs',mark:'two notches',wrapping:'folded flap'},
  {label:'Roof measurements',mark:'one notch',wrapping:'linen cord'},
@@ -23,6 +27,66 @@ const trace={title:'The paper packets',clue:{mark:'two notches',wrapping:'linen 
 ]}
 const parcel={title:'The repaired footbridge',fragment:'A repair note records three replaced boards on the footbridge beside the old street.'}
 function storage(db:DatabaseSync):AuthorityStorage{return {all:(sql,...b)=>db.prepare(sql).all(...b) as any,run:(sql,...b)=>{db.prepare(sql).run(...b)},transaction:work=>{db.exec('BEGIN IMMEDIATE');try{const r=work();db.exec('COMMIT');return r}catch(e){db.exec('ROLLBACK');throw e}}}}
+
+test('committed milestones prepare the next draft through HTTP without admitting it or blocking exploration',async()=>{
+ const raw=new DatabaseSync(':memory:'),db=storage(raw),background:Promise<unknown>[]=[]
+ let jobs:OldStreetCampaignJobs,calls=0,finish!:(value:unknown)=>void
+ const s=new OldStreetAuthority(db,()=>true,undefined,undefined,()=>undefined,()=>undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
+ jobs=new OldStreetCampaignJobs(db,(owner,id)=>s.get(owner,id),async context=>{
+  calls++
+  if(context.stage==='trace')return new Promise(resolve=>{finish=resolve})
+  assert.equal(context.stage,'parcel');if(context.stage!=='parcel')throw Error('WRONG_STAGE')
+  return compilePreparedInvestigation({title:'Street repairs',recordAt:'end',events:['The damaged path was surveyed','Repair materials were delivered','The crew began the repair',context.previous.label],roomPlan:{indexSide:'left',storageShelves:0,rack:'none'},denseSource:'index',...investigationRoutePlan(context.route!)},context.previous,context.locale)
+ })
+ const submit=async(h:OldStreetHead,target:string,payload:Record<string,unknown>)=>{
+  const request=new Request(`http://localhost/api/oldstreet/sessions/${h.id}/actions`,{method:'POST',headers:{[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT,'Content-Type':'application/json'},body:JSON.stringify(body(h,target,payload))})
+  const response=await handleOldStreetSession(request,'synthetic',s,r=>r.json(),undefined,{jobs,background:p=>background.push(p)})
+  assert.equal(response.status,200);return (await response.json()).head as OldStreetHead
+ }
+ try{
+  let h=s.create('synthetic',randomUUID(),'en',{campaign:'letter-trail-v4'})
+  h=await steps(s,h,['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter'])
+  h=await submit(h,'letter-compartment',{type:'action',action:'oldstreet:take-letter'})
+  assert.equal(jobs.get('synthetic',h.id,'trace')?.state,'planning');assert.equal(calls,1)
+  assert.equal(h.campaign?.trace,undefined)
+  h=await steps(s,h,['street']);const exploring=structuredClone(h)
+  finish(trace);await Promise.all(background)
+  assert.deepEqual(s.get('synthetic',h.id),exploring)
+  h=await steps(s,h,['shop'])
+  h=await submit(h,'record-book',{type:'campaign-read',stage:'trace'})
+  assert.equal(h.campaign?.trace?.observed,true);assert.equal(calls,1)
+  h=await submit(h,'record-book',{type:'campaign-decide',stage:'trace',selection:2})
+  const selected=structuredClone(h)
+  await Promise.all(background)
+  assert.equal(calls,2);assert.equal(jobs.get('synthetic',h.id,'parcel')?.state,'ready')
+  assert.deepEqual(s.get('synthetic',h.id),selected)
+  assert.equal(h.campaign?.parcel,undefined);assert.equal(h.save.facts['archive-ready'],undefined)
+  assert.throws(()=>jobs.get('synthetic',h.id,'archive'),/CAMPAIGN_PAPERS_REQUIRED/)
+  assert.equal(raw.prepare("SELECT count(*) AS n FROM oldstreet_campaign_jobs WHERE stage='archive'").get()?.n,1,'paired archive is saved without revealing it')
+ }finally{raw.close()}
+})
+
+test('prefetch failure preserves the committed action and does not retry on later actions or old journeys',async()=>{
+ const raw=new DatabaseSync(':memory:'),db=storage(raw),background:Promise<unknown>[]=[];let jobs:OldStreetCampaignJobs,calls=0
+ const s=new OldStreetAuthority(db,()=>true,undefined,undefined,()=>undefined,()=>undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
+ jobs=new OldStreetCampaignJobs(db,(owner,id)=>s.get(owner,id),async()=>{calls++;throw Error('SYNTHETIC_OFFLINE')})
+ const submit=async(h:OldStreetHead,target:string,payload:Record<string,unknown>)=>{
+  const response=await handleOldStreetSession(new Request(`http://localhost/api/oldstreet/sessions/${h.id}/actions`,{method:'POST',headers:{[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT},body:JSON.stringify(body(h,target,payload))}),'synthetic',s,r=>r.json(),undefined,{jobs,background:p=>background.push(p)})
+  assert.equal(response.status,200);return (await response.json()).head as OldStreetHead
+ }
+ try{
+  for(const version of ['letter-trail-v4','letter-trail-v3']){
+   let h=s.create('synthetic',randomUUID(),'en',{campaign:version})
+   h=await steps(s,h,['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter'])
+   h=await submit(h,'letter-compartment',{type:'action',action:'oldstreet:take-letter'})
+   await Promise.all(background)
+   assert.equal(h.save.facts['letter-taken'],true);assert.equal(h.campaign?.trace,undefined)
+   assert.equal(jobs.get('synthetic',h.id,'trace')?.state,version==='letter-trail-v4'?'failed':undefined)
+   h=await submit(h,'drawer',{type:'action',action:'oldstreet:move-box'})
+   await Promise.all(background);assert.equal(calls,1,'walking/interacting never silently retries failed preparation')
+  }
+ }finally{raw.close()}
+})
 
 test('background preparation allows exploration, reuses its draft on reopen and admits only at the paper anchor',async()=>{
  const raw=new DatabaseSync(':memory:'),db=storage(raw)

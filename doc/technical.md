@@ -1,10 +1,14 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 已提交节点的后台准备（2026-09-17）
+
+`server/old-street-prefetch.ts`由正式HTTP适配器及本地适配器在行动成功后调用，仅v4取信后准备trace、选定记录后准备parcel及同一事件的配套archive。复用campaign jobs的幂等排队与候选存储，后台完成不改权威head；仍在实际物件前阅读才准入。失败不自动重试，原材料入口保留显式重试。准备异常不影响已提交行动的成功回执。HTTP集成测试覆盖等待中探索、候选不提前揭示、成对材料、失败与旧旅程。
+
 ## 本地完整委托入口与确认拒绝（2026-09-17）
 
 `npm run dev:campaign` 启动127.0.0.1:55677的现有主游戏，使用`.data/oldstreet-campaign`持久数据库。两个显式开发开关分别开启服务端真实campaign生成能力与前端默认v4新旅程。`oldStreetNewJourneyOptions`仅在DEV、oldstreet-dev模式及对应开关同时满足时生效；正式cloud/Pages构建不会因此开启campaign。前端bootstrap与普通“另开探索”共享选项；RecoverableSessionClient已有续玩／开户回执逻辑仍优先已有旅程和待确认开户，不对旧档补新目标。
 
-本地适配器沿用现有平台叙事和媒体服务，界面操作到对应阶段才请求；入口检查没有调用生成。不是合成内容夹具或新的游戏UUID。生产开关仍关闭。
+本地适配器沿用现有平台叙事和媒体服务；必要文字材料在已提交节点提前准备，媒体仍在对应阶段请求。入口检查没有调用生成。不是合成内容夹具或新的游戏UUID。生产开关仍关闭。
 
 `OLD_STREET_NEGATIVE_REQUIRED`、`OLD_STREET_TARGET_TOO_FAR`进入旧街session的已确认拒绝列表，恢复只重读权威head，不重复提交已拒绝操作；界面给出取底片／走近放大台的具体说明。网络结果未确认的pending规则不变。
 

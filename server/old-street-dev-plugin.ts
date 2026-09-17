@@ -1,3 +1,4 @@
+import {prepareNextStreetContent} from './old-street-prefetch'
 import {OldStreetCampaignJobs} from './old-street-campaign-jobs'
 import {createOldStreetCampaignPlanner,type OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import {createOldStreetAttemptGenerator} from './old-street-attempt'
@@ -80,7 +81,11 @@ export function oldStreetDevPlugin(offlineCampaign?:OldStreetCampaignGenerator,q
    }
    if(operation==='expansion')return send(200,oldStreetExpansionOperation(req.method!,owner,id,expansions,body,p=>{void p.catch(()=>{})}))
    if(req.method==='GET'&&!operation)return send(200,s.get(owner,id))
-   if(req.method==='POST'&&operation==='actions')return send(200,await s.action(owner,id,body))
+   if(req.method==='POST'&&operation==='actions'){
+    const result=await s.action(owner,id,body)
+    prepareNextStreetContent(owner,result,campaignJobs,p=>{void p.catch(()=>{})})
+    return send(200,result)
+   }
    if(req.method==='POST'&&operation==='position')return send(200,s.checkpoint(owner,id,body))
    return send(405,{error:'METHOD_NOT_ALLOWED'})
   }catch(e){const error=e as Error & {status?:number};send(error.status??400,{error:error.message})}

@@ -1,3 +1,4 @@
+import {prepareNextStreetContent} from './old-street-prefetch'
 import {LabError} from '../src/journey-runtime'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
 import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
@@ -69,7 +70,11 @@ export async function handleOldStreetSession(request:Request,owner:string,author
   if(m[2]==='expansion')return oldStreetJson(oldStreetExpansionOperation(request.method,owner,m[1],expansion?.jobs,request.method==='POST'?await readBody(request):undefined,expansion?.background??(()=>{})))
   if(request.method==='GET'&&!m[2])return oldStreetJson(authority.get(owner,m[1]))
   if(request.method==='GET'&&m[2]==='events')return oldStreetJson({events:authority.events(owner,m[1],Number(url.searchParams.get('after')??0))})
-  if(request.method==='POST'&&m[2]==='actions')return oldStreetJson(await authority.action(owner,m[1],await readBody(request)))
+  if(request.method==='POST'&&m[2]==='actions'){
+   const result=await authority.action(owner,m[1],await readBody(request))
+   prepareNextStreetContent(owner,result,campaign?.jobs,campaign?.background??(()=>{}))
+   return oldStreetJson(result)
+  }
   if(request.method==='POST'&&m[2]==='position')return oldStreetJson(authority.checkpoint(owner,m[1],await readBody(request)))
   throw new LabError('METHOD_NOT_ALLOWED',405)
  }catch(e){return oldStreetJson({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
