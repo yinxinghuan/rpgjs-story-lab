@@ -25,7 +25,7 @@ for (const cleared of [false, true]) test(`every authored interaction can be app
   save.facts['crates-cleared'] = cleared
   const plan = oldStreetSpatialPlan(save), binding = bindOldStreet('zh', save)
   const absent=cartridge.domainRules!.rules.filter(rule=>!binding.actionIds().includes(rule.id))
-  assert.equal(absent.length,6)
+  assert.equal(absent.length,8)
   assert.ok(absent.every(rule=>rule.requirements.some(q=>q.type==='fact'&&q.id==='roof-recovery'&&q.equals===true)))
   assert.ok(!plan.entities.some(entity=>entity.id.startsWith('roof-')),'historical journeys retain the empty roof')
   for (const entity of plan.entities) {

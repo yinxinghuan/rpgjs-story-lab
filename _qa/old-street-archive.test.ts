@@ -1,3 +1,4 @@
+import {roofRecoveryForJourney,roofSpareVisible,roofStockVisible} from '../src/old-street-roof-recovery'
 import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {archiveLoanAt,archiveLoanLead} from '../src/old-street-archive-loan'
 import {archivePaperPose} from '../src/old-street-archive-reading'
@@ -75,7 +76,7 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
  let journeyId=randomUUID()
  const expectedRoute=loanSite==='photo'?'studio-loan-v1':loanSite==='laundry'?'laundry-loan-v1':'on-site-v1'
- while(chooseInvestigationRoute(journeyId)!==expectedRoute)journeyId=randomUUID()
+ while(chooseInvestigationRoute(journeyId)!==expectedRoute||(readingMode==='commission'&&roofRecoveryForJourney(journeyId)['roof-plank-source']!=='shed'))journeyId=randomUUID()
  const uuidMock=t.mock.method(globalThis.crypto,'randomUUID',()=>journeyId)
  let h=s.create('synthetic',randomUUID(),'en',{campaign:fullCommission?'letter-trail-v3':'letter-trail-v2'})
  uuidMock.mock.restore()
@@ -323,7 +324,22 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
     const attempted=await send('roof-planks',{type:'action',action:'oldstreet:try-short-plank'})
     assert.equal(h.save.facts['roof-bridge-laid'],false)
     assert.match(attempted.r.text,/cannot reach/)
-    const laid=await send('roof-planks',{type:'free-input',text:'Lay the long plank',mode:'local'})
+    assert.equal(h.save.facts['roof-plank-source'],'shed')
+    assert.equal(roofStockVisible(h.save),false)
+    await assert.rejects(s.action('synthetic',h.id,input('roof-planks',{type:'action',action:'oldstreet:lay-roof-plank'})),/ACTION_UNAVAILABLE|rejected/i)
+    await steps(['shed'])
+    assert.equal(roofSpareVisible(h.save),true)
+    assert.equal(oldStreetWalkable('shed',{x:120,y:390},h.save),false)
+    const collected=await send('watchmaker',{type:'free-input',text:'Collect the spare roof plank',mode:'local'})
+    assert.deepEqual(await s.action('synthetic',h.id,collected.b),collected.r,'lost receipt cannot duplicate the plank')
+    assert.equal(roofSpareVisible(h.save),false)
+    assert.equal(oldStreetWalkable('shed',{x:120,y:390},h.save),true)
+    s=authority();h=s.get('synthetic',h.id)
+    assert.equal(h.save.inventory.find(i=>i.id==='roof-plank')?.count,1)
+    assert.equal(h.save.facts['roof-plank-source'],'shed','recovery preserves the supply plan')
+    await steps(['roof'])
+    const laid=await send('roof-planks',{type:'free-input',text:'Lay the plank you brought',mode:'local'})
+    assert.ok(!h.save.inventory.some(i=>i.id==='roof-plank'))
     assert.equal(h.save.facts['roof-bridge-laid'],true)
     assert.ok(oldStreetPath('roof',start,cache.approach,h.save).length>0,'bridge opens an actual walkable route')
     assert.equal(oldStreetWalkable('roof',{x:240,y:384},h.save),true,'carried plank no longer blocks its former place')

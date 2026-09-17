@@ -11,7 +11,7 @@ export function oldStreetContextAction(save:StorySave,entity:Entity){
  // Returning a borrowed key before opening the letter remains possible, but is
  // not the suggested first action. Do not immediately offer to borrow it again.
  const offered=actions.filter(id=>!(id==='oldstreet:borrow-key'&&save.facts['letter-unlocked']))
- const priority=(id:string)=>id.startsWith('oldstreet:greet-')?0:['oldstreet:return-clock','oldstreet:return-photos','oldstreet:return-trolley','oldstreet:return-roof-negative','oldstreet:read-photo-index','oldstreet:lay-roof-plank'].includes(id)?1:id==='oldstreet:return-key'?(save.facts['letter-unlocked']?1:5):2
+ const priority=(id:string)=>id.startsWith('oldstreet:greet-')?0:['oldstreet:return-clock','oldstreet:return-photos','oldstreet:return-trolley','oldstreet:return-roof-negative','oldstreet:read-photo-index','oldstreet:lay-roof-plank','oldstreet:lay-carried-roof-plank','oldstreet:take-roof-plank'].includes(id)?1:id==='oldstreet:return-key'?(save.facts['letter-unlocked']?1:5):2
  offered.sort((a,b)=>priority(a)-priority(b))
  const next=offered[0]
  const reasons=[...new Set(results.filter(r=>r.result?.status!=='accepted').flatMap(r=>r.result?.reasons??[]))]

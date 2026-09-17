@@ -7,7 +7,7 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
   const f = save.facts
   if(id.startsWith('archive-storage-'))return ['固定储物架 · 需要绕行','Fixed storage shelf · walk around it']
   switch (id) {
-    case 'roof-planks':return f['roof-bridge-laid']===true?['剩下的短木板','Short plank left behind']:['长短两块木板','Long and short planks']
+    case 'roof-planks':return f['roof-bridge-laid']===true?['剩下的短木板','Short plank left behind']:f['roof-plank-source']==='shed'?['短木板与修补牌','Short plank and repair notice']:['长短两块木板','Long and short planks']
     case 'roof-cache':return f['roof-negative-taken']===true?['屋顶柜子 · 空格','Roof cabinet · empty compartment']:f['roof-box-open']===true?['屋顶柜子 · 底片套','Roof cabinet · negative sleeve']:['屋顶柜子','Roof cabinet']
     case 'archive-rack':return f['archive-rack-shifted']===true?['移到一旁的储物架','Storage rack moved aside']:['挡住索引的储物架','Storage rack blocking the index']
     case 'record-book': {

@@ -29,6 +29,7 @@ export function oldStreetPerson(entity:string,save?:Pick<StorySave,'facts'>){
 export function recordOldStreetInteraction(save:StorySave,entity:string,action:string,text:string,receipt:string):StoryBlock[]{
  const p=oldStreetPerson(entity,save),blocks:StoryBlock[]=[]
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en
+ if(action==='oldstreet:try-short-plank'&&save.facts['roof-plank-source']==='shed')text=save.facts['roof-plank-taken']?t('短板够不到另一边。你带来的长板可以搭住两侧。','The short plank cannot reach the far side. The longer one you brought can span it.'):t('短板够不到另一边。旁边的修补牌写着：备用长板请到河边工作棚领取。','The short plank cannot reach the far side. A repair notice beside it says: spare long planks are available at the riverside workshop.')
  if(action==='oldstreet:greet-laundry')text=(save.facts['trolley-borrowed']?t('推车用完放回来就行。','Return the trolley when you finish.'):t('推车就在旁边，需要可以借。','The trolley is beside you; you may borrow it.'))+' '+(save.facts['crates-cleared']?t('院里的台阶已经通了，谢谢你。','The courtyard steps are clear now. Thank you.'):t('院里的旧箱挡着台阶。','Crates block the courtyard steps.'))
  if(action==='oldstreet:greet-watchmaker')text=oldStreetLetterGuidance(save)+(save.facts['yard-unlatched']?'':t(' 院门的插销能从这边打开。',' The courtyard gate can be unbolted from this side.'))
  if(action==='oldstreet:greet-photographer'&&save.facts['photos-returned'])text=t('你找回的照片已经收好了，谢谢。楼梯仍然通向屋顶。','The photographs you found are safely put away. Thank you. The stairs still lead to the roof.')

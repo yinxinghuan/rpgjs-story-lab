@@ -2463,3 +2463,6 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 ### 2026-09-17 材料面板首次阅读
 
 `old-street-campaign-view.tsx` 在物件接近后的面板内，读取同一准备任务；无任务时自动发起一次准备，ready 时通过原 `campaignAct('read')` 提交权威准入与观察。已有未观察实例走 `observe`，已观察实例不重写正文。面板内的 prepare/read latch 限制一次自动尝试，失败仍由现有按钮重试；关闭卸载取消轮询，不在地图远处提交观察。服务端、结局条件、旧存档结构均未改变。完整路线实证与限制见 `full-route-review-20260917.md`。
+
+### 屋顶补给来源（2026-09-17）
+`old-street-roof-recovery.ts` 统一定义新旅程固定的长板来源、备用板占地、领取/消耗规则、可见知识及库存不变量。`old-street-runtime.ts` 仅新建完整旅程时赋值，旧档未定义来源时继续现场方案。`old-street-space.ts` 与 `old-street-roof-recovery-view.tsx` 共用占地，领取后同步移除碰撞和板图。两种搭板行动均进入原来的权威事务；`old-street-scene-knowledge.ts` 为自由输入/对白提供对应现场状态。证据见 `roof-supply-review-20260917.md`。

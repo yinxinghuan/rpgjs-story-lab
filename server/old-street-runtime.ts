@@ -1,4 +1,4 @@
-import {roofRecoveryInitial} from '../src/old-street-roof-recovery'
+import {roofRecoveryForJourney} from '../src/old-street-roof-recovery'
 import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {evidenceChoices} from '../src/old-street-shared-evidence'
 import {prepareEvidenceShare} from './old-street-shared-evidence'
@@ -69,7 +69,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const name=(options as {campaign:string}).campaign
         if(name==='letter-trail-v3'&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1,...(name==='letter-trail-v3'?{photoMethod:'develop-v1' as const,explorationRoute:chooseInvestigationRoute(id)}:{})}
-        if(name==='letter-trail-v3')Object.assign(h.save.facts,roofRecoveryInitial)
+        if(name==='letter-trail-v3')Object.assign(h.save.facts,roofRecoveryForJourney(id))
         if(h.campaign.version!==1)introduceCampaignCommission(h.save,h.campaign.version)
       }
       check(h);return h

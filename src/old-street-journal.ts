@@ -25,6 +25,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  const details:Record<string,string>={
   'field-note-copy':f['field-note-disposition']==='take'?t('在照相馆抄录的副本。原件也在行囊里。','A written copy made at the studio. You also carry the original.'):t('在照相馆抄录的副本。原件留在原处。','A written copy made at the studio. The original remains where you found it.'),
   'field-note':t('从交叉索引找到的补充便笺原件。','The original supplementary note found through the cross-reference.'),
+  'roof-plank':t('从河边工作棚领取的备用长板，可以搭过屋顶的破损处。','A spare plank from the riverside workshop, long enough to span the damaged roof decking.'),
   'street-negative':t('从屋顶北侧柜子取出的底片，可以带回家，也可以交回照相馆。','A negative recovered from the north roof cabinet. Bring it home or return it to the studio.'),
   'darkroom-print':t('在暗房拼合的旧街照片。','The old street photograph you matched in the darkroom.'),
   lens:t('可以看清细小的刻记。','Useful for examining tiny marks.'),
@@ -64,6 +65,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  if(typeof f['darkroom-photo-matched']==='string')notes.push({id:'darkroom-photo',title:t('暗房里的旧街照片','Old street photograph'),text:f['darkroom-photo-choice']==='keep'?t('你把看清细节的照片带在身上。','You carry the completed photograph.'):f['darkroom-photo-choice']==='leave'?t('看清细节的照片留在暗房显影台上。','The completed photograph remains on the darkroom bench.'):t('照片里的街景细节已看清。','The details of the street photograph are now clear.')})
  const note=(fact:string,title:[string,string],text:[string,string])=>{if(f[fact]===true)notes.push({id:fact,title:t(...title),text:t(...text)})}
  note('roof-index-read',['照片背面的标记','Filing mark on the print'],['对应底片在屋顶北侧柜子的双缺口纸套里。破损处需要木板跨过去。','The matching negative is in a double-notched sleeve in the north roof cabinet. A plank is needed to cross the damaged decking.'])
+ note('roof-plank-taken',['屋顶的备用板','Spare roof plank'],['你已从河边工作棚领取屋顶修补用的长板。','You collected a roof repair plank from the riverside workshop.'])
  note('roof-bridge-laid',['屋顶的通路','Roof crossing'],['长板搭住破损处两侧，可以走到北边的柜子旁。','The long plank spans the damaged decking, giving access to the north cabinet.'])
  note('roof-negative-returned',['底片回到照相馆','Negative returned'],['摄影师把找回的底片收在放大台旁。','The photographer has stored the recovered negative beside the viewing table.'])
  note('clock-mark-known',['钟底的刻记','Mark beneath the clock'],['放大镜下能看见一对燕子。','Two swallows are engraved beneath the clock.'])

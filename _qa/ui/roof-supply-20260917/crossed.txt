@@ -1,0 +1,22 @@
+- main:
+  - heading "屋顶 试玩" [level=1]:
+    - text: 屋顶
+    - generic: 试玩
+  - navigation:
+    - button "街区":
+      - generic: 街区
+    - button "随身与发现":
+      - generic: 随身
+    - button "旅程":
+      - generic: 旅程
+  - button "照相馆":
+    - generic: 照相馆
+  - button "河边工作棚":
+    - generic: 河边工作棚
+  - button "剩下的短木板"
+  - button "屋顶柜子 · 底片套"
+  - region "当前行动":
+    - status: You open the cabinet and find the double-notched sleeve described on the print. It holds the matching street negative.
+  - group "移动摇杆"
+  - button "取出底片套"
+  - generic "Renderer diagnostics"

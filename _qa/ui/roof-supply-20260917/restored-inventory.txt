@@ -1,0 +1,40 @@
+- main:
+  - heading "河边工作棚 试玩" [level=1]:
+    - text: 河边工作棚
+    - generic: 试玩
+  - navigation:
+    - button "街区":
+      - generic: 街区
+    - button "随身与发现":
+      - generic: 随身
+    - button "旅程":
+      - generic: 旅程
+  - button "屋顶":
+    - generic: 屋顶
+  - button "地下储物室":
+    - generic: 地下储物室
+  - button "合住院":
+    - generic: 合住院
+  - button "Zhou"
+  - group "移动摇杆" [disabled]
+  - button "归还钥匙"
+  - generic "Renderer diagnostics"
+  - dialog "Items & discoveries":
+    - heading "Items & discoveries" [level=2]
+    - button "Close" [active]
+    - paragraph: The letter, history and photographic findings are ready. Go home from the street, or keep exploring.
+    - navigation "View":
+      - button "Items" [pressed]
+      - button "Notes"
+      - button "People"
+    - list:
+      - strong: Drawer key
+      - paragraph: The watchmaker lent you this compartment key. Bring it back when finished.
+      - strong: Sealed letter
+      - paragraph: A sealed letter addressed to your family.
+      - strong: Trolley
+      - paragraph: Borrowed from the laundry; return it to its bay when finished.
+      - strong: Old street photograph
+      - paragraph: The old street photograph you matched in the darkroom.
+      - strong: Roof repair plank
+      - paragraph: A spare plank from the riverside workshop, long enough to span the damaged roof decking.
