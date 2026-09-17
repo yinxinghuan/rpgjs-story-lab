@@ -5,10 +5,14 @@ import {isDeepStrictEqual} from 'node:util'
 // include a semantically rejected candidate; it must never be production art.
 const replayPath=process.env.OLDSTREET_QA_CAMPAIGN_REPORT
 const replay=replayPath?JSON.parse(readFileSync(replayPath,'utf8')):undefined
+// Optional separate real geometry sample, overlaid only in this local harness.
+const roomPath=process.env.OLDSTREET_QA_ARCHIVE_ROOM_REPORT
+const roomReplay=roomPath?JSON.parse(readFileSync(roomPath,'utf8')).cases[Number(process.env.OLDSTREET_QA_ARCHIVE_ROOM_INDEX??1)]?.room:undefined
+if(roomPath&&!Array.isArray(roomReplay))throw Error('ROOM_REPLAY_NOT_ACCEPTED')
 /** Synthetic by default; explicit report replay never makes network calls.
  * Neither mode is installed by a production entry. */
 export const campaignFixture:OldStreetCampaignGenerator=async(context)=>{
- if(replay){const row=replay.cases.find((r:any)=>r.chain===Number(process.env.OLDSTREET_QA_CAMPAIGN_CHAIN??1)&&r.stage===context.stage&&r.accepted!==undefined);if(!row||!isDeepStrictEqual(row.context,context))throw Error('REPLAY_CONTEXT_MISMATCH');return structuredClone(row.accepted)}
+ if(replay){const row=replay.cases.find((r:any)=>r.chain===Number(process.env.OLDSTREET_QA_CAMPAIGN_CHAIN??1)&&r.stage===context.stage&&r.accepted!==undefined);if(!row||!isDeepStrictEqual(row.context,context))throw Error('REPLAY_CONTEXT_MISMATCH');return {...structuredClone(row.accepted),...(context.stage==='archive'&&roomReplay?{room:structuredClone(roomReplay)}:{})}}
  if(context.stage==='archive')return {
   title:context.locale==='zh'?'小桥维修记录':'Footbridge work records',layout:'east-index',
   cards:context.locale==='zh'?[{id:'a',label:'装好新木板'},{id:'b',label:'裁切替换木板'},{id:'c',label:'重新开放小桥'},{id:'d',label:'测量损坏的木板'}]:[{id:'a',label:'New boards were fitted'},{id:'b',label:'Replacement boards were cut'},{id:'c',label:'The footbridge reopened'},{id:'d',label:'Damaged boards were measured'}],

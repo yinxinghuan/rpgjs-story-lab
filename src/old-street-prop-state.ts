@@ -5,6 +5,7 @@ import {oldStreetRecordBookPose} from './old-street-record-book'
  * These do not assert that appearance or each art state has been admitted. */
 export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): readonly [string, string] | undefined {
   const f = save.facts
+  if(id.startsWith('archive-storage-'))return ['固定储物架 · 需要绕行','Fixed storage shelf · walk around it']
   switch (id) {
     case 'record-book': {
       if(f['archive-published']===true)return ['记录册 · 调查摘要','Record book · investigation summary']

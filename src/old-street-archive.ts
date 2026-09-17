@@ -1,10 +1,11 @@
 /** A generated investigation uses existing furniture and explicit ordering
  * evidence. The model never supplies executable rules or a trusted answer. */
 import {readInquiryFocus,inquiryConclusion,type InquiryFocus} from './old-street-inquiry'
+import {archiveRoomLayout,readArchiveRoom} from './old-street-archive-room'
 export const archiveCardIds=['a','b','c','d'] as const
 export type ArchiveCardId=typeof archiveCardIds[number]
 export type ArchiveRelation={before:ArchiveCardId;after:ArchiveCardId}
-export type ArchiveContent={title:string;layout:'west-index'|'east-index';cards:Array<{id:ArchiveCardId;label:string}>;sources:{index:ArchiveRelation[];ledger:ArchiveRelation[]};discovery:string}
+export type ArchiveContent={title:string;layout:'west-index'|'east-index';room?:string[];cards:Array<{id:ArchiveCardId;label:string}>;sources:{index:ArchiveRelation[];ledger:ArchiveRelation[]};discovery:string}
 export type ArchiveSource=keyof ArchiveContent['sources']
 export type ArchiveProgress={id:string;content:ArchiveContent;examined:ArchiveSource[];order?:ArchiveCardId[]}
 const card=(id:unknown):id is ArchiveCardId=>archiveCardIds.includes(id as ArchiveCardId)
@@ -21,7 +22,7 @@ export function archiveOrders(relations:readonly ArchiveRelation[]){
  return permutations(archiveCardIds).filter(order=>relations.every(r=>order.indexOf(r.before)<order.indexOf(r.after)))
 }
 export function readArchiveContent(raw:unknown):ArchiveContent{
- const r=object(raw,['title','layout','cards','sources','discovery']),sources=object(r.sources,['index','ledger'])
+ const r=object(raw,['title','layout','room','cards','sources','discovery']),sources=object(r.sources,['index','ledger'])
  if(!['west-index','east-index'].includes(String(r.layout))||!Array.isArray(r.cards)||r.cards.length!==4)throw Error('ARCHIVE_CONTENT_INVALID')
  const cards=r.cards.map(value=>{const c=object(value,['id','label']);if(!card(c.id))throw Error('ARCHIVE_CONTENT_INVALID');return {id:c.id,label:line(c.label,90)}})
  if(new Set(cards.map(c=>c.id)).size!==4||new Set(cards.map(c=>c.label.normalize('NFKC').toLowerCase())).size!==4)throw Error('ARCHIVE_CONTENT_INVALID')
@@ -29,7 +30,7 @@ export function readArchiveContent(raw:unknown):ArchiveContent{
   if(!Array.isArray(raw)||raw.length<1||raw.length>2)throw Error('ARCHIVE_CONTENT_INVALID')
   return raw.map(value=>{const e=object(value,['before','after']);if(!card(e.before)||!card(e.after)||e.before===e.after)throw Error('ARCHIVE_CONTENT_INVALID');return {before:e.before,after:e.after}})
  }
- const content:ArchiveContent={title:line(r.title,60),layout:r.layout as ArchiveContent['layout'],cards,sources:{index:evidence(sources.index),ledger:evidence(sources.ledger)},discovery:line(r.discovery,300)}
+ const content:ArchiveContent={title:line(r.title,60),layout:r.layout as ArchiveContent['layout'],...(r.room===undefined?{}:{room:readArchiveRoom(r.room)}),cards,sources:{index:evidence(sources.index),ledger:evidence(sources.ledger)},discovery:line(r.discovery,300)}
  const all=[...content.sources.index,...content.sources.ledger]
  if(all.length!==3||new Set(all.map(r=>r.before+':'+r.after)).size!==3||archiveOrders(all).length!==1)throw Error('ARCHIVE_ORDER_AMBIGUOUS')
  if(archiveOrders(content.sources.index).length<=1||archiveOrders(content.sources.ledger).length<=1)throw Error('ARCHIVE_EVIDENCE_REDUNDANT')
@@ -42,12 +43,12 @@ export function archiveOrderMatches(content:ArchiveContent,value:unknown):value 
  * intermediate events and which endpoint occurred earlier; the game authors
  * the written evidence and derives the conclusion from that same evidence. */
 export function compileInquiryArchive(raw:unknown,focus:InquiryFocus,locale:'zh'|'en',variant=Math.floor(Math.random()*24)):ArchiveContent{
- const r=object(raw,['title','layout','middleEvents','earlier']),inquiry=readInquiryFocus(focus)
+ const r=object(raw,['title','layout','room','middleEvents','earlier']),inquiry=readInquiryFocus(focus)
  if(!Array.isArray(r.middleEvents)||r.middleEvents.length!==2||!['first','second'].includes(String(r.earlier))||!Number.isInteger(variant)||variant<0||variant>=24)throw Error('ARCHIVE_CONTENT_INVALID')
  const middle=r.middleEvents.map(v=>line(v,90))
  const order:ArchiveCardId[]=r.earlier==='first'?['a','c','d','b']:['b','c','d','a']
  const byId={a:inquiry.first,b:inquiry.second,c:middle[0],d:middle[1]}
- const content=readArchiveContent({title:r.title,layout:r.layout,cards:permutations(archiveCardIds)[variant].map(id=>({id,label:byId[id]})),sources:{index:[{before:order[0],after:order[1]}],ledger:[{before:order[1],after:order[2]},{before:order[2],after:order[3]}]},discovery:inquiryConclusion(inquiry,r.earlier==='first',locale)})
+ const content=readArchiveContent({title:r.title,layout:r.layout,...(r.room===undefined?{}:{room:r.room}),cards:permutations(archiveCardIds)[variant].map(id=>({id,label:byId[id]})),sources:{index:[{before:order[0],after:order[1]}],ledger:[{before:order[1],after:order[2]},{before:order[2],after:order[3]}]},discovery:inquiryConclusion(inquiry,r.earlier==='first',locale)})
  assertArchiveInquiry(content,inquiry)
  return content
 }
@@ -66,13 +67,22 @@ export function archiveEvidence(content:ArchiveContent,source:ArchiveSource,loca
  const label=(id:ArchiveCardId)=>content.cards.find(c=>c.id===id)!.label
  return content.sources[source].map(r=>locale==='zh'?`「${label(r.before)}」发生在「${label(r.after)}」之前。`:`“${label(r.before)}” happened before “${label(r.after)}”.`)
 }
-/** Stable threshold and two bounded furniture arrangements. The same bodies
+/** Stable threshold, generated furniture or either legacy arrangement. The same bodies
  * and approaches are consumed by collision, rendering and action validation. */
-export function archiveLayout(layout:ArchiveContent['layout']){
+export function archiveLayout(layout:ArchiveContent['layout'],room?:unknown){
+ if(room!==undefined)return archiveRoomLayout(room)
  const indexX=layout==='west-index'?112:224,ledgerX=layout==='west-index'?224:112
  const shelf=(id:string,x:number,y:number)=>({id,room:'archive' as const,body:{x,y,w:40,h:28},position:{x:x+20,y:y+28},approach:{x:x+12,y:y+44},actions:[] as string[]})
  return {
   floor:{x:88,y:64,w:208,h:448},arrival:{x:184,y:456},
   props:[shelf('archive-index',indexX,132),shelf('archive-ledger',ledgerX,216),{id:'archive-desk',room:'archive' as const,body:{x:156,y:332,w:72,h:32},position:{x:192,y:364},approach:{x:184,y:388},actions:[] as string[]}],
  }
+}
+export function archiveLayoutFromFacts(facts:Record<string,unknown>){
+ return archiveLayout(facts['archive-layout']==='east-index'?'east-index':'west-index',typeof facts['archive-room']==='string'?JSON.parse(facts['archive-room']):undefined)
+}
+/** RPG-JS registers events before generation finishes. Bind stable slots now;
+ * onInit places/hides them using the admitted room, never the placeholders. */
+export function archiveEventSlots(){
+ return [...archiveLayout('west-index').props,...Array.from({length:6},(_,i)=>({id:`archive-storage-${i}`,room:'archive' as const,body:{x:92,y:96,w:40,h:40},position:{x:112,y:136},approach:{x:104,y:140},actions:[] as string[]}))]
 }

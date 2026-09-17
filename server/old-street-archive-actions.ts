@@ -16,6 +16,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
   const raw=candidate?.(head,'archive');if(raw===undefined)throw new LabError('CAMPAIGN_NOT_PREPARED',409)
   try{const content=readArchiveContent(raw);if(c.parcel?.content.inquiry)assertArchiveInquiry(content,c.parcel.content.inquiry);c.archive={id:body.action_id,content,examined:[]}}catch{throw new LabError('CAMPAIGN_PLAN_REJECTED',409)}
   save.facts['archive-ready']=true;save.facts['archive-layout']=c.archive.content.layout
+  if(c.archive.content.room)save.facts['archive-room']=JSON.stringify(c.archive.content.room)
   if(!save.map.some(n=>n.id==='archive'))save.map.push({id:'archive',label:t('档案工作间','Archive workroom'),current:false,visited:false})
   text=t('这些材料来自隔壁档案工作间。地下室东侧的门已可通行，里面有两处原始记录和一张整理桌。','These papers came from the adjoining archive workroom. The cellar’s east doorway is accessible; inside are two sets of source records and a sorting table.')
   save.objective=t('从地下室侧门进入档案工作间，调查两处记录，在桌面还原先后顺序。','Enter the archive through the cellar side door. Examine both sources and reconstruct the order at the table.')

@@ -1,0 +1,55 @@
+{
+  "system": "Design a small overhead archive room for an exploration game. Return only JSON {room}. room is a generated physical floor plan: exactly 9 row strings, each exactly 5 characters. Use . for clear floor, S for a full-cell storage shelf (0-6 total), exactly one I for the index shelf, exactly one L for the log shelf, and exactly one adjacent Tt pair for the two-cell sorting table. Place I, L and Tt away from each other, each with an entirely empty row immediately BELOW it for standing. The player enters from below row 9. Leave a connected empty walking route from the bottom to the row below each I, L and Tt. Do not form a solid wall or seal off a shelf. Vary the positions and walking routes across journeys; no new exits.",
+  "startedAt": "2026-09-17T00:09:37.636Z",
+  "finishedAt": "2026-09-17T00:09:42.080Z",
+  "usage": {
+    "used": 2,
+    "limit": 2
+  },
+  "cases": [
+    {
+      "input": "Create a room with two or three storage shelves and a route bending through its middle.",
+      "raw": {
+        "room": [
+          ".....",
+          "..S..",
+          "..S..",
+          "..S..",
+          ".....",
+          ".Tt..",
+          ".L...",
+          ".....",
+          "..I.."
+        ]
+      },
+      "error": "ARCHIVE_ROOM_UNREACHABLE"
+    },
+    {
+      "input": "Create a different room with three or four storage shelves, the index and ledger on opposite sides, and the sorting table nearer the entrance.",
+      "raw": {
+        "room": [
+          "S...I",
+          "S....",
+          "S....",
+          ".....",
+          "Tt...",
+          ".....",
+          "S....",
+          "....L",
+          "....."
+        ]
+      },
+      "room": [
+        "S...I",
+        "S....",
+        "S....",
+        ".....",
+        "Tt...",
+        ".....",
+        "S....",
+        "....L",
+        "....."
+      ]
+    }
+  ]
+}

@@ -45,7 +45,7 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
 
 test('new campaign enters its generated archive through the real door, gathers evidence and persists the reconstructed ending',async()=>{
  const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',otherEvent:'The footbridge reopened'}
- const parcel=compileLinkedParcel(parcelDraft,trace.records[0],'en'),archiveDraft={title:'The footbridge work',layout:'west-index',middleEvents:['Replacement boards were cut','The new boards were fitted'],earlier:'first'}
+ const parcel=compileLinkedParcel(parcelDraft,trace.records[0],'en'),archiveDraft={title:'The footbridge work',layout:'west-index',room:['I...L','.....','.SS..','.....','...S.','.Tt..','.....','.....','.....'],middleEvents:['Replacement boards were cut','The new boards were fitted'],earlier:'first'}
  const archive=compileInquiryArchive(archiveDraft,parcel.inquiry!,'en')
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0
@@ -78,6 +78,7 @@ test('new campaign enters its generated archive through the real door, gathers e
   await prepare('archive');assert.equal(h.save.facts['archive-ready'],undefined,'background generation does not open a room')
   const admitted=await send('photo-folder',{type:'campaign-plan',stage:'archive'})
   assert.equal(h.sceneId,'cellar','admission never teleports the player')
+  assert.equal(h.save.facts['archive-room'],JSON.stringify(archiveDraft.room))
   s=authority();assert.deepEqual(await s.action('synthetic',h.id,admitted.b),admitted.r)
   await steps(['archive'])
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)

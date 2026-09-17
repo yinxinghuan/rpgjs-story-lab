@@ -1,5 +1,5 @@
 import {oldStreetFurniture} from './old-street-furniture'
-import {archiveLayout} from './old-street-archive'
+import {archiveLayout,archiveLayoutFromFacts} from './old-street-archive'
 import {oldStreetCrateFootprint} from './old-street-crate-layout'
 import {oldStreetCharacterBindings,usesCurrentLaundryCast,usesCurrentPhotographerCast} from './old-street-characters'
 import type {Locale, StorySave} from './vendor/original-train/types'
@@ -84,7 +84,7 @@ export const oldStreetProps = [
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates=false) {
-  const archive=save.facts['archive-ready']===true?archiveLayout(save.facts['archive-layout']==='east-index'?'east-index':'west-index').props:[]
+  const archive=save.facts['archive-ready']===true?archiveLayoutFromFacts(save.facts).props:[]
   return [...oldStreetProps,...archive].map(p => {
     const resident=residents[p.id]
     if(resident&&['watchmaker','laundry-owner','photographer'].includes(p.id)){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
@@ -135,7 +135,7 @@ export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn:id==='archive'?archiveLayout('west-index').arrival:pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),
-      ...oldStreetProjectedProps(save).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
+      ...oldStreetProjectedProps(save).filter(p=>!p.id.startsWith('archive-storage-')).map(p => ({id: p.id, scene: p.room, position: p.position, approach: p.approach, states: ['initial', 'changed'], actions: p.actions})),
     ], portals: doors.map(d => ({actionId: d.actionId, fromScene: d.room, scene: d.destination.room, position: d.destination.approach})), characters: oldStreetCharacterBindings,
   }
 }
