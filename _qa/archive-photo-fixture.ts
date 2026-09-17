@@ -22,6 +22,13 @@ export const photoCampaignFixture:OldStreetCampaignGenerator=async (context,sign
 export async function photoPlanReplay(intent:OldStreetExpansionRequest,locale:'zh'|'en',signal:AbortSignal){
  signal.throwIfAborted()
  const source=intent.archiveSource
+ if(process.env.OLDSTREET_QA_PHOTO_PLAN_REPORT){
+  const report=JSON.parse(readFileSync(process.env.OLDSTREET_QA_PHOTO_PLAN_REPORT,'utf8'))
+  const row=report.cases.find((r:any)=>r.plan&&source&&isDeepStrictEqual({...source,archiveId:r.source.archiveId},r.source))
+  if(!row||locale!=='en')throw Error('PHOTO_REPLAY_CONTEXT_MISMATCH')
+  const {title,discovery,photograph}=row.plan.content
+  return compileExpansionPlan(intent,{title,discovery,photograph},locale)
+ }
  if(!source||locale!=='en'||!isDeepStrictEqual({...source,archiveId:sample.source.archiveId},sample.source))throw Error('PHOTO_REPLAY_CONTEXT_MISMATCH')
  const {title,discovery,photograph}=sample.plan.content
  return compileExpansionPlan(intent,{title,discovery,photograph},locale)

@@ -21,23 +21,51 @@ test('model content compiles to playable baseline; only visual puzzle awaits its
 
 const archiveSource={archiveId:'archive-source-00001',title:'Bridge repair',events:['The damage was measured','Replacement boards were cut','New boards were fitted','The bridge reopened'],account:'Boards were fitted before the bridge reopened.'}
 const bridgeContent={title:'Bridge boards',discovery:'Pale boards cross the darker planks.',photograph:'A monochrome pixel art footbridge with pale boards among dark planks, no people or text.'}
-const groundedReview={valid:true,issues:[],sourceEvent:'New boards were fitted',pictureDetail:'footbridge with pale boards',subjectMatches:true,materialsCompatible:true,observationOnly:true}
+const groundedReview={archiveSubject:'Bridge boards',pictureSubject:'Bridge planks',comparison:'Both depict the same wooden bridge surface.',relationship:'same-object',issues:[],sourceEventId:'event-3',pictureDetailId:'detail-1',sameSubject:true,compatibleMaterials:true,visibleDiscovery:true}
 test('linked photograph carries the confirmed chronology into generation and review, without changing room geometry',async()=>{
  const inputs:any[]=[]
  const plan=await createOldStreetExpansionPlanner(async(_system,user)=>{const data=JSON.parse(user);inputs.push(data);return inputs.length===1?bridgeContent:groundedReview})({...intent,archiveSource},'en',new AbortController().signal)
- assert.equal(inputs.length,2);assert.deepEqual(inputs[0].archiveSource,archiveSource);assert.deepEqual(inputs[1].archiveSource,archiveSource)
+ assert.equal(inputs.length,2);assert.deepEqual(inputs[0].archiveSource,archiveSource);assert.deepEqual(inputs[1].sourceEvents.map((e:any)=>e.text),archiveSource.events)
+ assert.equal(inputs[1].pictureDetails[0].text,bridgeContent.photograph)
  assert.deepEqual(plan.space, (await createOldStreetExpansionPlanner(async()=>content)(intent,'en',new AbortController().signal)).space)
 })
 test('a positive verdict cannot override a material mismatch or fabricated supporting quotes',async()=>{
  for(const review of [
-  {...groundedReview,materialsCompatible:false},
-  {...groundedReview,sourceEvent:'The sidewalk tiles were replaced'},
-  {...groundedReview,pictureDetail:'concrete sidewalk tiles'},
+  {...groundedReview,compatibleMaterials:false},
+  {...groundedReview,relationship:'background-only'},
+  {...groundedReview,sourceEventId:'event-99'},
+  {...groundedReview,pictureDetailId:'detail-99'},
   {valid:true,issues:[]},
  ]){
   let calls=0
   await assert.rejects(createOldStreetExpansionPlanner(async()=>++calls===1?bridgeContent:review)({...intent,archiveSource},'en',new AbortController().signal),/ARCHIVE_PHOTO_REVIEW_REJECTED/)
  }
+})
+
+test('one malformed evidence selection can be repaired without rewriting the candidate or its source',async()=>{
+ const seen:any[]=[]
+ const plan=await createOldStreetExpansionPlanner(async(_system,input)=>{
+  seen.push(JSON.parse(input))
+  if(seen.length===1)return bridgeContent
+  return {...groundedReview,pictureDetailId:seen.length===2?'copied prose':'detail-1'}
+ })({...intent,archiveSource},'en',new AbortController().signal)
+ assert.equal(seen.length,3)
+ assert.deepEqual(plan.content.photograph,bridgeContent.photograph)
+ assert.deepEqual(seen[2].candidate,seen[1].candidate)
+ assert.deepEqual(seen[2].sourceEvents,seen[1].sourceEvents)
+ assert.deepEqual(seen[2].pictureDetails,seen[1].pictureDetails)
+ assert.match(seen[2].reviewFormatErrors.join(' '),/pictureDetailId/)
+})
+
+test('explicit disagreement or provider interruption cannot be retried into a pass',async()=>{
+ for(const review of [{...groundedReview,visibleDiscovery:false,issues:['Discovery claims a repair date.']},{...groundedReview,issues:['The object is wrong.']}]){
+  let calls=0
+  await assert.rejects(createOldStreetExpansionPlanner(async()=>++calls===1?bridgeContent:review)({...intent,archiveSource},'en',new AbortController().signal),/ARCHIVE_PHOTO_REVIEW_REJECTED/)
+  assert.equal(calls,2)
+ }
+ let calls=0
+ await assert.rejects(createOldStreetExpansionPlanner(async()=>{if(++calls===1)return bridgeContent;throw Error('MODEL_HTTP_503')})({...intent,archiveSource},'en',new AbortController().signal),/MODEL_HTTP_503/)
+ assert.equal(calls,2)
 })
 test('review cannot admit a photograph about an unrelated event',async()=>{
  let calls=0

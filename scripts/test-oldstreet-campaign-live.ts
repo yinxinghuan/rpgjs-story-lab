@@ -18,11 +18,11 @@ const usedAtStart=Number(process.env.OLDSTREET_MODEL_TEST_USED??0)
 const plannedRoutes=process.argv.includes('--planned-routes')
 const withPhoto=process.argv.includes('--with-photo')
 // The older three-stage probe retains its shared 12-call budget. A complete
-// commission gets two independent 8-call synthetic budgets (trace <=2,
-// investigation including repair/review <=4, photograph plus review <=2).
+// commission gets two independent 9-call synthetic budgets (trace <=2,
+// investigation including repair/review <=4, photograph plus review <=3).
 if(withPhoto&&usedAtStart!==0)throw Error('NEW_FULL_CHAIN_REPORT_REQUIRED')
-const budgets=withPhoto?[originalPreflightModels('8')!,originalPreflightModels('8')!]:[originalPreflightModels('12',undefined,usedAtStart)!]
-const usage=()=>({used:budgets.reduce((n,b)=>n+b.usage().used,0),limit:withPhoto?16:12})
+const budgets=withPhoto?[originalPreflightModels('9')!,originalPreflightModels('9')!]:[originalPreflightModels('12',undefined,usedAtStart)!]
+const usage=()=>({used:budgets.reduce((n,b)=>n+b.usage().used,0),limit:withPhoto?18:12})
 type RequestRecord={system:string;input:unknown;raw?:unknown;error?:string}
 type CaseRecord={chain:number;stage:CampaignContext['stage'];context:CampaignContext;requests:RequestRecord[];raw?:unknown;accepted?:unknown;preparedArchive?:unknown;source?:string;error?:string;elapsedMs?:number;system?:string}
 const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,scope:`Two new English synthetic content chains${withPhoto?' through archive-linked photograph planning':''}, ${plannedRoutes?'with a stable pre-generation route per synthetic journey, ':''}including semantic review and at most one correction per campaign stage. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment. Content acceptance is not a rendered gameplay or length verdict.`,limit:usage().limit,usedAtStart,usage:usage(),cases:[] as CaseRecord[],photos:[] as Array<{chain:number;source:ArchivePhotoSource;requests:RequestRecord[];plan?:unknown;error?:string}>,chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
