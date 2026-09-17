@@ -21,7 +21,7 @@ function RecoveryCheck(){
   <h1 style={{fontSize:18}}>局部恢复检查</h1>
   <p>合成故障：首次状态请求失败，再模拟首次图片下载失败。</p>
   <output>状态读取 {counts.reads} · 图片下载 {counts.files} · 生成请求 {counts.posts}</output>
-  <OldStreetExpansionPhotoView locale="zh" sessionId="synthetic" api={api} disabled={false} matched={matched} submit={async()=>setMatched(true)} pause={()=>{}} choice="" decide={async()=>{}}/>
+  <OldStreetExpansionPhotoView locale="zh" sessionId="synthetic" api={api} disabled={false} matched={matched} submit={async()=>setMatched(true)} onOpenChange={()=>{}} choice="" decide={async()=>{}}/>
  </main>
 }
 createRoot(document.getElementById('root')!).render(<RecoveryCheck/>);

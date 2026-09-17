@@ -99,3 +99,6 @@
 .os-preparations summary { justify-content:space-between; gap:8px; }
 .os-preparations summary svg { flex:none; }
 .os-preparations[open] summary svg { transform:rotate(90deg); }
+
+.os-leave__actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+.os-leave__actions button { flex:1; }
