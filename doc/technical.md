@@ -2506,3 +2506,6 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ### 系统界面等待与短横屏
 `OldStreetDev` 的 `busyActivity` 驱动回应区状态；3秒effect在操作结束/类型变化时清理。error时不渲染旧选项并隐藏扩展区。`old-street-content.css` 通过短横屏媒体查询实现回应/选项两栏，`:has`仅暂隐主动面板上方HUD，不改变世界尺寸；新回合/页/目标重置三个滚动容器。`OldStreetExpansionPhotoView` 在candidate但image未载入时明确下载状态，沿用已有图重载及任务恢复，不新增生成调用。
+
+### 附近目标稳定选择
+`stableInteraction` 仅从当前已揭示实体投影中选择严格小于 `oldStreetInteractionDistance` 的目标；原目标与最近对象距离差小于8时保持原目标，显式点击优先在有效范围内的目标。组件在切场景/实体消失时失效，不修改已打开互动的selected。共享54半径用于空间绑定与UI，保存结构和服务端行动规则不变。

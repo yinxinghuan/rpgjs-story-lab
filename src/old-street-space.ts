@@ -15,6 +15,7 @@ export const oldStreetBody = {w: 16, h: 26}
 export const oldStreetHeroScale = .24
 // A complete left/right cycle; independent of camera zoom and sprite display scale.
 export const oldStreetStride = 56
+export const oldStreetInteractionDistance = 54
 /** Logical blockout coordinates, not approved art or final room proportions. */
 export const oldStreetFloors: Record<OldStreetRoom, Rect> = {
   archive:archiveLayout('west-index').floor,
@@ -134,7 +135,7 @@ export const oldStreetPath = (room: string, start: SpatialPoint, end: SpatialPoi
 export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}}): SpatialBindingDefinition {
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
-  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-thresholds-4', interactionDistance: 54,
+  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-thresholds-4', interactionDistance: oldStreetInteractionDistance,
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn:id==='archive'?archiveLayout('west-index').arrival:pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),

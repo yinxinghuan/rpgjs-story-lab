@@ -1,3 +1,5 @@
+import {stableInteraction} from './nearby-interaction'
+import {oldStreetInteractionDistance} from './old-street-space'
 import {OldStreetConversationChoices} from './old-street-conversation-choices'
 import './old-street-content.css'
 import {OldStreetLeaveView} from './old-street-leave-view'
@@ -521,8 +523,12 @@ export default function OldStreetDev() {
   }
   function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e})}
   const entities = liveEntities().filter(e => e.scene === head.scene && (!e.id.includes('studio-darkroom')||head.save.facts['darkroom-ready'])&&(!e.id.includes('cellar-archive')||head.save.facts['archive-ready']))
-  const nearest = [...entities].filter(e => Math.hypot(e.position.x - feet.x, e.position.y - feet.y) < 54)
-    .sort((a, b) => Math.hypot(a.position.x - feet.x, a.position.y - feet.y) - Math.hypot(b.position.x - feet.x, b.position.y - feet.y))[0]
+  const nearbyFocus=useRef<{scene:string;previous?:string;preferred?:string}>({scene:head.scene})
+  if(nearbyFocus.current.scene!==head.scene)nearbyFocus.current={scene:head.scene}
+  if(nearbyFocus.current.preferred&&!entities.some(e=>e.id===nearbyFocus.current.preferred))nearbyFocus.current.preferred=undefined
+  const nearest=stableInteraction(entities,feet,oldStreetInteractionDistance,nearbyFocus.current.previous,nearbyFocus.current.preferred)
+  if(nearbyFocus.current.previous===nearbyFocus.current.preferred&&nearest?.id!==nearbyFocus.current.preferred)nearbyFocus.current.preferred=undefined
+  nearbyFocus.current.previous=nearest?.id
   const chosen = entities.find(e => e.id === selected) ?? nearest
   const knownSpeaker=chosen&&oldStreetPerson(chosen.id)&&head.save.characters.some(c=>c.id===oldStreetPerson(chosen.id)?.id)
   const shareChoices=chosen&&serverHead.current?evidenceChoices(serverHead.current,chosen.id):[]
@@ -551,7 +557,8 @@ export default function OldStreetDev() {
   function approachObject(entity:typeof entities[number]){
     if(!ready||busyRef.current||error||outcome)return
     closeInteraction()
-    if(!runtime.current?.walkTo(entity.approach))setNotice(text(['这里暂时走不过去。','There is no clear path.']))
+    nearbyFocus.current.preferred=entity.id
+    if(!runtime.current?.walkTo(entity.approach)){nearbyFocus.current.preferred=undefined;setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
   }
   useEffect(()=>{
     if(!notice||selected||openingOpen||error)return
@@ -595,6 +602,7 @@ export default function OldStreetDev() {
     <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button aria-label={text(['街区','Neighbourhood'])} ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setMapOpen(true)}}><OldStreetToolIcon kind="map"/><span>{text(['街区','Map'])}</span></button><button aria-label={text(['随身与发现','Items & discoveries'])} ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJournalOpen(true)}}><OldStreetToolIcon kind="items"/><span>{text(['随身','Items'])}</span></button><button aria-label={text(['菜单','Menu'])} disabled={!ready||busy||!!error} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJourneysOpen(true)}}><OldStreetToolIcon kind="journeys"/><span>{text(['菜单','Menu'])}</span></button></nav></header>
     <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || modalOpen) return
+      nearbyFocus.current.preferred=undefined
       const r = e.currentTarget.getBoundingClientRect()
       runtime.current?.walkTo({x: (e.clientX - r.left) * 384 / r.width, y: (e.clientY - r.top) * 576 / r.height})
       closeInteraction()
