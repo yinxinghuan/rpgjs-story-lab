@@ -10,8 +10,12 @@ import {readPreparedInvestigation,compilePreparedInvestigation} from '../server/
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 
 for(const locale of ['zh','en'] as const)test(`new ${locale} commission is visible before input; legacy opening is never retroactively rewritten`,()=>{
- const runtime=oldStreetRuntime(()=>true,undefined,undefined,undefined,undefined,undefined,async()=>({}))
+ const runtime=oldStreetRuntime(()=>true,undefined,undefined,()=>undefined,()=>undefined,undefined,async()=>({}))
  const original=runtime.initial(locale,randomUUID()),v1=runtime.initial(locale,randomUUID(),{campaign:'letter-trail-v1'}),v2=runtime.initial(locale,randomUUID(),{campaign:'letter-trail-v2'})
+ const v3=runtime.initial(locale,randomUUID(),{campaign:'letter-trail-v3'})
+ assert.equal(v3.campaign?.version,3)
+ assert.match(campaignOpening(v3.save,''),locale==='zh'?/街景/:/glimpse/)
+ assert.match(oldStreetJournal(v3.save,v3.campaign).notes[0].text,locale==='zh'?/旧照/:/photograph/)
  assert.notEqual(campaignOpening(v2.save,''),campaignOpening(original.save,''))
  assert.equal(campaignOpening(v1.save,''),campaignOpening(original.save,''))
  assert.deepEqual(campaignInputKnowledge(v2).map(k=>k.id),['learned:campaign-commission'],'goal is known, generated records are not')

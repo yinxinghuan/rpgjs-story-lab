@@ -1,5 +1,5 @@
 import {fieldKnowledge} from './old-street-field-inquiry'
-import {campaignCommission} from './old-street-campaign-story'
+import {campaignCommission,campaignPhotoPurpose} from './old-street-campaign-story'
 import {oldStreetPropState} from './old-street-prop-state'
 import {campaignComplete,type OldStreetCampaign} from './old-street-campaign'
 import {campaignPropTitle} from './old-street-campaign-interaction'
@@ -8,8 +8,9 @@ import {archiveEvidence} from './old-street-archive'
 export function oldStreetCurrentPurpose(save:StorySave,campaign?:OldStreetCampaign){
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
  if(f.departed===true)return t('信已经交给家人。','The letter has been delivered.')
- if(campaign?.version===2&&campaign.parcel?.observed&&!campaign.archive?.order)return campaign.archive?t('进入档案工作间，调查两处资料架，再到整理桌核对先后顺序。','Examine both archive shelves, then reconstruct the order at the sorting table.'):t('在地下室资料架追查原始记录，准备隔壁档案工作间。','Follow the source records from the cellar shelf to prepare the adjoining archive.')
- if(f['letter-taken']===true&&campaign&&!campaignComplete(campaign))return campaign.trace?.selected===undefined?t('到修表铺记录册比对寄存条，寻找信件关联的材料。','Compare the filing slip with the shop record book to trace the papers linked to the letter.'):t('到地下储物室阅读寄存材料，再决定带走原件或留下。','Read the archived papers in the cellar, then decide whether to take the original or leave it there.')
+ if(campaign&&campaign.version>=2&&campaign.parcel?.observed&&!campaign.archive?.order)return campaign.archive?t('进入档案工作间，调查两处资料架，再到整理桌核对先后顺序。','Examine both archive shelves, then reconstruct the order at the sorting table.'):t('在地下室资料架追查原始记录，准备隔壁档案工作间。','Follow the source records from the cellar shelf to prepare the adjoining archive.')
+ const photoPurpose=campaignPhotoPurpose(save,campaign);if(photoPurpose)return photoPurpose
+ if(f['letter-taken']===true&&campaign&&!campaignComplete(campaign,save.facts))return campaign.trace?.selected===undefined?t('到修表铺记录册比对寄存条，寻找信件关联的材料。','Compare the filing slip with the shop record book to trace the papers linked to the letter.'):t('到地下储物室阅读寄存材料，再决定带走原件或留下。','Read the archived papers in the cellar, then decide whether to take the original or leave it there.')
  if(campaignCommission(save)&&!save.characters.some(c=>c.id==='zhou-watchmaker'&&c.status==='known')&&!f['letter-unlocked']&&!save.inventory.some(i=>i.id==='letter-key'&&i.count>0)&&!f['letter-taken'])return save.objective
  if(f['letter-taken']===true)return t('信已收好，可以从街口回家；也可以继续逛逛。','You have the letter. Go home from the street, or keep exploring.')
  if(f['letter-unlocked']===true)return t('修表铺的小格已经打开，回去收好里面的信。','The compartment in the watch shop is open. Collect the letter inside.')

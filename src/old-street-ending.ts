@@ -12,7 +12,8 @@ export function completeOldStreetEnding(save:StorySave,cartridge:StoryCartridge)
  const preserved=[t('密封信已交到家人手里。','The sealed letter is back with your family.')]
  if(save.facts['campaign-enclosure-disposition']==='take')preserved.push(t('你也带回了在旧街查到的寄存材料，原件不再留在资料架上。','You also brought home the archived papers you traced. The original no longer remains on the shelf.'))
  if(save.facts['campaign-enclosure-disposition']==='leave')preserved.push(t('你向家人转述了材料里的发现，原件仍留在旧街。','You told your family what you found in the papers. The original remains on the old street.'))
- if(commission)preserved.push(t('你也把核对过的旧街记录讲给家人听，完成了这次委托。','You shared the account you reconstructed from the street records, completing your family’s request.'))
+ if(commission&&save.facts['campaign-commission']==='street-memory')preserved.push(t('你把档案里查明的经过和照片里看见的细节讲给家人听，完成了取信之外的委托。','You shared both the history reconstructed from the records and the details visible in the photograph, completing the request that came with the letter.'))
+ else if(commission)preserved.push(t('你也把核对过的旧街记录讲给家人听，完成了这次委托。','You shared the account you reconstructed from the street records, completing your family’s request.'))
  if(flag('archive-reconstructed')){const record=save.blocks.find(b=>b.data?.archiveReconstructed===1);if(record)preserved.push(record.text)}
  if(flag('archive-published'))preserved.push(t('核对过的调查摘要留在修表铺的公共记录册里，供后来的人阅读。','Your verified summary remains in the watch shop public record book for later visitors.'))
  if(flag('clock-returned'))preserved.push(t('旧钟回到了洗衣店。','The old clock is back at the laundry.'))

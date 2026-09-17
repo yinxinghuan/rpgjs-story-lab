@@ -1,5 +1,14 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 完整委托候选 v3（2026-09-17）
+
+`OldStreetCampaign.version=3` 仅经显式 `letter-trail-v3` 新建；本地调试菜单需 campaign/planning/media 能力齐备。v1/v2 不迁移、不加照片门槛；生产 campaign 开关仍关闭。新委托开场和目标在 `old-street-campaign-story.ts` 定义，`campaignPhotoPurpose` 供笔记与准备提交共用。runtime 的 `finish` 只在候选上复制 save 更新 objective，再经过原权威校验，不改准备前的头部。
+
+v3 暗房请求必须继承本旅程已还原的 `archivePhotoSource`，早期无关请求不占用唯一扩展槽位。实际媒体匹配时保存 `campaign-photo-archive`；`campaignComplete(campaign,facts)` 同时要求已观察匹配照片、关联档案与明确 keep/leave。`assertOldStreetHead` 校验来源、观察与照片库存一致。生成、房间准入、匹配和去向是不同状态，重试不自动完成；离开仍由同一 Story Session 事务裁决。生成任务与媒体接口复用原实现，未创建第二套状态引擎。
+
+`_qa/commission-playtest-progress.ts --seed-synthetic` 只针对隔离 QA 数据库中唯一零进度 v3 旅程，通过正常 authority 行动和 jobs 准备到未解答的档案桌，供代表性 renderer 检查。它不是浏览器步行证据或正式游戏入口。`showExpansionPhoto` 在照片去向已确定且离台时关闭常驻面板，照片仍在权威旅程中保存，靠近重新读取。
+
+
 ## 便笺副本与归还（2026-09-17）
 
 可选 `campaign.field.copy` 存储已观察原件的 title/finding 快照，`field-note-copy` 是独立行囊物品与 fact，不重新生成内容。复制只允许在实际接近照相馆放大台且原件在手（或原本就在台上）时执行；同一原件只做一份副本。原件 take/leave 可在离开前通过 borrow/return 改变，原始所在地不变。沿用原 Session 事务和回执；旧字段缺失时保持兼容，结束旅程不再提供操作。

@@ -1,3 +1,4 @@
+import type {StorySave} from './vendor/original-train/types'
 import {readFieldContent,type FieldProgress} from './old-street-field-inquiry'
 import {readArchiveContent,archiveOrderMatches,assertArchiveInquiry,type ArchiveProgress} from './old-street-archive'
 import {readInquiryFocus,inquiryQuestion,type InquiryFocus} from './old-street-inquiry'
@@ -8,7 +9,7 @@ export type ParcelContent={title:string;fragment:string;question?:string;inquiry
 export type CampaignContext={locale:'zh'|'en';stage:'field';account:string;events:string[]}|{locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
- version:1|2;
+ version:1|2|3;
  trace?:CampaignInstance<TraceContent>&{selected?:number};
  parcel?:CampaignInstance<ParcelContent>&{disposition?:'take'|'leave'};
  archive?:ArchiveProgress;
@@ -66,10 +67,11 @@ export function compileLinkedParcel(raw:unknown,record:TraceRecord,locale:'zh'|'
  return compileInquiryParcel({title:r.title,fragment:r.fragment,inquiry:{first:record.label,second:line(r.otherEvent,50)}},locale)
 }
 export function campaignRecordMatches(content:TraceContent,index:number){return Number.isInteger(index)&&!!content.records[index]&&signature(content.records[index])===signature(content.clue)}
-export function campaignComplete(c:OldStreetCampaign){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)}
+export function campaignComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)&&(c.version!==3||campaignPhotoComplete(c,facts))}
+export function campaignPhotoComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return !!c.archive?.order&&facts?.['campaign-photo-archive']===c.archive.id&&typeof facts['darkroom-photo-matched']==='string'&&typeof facts['darkroom-photo-discovery']==='string'&&['keep','leave'].includes(String(facts['darkroom-photo-choice']))}
 export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCampaign|undefined{
  if(raw===undefined)return
- const c=object(raw,['version','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2)throw Error('CAMPAIGN_SAVE_INVALID')
+ const c=object(raw,['version','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.trace!==undefined){
   const trace=object(c.trace,['id','content','observed','selected']);instance(trace);const content=readTraceContent(trace.content)
   if(trace.selected!==undefined&&(!trace.observed||!campaignRecordMatches(content,trace.selected as number)))throw Error('CAMPAIGN_SAVE_INVALID')
@@ -85,7 +87,7 @@ export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCam
   if(!(c.archive as OldStreetCampaign['archive'])?.order||f.disposition!==undefined&&(!f.observed||!['take','leave'].includes(String(f.disposition))))throw Error('CAMPAIGN_SAVE_INVALID')
  }
  if(c.archive!==undefined){
-  if(c.version!==2||!(c.parcel as OldStreetCampaign['parcel'])?.observed)throw Error('CAMPAIGN_SAVE_INVALID')
+  if((c.version!==2&&c.version!==3)||!(c.parcel as OldStreetCampaign['parcel'])?.observed)throw Error('CAMPAIGN_SAVE_INVALID')
   const a=object(c.archive,['id','content','examined','order']);instance({id:a.id,observed:true})
   const content=readArchiveContent(a.content)
   const inquiry=(c.parcel as OldStreetCampaign['parcel'])?.content.inquiry

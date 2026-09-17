@@ -9,7 +9,7 @@ import {photoCampaignFixture,photoPlanReplay} from './archive-photo-fixture'
 if(!process.argv.includes('--live-media'))throw Error('Explicit --live-media required for this authorized synthetic photo test')
 process.env.OLDSTREET_MODEL_TEST_BUDGET='0'
 process.env.OLDSTREET_DEV_DATA='.data/archive-photo-playtest-20260917'
-const out='doc/archive-photo-media-20260917';mkdirSync(out,{recursive:true})
+const out=process.env.OLDSTREET_PHOTO_QA_OUTPUT??'doc/archive-photo-media-20260917';mkdirSync(out,{recursive:true})
 const produce=expansionPhotoProducer()
 const config=await (base as (e:ConfigEnv)=>UserConfig)({command:'serve',mode:'oldstreet-dev'})
 config.plugins=(config.plugins??[]).map(p=>p&&typeof p==='object'&&'name' in p&&p.name==='oldstreet-loopback-session'?oldStreetDevPlugin(photoCampaignFixture,{plan:photoPlanReplay,photo:async(job,onTask)=>{

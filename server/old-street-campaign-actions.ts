@@ -1,3 +1,4 @@
+import {campaignPhotoPurpose} from '../src/old-street-campaign-story'
 import {prepareFieldAction} from './old-street-field-actions'
 import {campaignAnchor,campaignRecordMatches,readParcelContent,readTraceContent,type CampaignContext} from '../src/old-street-campaign'
 import type {OldStreetHead} from '../src/old-street-head'
@@ -20,7 +21,7 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
   let context:CampaignContext={stage:'trace',locale:save.locale}
   if(body.stage==='parcel'){
    if(campaign.trace?.selected===undefined)throw new LabError('CAMPAIGN_TRACE_REQUIRED',409)
-   context={stage:'parcel',locale:save.locale,previous:structuredClone(campaign.trace.content.records[campaign.trace.selected]),...(campaign.version===2?{investigation:true as const}:{})}
+   context={stage:'parcel',locale:save.locale,previous:structuredClone(campaign.trace.content.records[campaign.trace.selected]),...(campaign.version>=2?{investigation:true as const}:{})}
   }
   let raw:unknown
   if(candidate){raw=candidate(head,body.stage);if(raw===undefined)throw new LabError('CAMPAIGN_NOT_PREPARED',409)}
@@ -67,9 +68,10 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
    if(body.selection==='take')save.inventory.push({id:'letter-enclosure',label:t('寄存的旧街材料','Archived street papers'),count:1,rarity:'common'})
    text=body.selection==='take'?t('你把材料收好，准备和密封信一起带回去。架上不再留着这份原件。','You pack the papers to bring home with the sealed letter. The original is no longer on the shelf.'):t('你记住材料里的发现，把原件留在架上。回家时可以转述，但不会带走实物。','You remember what you read and leave the original on the shelf. You can tell your family about it, but will not bring the papers.')
    save.objective=t('从街口带信回家，或继续帮助街上的人。','Take the letter home from the street, or stay to help the neighbors.')
-   if(campaign.version===2&&!campaign.archive?.order)save.objective=t('从资料架继续追查，进入隔壁档案工作间核对原始记录。','Follow the papers into the adjoining archive to examine the source records.')
+   if(campaign.version>=2&&!campaign.archive?.order)save.objective=t('从资料架继续追查，进入隔壁档案工作间核对原始记录。','Follow the papers into the adjoining archive to examine the source records.')
   }
  }else if(body.type!=='campaign-plan')throw new LabError('INVALID_ACTION_TYPE')
+ const photoPurpose=campaignPhotoPurpose(save,campaign);if(photoPurpose)save.objective=photoPurpose
  next.version++;next.position=position
  save.blocks.push({id:body.action_id+':campaign',kind:'narration',text,data:{oldStreetCampaignStage:body.stage}})
  return {head:next,kind:body.type,accepted:true,text}

@@ -1,3 +1,4 @@
+import {campaignPhotoPurpose} from '../src/old-street-campaign-story'
 import {applyArchiveReading} from './old-street-archive-reading'
 import {archiveEvidence,archiveOrderMatches,readArchiveContent,assertArchiveInquiry,archiveRackState,type ArchiveSource} from '../src/old-street-archive'
 import {bindOldStreet,oldStreetWalkable} from '../src/old-street-space'
@@ -7,7 +8,7 @@ import {LabError} from '../src/journey-runtime'
 /** Preparation makes the room available; reading a source and submitting an
  * order require actual proximity in the admitted layout. No auto-solving. */
 export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStreetHead['position'],candidate?:CampaignCandidate){
- if(head.campaign?.version!==2||!head.campaign.parcel?.observed)throw new LabError('CAMPAIGN_PAPERS_REQUIRED',409)
+ if((!head.campaign||head.campaign.version<2)||!head.campaign.parcel?.observed)throw new LabError('CAMPAIGN_PAPERS_REQUIRED',409)
  const next=structuredClone(head),c=next.campaign!,save=next.save,t=(zh:string,en:string)=>save.locale==='zh'?zh:en
  const expected=body.type==='campaign-plan'?{scene:'cellar',target:'photo-folder'}:{scene:'archive',target:body.target}
  if(head.sceneId!==expected.scene||body.target!==expected.target||!bindOldStreet(save.locale,save).canInteract(body.target,head.sceneId,position))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
@@ -47,7 +48,7 @@ export function prepareArchiveAction(head:OldStreetHead,body:any,position:OldStr
    if(!archiveOrderMatches(archive.content,body.order))throw new LabError('CAMPAIGN_ARCHIVE_ORDER_MISMATCH',409)
    archive.order=[...body.order];text=archive.content.discovery
    save.facts['archive-reconstructed']=true
-   save.objective=c.parcel?.disposition?t('记录已还原。可以带信回家，或继续探索。','The records are reconstructed. Take the letter home, or keep exploring.'):t('记录已还原，回资料架决定原件的去向。','The records are reconstructed. Return to the paper shelf to decide where the original belongs.')
+   save.objective=campaignPhotoPurpose(save,c)??(c.parcel?.disposition?t('记录已还原。可以带信回家，或继续探索。','The records are reconstructed. Take the letter home, or keep exploring.'):t('记录已还原，回资料架决定原件的去向。','The records are reconstructed. Return to the paper shelf to decide where the original belongs.'))
   }else throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
  }
  next.version++;next.position=position

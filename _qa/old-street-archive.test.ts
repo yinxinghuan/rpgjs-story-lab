@@ -1,8 +1,9 @@
+import {assertOldStreetHead} from '../src/old-street-head'
 import {fieldChoices,fieldKnowledge} from '../src/old-street-field-inquiry'
 import {evidenceChoices,sharedEvidence,sharedEvidenceKnowledge} from '../src/old-street-shared-evidence'
 import {oldStreetAuthoredTalkReply,oldStreetTalkTopics} from '../src/old-street-conversation'
 import {oldStreetDialogueContext} from '../server/old-street-dialogue'
-import {archivePhotoSource} from '../src/old-street-archive-photo'
+import {archivePhotoSource,archivePhotoSuggestion} from '../src/old-street-archive-photo'
 import {compileExpansionPlan,type ExpansionPlan} from '../src/old-street-expansion-plan'
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -11,12 +12,12 @@ import {randomUUID} from 'node:crypto'
 import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent,archiveRackLabel} from '../src/old-street-archive'
 import {assertOldStreetCampaign,campaignComplete} from '../src/old-street-campaign'
 import {oldStreetSpatialPlan,oldStreetDoors,oldStreetPath,oldStreetWalkable} from '../src/old-street-space'
-import {OldStreetAuthority,type OldStreetHead} from '../server/old-street-runtime'
+import {OldStreetAuthority,oldStreetRuntime,type OldStreetHead} from '../server/old-street-runtime'
 import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
 import {compilePreparedInvestigation} from '../server/old-street-investigation-draft'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 import {campaignInputKnowledge} from '../src/old-street-campaign-interaction'
-import {oldStreetJournal} from '../src/old-street-journal'
+import {oldStreetJournal,oldStreetCurrentPurpose} from '../src/old-street-journal'
 import type {AuthorityStorage} from '../server/session-authority'
 import {publicRecordAction,publicRecordKnowledge} from '../src/old-street-public-record'
 import {oldStreetRecordBookPose} from '../src/old-street-record-book'
@@ -50,8 +51,9 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
  assert.equal(oldStreetWalkable('archive',{x:plan.props[0].body.x+4,y:plan.props[0].body.y+4},save),false,'furniture blocks passage')
 })
 
-for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async()=>{
- const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(readingMode==='direct'?{}:{denseSource:'index'})}
+for(const readingMode of ['direct','lens','table','commission'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async()=>{
+ const fullCommission=readingMode==='commission',direct=readingMode==='direct'||fullCommission
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(direct?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0,interpretationCalls=0,photoPlan:ExpansionPlan|undefined
@@ -65,12 +67,18 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
  })
  const authority=()=>new OldStreetAuthority(db,()=>true,async(text,context)=>{interpretationCalls++;assert.equal(text,'Tell her what I learned from the records');assert.ok(context.actions.some(a=>a.id==='evidence:share-account'));return 'evidence:share-account'},undefined,()=>photoPlan,()=>photoPlan?'synthetic-photo-hash':undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
- let h=s.create('synthetic',randomUUID(),'en',{campaign:'letter-trail-v2'})
+ let h=s.create('synthetic',randomUUID(),'en',{campaign:fullCommission?'letter-trail-v3':'letter-trail-v2'})
  const input=(target:string,extra:any)=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.id===target)!.approach,target,...extra})
  const send=async(target:string,extra:any)=>{const b=input(target,extra),r=await s.action('synthetic',h.id,b);h=r.head;return {b,r}}
  const steps=async(route:string[])=>{for(const step of route){const action=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===step)!.actionId;const e=oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;await send(e.id,{type:'action',action})}}
  const prepare=async(stage:'trace'|'parcel'|'archive'|'field')=>{jobs.enqueue('synthetic',h.id,stage);await jobs.run('synthetic',h.id,stage)}
  try{
+  if(fullCommission){
+   await steps(['photo'])
+   await assert.rejects(s.action('synthetic',h.id,input('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'An unrelated place'})),/EXPANSION_UNAVAILABLE/)
+   assert.equal(s.get('synthetic',h.id).expansions,undefined,'early unrelated request cannot occupy the only darkroom')
+   await steps(['street'])
+  }
   await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
   if(readingMode==='lens')await steps(['oldstreet:move-box','oldstreet:take-lens'])
   await prepare('trace');await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:0})
@@ -103,7 +111,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   assert.deepEqual(await s.action('synthetic',h.id,shifted.b),shifted.r,'lost response replays without moving twice')
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)
   assert.ok(!JSON.stringify(campaignInputKnowledge(h)).includes(archive.discovery))
-  if(readingMode!=='direct'){
+  if(!direct){
    await assert.rejects(s.action('synthetic',h.id,input('archive-index',{type:'campaign-observe',stage:'archive'})),/READING_AID_REQUIRED/)
    const initialEvidence=[...h.campaign!.archive!.examined]
    if(readingMode==='lens'){
@@ -139,9 +147,9 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   assert.throws(()=>jobs.enqueue('synthetic',h.id,'field'),/OBSERVATION_REQUIRED/)
   const completed=await send('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})
   assert.deepEqual(await s.action('synthetic',h.id,completed.b),completed.r)
-  assert.equal(campaignComplete(h.campaign!),true);assertOldStreetCampaign(h.campaign)
+  assert.equal(campaignComplete(h.campaign!,h.save.facts),!fullCommission);assertOldStreetCampaign(h.campaign)
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.text===archive.discovery))
-  if(readingMode!=='direct'){
+  if(!direct){
    await prepare('field')
    assert.equal(h.campaign?.field,undefined,'background work does not discover or place a note')
    const planned=await send('archive-desk',{type:'campaign-plan',stage:'field'})
@@ -223,27 +231,49 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   assert.ok(publicRecordKnowledge(h)[0].text.includes('no longer public'))
   assert.ok(campaignInputKnowledge(h).some(n=>n.text===archive.discovery),'withdrawal does not erase the discovery')
   assert.deepEqual(h.save.inventory,inventory);assert.deepEqual(h.save.relationships,relationships)
-  assert.equal(campaignComplete(h.campaign!),true,'publishing is optional')
-  const privateEnding=structuredClone(h.save);privateEnding.facts.departed=true;completeOldStreetEnding(privateEnding,oldStreetCartridge('en'))
-  assert.ok(!privateEnding.finale.ending?.preserved.some(p=>p.includes('public record book')),'withdrawn summary is absent from ending')
+  assert.equal(campaignComplete(h.campaign!,h.save.facts),!fullCommission,'publishing is optional; related photograph is not yet observed')
+  if(fullCommission){
+   assert.match(oldStreetCurrentPurpose(h.save,h.campaign),/photograph/)
+   await steps(['street'])
+   await assert.rejects(s.action('synthetic',h.id,input('street-exit',{type:'action',action:'oldstreet:leave'})),/CAMPAIGN_UNFINISHED/)
+   const premature=structuredClone(h);premature.save.facts.departed=true;assert.throws(()=>assertOldStreetHead(premature),/SAVE_UNSUPPORTED/)
+   await steps(['shop'])
+  }
+  if(!fullCommission){const privateEnding=structuredClone(h.save);privateEnding.facts.departed=true;completeOldStreetEnding(privateEnding,oldStreetCartridge('en'));assert.ok(!privateEnding.finale.ending?.preserved.some(p=>p.includes('public record book')),'withdrawn summary is absent from ending')}
   await send('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='campaign-public-summary')?.text.includes('public record book'))
-  if(readingMode==='direct'){
+  if(direct){
    await steps(['street','photo'])
    const source=archivePhotoSource(h.campaign)!
    const request=await send('viewing-table',{type:'expansion-request',template:'photo-darkroom-v1',text:'Find a photograph of the bridge repairs',followArchive:true,archiveSource:{account:'client must not invent history'}})
    assert.deepEqual(h.expansions![0].archiveSource,source)
+   if(fullCommission)assert.equal(h.expansions![0].input,archivePhotoSuggestion('en'))
    assert.deepEqual(await s.action('synthetic',h.id,request.b),request.r)
    s=authority();h=s.get('synthetic',h.id);assert.deepEqual(h.expansions![0].archiveSource,source)
+   if(fullCommission){
+    assert.equal(campaignComplete(h.campaign!,h.save.facts),false)
+    await assert.rejects(s.action('synthetic',h.id,input('viewing-table',{type:'expansion-activate'})),/EXPANSION_UNAVAILABLE/)
+    assert.equal(h.save.facts['darkroom-ready'],undefined,'missing preparation preserves an unfinished, retryable journey')
+   }
    photoPlan=compileExpansionPlan(h.expansions![0],{title:'The bridge boards',discovery:'Three newer boards interrupt the worn planks of the footbridge.',photograph:'Monochrome pixel art of a footbridge with three replacement boards.'},'en')
    await send('viewing-table',{type:'expansion-activate'})
    assert.equal(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='darkroom-photo-discovery'),false,'preparation does not reveal the photograph')
    await steps(['darkroom'])
    const matched=await send('developing-bench',{type:'expansion-photo-match',photoMatch:{version:'synthetic-photo-hash',piece:'piece-river',rotation:0}})
+   if(fullCommission){
+    assert.equal(h.save.facts['campaign-photo-archive'],source.archiveId)
+    assert.equal(campaignComplete(h.campaign!,h.save.facts),false,'observing the image does not choose its destination')
+    assert.match(oldStreetCurrentPurpose(h.save,h.campaign),/Decide whether/)
+    const left=await oldStreetRuntime(()=>true).prepare(h,input('developing-bench',{type:'expansion-photo-decision',decision:'leave'}),()=>true)
+    assert.equal(campaignComplete(left.head.campaign!,left.head.save.facts),true,'leaving the original is equally valid')
+    assert.equal(left.head.save.inventory.some(i=>i.id==='darkroom-print'),false)
+    assertOldStreetHead(left.head)
+   }
    assert.equal(matched.r.text,photoPlan.content.discovery)
    assert.deepEqual(await s.action('synthetic',h.id,matched.b),matched.r)
    await send('developing-bench',{type:'expansion-photo-decision',decision:'keep'})
    s=authority();h=s.get('synthetic',h.id)
+   if(fullCommission){assert.equal(campaignComplete(h.campaign!,h.save.facts),true);assert.match(oldStreetCurrentPurpose(h.save,h.campaign),/Go home/)}
    assert.equal(oldStreetJournal(h.save,h.campaign).notes.find(n=>n.id==='darkroom-photo-discovery')?.text,photoPlan.content.discovery)
    assert.equal(h.save.inventory.some(i=>i.id==='darkroom-print'),true)
    await steps(['photo'])
@@ -291,9 +321,9 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   if(photoPlan)assert.ok(h.save.finale.ending?.preserved.includes(photoPlan.content.discovery))
   assert.equal(h.save.finale.status,'complete');assert.ok(h.save.finale.ending?.preserved.includes(archive.discovery))
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
-  assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
+  assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes(fullCommission?'request that came with the letter':'family’s request')))
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('public record book')))
-  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,readingMode==='direct'?3:5)
+  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,direct?3:5)
   if(h.campaign?.field){assert.ok(h.save.finale.ending?.preserved.includes(h.campaign.field.content.finding));assert.ok(h.save.finale.ending?.preserved.some(p=>p.includes('written copy')));assert.ok(h.save.finale.ending?.preserved.some(p=>p.includes('left the supplementary note')))}
  }finally{raw.close()}
 })

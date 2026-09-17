@@ -45,7 +45,7 @@ export function OldStreetCampaignView({campaign,stage,published=false,locale,ses
     </details>
    </>:parcel?<>
     {trace?.selected!==undefined&&<p className="os-campaign__clue">{trace.content.records[trace.selected].label} · {trace.content.records[trace.selected].mark}</p>}
-    <p>{parcel.content.fragment}</p>{parcel.content.question&&<p className="os-campaign__clue">{parcel.content.question}</p>}{campaign.version===2&&!campaign.archive?.order&&<p>{t('隔壁档案间保存着原始记录。核对它们，才能把这段经过讲清楚。','The adjoining archive holds the source records. Compare them to piece together what happened.')}</p>}
+    <p>{parcel.content.fragment}</p>{parcel.content.question&&<p className="os-campaign__clue">{parcel.content.question}</p>}{campaign.version>=2&&!campaign.archive?.order&&<p>{t('隔壁档案间保存着原始记录。核对它们，才能把这段经过讲清楚。','The adjoining archive holds the source records. Compare them to piece together what happened.')}</p>}
     {!parcel.disposition?<p>{t('带走可交给家人；留下则保留在这里，回家转述内容。','Take it to show your family, or leave it here and tell them what you read.')}</p>:<p>{t(parcel.disposition==='take'?'原件已收进你的行囊。':'原件仍留在架上，你记下了它的内容。',parcel.disposition==='take'?'The original is in your bag.':'The original remains on the shelf. You remember what it says.')}</p>}
    </>:null}
   </div>

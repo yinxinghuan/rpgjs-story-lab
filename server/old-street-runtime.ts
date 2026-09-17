@@ -1,7 +1,7 @@
 import {evidenceChoices} from '../src/old-street-shared-evidence'
 import {prepareEvidenceShare} from './old-street-shared-evidence'
-import {archivePhotoSource} from '../src/old-street-archive-photo'
-import {introduceCampaignCommission,campaignCommission} from '../src/old-street-campaign-story'
+import {archivePhotoSource,archivePhotoSuggestion} from '../src/old-street-archive-photo'
+import {introduceCampaignCommission,campaignCommission,campaignPhotoPurpose} from '../src/old-street-campaign-story'
 import {oldStreetAttemptContext,type OldStreetAttemptGenerator} from './old-street-attempt'
 import {prepareCampaignAction,type CampaignCandidate} from './old-street-campaign-actions'
 import {campaignComplete} from '../src/old-street-campaign'
@@ -48,6 +48,11 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
     assertOldStreetHead(h)
     if(admit(structuredClone(h),previous?structuredClone(previous):undefined,id)!==true)throw new LabError('OLD_STREET_PRESENTATION_NOT_READY',409)
   }
+  const finish=(h:OldStreetHead,previous:OldStreetHead,id?:string)=>{
+    const objective=campaignPhotoPurpose(h.save,h.campaign)
+    if(objective)h.save={...h.save,objective}
+    check(h,previous,id)
+  }
   const position=(h:OldStreetHead,value:unknown)=>{
     const p=value as OldStreetHead['position']
     if(!p || !oldStreetWalkable(h.sceneId,p,h.save))throw new LabError('INVALID_POSITION')
@@ -57,9 +62,11 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
     initial:(locale,id,options)=>{
       const h:OldStreetHead={id,version:0,mapVersion:plan.mapVersion,sceneId:'street',position:{...plan.scenes.find(s=>s.id==='street')!.spawn},save:createInitialSave(oldStreetCartridge(locale))}
       if(options!==undefined){
-        if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
-        h.campaign={version:(options as {campaign:string}).campaign==='letter-trail-v2'?2:1}
-        if(h.campaign.version===2)introduceCampaignCommission(h.save)
+        if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2','letter-trail-v3'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
+        const name=(options as {campaign:string}).campaign
+        if(name==='letter-trail-v3'&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
+        h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1}
+        if(h.campaign.version!==1)introduceCampaignCommission(h.save,h.campaign.version)
       }
       check(h);return h
     },
@@ -77,7 +84,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
       if(body.type.startsWith('campaign-')){
         const result=await prepareCampaignAction(h,body,pos,campaignGenerator,reserveNarration,campaignCandidate)
-        check(result.head,h);return result
+        finish(result.head,h);return result
       }
       const resolveAttempt=async(actions:Array<{id:string;label:string}>)=>{
         check({...h,position:pos})
@@ -88,7 +95,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
           const save=structuredClone(h.save)
           const discoveries=context.knowledge.filter(k=>!k.id.startsWith('learned:')&&result.discoveryIds.includes(k.id))
           save.blocks.push({id:body.action_id+':attempt',kind:'narration',text:result.text,data:{oldStreetAttemptTarget:body.target,oldStreetAttemptScene:h.sceneId,input:body.text,outcome:result.outcome,oldStreetDiscoveries:JSON.stringify(discoveries)}})
-          const next={...h,version:h.version+1,position:pos,save};check(next,h)
+          const next={...h,version:h.version+1,position:pos,save};finish(next,h)
           return {response:{head:next,kind:'attempt',accepted:true,source:'model',text:result.text,outcome:result.outcome}}
         }
       }
@@ -121,7 +128,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(keep)save.inventory.push({id:'darkroom-print',label:save.locale==='zh'?'旧街照片':'Old street photograph',count:1,rarity:'common'})
         const text=save.locale==='zh'?(keep?'你把拼好的旧街照片收进随身行囊。':'你把照片平整地留在显影台上。'):(keep?'You tuck the completed street photograph into your bag.':'You leave the photograph flat on the developing bench.')
         recordOldStreetInteraction(save,'developing-bench','expansion-photo-decision',text,body.action_id)
-        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        const next={...h,version:h.version+1,position:pos,save};finish(next,h)
         return {head:next,kind:'expansion-photo-decision',accepted:true,text}
       }
       if(body.type==='expansion-photo-match'){
@@ -130,11 +137,15 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(h.sceneId!=='darkroom'||!h.save.facts['darkroom-ready']||!hash||!binding.canInteract('developing-bench',h.sceneId,pos))throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         if(!oldStreetPhotoMatches(body.photoMatch,hash))throw new LabError('OLD_STREET_PHOTO_ALIGNMENT_REQUIRED',409)
         const save=structuredClone(h.save);save.facts['darkroom-photo-matched']=hash
-        const content=expansionPlan?.(h)?.content
+        const prepared=expansionPlan?.(h),content=prepared?.content
+        if(h.campaign?.version===3){
+          if(!h.campaign.archive?.order||!content||prepared?.requestId!==h.expansions?.[0]?.id||h.expansions?.[0]?.archiveSource?.archiveId!==h.campaign.archive.id)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
+          save.facts['campaign-photo-archive']=h.campaign.archive.id
+        }
         if(content)save.facts['darkroom-photo-discovery']=content.discovery
         const text=content?.discovery??(save.locale==='zh'?'这张旧街照片完整了。':'The old street photograph is complete.')
         recordOldStreetInteraction(save,'developing-bench','expansion-photo-match',text,body.action_id)
-        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        const next={...h,version:h.version+1,position:pos,save};finish(next,h)
         return {head:next,kind:'expansion-photo-match',accepted:true,text}
       }
       if(body.type==='expansion-activate'){
@@ -142,17 +153,18 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(h.sceneId!=='photo'||!expansion||expansion.requestId!==h.expansions?.[0]?.id)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         const save=structuredClone(h.save);save.facts['darkroom-ready']=true
         if(!save.map.some(n=>n.id==='darkroom'))save.map.push({id:'darkroom',label:save.locale==='zh'?'暗房':'Darkroom',current:false,visited:false})
-        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        const next={...h,version:h.version+1,position:pos,save};finish(next,h)
         return {head:next,kind:'expansion-activate',accepted:true,text:save.locale==='zh'?'暗房门可以打开了。':'The darkroom door can now be opened.'}
       }
       if(body.type==='expansion-request'){
         if(h.sceneId!=='photo'||body.template!=='photo-darkroom-v1')throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
         if(typeof body.text!=='string'||!body.text.trim()||body.text.length>500)throw new LabError('INVALID_TEXT')
         if(h.expansions?.length)throw new LabError('OLD_STREET_EXPANSION_ALREADY_REQUESTED',409)
-        const archiveSource=body.followArchive===true?archivePhotoSource(h.campaign):undefined
-        if(body.followArchive===true&&!archiveSource)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
-        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:body.text.trim(),status:'requested',requestedAtVersion:h.version,...(archiveSource?{archiveSource}:{})}]}
-        check(next,h)
+        const followArchive=h.campaign?.version===3||body.followArchive===true
+        const archiveSource=followArchive?archivePhotoSource(h.campaign):undefined
+        if(followArchive&&!archiveSource)throw new LabError('OLD_STREET_EXPANSION_UNAVAILABLE',409)
+        const next:OldStreetHead={...h,version:h.version+1,position:pos,expansions:[{version:1,id:body.action_id,template:'photo-darkroom-v1',sourceScene:'photo',input:h.campaign?.version===3?archivePhotoSuggestion(h.save.locale):body.text.trim(),status:'requested',requestedAtVersion:h.version,...(archiveSource?{archiveSource}:{})}]}
+        finish(next,h)
         return {head:next,kind:'expansion-request',accepted:true,text:h.save.locale==='zh'?'已记下你想探索的新去处。准备好后才能进入；现在可以继续逛。':'Your exploration idea is saved. You can keep exploring while the new area is prepared.'}
       }
       if(body.type==='dialogue'){
@@ -167,7 +179,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         const reply=authored??(useModel?await oldStreetModelCall(()=>dialogue!(text,oldStreetDialogueContext(h,body.target))):oldStreetTalkReply(h.save,body.target,text))
         if(typeof reply!=='string'||!reply.trim()||reply.length>(useModel?300:650))throw new LabError('OLD_STREET_DIALOGUE_REJECTED',409)
         const save=structuredClone(h.save);save.blocks.push(...oldStreetTalkBlocks(save,body.target,body.action_id,text,reply))
-        const next={...h,version:h.version+1,position:pos,save};check(next,h)
+        const next={...h,version:h.version+1,position:pos,save};finish(next,h)
         return {head:next,kind:'dialogue',accepted:true,speakerId:person.id,source:useModel?'model':'author',text:reply}
       }
       if(body.type==='free-input'){
@@ -196,19 +208,19 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if(!action)throw new LabError('OLD_STREET_INPUT_UNSUPPORTED',409)
         if(sharedActions.some(a=>a.id===action)){
           const result=prepareEvidenceShare(h,entity.id,action,body.action_id,pos)
-          check(result.head,h)
+          finish(result.head,h)
           return {...result,interpretation:{input:body.text,actionId:action}}
         }
         const campaignAction=campaignActions.find(a=>a.id===action)
         if(campaignAction){
           const result=await prepareCampaignAction(h,{...body,type:campaignAction.type,stage:campaignAction.stage,selection:campaignAction.selection},pos,campaignGenerator,reserveNarration,campaignCandidate)
-          check(result.head,h)
+          finish(result.head,h)
           return {...result,interpretation:{input:body.text,actionId:action}}
         }
         body={...body,action}
       }
       if(!binding.admits(body.action,body.target,h.sceneId,pos))throw new LabError('UNSUPPORTED_ACTION')
-      if(body.action==='oldstreet:leave'&&h.campaign&&!campaignComplete(h.campaign))throw new LabError('CAMPAIGN_UNFINISHED',409)
+      if(body.action==='oldstreet:leave'&&h.campaign&&!campaignComplete(h.campaign,h.save.facts))throw new LabError('CAMPAIGN_UNFINISHED',409)
       check({...h,position:pos})
       const c=oldStreetCartridge(h.save.locale),resolution=resolveDomainAction(h.save,c,body.action)
       if(!resolution || resolution.status!=='accepted')throw new LabError('OLD_STREET_ACTION_UNAVAILABLE',409)
@@ -229,7 +241,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         next={...h,version:h.version+1,save,position:oldStreetSafePosition(h.sceneId,pos,save)}
       }
       if(next.save.facts.departed)completeOldStreetEnding(next.save,c)
-      check(next,h,body.action)
+      finish(next,h,body.action)
       return {head:next,kind:'action',accepted:true,actionId:body.action,source:'author',text,...(body.type==='free-input'?{interpretation:{input:body.text,actionId:body.action}}:{})}
     },
   }

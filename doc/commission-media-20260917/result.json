@@ -1,0 +1,21 @@
+{
+  "campaignVersion": 3,
+  "scene": "street",
+  "complete": true,
+  "finale": "complete",
+  "archive": "The footbridge repairs",
+  "linkedPhoto": true,
+  "photoHash": "7d184e2825e65777c59ed2c9a523905240cc70a04b4791d4bfd173e906cfaf1c",
+  "photoChoice": "leave",
+  "photoDiscovery": "Three pale boards interrupt the dark, weathered planks.",
+  "hasPrint": false,
+  "ending": [
+    "The sealed letter is back with your family.",
+    "You told your family what you found in the papers. The original remains on the old street.",
+    "You shared both the history reconstructed from the records and the details visible in the photograph, completing the request that came with the letter.",
+    "The footbridge reopened after the three replacement boards were fitted.",
+    "The completed street photograph remains in the darkroom for another visitor.",
+    "Three pale boards interrupt the dark, weathered planks."
+  ],
+  "scope": "Isolated synthetic QA journey; archive/planning text replayed from established fixture; one new platform media job; first 23 actions prepared by normal authority, remainder via actual renderer"
+}
