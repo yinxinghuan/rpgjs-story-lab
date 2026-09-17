@@ -1,0 +1,36 @@
+/* Common tools stay outside the variable-length journey directory. */
+.os-menu__sections { display:flex; flex:none; gap:8px; margin-bottom:12px; }
+.os-menu__sections button { flex:1; min-width:0; }
+.os-menu__sections button[aria-pressed=true] { background:#d2dbc8; border-color:var(--os-accent); font-weight:600; }
+.os-journeys__body { overflow-wrap:anywhere; }
+.os-menu__new { flex:none; border-top:1px solid #a69c88; padding-top:8px; margin-top:8px; }
+.os-journeys .os-menu__new p { margin:0 0 8px; font-size:14px; }
+.os-journeys .os-journeys__body > ul { margin-top:0; }
+.os-menu__new button { width:100%; }
+.os-menu__new button+button { margin-top:8px; }
+@media(max-height:480px) {
+ .os-map.os-journeys { padding:12px; }
+ .os-menu__sections { margin-bottom:8px; }
+}
+@media(min-width:540px) and (max-height:480px) {
+ .os-map.os-journeys[data-section=journeys][open] {
+  display:grid; grid-template-columns:minmax(0,1fr) 176px;
+  grid-template-rows:auto auto minmax(0,1fr); column-gap:12px;
+  width:calc(100vw - 24px); max-width:680px; height:calc(100dvh - 24px);
+ }
+ .os-journeys[data-section=journeys] > header,
+ .os-journeys[data-section=journeys] > .os-menu__sections { grid-column:1/-1; }
+ .os-journeys[data-section=journeys] > .os-journeys__body { grid-column:1; }
+ .os-journeys[data-section=journeys] > .os-menu__new {
+  grid-column:2; grid-row:3; margin:0; padding:0 0 0 12px;
+  border-top:0; border-left:1px solid #a69c88; min-height:0; overflow:auto;
+ }
+}
+
+/* Quiet navigation, contrasted action only when there is something to do. */
+.os-dev--immersive .os-tools button {
+ background:transparent; color:var(--os-paper); border-color:#c9bfad55;
+}
+.os-dev--immersive > footer .os-primary[data-idle=true] {
+ background:#192326d9; color:#d1caba; border-color:#c9bfad55; opacity:1;
+}

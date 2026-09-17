@@ -1,5 +1,11 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 菜单分区与探索工具（2026-09-17）
+
+`old-street-journeys-view.tsx` 继续复用原旅程读写入口，界面新增 game/journeys 状态。默认 game；结局调用传入 `initialSection='journeys'`。仅 journeys 区请求目录，切区/卸载使旧响应失效；切区滚动归顶，现有重试及原生 dialog 关闭行为保留。关闭不改变旅程，另开仍由既有 create/select 权威流程负责。
+
+`old-street-menu.css` 定义独立内容滚动、固定分区/关闭/新建区和短横屏两栏；同时统一顶部工具的弱强调样式。`old-street-dev.tsx` 的行动按钮以 data-idle 区分无目标视觉，未更改动作判定、移动或相机尺寸。视觉证据和范围见 `system-interface-assessment.md`。
+
 ## 2026-09-17 屋顶底片的空间后果
 
 `old-street-roof-recovery.ts` 定义六个领域动作、归档标记前置、纸套占有不变量与缺口／桥板几何。仅新建 v3 旅程写入 roof-recovery 功能事实；旧旅程升级不回填。`bindOldStreet` 对未开启旅程移除六条不可用的可选规则，保持完整动作绑定校验，而非把实体硬塞进旧屋顶。`oldStreetProjectedProps` 随搭板收缩木板堆的碰撞；正常两个出口保持可达。
