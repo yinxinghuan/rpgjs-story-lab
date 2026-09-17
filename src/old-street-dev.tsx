@@ -175,6 +175,7 @@ export default function OldStreetDev() {
   const visibleTurn=useRef(turn);visibleTurn.current=turn
   const visibleNotice=useRef(notice);visibleNotice.current=notice
   const [turnPage,setTurnPage]=useState(0)
+  const [revealedReply,setRevealedReply]=useState('')
   useEffect(()=>setTurnPage(0),[turn])
   useEffect(()=>{if(!turn.length&&/^(已恢复旅程。|已继续这段旅程。|Journey restored\.|Journey resumed\.)$/.test(notice)){const timer=setTimeout(()=>updateNotice(''),3200);return()=>clearTimeout(timer)}},[notice,turn.length])
   const actionPanel=useRef<HTMLElement>(null)
@@ -523,6 +524,7 @@ export default function OldStreetDev() {
   function sendInput(dialogue=false,provided?:string){
     if(!chosen||!(provided??typed).trim()||!ready||busyRef.current||error||leaving||head.save.facts.departed)return
     const input=(provided??typed).trim(),target=chosen.id
+    setInputOpen(false)
     setBusyActivity('approach')
     busyRef.current=true;setBusy(true);setTurn([]);setPendingSpeech(input);setNotice(text(['正在走近…','Walking closer…']))
     prepareApproachCancellation(input)
@@ -555,6 +557,20 @@ export default function OldStreetDev() {
   const morePages=turnPage<pages.length-1
   const inspectionOpen=Boolean(selected)
   const conversationOpen=Boolean(knownSpeaker&&inspectionOpen)
+  const replyKey=page?.map(block=>block.id).join('|')??''
+  // A response is first a reading beat, then a choice. Never delay the request
+  // or recovery controls; only reveal ordinary conversation choices later.
+  const awaitingChoices=conversationOpen&&(busy||Boolean(replyKey&&revealedReply!==replyKey))
+  useEffect(()=>{
+    setRevealedReply('')
+    if(!conversationOpen||busy||morePages||!replyKey||error)return
+    const timer=setTimeout(()=>setRevealedReply(replyKey),900)
+    return()=>clearTimeout(timer)
+  },[conversationOpen,busy,morePages,replyKey,error])
+  useEffect(()=>{
+    const panel=actionPanel.current
+    for(const region of panel?.querySelectorAll('.os-actions__content,.os-actions__body')??[])region.scrollTop=0
+  },[replyKey,busy])
   const secondaryActions=chosen?.id==='developing-bench'&&expansionCapabilities.media?[]:actions
   useEffect(()=>{setInputOpen(false);setTyped('')},[chosen?.id])
   function closeInteraction(){
@@ -641,9 +657,10 @@ export default function OldStreetDev() {
       <div className="os-actions__content">
       <div className="os-actions__body">
         {pixelShop&&selected&&!error&&!inputOpen&&<OldStreetObjectPreview key={selected} target={selected} save={head.save} drawer={pixelDrawerUrl} cabinet={pixelPropsUrl} disabled={busy} onOpenChange={open=>{setObjectDetailOpen(open);runtime.current?.pause(open||!!error||busyRef.current)}}/>}
-        {busy&&!error?<section className="os-turn" aria-label={text(['互动回应','Interaction'])} aria-busy="true">{pendingSpeech&&<div className="os-turn__speech"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div>}<p role="status">{busyLabel}</p>{slowOperation&&<p>{text(['还在等待确认，请稍候，不必重复操作。','Still waiting for confirmation. There is no need to repeat the action.'])}</p>}</section>:page&&!error?<section className="os-turn" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice||inspectionHint)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice||inspectionHint}</p>}
+        {busy&&!error?<section className="os-turn os-turn--waiting" aria-label={text(['互动回应','Interaction'])} aria-busy="true">{pendingSpeech&&<div className="os-turn__speech os-turn__speech--player"><strong>{text(['你','You'])}</strong><p>{pendingSpeech}</p></div>}<p className="os-turn__waiting" role="status">{busyLabel}</p>{slowOperation&&<p>{text(['还在等待确认，请稍候，不必重复操作。','Still waiting for confirmation. There is no need to repeat the action.'])}</p>}</section>:page&&!error?<section key={replyKey} className="os-turn os-turn--arrived" aria-live="polite" aria-label={text(['互动回应','Interaction'])}>{page.map(block=><div key={block.id} className={block.kind==='dialogue'?'os-turn__speech':'os-turn__scene'}>{block.speaker&&<strong>{block.speaker}</strong>}<p>{block.text}</p></div>)}</section>:(error||notice||inspectionHint)&&<p role="status">{error?oldStreetRecoveryMessage(error,locale):notice||inspectionHint}</p>}
       </div>
-      <div className="os-actions__options">
+      <div className={'os-actions__options'+(conversationOpen&&!morePages?' os-actions__options--reply':'')} data-awaiting={!error&&conversationOpen&&(busy||(!morePages&&awaitingChoices))?'true':undefined} aria-hidden={!error&&conversationOpen&&(busy||(!morePages&&awaitingChoices))||undefined}>
+      {conversationOpen&&!morePages&&!error&&<span className="os-response-label">{text(['你的回应','Your response'])}</span>}
       {expansionCapabilities.planning&&head.scene==='photo'&&!head.save.facts['darkroom-ready']&&serverHead.current&&<div hidden={!!error||selected!=='viewing-table'}><OldStreetExpansionView key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} requested={!!serverHead.current.expansions?.length} disabled={!ready||busy||!!error||!!outcome} api={connection.api} commission={serverHead.current.campaign?.version===3} sourcePending={!!serverHead.current.campaign?.archive?.order&&!negativeSourceReady(head.save,serverHead.current.campaign)} sourceRecovered={needsRecoveredNegative(serverHead.current.campaign)&&negativeSourceReady(head.save,serverHead.current.campaign)} archiveTitle={serverHead.current.campaign?.archive?.order?serverHead.current.campaign.archive.content.title:undefined} submit={(input,follow)=>requestExpansion(input,false,undefined,undefined,follow)} activate={()=>requestExpansion('',true)}/></div>}
       {showExpansionPhoto&&serverHead.current&&<div hidden={!!error||selected!=='developing-bench'}><OldStreetExpansionPhotoView exhibited={photoDisplayed(head.save)} interrupted={!!error} onClose={closeInteraction} photoMethod={serverHead.current.expansions?.[0]?.photoMethod} nearby={nearbyDarkroom} requestOpen={expansionPhotoRequest} allowRegenerate={debug} key={serverHead.current.id} locale={locale} sessionId={serverHead.current.id} api={connection.api} disabled={!ready||busy||!!error||!!outcome} discovery={typeof head.save.facts['darkroom-photo-discovery']==='string'?head.save.facts['darkroom-photo-discovery']:undefined} matched={!!head.save.facts['darkroom-photo-matched']} choice={String(head.save.facts['darkroom-photo-choice']??'')} decide={choice=>requestExpansion('',false,undefined,choice)} submit={proof=>requestExpansion('',false,proof)} onOpenChange={open=>{setExpansionPhotoOpen(open);runtime.current?.pause(open||!!error||!!head.save.facts.departed||busyRef.current)}}/></div>}
       {openingOpen&&!error&&<p className="os-controls-help">{text(['点击地面或拖动摇杆行走。走近物件后，按右下按钮互动；委托和发现保存在上方“随身”中。','Tap the ground or use the stick to move. Approach an object, then use the lower-right button. Your errand and discoveries are kept in Items.'])}</p>}

@@ -92,3 +92,20 @@
 
 .os-field-note{position:absolute;z-index:2;width:24px;height:16px;transform:translate(-50%,-50%);background-size:200% 100%;background-position:right center;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}
 .os-field-lead{margin-top:16px;padding-top:12px;border-top:1px solid #a69c88}.os-field-lead button{width:100%}
+
+/* Speech is a left-aligned reading surface; paper controls belong to the
+   player's next response. No speech tail or button-shaped NPC card. */
+.os-actions--conversation .os-turn__speech{background:transparent;color:var(--os-paper);border-radius:0;border-left:2px solid #c6af7b;padding:6px 12px;margin:4px 8px 8px 0}
+.os-actions--conversation .os-turn__speech strong{color:#dbc596;font:600 14px/1.4 system-ui;margin-bottom:8px}
+.os-actions--conversation .os-turn__speech p{font:18px/1.6 Georgia,"Songti SC",serif}
+.os-actions--conversation .os-turn__speech--player{border-left:0;border-right:2px solid #889e99;text-align:right;margin:4px 0 8px 24px;color:#d6ded9}
+.os-actions--conversation .os-turn__speech--player strong{color:#b8c9c2}
+.os-actions--conversation .os-turn__speech--player p{font:16px/1.5 system-ui}
+.os-turn .os-turn__waiting{font:14px/1.5 system-ui;color:#c5cbbc;padding:4px 0}
+.os-actions__options[data-awaiting=true]{visibility:hidden;pointer-events:none;animation:none}
+.os-actions--conversation .os-actions__options--reply{padding-top:12px;border-top:1px solid #c9bfad35;margin-left:16px}
+.os-response-label{font:600 13px/1.4 system-ui;color:#c5cbbc}
+.os-actions--conversation .os-choices button{border-color:#bcb19d;background:var(--os-paper);padding:10px 12px;border-radius:6px;font:16px/1.4 system-ui}
+.os-turn--arrived,.os-actions__options--reply{animation:os-dialogue-arrive 180ms ease-out both}
+@keyframes os-dialogue-arrive{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.os-turn--arrived,.os-actions__options--reply{animation:none}}
