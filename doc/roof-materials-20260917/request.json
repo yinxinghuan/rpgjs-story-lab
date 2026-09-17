@@ -1,0 +1,10 @@
+{
+  "requestId": "afe2e9bf-66e0-470e-9231-5a9f716c7b89",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 512,
+    "height": 512
+  },
+  "prompt": "Create a production texture atlas for a 2D orthogonal overhead pixel-art exploration game, old partly abandoned American neighborhood. STRICT straight-down camera, no perspective, no walls, no whole building, no text, no margins. EXACTLY two full-bleed rectangular material strips: LEFT HALF x0-255, RIGHT HALF x256-511. Each strip is 256x512. No separators. LEFT: weathered muted terracotta roof, many SMALL overlapping clay tiles in staggered straight rows, dusty warm brown-red and desaturated brick, darker seams, small chipped corners, a few restrained lichen clusters. RIGHT: old dark desaturated charcoal asphalt roof shingles, small staggered rectangular shingles, worn edges, a few dull tar repair patches, occasional faded ochre leaves. Both are flat roof surface samples, not illustrations of a whole roof. TILEABLE vertically: top and bottom rows continue seamlessly, uniform small repeated module sizes, at least 12 rows down height. Crisp hand-authored pixel-art appearance: intentional 3-5 pixel color clusters and stepped edges, compact subdued palette, NO photographic grain, NO micro-noise, NO smooth gradients, NO 3D realism, no blur. Rich wear and clear small seams without huge chunky slabs. Constant scale across both samples; mild ambient top-left light, no cast shadows. Surfaces fill every pixel, no borders, no gutters, no transparent background. Roof pixels should match detailed retro adventure-game paving, rather than a high-resolution photograph."
+}

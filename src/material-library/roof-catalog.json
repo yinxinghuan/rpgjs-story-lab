@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "materials": [
+    {
+      "id": "roof-zinc-green-01",
+      "category": "roof",
+      "family": "metal",
+      "label": "旧绿金属板",
+      "status": "candidate",
+      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "source": "../../doc/oldstreet-street-atmosphere/roof-edges/candidate.png",
+      "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
+      "image": {
+        "width": 512,
+        "height": 1024
+      },
+      "assetKey": "streetEdges",
+      "crop": {
+        "x": 0,
+        "y": 8,
+        "width": 234,
+        "height": 1008
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "gutterInSource": true,
+      "fallback": "#59634b",
+      "render": {
+        "mode": "repeat-y",
+        "worldWidth": 40,
+        "pixelsPerWorldUnit": 2
+      },
+      "review": "../../doc/roof-materials-20260917/review.md"
+    },
+    {
+      "id": "roof-slate-blue-01",
+      "category": "roof",
+      "family": "slate",
+      "label": "蓝灰石板瓦",
+      "status": "candidate",
+      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "source": "../../doc/oldstreet-street-atmosphere/roof-edges/candidate.png",
+      "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
+      "image": {
+        "width": 512,
+        "height": 1024
+      },
+      "assetKey": "streetEdges",
+      "crop": {
+        "x": 282,
+        "y": 8,
+        "width": 230,
+        "height": 1008
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "gutterInSource": true,
+      "fallback": "#47545a",
+      "render": {
+        "mode": "repeat-y",
+        "worldWidth": 40,
+        "pixelsPerWorldUnit": 2
+      },
+      "review": "../../doc/roof-materials-20260917/review.md"
+    },
+    {
+      "id": "roof-clay-worn-01",
+      "category": "roof",
+      "family": "clay",
+      "label": "旧陶瓦",
+      "status": "candidate",
+      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "source": "../../doc/roof-materials-20260917/candidate.png",
+      "sha256": "d74247a1d6719da7e75a074dc95ac9246a6f21c82e6599e57b9e8f4273665e31",
+      "image": {
+        "width": 512,
+        "height": 512
+      },
+      "assetKey": "roofVariants",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 512
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "gutterInSource": false,
+      "fallback": "#8b674b",
+      "render": {
+        "mode": "repeat-y",
+        "worldWidth": 40,
+        "pixelsPerWorldUnit": 2
+      },
+      "review": "../../doc/roof-materials-20260917/review.md"
+    },
+    {
+      "id": "roof-asphalt-grey-01",
+      "category": "roof",
+      "family": "asphalt",
+      "label": "灰沥青瓦",
+      "status": "candidate",
+      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "source": "../../doc/roof-materials-20260917/candidate.png",
+      "sha256": "d74247a1d6719da7e75a074dc95ac9246a6f21c82e6599e57b9e8f4273665e31",
+      "image": {
+        "width": 512,
+        "height": 512
+      },
+      "assetKey": "roofVariants",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 512
+      },
+      "projection": "orthogonal-overhead",
+      "seamless": "unverified",
+      "gutterInSource": false,
+      "fallback": "#424c4f",
+      "render": {
+        "mode": "repeat-y",
+        "worldWidth": 40,
+        "pixelsPerWorldUnit": 2
+      },
+      "review": "../../doc/roof-materials-20260917/review.md"
+    }
+  ]
+}

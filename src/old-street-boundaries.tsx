@@ -1,3 +1,6 @@
+import {RoofMaterialSurface} from './roof-material-surface'
+import {oldStreetRoofSections} from './old-street-roof-materials'
+import {getRoofMaterial} from './material-library/roof-materials'
 import {oldStreetBuildingEdges,oldStreetBuildingRoofs} from './old-street-boundary-layout'
 import {oldStreetDoors,oldStreetFloors} from './old-street-space'
 /** Facade beneath continuous roof strips. Door recesses use authoritative endpoints. */
@@ -21,16 +24,15 @@ export function OldStreetBuildingEdges({room='street'}:{room?:string;image?:stri
  </g>
 }
 /** One building mass along each hub boundary, with entrances underneath its eaves. */
-export function OldStreetEntranceEaves({room,image}:{room:string;image?:string}){
+export function OldStreetEntranceEaves({room,image,variants}:{room:string;image?:string;variants?:string}){
  const roofs=oldStreetBuildingRoofs(room);if(!roofs.length)return null
  const doors=oldStreetDoors().filter(d=>d.room===room)
  return <g data-entrance-eaves={room}>
   {roofs.map(r=>{
-   const west=r.side==='W',edge=west?r.x+r.width:r.x,sourceWidth=west?234:230,tileHeight=1008/sourceWidth*40,id=`os-building-roof-${room}-${r.side}`
-   // Fixed density and crop: narrower borders clip the outer roof, not shrink the tiles.
+   const west=r.side==='W',edge=west?r.x+r.width:r.x,sections=oldStreetRoofSections(room,r.side,r.y,r.height)
    return <g key={r.side}>
-    {image&&<defs><pattern id={id} x={west?edge-40:r.x} y={r.y} width="40" height={tileHeight} patternUnits="userSpaceOnUse"><svg width="40" height={tileHeight} viewBox={`${west?0:282} 8 ${sourceWidth} 1008`} overflow="hidden"><image href={image} width="512" height="1024" style={{imageRendering:'pixelated'}}/></svg></pattern></defs>}
-    <rect x={r.x} y={r.y} width={r.width} height={r.height} fill={image?`url(#${id})`:west?'#59634b':'#47545a'}/>
+    {sections.map(section=><RoofMaterialSurface key={section.material} material={section.material} source={getRoofMaterial(section.material,{allowCandidate:true}).assetKey==='streetEdges'?image:variants} x={r.x} y={section.y} width={r.width} height={section.height} side={r.side}/>)}
+    {sections.slice(1).map(section=><path key={section.material} d={`M${r.x} ${section.y}h${r.width}`} stroke="#414b3c" strokeWidth="2"/>)}
     <path d={`M${edge} ${r.y}v${r.height}`} stroke="#29372f" strokeWidth="2"/>
     <path d={`M${r.x} ${r.y}h${r.width}M${r.x} ${r.y+r.height}h${r.width}`} stroke={west?'#9b8c66':'#8a9893'} strokeWidth="2"/>
     {doors.filter(d=>d.side===r.side).map(d=><g key={d.id}><rect x={west?edge:edge-6} y={d.position.y-24} width="6" height="48" fill="#192820" opacity=".5"/></g>)}

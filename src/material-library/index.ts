@@ -8,3 +8,5 @@ export function getMaterial(id:string, options:{allowCandidate?:boolean}={}){
  return material
 }
 export function reusableMaterials(){return catalog.materials.filter(m=>m.status==='approved')}
+
+export {getRoofMaterial,roofMaterialSampling,type RoofMaterialId} from './roof-materials'

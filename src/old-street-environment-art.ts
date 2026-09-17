@@ -1,3 +1,4 @@
+import roofVariants from '../doc/roof-materials-20260917/candidate.png'
 import {oldStreetEnvironmentKeys} from './old-street-environment-dependencies'
 import shedFloor from '../doc/oldstreet-shed-floor/correction/candidate.png'
 import doorWood from '../doc/oldstreet-door-wood/candidate.png'
@@ -15,7 +16,7 @@ import wood from '../doc/oldstreet-pixel-study/floor-narrow/candidate-actual.png
 import laundry from '../doc/oldstreet-laundry-candidate/correction/candidate.png'
 import shopWall from '../doc/oldstreet-pixel-study/workshop-wall/candidate.png'
 import shedWall from '../doc/oldstreet-shed-wall/candidate.png'
-export const oldStreetEnvironmentArt={wood,laundry,shopWall,shedWall,shedFloor,yard,streetGround,streetEdges,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
+export const oldStreetEnvironmentArt={roofVariants,wood,laundry,shopWall,shedWall,shedFloor,yard,streetGround,streetEdges,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
 export type OldStreetEnvironmentArt=typeof oldStreetEnvironmentArt
 export function oldStreetEnvironmentDownloads(pixel:boolean,composite=false,room?:string){
  const needed=room?new Set(oldStreetEnvironmentKeys(room,pixel,composite)):null

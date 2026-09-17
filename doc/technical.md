@@ -2617,3 +2617,6 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 
 ### 全场景上下墙
 `oldStreetRoomWalls` 现在为全部十个场景返回墙段与size/outdoor标记。室外`outdoorWallSize`为back32/foreground24/thickness8，室内仍为64/56/8。前景局部mask的范围读取当前场景size。`OutdoorMasonry` 复用已加载stoneStair的纯石面区域（170,62,160,40），按固定48×24纹理周期绘制，不新增下载；室内仍用photoWall。街口南开口读取真实`street-exit`位置，其他开口继续读oldStreetDoors。所有墙仅呈现，不修改移动和存档。
+
+### 屋顶材质目录与采样
+`src/material-library/roof-catalog.json` 保存四种屋顶候选，`roof-materials.ts` 负责准入与采样尺寸。`RoofMaterialSurface` 在离屏Canvas对指定裁切一次下采样为2texel/world unit，再以pixelated SVG pattern重复，缓存至多16项；URL或材质改变时不显示旧采样结果，采样失败保留原图裁切。`old-street-roof-materials.ts` 按真实侧门位置中点划分院西两栋建筑，修表铺前后共享ID；其他建筑样式固定，不随机。新双材质图只在yard环境依赖中加载。源PNG保持不变，目录、组件与场景分配分开，方便后续游戏复用。
