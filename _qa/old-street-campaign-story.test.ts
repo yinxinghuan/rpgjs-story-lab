@@ -5,7 +5,8 @@ import {oldStreetRuntime} from '../server/old-street-runtime'
 import {campaignOpening} from '../src/old-street-campaign-story'
 import {campaignInputKnowledge} from '../src/old-street-campaign-interaction'
 import {oldStreetJournal} from '../src/old-street-journal'
-import {readParcelContent,compileLinkedParcel} from '../src/old-street-campaign'
+import {readParcelContent} from '../src/old-street-campaign'
+import {readPreparedInvestigation,compilePreparedInvestigation} from '../server/old-street-investigation-draft'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 
 for(const locale of ['zh','en'] as const)test(`new ${locale} commission is visible before input; legacy opening is never retroactively rewritten`,()=>{
@@ -33,9 +34,11 @@ test('new investigation asks a concrete question; older complete paper instances
  const planner=createOldStreetCampaignPlanner(async system=>{prompt=system;return old})
  const signal=new AbortController().signal
  assert.deepEqual(await planner({stage:'parcel',locale:'en',previous},signal),old)
- await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/CONTENT_INVALID/)
- assert.match(prompt,/timing relative to that subject/)
- const draft={...old,otherEvent:'The delivery arrived'}
- const accepted=createOldStreetCampaignPlanner(async(_system,user)=>'candidate' in JSON.parse(user)?{valid:true,issues:[]}:draft)
- assert.deepEqual(await accepted({stage:'parcel',locale:'en',previous,investigation:true},signal),compileLinkedParcel(draft,previous,'en'))
+ await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/INVESTIGATION_INVALID/)
+ assert.match(prompt,/ONE complete coherent historical episode/)
+ const draft={...old,recordAt:'end',events:['The damage was surveyed','Materials were ordered','The delivery arrived'],roomPlan:{indexSide:'left',storageShelves:1,rack:'none'}}
+ const accepted=createOldStreetCampaignPlanner(async(_system,user)=>'chronologicalEvents' in JSON.parse(user)?{valid:true,issues:[]}:draft)
+ const bundle=readPreparedInvestigation(await accepted({stage:'parcel',locale:'en',previous,investigation:true},signal))
+ assert.deepEqual(bundle.parcel,compilePreparedInvestigation(draft,previous,'en',42).parcel)
+ assert.ok(bundle.archive.room)
 })

@@ -2,11 +2,12 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
 import {randomUUID} from 'node:crypto'
-import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent,compileInquiryArchive,archiveRackLabel} from '../src/old-street-archive'
-import {assertOldStreetCampaign,campaignComplete,compileLinkedParcel} from '../src/old-street-campaign'
+import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent,archiveRackLabel} from '../src/old-street-archive'
+import {assertOldStreetCampaign,campaignComplete} from '../src/old-street-campaign'
 import {oldStreetSpatialPlan,oldStreetDoors,oldStreetPath,oldStreetWalkable} from '../src/old-street-space'
 import {OldStreetAuthority,type OldStreetHead} from '../server/old-street-runtime'
 import {OldStreetCampaignJobs} from '../server/old-street-campaign-jobs'
+import {compilePreparedInvestigation} from '../server/old-street-investigation-draft'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 import {campaignInputKnowledge} from '../src/old-street-campaign-interaction'
 import {oldStreetJournal} from '../src/old-street-journal'
@@ -44,18 +45,16 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
 })
 
 test('new campaign enters its generated archive through the real door, gathers evidence and persists the reconstructed ending',async()=>{
- const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',otherEvent:'The footbridge reopened'}
- const parcel=compileLinkedParcel(parcelDraft,trace.records[0],'en'),archiveDraft={title:'The footbridge work',layout:'west-index',room:['..I..','.mM..','.....','....L','.....','.Tt..','.....','.....','.....'],middleEvents:['Replacement boards were cut','The new boards were fitted'],earlier:'first'}
- const archive=compileInquiryArchive(archiveDraft,parcel.inquiry!,'en')
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'}}
+ const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0
  const planner=createOldStreetCampaignPlanner(async(_system,user)=>{
   calls++;const context=JSON.parse(user)
-  if('candidate' in context)return {valid:true,issues:[]}
+  if('candidate' in context||'chronologicalEvents' in context)return {valid:true,issues:[]}
   if(context.stage==='trace')return trace
   if(context.stage==='parcel')return parcelDraft
-  assert.deepEqual(context.previous,trace.records[0]);assert.deepEqual(context.papers,parcel)
-  return archiveDraft
+  throw Error('Archive must reuse the prepared episode, not generate another history')
  })
  const authority=()=>new OldStreetAuthority(db,()=>true,undefined,undefined,undefined,undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
@@ -69,7 +68,13 @@ test('new campaign enters its generated archive through the real door, gathers e
   await prepare('trace');await send('record-book',{type:'campaign-read',stage:'trace'});await send('record-book',{type:'campaign-decide',stage:'trace',selection:0})
   await assert.rejects(s.action('synthetic',h.id,input('record-book',{type:'campaign-decide',stage:'trace',selection:'share'})),/OBSERVATION_REQUIRED/)
   await steps(['yard','laundry','oldstreet:borrow-trolley','yard','oldstreet:clear-crates','cellar'])
+  const beforePreparation=structuredClone(h)
   await prepare('parcel')
+  assert.deepEqual(s.get('synthetic',h.id),beforePreparation,'preparing an episode never observes clues or moves the player')
+  assert.deepEqual(jobs.get('synthetic',h.id,'parcel')?.content,parcel,'public job exposes only the opening clue')
+  assert.throws(()=>jobs.get('synthetic',h.id,'archive'),/PAPERS_REQUIRED/)
+  jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
+  assert.deepEqual(jobs.get('synthetic',h.id,'parcel')?.content,parcel,'restart preserves the opening')
   assert.ok(!campaignInputKnowledge(h).some(k=>k.id==='learned:campaign-question'),'a prepared draft is not player knowledge')
   await send('photo-folder',{type:'campaign-read',stage:'parcel'})
   assert.equal(campaignInputKnowledge(h).find(k=>k.id==='learned:campaign-question')?.text,parcel.question)
@@ -79,7 +84,7 @@ test('new campaign enters its generated archive through the real door, gathers e
   await prepare('archive');assert.equal(h.save.facts['archive-ready'],undefined,'background generation does not open a room')
   const admitted=await send('photo-folder',{type:'campaign-plan',stage:'archive'})
   assert.equal(h.sceneId,'cellar','admission never teleports the player')
-  assert.equal(h.save.facts['archive-room'],JSON.stringify(archiveDraft.room))
+  assert.equal(h.save.facts['archive-room'],JSON.stringify(readArchiveContent(jobs.get('synthetic',h.id,'archive')!.content).room))
   s=authority();assert.deepEqual(await s.action('synthetic',h.id,admitted.b),admitted.r)
   await steps(['archive'])
   assert.ok(!oldStreetSpatialPlan(h.save).entities.some(e=>e.id==='archive-index'),'blocked source is not an available remote read')
@@ -128,6 +133,6 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('public record book')))
-  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,5)
+  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,3)
  }finally{raw.close()}
 })

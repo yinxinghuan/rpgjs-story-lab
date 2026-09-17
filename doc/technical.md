@@ -1,5 +1,14 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 成套调查准备（2026-09-17）
+
+`server/old-street-investigation-draft.ts` 将完整四事件稿编译为 `PreparedInvestigation`：固定记录保留在指定端点，同一 chronology 分发为纸袋、证据和结论，房间仍交给现有 composer。兼容此前三个补充事件的未准入稿格式；不迁移已保存文本。纸袋只列出实际端点记录与未明的先后，不接受生成摘要泄露答案。语义复核读取精简后的固定事件、开场、顺序和结论，不把家具网格传入判断。
+
+`OldStreetCampaignJobs.run` 在原规划 attempt 仍有效时，将 public parcel job 与匹配 archive job 同事务写入。纸袋的 HTTP 返回不包含未来档案；archive 的现有读取条件仍要求纸袋已观察，准入和实际调查仍走原权威行动。同步写事务之前读取最新 head（authority 读取可能自身开启迁移事务），两者之间没有异步等待。发现纸袋已准入或 archive job 已存在时不覆盖。重启、轮询和随后请求 archive 复用既有候选，无第二次作者调用。旧纸袋沿用旧 archive 生成路径。
+
+实际本地/Worker入口通过 jobs 注入候选，直接 generator 的旧测试入口不会拆包吞掉未来档案。后者收到完整 bundle 会按原 schema 拒绝，不能用于新生产接入。开发回放保存 public accepted 与 preparedArchive 两部分；报告保留所有作者/复核/失败请求。详见 `campaign-live-20260917/prepared-investigation-review.md`。18次实际请求中的早期失败、语义复核漏检及最终样本调查性不足均保留，不将格式通过视为完整动态章节验收。
+
+
 ## 内容复核与程序化房间组装（2026-09-17）
 
 `old-street-campaign-planner.ts` 在未准入草稿阶段最多进行两次作者请求。每次先编译规则，再对调查纸条/档案调用 `old-street-campaign-review.ts`；档案复核上下文携带前文和由实际关系链推导的完整顺序。通过才返回候选，二次失败/异常保持原后台失败恢复行为，所有请求沿用同一个 AbortSignal。旧已准入内容不经此流程，模型复核不授予状态或完成事实。

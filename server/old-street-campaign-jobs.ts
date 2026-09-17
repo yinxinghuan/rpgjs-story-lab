@@ -4,6 +4,7 @@ import {readTraceContent,readParcelContent,type CampaignContext,type TraceConten
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import {LabError} from '../src/journey-runtime'
 import {readArchiveContent,type ArchiveContent} from '../src/old-street-archive'
+import {isPreparedInvestigation,readPreparedInvestigation} from './old-street-investigation-draft'
 type Stage='trace'|'parcel'|'archive'
 export type CampaignJob={stage:Stage;state:'queued'|'planning'|'ready'|'failed';attempt:number;deadline:number;context:CampaignContext;content?:TraceContent|ParcelContent|ArchiveContent}
 export function campaignJobContext(h:OldStreetHead,stage:Stage):CampaignContext{
@@ -54,8 +55,23 @@ export class OldStreetCampaignJobs{
   if(!claimed)return this.get(owner,id,stage)
   try{
    const signal=AbortSignal.timeout(22000),raw=await this.produce(context,signal);signal.throwIfAborted()
-   const content=stage==='trace'?readTraceContent(raw):stage==='parcel'?readParcelContent(raw):readArchiveContent(raw)
-   this.db.transaction(()=>{const j=this.read(owner,id,stage);if(j?.state==='planning'&&j.attempt===claimed.attempt)this.write(owner,id,{...j,state:'ready',deadline:0,content})})
+   const prepared=isPreparedInvestigation(raw)?readPreparedInvestigation(raw):undefined
+   if(prepared&&(context.stage!=='parcel'||!context.investigation))throw Error('CAMPAIGN_INVESTIGATION_CONTEXT_INVALID')
+   const content=prepared?prepared.parcel:stage==='trace'?readTraceContent(raw):stage==='parcel'?readParcelContent(raw):readArchiveContent(raw)
+   // Authority reads may run their own upgrade transaction. Read immediately
+   // before this synchronous commit, with no asynchronous gap between them.
+   const latest=prepared?this.head(owner,id):undefined
+   this.db.transaction(()=>{
+    const j=this.read(owner,id,stage)
+    if(j?.state!=='planning'||j.attempt!==claimed.attempt)return
+    if(prepared&&context.stage==='parcel'){
+     if(JSON.stringify(campaignJobContext(latest!,stage))!==JSON.stringify(context)||latest!.campaign?.parcel||this.read(owner,id,'archive'))throw Error('CAMPAIGN_INVESTIGATION_ALREADY_ADMITTED')
+     // Commit the pair together; archive access still requires reading the
+     // parcel. Preparation does not grant knowledge, open doors or move actors.
+     this.write(owner,id,{stage:'archive',state:'ready',attempt:1,deadline:0,context:{stage:'archive',locale:context.locale,previous:context.previous,papers:prepared.parcel},content:prepared.archive})
+    }
+    this.write(owner,id,{...j,state:'ready',deadline:0,content})
+   })
   }catch{
    this.db.transaction(()=>{const j=this.read(owner,id,stage);if(j?.state==='planning'&&j.attempt===claimed.attempt)this.write(owner,id,{...j,state:'failed',deadline:0})})
   }
