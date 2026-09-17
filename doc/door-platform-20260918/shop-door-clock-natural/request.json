@@ -1,0 +1,10 @@
+{
+  "requestId": "cd95020b-e3a7-4d83-a7f8-edab396d44ec",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 512,
+    "height": 768
+  },
+  "prompt": "Detailed pixel art game sprite of ONE detached SHOP DOOR LEAF, strictly FRONT ELEVATION. Authentically observed real-world neighborhood business entrance, humble, weathered, lived-in, subtle rather than graphical. Muted blue-green wooden door of an old American WATCH REPAIR shop. Subtle small faded gold WATCH REPAIR lettering directly on upper glass, in two quiet lines. A small slightly crooked OPEN card hangs inside near the handle. Dim warm shelving barely visible behind dusty glass, with two tiny actual tabletop clocks deep inside, not symbolic clock logos. Upper two-thirds is smoky aged glass with restrained reflections and paint scratches; lower third plain wooden kick-panel. Thin wooden stiles, brass pull handle on LEFT, hinges on RIGHT. Draw only the rectangular moving leaf. NO surrounding doorway frame, NO architectural jamb, NO lintel/cornice, NO sill, NO wall, NO ground. Panel occupies approximately x100..412 y60..710. It must look like an ordinary REAL SHOP DOOR rendered in rich medium-cluster pixel art, not a game inventory icon or category button. No huge logo, no large clock face, no giant camera icon, no central badge, no decorative emblem, no billboard. Restrained realistic small signage and wear. Parallel vertical and horizontal edges; no isometric rotation or convergence. Pure magenta #FF00FF outside the single leaf. No glow or cast shadow. Thickness will be added by our game renderer."
+}

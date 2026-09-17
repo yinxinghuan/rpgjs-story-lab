@@ -1,0 +1,10 @@
+{
+  "requestId": "16197c1c-e2f2-4ea2-b0a7-118bf28a715f",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "prompt": "Pixel art RPG WEST SIDE doorway, camera due SOUTH elevated 60 degrees, PARALLEL ORTHOGRAPHIC projection. Two sprites side by side on flat pure magenta #FF00FF. Each384x512 cell. LEFT CLOSED / RIGHT OPEN of SAME west-side doorway. This is a SIDE-ON passage through a wall that runs vertically NORTH-SOUTH on screen, NOT a front-facing doorway rotated as a flat sticker. The walking direction through this door is HORIZONTAL left-right. Show a rectangular worn wood threshold on the GROUND, about200px wide horizontally and300px long vertically, centered192,256 in eachcell. A very thin dark olive wooden jamb at its NORTH and SOUTH ends, small rectangular metal caps on top. NO overhead connecting lintel obscuring the threshold. West-facing CLOSED leaf is seen EDGE-ON: a narrow wooden vertical strip running north-south through middle of threshold. On RIGHT the same leaf swings inward EAST exactly90degrees and rests along NORTH edge of threshold: show its weathered wooden front panel extending horizontally toward right from north hinge, with compressed elevation. Preserve wide clear passage between north and south jambs. No room, no masonry, no surrounding walls, no fancy porch, no characters. All ground edges horizontal/vertical, all elevation edges straight vertical, no diagonal axes, no vanishing point or isometric view. Fine readable chipped olive timber, dark pixel outlines, subdued gray metal, detailed pixel clusters matching old western town RPG. No smooth painting. Two aligned ground footprints, same size. No words, checkerboard, gradient or cast shadow on magenta."
+}

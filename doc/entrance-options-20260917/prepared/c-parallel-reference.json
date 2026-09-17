@@ -1,0 +1,47 @@
+{
+  "source": "doc/entrance-options-20260917/c-parallel-reference/candidate.png",
+  "sourceSha256": "7d33247dc06f042aa5c19c7e5adc5919f69e750bbb9a40ac381a6eec120f5f11",
+  "sha256": "9f373eaf8b9e0317eaee8275727ef6c299093badc71bfb587d93c759ebcb40fc",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 202,
+        "y": 437
+      },
+      {
+        "x": 178,
+        "y": 437
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 548,
+        "y": 264
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 245091,
+    "edgeCorrected": 0,
+    "corePreserved": 141460
+  },
+  "admission": "comparison-only",
+  "operations": [
+    "nearest-neighbour 2:1 source sampling",
+    "reviewed magenta/violet matte normalization",
+    "connected matte removal",
+    "translation for paired threshold anchors; no rescaling"
+  ]
+}

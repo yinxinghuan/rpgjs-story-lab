@@ -1,13 +1,13 @@
 import {OldStreetEntranceArt} from './old-street-entrance-art'
 import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
-import {oldStreetDoors} from './old-street-space'
+import {oldStreetDoors,oldStreetProps} from './old-street-space'
 import {oldStreetCrateSprite as crateArt,oldStreetCrateScale as crateScale} from './old-street-crate-layout'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
 const elevation:Record<OldStreetRoom,number>={archive:-1,darkroom:0,street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
 /** Physical variants share the existing endpoints; decoration cannot create a route. */
 export function OldStreetDoorways({room,facts,cratesImage,stoneImage,art=oldStreetEnvironmentArt,foreground=false}:{room:OldStreetRoom;facts:StorySave['facts'];cratesImage?:string;stoneImage?:string;art?:OldStreetEnvironmentArt;foreground?:boolean}){
- return <g>{oldStreetDoors().filter(d=>d.room===room&&(!['darkroom-ready','archive-ready'].includes(d.gate??'')||facts[d.gate!])).map(d=>{
+ return <g>{room==='street'&&<OldStreetEntranceArt door={{id:'street-exit',side:'S',kind:'door',position:oldStreetProps.find(p=>p.id==='street-exit')!.position}} closed={!facts.departed} art={art} foreground={foreground}/>} {oldStreetDoors().filter(d=>d.room===room&&(!['darkroom-ready','archive-ready'].includes(d.gate??'')||facts[d.gate!])).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
   const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
   if(foreground)return <OldStreetEntranceArt key={d.id} door={d} closed={closed} art={art} foreground/>

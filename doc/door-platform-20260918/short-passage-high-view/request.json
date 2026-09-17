@@ -1,0 +1,13 @@
+{
+  "requestId": "4781eedc-00d4-4733-bc45-2ef114cf38b2",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789668889568-r3fxmbgvxu.png"
+  ],
+  "prompt": "High-angle orthographic pixel art, looking steeply DOWN onto the ground at 65 degrees elevation. Reproduce the reference as a single small horizontal walk-through opening in a north-south side wall. NO DOOR LEAVES. NO TALL VERTICAL WOODEN PANELS. Two tiny short rectangular timber wall-end blocks with large visible pale stone TOP surfaces: one block at screen TOP center, the other block BELOW it at screen BOTTOM center. Both blocks have the SAME horizontal center x=384. The first block is centered around y=165 and the second around y=330. Low front faces, broad top faces. A narrow vertical strip of pale stone floor connects behind these two blocks from top to bottom. Open unobstructed walking route runs HORIZONTALLY left to right through the gap between them. Orthographic parallel straight edges, zero vanishing point. The floor has a thin 3 pixel dark vertical edge on its exposed bottom rim. Simple narrow asset, weathered olive timber, restrained grain and crisp pixel clusters. Entire sprite about 120 pixels wide, 250 pixels tall. Uniform pure magenta #FF00FF everywhere outside. No walls attached, no side-by-side pillars, no doorway facing viewer, no steps, no door panels, no ornament, no text."
+}

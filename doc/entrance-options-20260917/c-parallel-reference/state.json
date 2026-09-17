@@ -1,0 +1,13 @@
+{
+  "provider": "codex-imagegen",
+  "status": "downloaded",
+  "admission": "comparison-only",
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "7d33247dc06f042aa5c19c7e5adc5919f69e750bbb9a40ac381a6eec120f5f11",
+    "width": 1536,
+    "height": 1024
+  },
+  "reference": "../c-simple-frame/candidate.png",
+  "purpose": "Correct lintel/sill vanishing-point convergence. Geometry reference only; not platform-generated."
+}

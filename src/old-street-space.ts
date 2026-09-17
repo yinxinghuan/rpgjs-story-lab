@@ -1,3 +1,4 @@
+import {openSideLeafBody} from './old-street-side-door-config'
 import {oldStreetMediatedCast,type JournalCastSnapshot} from './old-street-mediated-cast'
 import {archiveSourceBlocked} from './old-street-archive'
 import {roofRecoveryProps,roofRecoveryObstacles,roofStockVisible,roofSpareVisible,roofSpareBoard} from './old-street-roof-recovery'
@@ -84,7 +85,7 @@ export const oldStreetProps = [
   prop('viewing-table', 'photo', .3, .3, ['match-photos']),
   {id:'developing-bench',room:'darkroom',position:{x:192,y:192},approach:{x:192,y:244},body:{x:136,y:160,w:112,h:48},actions:[oldStreetActionId('observe-darkroom')]},
   prop('photographer', 'photo', .7, .65, ['greet-photographer', 'return-photos', 'consent-photo']),
-  prop('street-exit', 'street', .5, .88, ['leave']),
+  {...prop('street-exit', 'street', .5, 1, ['leave']),approach:{x:192,y:496}},
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates=false) {
@@ -103,7 +104,9 @@ export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, resident
     if (p.id !== 'crates' || save.facts['crates-cleared'] !== true) return p
     const body = {...p.body, x: oldStreetFloors.yard.x + 4, y: oldStreetFloors.yard.y + 220}
     const position = {x: body.x + body.w/2, y: body.y + body.h}
-    return {...p, body, position, approach: {x: position.x-8, y: position.y+8}}
+    // The opened shop-back leaf occupies the south edge of this storage spot.
+    // Inspect the relocated crates from the aisle on their east side instead.
+    return {...p, body, position, approach: {x: body.x+body.w+8, y: body.y+8}}
   })
 }
 export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates=false): Rect[] {
@@ -121,6 +124,7 @@ export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<Stor
   if (!r || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return false
   const feet = {...p, ...body}
   return p.x >= r.x && p.y >= r.y && p.x + feet.w <= r.x + r.w && p.y + feet.h <= r.y + r.h
+    && !oldStreetDoors().filter(d=>d.room===room).some(d=>{const b=openSideLeafBody(d,save.facts);return b&&intersects(feet,b)})
     && !oldStreetObstacleBodies(room as OldStreetRoom, save,residents,includeFurniture,ignoreResident,legacyCrates).some(body => intersects(feet, body))
 }
 export function oldStreetSafePosition(room:string,p:SpatialPoint,save:Pick<StorySave,'facts'>):SpatialPoint {

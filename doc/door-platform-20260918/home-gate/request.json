@@ -1,0 +1,13 @@
+{
+  "requestId": "80112d7d-e15e-4c88-b4c1-33f033e1af99",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789663340329-2zhnz6mdwqq.png"
+  ],
+  "prompt": "Create a special HOMEWARD main gate variant of this approved pixel RPG door atlas. Preserve exact PARALLEL ORTHOGRAPHIC camera, rectangular top metal lintel, rectangular sill and thin wooden jambs. No walls around frame, no trapezoids, no converging edges. Keep both cell positions and frame dimensions. LEFT CLOSED double-leaf painted dark TEAL timber door, two symmetrical brass handles and a small round brass medallion centered above lintel. RIGHT SAME frame OPEN: BOTH leaves open inward exactly90degrees, seen as two narrow edge strips inside left/right jambs, center aperture completely empty flat magenta. Clear quiet dignified exit, not a castle or fantasy gate, no grand columns. Worn dark blue-green paint, warm aged brass hinges, soft cream stone threshold, medium pixel clusters, crisp charcoal contours, subtle weathering and fine grain. Tiny brass porch lamps fixed to frame edges only, no surrounding facade or roof. DO NOT enlarge the frame or its width. Transparent areas become pure flat magenta#FF00FF. No words, lettering, characters, checkerboard or glow on magenta. Two aligned384x512 cells in768x512atlas, thresholdcenter x192,y450 each."
+}

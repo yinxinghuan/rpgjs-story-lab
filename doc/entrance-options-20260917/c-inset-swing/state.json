@@ -1,0 +1,14 @@
+{
+  "provider": "codex-imagegen",
+  "status": "downloaded",
+  "admission": "comparison-only",
+  "reference": "../c-parallel-reference/candidate.png",
+  "purpose": "Swing open leaf to aperture side of right hinge; preserve orthographic frame and wall occlusion.",
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "274731b1c36ad6eadd43fe21d81ea40b398b3dd86207786622cfe7be07add826",
+    "width": 1536,
+    "height": 1024,
+    "alpha": "native"
+  }
+}

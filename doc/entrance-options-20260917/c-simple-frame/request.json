@@ -1,0 +1,13 @@
+{
+  "requestId": "0099206d-8825-47a6-a6d5-5afffb0effc1",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789660165179827.png"
+  ],
+  "prompt": "Simplify ONLY the frame of these two RPG doorway sprites. Preserve exactly their elevated downward camera angle, parallel edges, visible top surfaces, wooden leaf design, height, opening position, open/closed poses and worn pixel-art texture. LEFT CLOSED, RIGHT OPEN. REMOVE ALL stone blocks and masonry flanking both door openings. The sprites must NOT include any adjoining WALL, stone pillar, bricks or plaster. Replace each chunky stone side with just one plain narrow weathered olive WOODEN JAMB, about 12 to16px thick. Magenta everywhere outside the thin frame. Remove the elaborate brackets and heavy extra beams underneath the metal top. Keep a single simple rectangular timber lintel capped with a shallow dull zinc top, retaining the reference top surface angle so the downward perspective stays clear. No decorative caps, no stacked moldings, no post bases. Reduce the oversized top width to just slightly wider than the thin doorframe, not a broad porch roof. Bottom: one narrow plain worn sill, no large raised stone plinth, no extra surrounding floor. OPEN door remains hinged on right, with clear magenta through aperture and its original foot baseline. Same exact frame and same foot baseline in open and closed cells. Same solid magenta outside. No text, no checkerboard, no people, no new objects. Do not turn it into a flat front elevation: preserve the original foreshortening and camera angle. Two sprites in same 384x512 cells."
+}

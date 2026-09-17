@@ -1,0 +1,48 @@
+{
+  "source": "doc/door-platform-20260918/home-gate/candidate.png",
+  "sourceSha256": "01ea0226ab8d5c0f59bd127b763c19fcbf03e92f07b5bf15206e4e2a11dc1969",
+  "sha256": "05ac78e2b64d40500bca388ba619e284da62b926b612d94248a3bdde4e50d982",
+  "provider": "alteru-media",
+  "taskId": "mt_2f3614a27775a8705658f847e8fd8e4b",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 190,
+        "y": 453
+      },
+      {
+        "x": 198,
+        "y": 453
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 580,
+        "y": 250
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 223547,
+    "edgeCorrected": 0,
+    "corePreserved": 161686
+  },
+  "exteriorRemoved": 192304,
+  "operations": [
+    "connected corner-color exterior matte removal",
+    "reviewed magenta aperture removal",
+    "integer translation to shared threshold anchor; no warping or redraw"
+  ]
+}

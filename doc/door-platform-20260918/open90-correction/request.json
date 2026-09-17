@@ -1,0 +1,13 @@
+{
+  "requestId": "171e60fb-e9f9-4a2f-af9a-e1c62623297e",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789663340329-2zhnz6mdwqq.png"
+  ],
+  "prompt": "Preserve this reference sprite sheet PIXEL GEOMETRY exactly. Only add small subtle woodgrain scratches to olive wooden surfaces and replace all transparent pixels with flat solid #FF00FF magenta. LEFT closed door, RIGHT door open90 degrees. In the RIGHT sprite the door leaf is a narrow vertical WOODEN STRIP about 7 pixels wide at the right inside jamb, seen completely EDGE-ON. Keep that narrow strip EXACTLY its original width and position. Do NOT draw the broad side of the door or any diagonal door panel. Do NOT remove the horizontal wooden beam above the open aperture. Both rectangular metal caps, both thin wooden frames, both thresholds and both frame opening sizes must stay unchanged. No widening, rotation, perspective, silhouette changes or extra shadows. Copy the reference geometry faithfully. Same 768x512 image, exact two-cell positions, crisp pixel art."
+}

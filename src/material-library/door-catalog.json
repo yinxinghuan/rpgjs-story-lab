@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 1,
+  "contract": {
+    "projection": "orthogonal-overhead-b-v1",
+    "includesWall": false,
+    "wallOwnership": "scene",
+    "orientationRule": "front assets only N/S; W/E requires separately reviewed side art",
+    "variationRule": "select stable material id per entrance, never randomize on refresh",
+    "selectionRule": "Prefer open-90 for narrow/high-frequency passages; inset-oblique where space permits. Stable per entrance. Both are acceptable, neither must replace the other."
+  },
+  "materials": [
+    {
+      "id": "door-wood-olive-simple-01",
+      "label": {
+        "zh": "旧橄榄木门 · 简框",
+        "en": "Weathered olive wood door · simple frame"
+      },
+      "family": "wood",
+      "status": "rejected-projection",
+      "source": "../../doc/entrance-options-20260917/prepared/c-simple-frame.png",
+      "sha256": "9d511e0ec6d5c689a4333daf789be363d4004e728a56d2e4524cadf5ca769f5c",
+      "provider": "alteru-media",
+      "taskId": "mt_df3ec66387e2095a7b664bfd0d7207f5",
+      "includesWall": false,
+      "orientations": [
+        "N",
+        "S"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 0,
+          "row": 0
+        },
+        "open": {
+          "column": 1,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 450
+      },
+      "render": {
+        "scale": 0.22,
+        "southOffset": 8,
+        "foregroundCutY": 442,
+        "openLeafForeground": {
+          "x": 240,
+          "y": 400,
+          "width": 100,
+          "height": 110
+        }
+      },
+      "review": "../../doc/entrance-options-20260917/c-simple-frame/review.md",
+      "rejectionReason": "Lintel and sill depth edges converge; user identified wedge gap against orthogonal scene walls."
+    },
+    {
+      "id": "door-wood-olive-inset-01",
+      "label": {
+        "zh": "旧橄榄木门 · 内收斜开",
+        "en": "Weathered olive door · inset swing"
+      },
+      "family": "wood",
+      "status": "admitted-local",
+      "source": "../../doc/entrance-options-20260917/prepared/c-inset-swing.png",
+      "sha256": "58d1c676eac7ca2c0cc6327c7d5874ce478e27640a542cecccfc8d61e51bdbc7",
+      "provider": "codex-imagegen",
+      "includesWall": false,
+      "orientations": [
+        "N",
+        "S"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 0,
+          "row": 0
+        },
+        "open": {
+          "column": 1,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 450
+      },
+      "render": {
+        "scale": 0.25,
+        "southOffset": 8,
+        "foregroundCutY": 442,
+        "openLeafForeground": {
+          "x": 180,
+          "y": 400,
+          "width": 100,
+          "height": 110
+        }
+      },
+      "review": "../../doc/entrance-options-20260917/c-inset-swing/review.md",
+      "openingPose": "inset-oblique",
+      "acceptance": {
+        "date": "2026-09-18",
+        "basis": "用户认可当前对照页的内收斜开与90度两种效果均可接受",
+        "scope": "当前北/南正面门的可接受美术；不是完美比例标准，也不代表侧门或全游戏接入验收"
+      }
+    },
+    {
+      "id": "door-wood-olive-open90-01",
+      "label": {
+        "zh": "旧橄榄木门 · 90度开门",
+        "en": "Weathered olive door · 90-degree opening"
+      },
+      "family": "wood",
+      "status": "admitted-local",
+      "source": "../../doc/entrance-options-20260917/prepared/c-open-90.png",
+      "sha256": "ffd94eb5dc9cda1fd4a085997d13770ec2a2a9f2af0fad51bf142e0c8bc8d9ad",
+      "provider": "codex-imagegen",
+      "includesWall": false,
+      "orientations": [
+        "N",
+        "S"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 0,
+          "row": 0
+        },
+        "open": {
+          "column": 1,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 450
+      },
+      "render": {
+        "scale": 0.25,
+        "southOffset": 8,
+        "foregroundCutY": 442,
+        "openLeafForeground": {
+          "x": 180,
+          "y": 400,
+          "width": 100,
+          "height": 110
+        }
+      },
+      "review": "../../doc/entrance-options-20260917/c-open-90/review.md",
+      "openingPose": "open-90",
+      "acceptance": {
+        "date": "2026-09-18",
+        "basis": "用户认可当前对照页的内收斜开与90度两种效果均可接受",
+        "scope": "当前北/南正面门的可接受美术；不是完美比例标准，也不代表侧门或全游戏接入验收"
+      }
+    },
+    {
+      "id": "door-wood-olive-inset-platform-01",
+      "label": {
+        "zh": "旧橄榄木门 · 内收斜开 · 平台",
+        "en": "Weathered olive door · inset swing · platform"
+      },
+      "family": "wood",
+      "status": "admitted-local",
+      "source": "../../doc/door-platform-20260918/prepared/inset.png",
+      "sha256": "f568dccb48ef10427005df1cf13d9a501a1bc3a9bed18c3d6585a27a19aab391",
+      "provider": "alteru-media",
+      "includesWall": false,
+      "orientations": [
+        "N",
+        "S"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 0,
+          "row": 0
+        },
+        "open": {
+          "column": 1,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 450
+      },
+      "render": {
+        "scale": 0.24,
+        "southOffset": 8,
+        "foregroundCutY": 442,
+        "openLeafForeground": {
+          "x": 180,
+          "y": 400,
+          "width": 100,
+          "height": 110
+        }
+      },
+      "review": "../../doc/door-platform-20260918/review.md",
+      "openingPose": "inset-oblique",
+      "acceptance": {
+        "date": "2026-09-18",
+        "basis": "Agent compared against both user-accepted poses under explicit platform replacement request",
+        "scope": "North/south local art admission; reference-conditioned image editing, not text-only stability proof"
+      },
+      "taskId": "mt_f04c27277ed9dfbc0ec534147b264b02",
+      "referenceMaterialId": "door-wood-olive-inset-01"
+    },
+    {
+      "id": "door-wood-olive-open90-platform-01",
+      "label": {
+        "zh": "旧橄榄木门 · 90度开门 · 平台",
+        "en": "Weathered olive door · 90-degree opening · platform"
+      },
+      "family": "wood",
+      "status": "admitted-local",
+      "source": "../../doc/door-platform-20260918/prepared/open90-correction.png",
+      "sha256": "2ab3cf20aafa45a3f87c7afad821a6b2b293a2752f5f9c470f13bb5d615aa051",
+      "provider": "alteru-media",
+      "includesWall": false,
+      "orientations": [
+        "N",
+        "S"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 0,
+          "row": 0
+        },
+        "open": {
+          "column": 1,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 450
+      },
+      "render": {
+        "scale": 0.24,
+        "southOffset": 8,
+        "foregroundCutY": 442,
+        "openLeafForeground": {
+          "x": 180,
+          "y": 400,
+          "width": 100,
+          "height": 110
+        }
+      },
+      "review": "../../doc/door-platform-20260918/review.md",
+      "openingPose": "open-90",
+      "acceptance": {
+        "date": "2026-09-18",
+        "basis": "Agent compared against both user-accepted poses under explicit platform replacement request",
+        "scope": "North/south local art admission; reference-conditioned image editing, not text-only stability proof"
+      },
+      "taskId": "mt_490b63855218f5e02a3e0376a1b463cc",
+      "referenceMaterialId": "door-wood-olive-open90-01"
+    },
+    {
+      "id": "door-wood-side-sliding-platform-01",
+      "label": {
+        "zh": "旧橄榄木侧门",
+        "en": "Weathered olive side passage"
+      },
+      "family": "wood",
+      "status": "rejected-composition",
+      "source": "../../doc/door-platform-20260918/prepared/side-reference.png",
+      "sha256": "b2bbdfb2f35ba3b19b65b0e6c5947140bba8f89f29feb3e668f0cebf7d9341b8",
+      "provider": "alteru-media",
+      "includesWall": false,
+      "orientations": [
+        "W",
+        "E"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 1,
+          "row": 0
+        },
+        "open": {
+          "column": 0,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 256
+      },
+      "render": {
+        "scale": 0.145,
+        "southOffset": 0,
+        "foregroundCutY": 512,
+        "openLeafForeground": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "review": "../../doc/door-platform-20260918/review.md",
+      "openingPose": "side-sliding",
+      "acceptance": {
+        "date": "2026-09-18",
+        "basis": "Dedicated ground-plan side threshold; visible narrow partition when closed, cleared centre when open. Scene provides foreground wall ends.",
+        "scope": "Side passages only; no rotation of upright front-door art"
+      },
+      "taskId": "mt_43391e8db7de55f806adb03fe1b76d39"
+    },
+    {
+      "id": "door-home-teal-platform-01",
+      "label": {
+        "zh": "回家正门 · 深青双扇",
+        "en": "Homeward gate · teal double door"
+      },
+      "family": "wood",
+      "status": "admitted-local",
+      "source": "../../doc/door-platform-20260918/prepared/home-gate.png",
+      "sha256": "05ac78e2b64d40500bca388ba619e284da62b926b612d94248a3bdde4e50d982",
+      "provider": "alteru-media",
+      "includesWall": false,
+      "orientations": [
+        "N",
+        "S"
+      ],
+      "image": {
+        "width": 768,
+        "height": 512
+      },
+      "cell": {
+        "width": 384,
+        "height": 512
+      },
+      "states": {
+        "closed": {
+          "column": 0,
+          "row": 0
+        },
+        "open": {
+          "column": 1,
+          "row": 0
+        }
+      },
+      "foot": {
+        "x": 192,
+        "y": 450
+      },
+      "render": {
+        "scale": 0.24,
+        "southOffset": 8,
+        "foregroundCutY": 442,
+        "openLeafForeground": {
+          "x": 80,
+          "y": 400,
+          "width": 220,
+          "height": 110
+        }
+      },
+      "review": "../../doc/door-platform-20260918/review.md",
+      "openingPose": "open-90",
+      "acceptance": {
+        "date": "2026-09-18",
+        "basis": "Agent compared against both user-accepted poses under explicit platform replacement request",
+        "scope": "Homeward exit only; confirmed ending interaction remains authoritative"
+      },
+      "taskId": "mt_2f3614a27775a8705658f847e8fd8e4b",
+      "referenceMaterialId": "door-wood-olive-open90-01"
+    }
+  ],
+  "preferredByPose": {
+    "inset-oblique": "door-wood-olive-inset-platform-01",
+    "open-90": "door-wood-olive-open90-platform-01"
+  }
+}

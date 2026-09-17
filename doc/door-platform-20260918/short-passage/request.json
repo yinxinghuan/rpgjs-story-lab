@@ -1,0 +1,13 @@
+{
+  "requestId": "880ac364-5af5-4801-9207-a67fdecc0f08",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 1536,
+    "height": 1024
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789668889568-r3fxmbgvxu.png"
+  ],
+  "prompt": "Faithfully redraw this EXACT approved narrow open passage asset for our pixel RPG. Preserve its camera, parallel orthographic projection, EXACT silhouette and layout, narrow width, both wooden end pieces, their visible top and front faces, and continuous stone floor. One SINGLE asset at same center and size, NOT a sprite sheet. The walking route is LEFT-RIGHT across the gap between the upper and lower jambs. Do not add a door leaf. Do NOT add scene walls or lengthen either jamb. Do NOT add blocks, columns, brass ornaments or larger caps. Keep simple aged muted olive timber, small light stone tops, medium crisp pixel grain and modest wear, same tile sizes. Crucial output cleanup: replace ALL black background AND all surrounding glow with uniform pure magenta #FF00FF. Only the actual wood/stone silhouette remains; no shadow or glow outside its boundary, no checkerboard. Keep exact1536x1024canvas and same asset bounds near x662..873,y170..815. Preserve geometry, no redesign, no perspective convergence, no isometric diagonal axes, no captions."
+}

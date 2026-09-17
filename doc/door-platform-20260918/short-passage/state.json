@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "requestSha256": "06dc5ff1850e497551f43a89151e221aa1842ff91134cc839bd362560a78961b",
+  "requestId": "880ac364-5af5-4801-9207-a67fdecc0f08",
+  "status": "failed",
+  "startedAt": "2026-09-17T18:16:31.028Z",
+  "attempts": 1,
+  "error": "PROVIDER_REJECTED",
+  "retryable": false,
+  "elapsedMs": 8659,
+  "httpStatus": 502,
+  "errorMessage": "AcceleratorError: CUDA error: unknown error\nSearch for `cudaErrorUnknown' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions."
+}

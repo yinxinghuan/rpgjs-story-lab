@@ -1,0 +1,13 @@
+{
+  "requestId": "e2fe5606-4e56-43b4-8ca1-6d33ef0cac02",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789658902315580.png"
+  ],
+  "prompt": "Preserve the reference's exact TOP-DOWN groundplan geometry and two cell alignment. These are SIDE passage sprites for horizontal travel, NOT front facing doors. LEFT OPEN, RIGHT CLOSED. Keep north and south wooden beams, clear stone threshold and vertical narrow closed gate at right cell middle. Redraw wood in weathered DARK OLIVE muted timber matching a worn zinc-capped wooden door. Simplify blocky square posts to thin plain jamb ends, no ornamental square bases, no masonry walls. Beam width280 pixels, thickness30pixels, at y65 andy432 respectively, both horizontal and PARALLEL, allrectangles no vanishing point. CLOSED central gate about20pxwide runsvertical fromy95to417 in RIGHTcell only, withsmall brass latch; LEFT fullyclear middle. Keep detailed old warmgray stone pavers and subtle moss, pixel scratches/paintwear on olive wood, discrete crisp darkoutline. No smooth illustration, no new architecture, no diagonal perspective, no additional objects, no words. Same768x512magenta backdrop, flat puremagenta outside bothsprites."
+}

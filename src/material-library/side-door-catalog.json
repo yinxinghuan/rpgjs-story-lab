@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "projection": "orthographic-front-leaf-20260918",
+  "threshold": {
+    "id": "short-passage-high-view",
+    "asset": "../../doc/door-platform-20260918/short-passage-high-view/cutout.png",
+    "provider": "alteru-media",
+    "taskId": "mt_dcc72225117be519b1ebb396b1b7326e",
+    "sha256": "07ee7721a756cf6864f640ea80ca1d77bfdbe5fcd9bd6e37de6d440dbf4b0e36",
+    "sourceSha256": "9170d0e44fcc04c40014d4ac7b702369c6a9f239bb43fb078666bcbb372d61c7",
+    "width": 768,
+    "height": 512,
+    "status": "admitted",
+    "acceptance": "User confirmed perspective in laundry scene on 2026-09-18",
+    "anchor": {
+      "x": 384,
+      "y": 307.5
+    },
+    "groundSpan": 251,
+    "worldSpan": 56,
+    "tone": { "brightness": 0.82, "saturation": 0.88 },
+    "nearJamb": {
+      "x": 349,
+      "y": 313,
+      "width": 71,
+      "height": 122
+    }
+  },
+  "leaves": {
+    "clock": {
+      "provider": "alteru-media",
+      "taskId": "mt_f29fd11deee0b54cb8ca55a00815ba85",
+      "sourceSha256": "7a0b38eba7e999cdacd67fec8fd97a7b99085cbd18cf030edee64cfd92b56ca0",
+      "sha256": "2e8bdb0d5ac9f3021ed6f48da54fb939d14e085666a96ae274e7790249e34bef",
+      "operation": "magenta matte removal only",
+      "removed": 111584,
+      "width": 512,
+      "height": 768,
+      "bounds": {
+        "x": 44,
+        "y": 47,
+        "width": 419,
+        "height": 678
+      },
+      "id": "clock",
+      "status": "admitted-with-runtime-thickness",
+      "asset": "../../doc/door-platform-20260918/side-door-face/cutout.png",
+      "assetKey": "entranceClockLeaf",
+      "hinge": "right",
+      "lettering": false,
+      "top": "#829486",
+      "edge": "#344c40",
+      "outline": "#354f43"
+    },
+    "plain": {
+      "provider": "alteru-media",
+      "taskId": "mt_1c41763e8234e51915ed5e2cf6c0c2e0",
+      "sourceSha256": "563177251001fa4eecfb34d9b1e19989ee364d21f110d178b7638158e73daf30",
+      "sha256": "da0d44cce601029c85b4beaa6fa036dde6c84c885f739b826c5ae7db4072b3cb",
+      "operation": "magenta matte removal only",
+      "removed": 162265,
+      "width": 512,
+      "height": 768,
+      "bounds": {
+        "x": 78,
+        "y": 56,
+        "width": 360,
+        "height": 658
+      },
+      "id": "plain",
+      "status": "admitted-with-runtime-thickness",
+      "asset": "../../doc/door-platform-20260918/side-door-plain/cutout.png",
+      "assetKey": "entrancePlainLeaf",
+      "hinge": "right",
+      "lettering": false,
+      "top": "#9b9c63",
+      "edge": "#515735",
+      "outline": "#4e5535"
+    },
+    "shop-clock": {
+      "provider": "alteru-media",
+      "taskId": "mt_0fba98b81f7096d80251b69461c4adaf",
+      "sourceSha256": "e08f1e5a607d948e3d07a8700d9dc2d13101414711b488e7fb94a28e765a1fea",
+      "sha256": "723531104f7a8ee639174476dcb02317994dccef40b5b26d3b1db6b6db4f3bf4",
+      "operation": "magenta matte removal only",
+      "removed": 163427,
+      "width": 512,
+      "height": 768,
+      "bounds": {
+        "x": 72,
+        "y": 54,
+        "width": 357,
+        "height": 662
+      },
+      "id": "shop-clock",
+      "status": "admitted-with-runtime-thickness",
+      "asset": "../../doc/door-platform-20260918/shop-door-watch-left-v2/cutout.png",
+      "assetKey": "entranceShopClock",
+      "hinge": "left",
+      "lettering": true,
+      "top": "#718c88",
+      "edge": "#32494a",
+      "outline": "#32494a"
+    },
+    "shop-photo": {
+      "provider": "alteru-media",
+      "taskId": "mt_3d8dd79039ba5b1d34184fd33ae5a824",
+      "sourceSha256": "50cee57fdd8ffd9582ac6b539f21a97d554c56c1b20139571867ca5678e1f113",
+      "sha256": "f3f7eddd068c06370352b82ab2ede30eba1edc1813cf1d4b33047e0d97f71270",
+      "operation": "magenta matte removal only",
+      "removed": 156876,
+      "width": 512,
+      "height": 768,
+      "bounds": {
+        "x": 76,
+        "y": 53,
+        "width": 365,
+        "height": 663
+      },
+      "id": "shop-photo",
+      "status": "admitted-with-runtime-thickness",
+      "asset": "../../doc/door-platform-20260918/shop-door-photo-v1/cutout.png",
+      "assetKey": "entranceShopPhoto",
+      "hinge": "right",
+      "lettering": true,
+      "top": "#997866",
+      "edge": "#4d3830",
+      "outline": "#4d3830"
+    }
+  },
+  "slab": {
+    "topDepth": 5,
+    "edgeWidth": 1.5
+  },
+  "note": "All complete leaf pixels are preserved: matte removal + automatic alpha bounds only. No semantic crop. Prompt uses one frame-free reference; scene owns thickness and doorway. Business lettering uses native left/right hinge assets, never a mirrored label. User accepted natural shop styling on 2026-09-18."
+}

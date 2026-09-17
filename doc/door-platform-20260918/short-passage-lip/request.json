@@ -1,0 +1,13 @@
+{
+  "requestId": "b483af3c-352b-4369-b42c-1cdf8dd80b32",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789668889568-r3fxmbgvxu.png"
+  ],
+  "prompt": "Reproduce this narrow simple open passage sprite faithfully at768x512. One single centered asset, not an atlas. Same orthographic elevated camera and parallel edges. Same two short olive wooden jambs and stone tops, same narrow width. Walking LEFT-RIGHT through gap between upper and lower jamb. No door leaf and NO scene walls added. At half reference size, asset approximate bounds x331..437,y85..407. Only requested change: the stone threshold FLOOR must have a small visible thickness. Draw a thin dark-gray vertical edge, about3-4 pixels high, along its exposed lower/south rim and small side edges, with subtle light top edge; a thin worn stone slab, not a tall platform, not stairs. Continuous level paving, no missing part. Keep reference woodgrain, pixel clusters and restrained wear. Replace all black backdrop and glow with uniform pure magenta#FF00FF; clean silhouette, no shadow/glow outside, no checkerboard, no words. No extra ornament, columns, walls or changes of viewpoint."
+}

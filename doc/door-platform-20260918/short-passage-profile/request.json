@@ -1,0 +1,13 @@
+{
+  "requestId": "4c71fdb3-a1a6-4a5a-8dbb-94e2e15145b9",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 1536,
+    "height": 1024
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789668889568-r3fxmbgvxu.png"
+  ],
+  "prompt": "Keep this image composition EXACTLY unchanged. This is a SIDE passage for LEFT-RIGHT walking, NOT a front-facing gate. The two wooden blocks are stacked VERTICALLY in the image: one at top center and one at bottom center. Their x coordinates are identical. The continuous narrow stone floor is behind and BETWEEN them. Preserve all object shapes and positions exactly. ONLY change the black background and halo to solid bright magenta #FF00FF. Add a very thin 4-pixel dark stone edge along the exposed bottom edge of the stone floor to give the floor slight slab thickness. No other changes. No new walls. Do not rotate the passage or move the two blocks to left and right. Pixel art."
+}

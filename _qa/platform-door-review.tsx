@@ -1,0 +1,17 @@
+import React,{useState} from 'react'
+import {createRoot} from 'react-dom/client'
+import {getPreferredDoorMaterial} from '../src/material-library/door-materials'
+import {Scene,type Side} from './entrance-option-scene'
+import referenceInset from '../doc/entrance-options-20260917/prepared/c-inset-swing.png'
+import reference90 from '../doc/entrance-options-20260917/prepared/c-open-90.png'
+import platformInset from '../doc/door-platform-20260918/prepared/inset.png'
+import platform90 from '../doc/door-platform-20260918/prepared/open90-correction.png'
+function Review(){
+ const[pose,setPose]=useState<'inset'|'90'>('90'),[side,setSide]=useState<Side>('N'),[closed,setClosed]=useState(false)
+ const reference=pose==='90'?reference90:referenceInset,platform=pose==='90'?platform90:platformInset,material=getPreferredDoorMaterial(pose==='90'?'open-90':'inset-oblique',side)
+ return <main><header><p className="small">平台媒体服务 · 门素材</p><h1>同一门洞，比较生成效果</h1><p>左侧为已认可的 Codex 参考，右侧为平台媒体服务实际生成并去背景的结果。共用场景、人物与镜头；门框按同一洞口校准。</p><nav><button aria-pressed={pose==='90'} onClick={()=>setPose('90')}>90° 开门</button><button aria-pressed={pose==='inset'} onClick={()=>setPose('inset')}>内收斜开</button><button aria-pressed={side==='N'} onClick={()=>setSide('N')}>正面门</button><button aria-pressed={side==='S'} onClick={()=>setSide('S')}>底端门</button><label><input type="checkbox" checked={closed} onChange={e=>setClosed(e.target.checked)}/>关闭门扇</label></nav></header>
+ <section className="grid">{[{id:'reference',title:'已认可参考',front:reference,scale:.25,note:'Codex 图像生成，保留作为参考和回退。'},{id:'platform',title:'平台生成',front:platform,scale:material.render.scale,note:'AlterU 媒体服务；原图留存，去背景后平移对齐门槛，没有手工重绘门体。'}].map(o=><article key={o.id}><h2>{o.title}</h2><Scene option={{...o,side:reference,leafForeground:{x:180,y:400,width:100,height:110}}} side={side} walls baseline={false} closed={closed}/><p>{o.note}</p></article>)}</section>
+ <p className="foot">两款平台素材已登记为本地门库优先版本，原参考保留。<a href="./_qa-c-door-frame.html">查看两种已认可开门姿态</a> · <a href="./">进入本地试玩</a></p>
+ <style>{`*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif}main{max-width:960px;margin:auto;padding:22px}h1{font-size:28px;margin:6px 0 12px}header>p{max-width:730px;color:#bbc4b4;line-height:1.65}.small{font-size:12px;letter-spacing:.1em}nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0}button{min-height:44px;padding:10px 18px;border-radius:8px;border:1px solid #596757;background:#314038;color:#eee5ca;font:inherit;cursor:pointer}button[aria-pressed=true]{background:#d6c899;color:#24342c}nav label{min-height:44px;display:flex;align-items:center;gap:8px;padding:0 8px}input{width:18px;height:18px;accent-color:#d6c899}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{background:#293730;border:1px solid #53604e;border-radius:12px;overflow:hidden}h2{font-size:18px;margin:16px}.scene{display:block;width:100%}article p{font-size:14px;line-height:1.65;color:#c1c7b6;margin:16px;min-height:46px}.foot{font-size:13px;color:#adb8a6;line-height:1.8}a{color:#ded09e}button,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent}@media(max-width:650px){main{padding:16px}.grid{grid-template-columns:1fr}article{width:100%;max-width:440px;margin:auto}.scene{max-height:390px}h1{font-size:25px}}`}</style></main>
+}
+createRoot(document.getElementById('root')!).render(<Review/>);

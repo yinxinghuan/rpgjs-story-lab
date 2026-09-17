@@ -1,0 +1,13 @@
+{
+  "requestId": "88ec6785-4202-4bcb-8172-396c49a2ee09",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789660886893052.png"
+  ],
+  "prompt": "Correct the projection of this 2-cell wooden door game sprite sheet. Keep the olive weathered wood, simple thin frame, CLOSED left / OPEN right, no surrounding wall. STRICT PARALLEL ORTHOGRAPHIC projection, camera looking downward along the north-south axis, NOT perspective, NOT isometric. This is a technical constraint: the metal lintel top must be a perfect RECTANGLE with horizontal front and back edges of EXACTLY EQUAL LENGTH and vertical left and right depth edges. Its back edge must NOT be shorter. Likewise the threshold is a RECTANGLE, not a trapezoid. Every vertical jamb edge is straight vertical; every horizontal width edge is exactly horizontal. No taper, no vanishing point, no converging lines. The closed wooden leaf is rectangular. The opened right-hinged leaf is an orthographically projected PARALLELOGRAM: its upper and lower long edges must be EXACTLY PARALLEL and equal length, slanting down-right by the same vector; hinge and latch edges vertical, parallel and equal length. No converging door leaf edges, no triangle-shaped thickness. Keep identical thin frame dimensions and alignment between both states. Show a small rectangular top surface on the lintel to preserve elevated camera, without a sloped roof or flared cap. No surrounding walls, no stone blocks, no extra floor. Keep tactile detailed pixel art wear, dark edge pixels, same muted olive wood palette. 768x512 canvas split into two 384x512 cells, centered sprites with generous pure solid magenta background outside and through open aperture, identical sill baseline near y450. No shadows on magenta, no text, no checkerboard, no people."
+}

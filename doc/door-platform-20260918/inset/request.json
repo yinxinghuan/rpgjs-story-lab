@@ -1,0 +1,13 @@
+{
+  "requestId": "52b9df83-1d62-4e56-8a1f-266e10d9c4a4",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789663338729-medb7gmuv0d.png"
+  ],
+  "prompt": "Produce a production pixel-art RPG sprite atlas matching this approved reference. This is a geometry-preserving redraw, NOT a new composition. Keep EXACTLY the same two-cell layout, positions, frame dimensions, thin simple jambs, threshold baseline and wood/metal palette. LEFT closed and RIGHT open of the SAME door frame. No surrounding wall or masonry. Strict parallel orthographic projection: lintel top and sill top are RECTANGLES, not trapezoids; front and back edges equal width, all depth edges parallel, no vanishing point. OPEN leaf swings inward into the aperture from the right hinge, as in reference: its upper and lower edges must remain parallel, equal length and slant down-left. The leaf stays entirely inside the horizontal extent of the frame, never to its right. Keep left half of aperture clear. Retain muted weathered olive wooden planks, charcoal pixel outlines, subtle chipped paint/woodgrain, simple gray metal lintel cap. Crisp medium-coarse pixel texture, no smoothing, no extra details or decorative frame bulk. Keep the source view and proportions; no isometric view. Transparent reference pixels must become perfectly flat solid magenta #FF00FF, both outside and through open aperture; no shadows/glow on magenta, no checkerboard. 768x512 sheet: 2 cells each384x512, each threshold center at x192,y450 within its cell. Preserve identical closed/open frame alignment. No words or annotations."
+}

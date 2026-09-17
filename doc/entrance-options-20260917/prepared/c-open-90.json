@@ -1,0 +1,43 @@
+{
+  "source": "doc/entrance-options-20260917/c-open-90/candidate.png",
+  "sourceSha256": "3a6a8746387a62c122256b48022af8647b93a1f7e0b2747f4fdca3a3223c2ab4",
+  "sha256": "ffd94eb5dc9cda1fd4a085997d13770ec2a2a9f2af0fad51bf142e0c8bc8d9ad",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 202,
+        "y": 437
+      },
+      {
+        "x": 182,
+        "y": 437
+      }
+    ],
+    "matteSeeds": []
+  },
+  "metrics": {
+    "removed": 212909,
+    "edgeCorrected": 0,
+    "corePreserved": 156679
+  },
+  "admission": "comparison-only",
+  "operations": [
+    "discard native alpha <=8/255 stray fringe",
+    "nearest-neighbour 2:1 source sampling",
+    "reviewed magenta/violet matte normalization",
+    "connected matte removal",
+    "translation for paired threshold anchors; no rescaling"
+  ]
+}

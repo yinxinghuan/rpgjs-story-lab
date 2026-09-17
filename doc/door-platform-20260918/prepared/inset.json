@@ -1,0 +1,48 @@
+{
+  "source": "doc/door-platform-20260918/inset/candidate.png",
+  "sourceSha256": "a9ec70b661c6e1874396afb464071365b5252f2904955ac7102f6a708cc4cdef",
+  "sha256": "f568dccb48ef10427005df1cf13d9a501a1bc3a9bed18c3d6585a27a19aab391",
+  "provider": "alteru-media",
+  "taskId": "mt_f04c27277ed9dfbc0ec534147b264b02",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 192,
+        "y": 449
+      },
+      {
+        "x": 198,
+        "y": 449
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 530,
+        "y": 250
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 222797,
+    "edgeCorrected": 0,
+    "corePreserved": 163581
+  },
+  "exteriorRemoved": 201403,
+  "operations": [
+    "connected corner-color exterior matte removal",
+    "reviewed magenta aperture removal",
+    "integer translation to shared threshold anchor; no warping or redraw"
+  ]
+}

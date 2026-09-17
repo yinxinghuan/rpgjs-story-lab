@@ -1,0 +1,16 @@
+{
+  "provider": "alteru-media",
+  "taskId": "mt_dcc72225117be519b1ebb396b1b7326e",
+  "sourceSha256": "9170d0e44fcc04c40014d4ac7b702369c6a9f239bb43fb078666bcbb372d61c7",
+  "sha256": "07ee7721a756cf6864f640ea80ca1d77bfdbe5fcd9bd6e37de6d440dbf4b0e36",
+  "operation": "magenta matte removal only",
+  "removed": 355681,
+  "width": 768,
+  "height": 512,
+  "groundAnchor": {
+    "x": 384,
+    "y": 307.5
+  },
+  "scale": 0.22310756972111553,
+  "review": "local representative scene trial; not bulk library replacement"
+}

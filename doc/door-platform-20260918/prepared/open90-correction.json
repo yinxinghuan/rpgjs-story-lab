@@ -1,0 +1,48 @@
+{
+  "source": "doc/door-platform-20260918/open90-correction/candidate.png",
+  "sourceSha256": "d3b2c98777ecdfda216cbc076a09ef9718f2b30076437c17c191c89e1086a1d5",
+  "sha256": "2ab3cf20aafa45a3f87c7afad821a6b2b293a2752f5f9c470f13bb5d615aa051",
+  "provider": "alteru-media",
+  "taskId": "mt_490b63855218f5e02a3e0376a1b463cc",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 190,
+        "y": 454
+      },
+      {
+        "x": 195,
+        "y": 454
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 530,
+        "y": 250
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 238270,
+    "edgeCorrected": 0,
+    "corePreserved": 147455
+  },
+  "exteriorRemoved": 23,
+  "operations": [
+    "connected corner-color exterior matte removal",
+    "reviewed magenta aperture removal",
+    "integer translation to shared threshold anchor; no warping or redraw"
+  ]
+}

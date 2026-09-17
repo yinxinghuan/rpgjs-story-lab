@@ -1,3 +1,5 @@
+import {OldStreetSidePassage,OldStreetSideDoorLeaf} from './old-street-side-passage'
+import {roomSidePassages} from './old-street-side-door-layout'
 import {useId} from 'react'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
@@ -19,10 +21,10 @@ const palettes:Record<string,{face:string;cap:string;edge:string;trim:string}>={
  darkroom:{face:'#616b61',cap:'#939889',edge:'#3c4943',trim:'#4b554b'},
  archive:{face:'#888b74',cap:'#b2aa8b',edge:'#535b4c',trim:'#736348'},
 }
-type Props={room:OldStreetRoom;facts:StorySave['facts'];art?:OldStreetEnvironmentArt;compositeShop?:boolean;actor?:{x:number;y:number}}
+type Props={room:OldStreetRoom;facts:StorySave['facts'];art?:OldStreetEnvironmentArt;compositeShop?:boolean;actor?:{x:number;y:number};locale?:'zh'|'en'}
 /** Static north/side architecture is behind the sortable RPG scene. */
-export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compositeShop=false}:Props){
- const walls=oldStreetRoomWalls(room,facts);if(!walls)return null
+export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compositeShop=false,actor,locale='zh'}:Props){
+ const passages=roomSidePassages(room,facts),walls=oldStreetRoomWalls(room,facts);if(!walls)return null
  const {floor:f,north,west,east}=walls,s=walls.size,p=palettes[room]
  return <g data-room-walls={room}>
   {north.map((r,i)=><g key={i}>
@@ -44,16 +46,20 @@ export function OldStreetRoomWalls({room,facts,art=oldStreetEnvironmentArt,compo
   </g>)}
   {[{x:f.x-s.thickness,rows:west},{x:f.x+f.w,rows:east}].map(({x,rows},side)=><g key={side}>
    <rect x={x} y={f.y-s.back} width={s.thickness} height={s.back} fill={p.cap}/>
-   {rows.map((r,i)=><g key={i}><rect x={x} y={r.start} width={s.thickness} height={r.length} fill={p.cap}/><path d={`M${x+(side===0?s.thickness:0)} ${r.start}v${r.length}`} stroke={p.edge} strokeWidth="2"/><path d={`M${x+3} ${r.start}v${r.length}`} stroke={p.face}/></g>)}
+   {rows.map((r,i)=>passages.some(d=>d.side===(side===0?'W':'E'))?<SideWallSegment key={i} x={x} start={r.start} length={r.length} width={s.thickness} height={s.foreground} palette={p} art={art} endFace={i<rows.length-1}/>:<g key={i}><rect x={x} y={r.start} width={s.thickness} height={r.length} fill={p.cap}/><path d={`M${x+(side===0?s.thickness:0)} ${r.start}v${r.length}`} stroke={p.edge} strokeWidth="2"/><path d={`M${x+3} ${r.start}v${r.length}`} stroke={p.face}/></g>)}
   </g>)}
+  {passages.map(door=><g key={door.id}><OldStreetSidePassage door={door} art={art}/><OldStreetSideDoorLeaf door={door} art={art} closed={Boolean(door.gate&&!facts[door.gate])} actor={actor} locale={locale}/></g>)}
  </g>
 }
 /** Equal-height foreground wall, with a small actor-following visibility window. */
-export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt,actor}:Props){
+export function OldStreetRoomForeground({room,facts,art=oldStreetEnvironmentArt,actor,locale='zh'}:Props){
  const id=useId().replace(/:/g,''),reveal=oldStreetWallReveal(room,facts,actor)
- const walls=oldStreetRoomWalls(room,facts);if(!walls)return null
+ const passages=roomSidePassages(room,facts),walls=oldStreetRoomWalls(room,facts);if(!walls)return null
  const {floor:f,south}=walls,s=walls.size,p=palettes[room],top=f.y+f.h-s.foreground
  return <g data-room-foreground={room}>
+  {passages.map(door=><OldStreetSidePassage key={door.id} door={door} art={art} foreground/>)}
+  {passages.map(door=><OldStreetSideDoorLeaf key={door.id} door={door} art={art} closed={Boolean(door.gate&&!facts[door.gate])} actor={actor} locale={locale} foreground/>)}
+  {([{side:'W',x:f.x-s.thickness,rows:walls.west},{side:'E',x:f.x+f.w,rows:walls.east}]).filter(v=>passages.some(d=>d.side===v.side)).map(v=><g key={v.side}>{v.rows.slice(1).map((r,i)=><SideWallSegment key={i} x={v.x} start={r.start} length={r.length} width={s.thickness} height={s.foreground} palette={p} art={art} endFace={i<v.rows.length-2}/>)}</g>)}
   <defs><radialGradient id={id+'fade'}><stop offset="0" stopColor="black" stopOpacity=".8"/><stop offset=".58" stopColor="black" stopOpacity=".8"/><stop offset="1" stopColor="black" stopOpacity="0"/></radialGradient><mask id={id+'mask'} maskUnits="userSpaceOnUse" x="0" y="0" width="384" height="576"><rect width="384" height="576" fill="white"/>{reveal&&<circle cx={reveal.x} cy={reveal.y} r={reveal.radius} fill={`url(#${id}fade)`}/>}</mask></defs>
   <g mask={`url(#${id}mask)`}>{south.map((r,i)=><g key={i}>
   <rect x={r.start} y={top} width={r.length} height={s.foreground+s.thickness} fill={p.face}/>
@@ -75,4 +81,15 @@ function OutdoorMasonry({x,y,width,height,image}:{x:number;y:number;width:number
   {[0,12].map(row=><svg key={row} x="0" y={row} width="48" height="12" viewBox="170 62 160 40" preserveAspectRatio="none" overflow="hidden" opacity=".55"><image href={image} width="512" height="512" style={{imageRendering:'pixelated'}}/></svg>)}
   <path d="M0 0H48M0 12H48M24 0V12M0 12V24" stroke="#555e4d" strokeWidth=".8" opacity=".45"/>
  </pattern></defs><rect x={x} y={y} width={width} height={height} fill={`url(#${id})`}/></g>
+}
+
+/** A raised side-wall cap and its exposed south-facing end, using scene plaster. */
+function SideWallSegment({x,start,length,width,height,palette:p,art,endFace=false}:{x:number;start:number;length:number;width:number;height:number;palette:typeof palettes[string];art:OldStreetEnvironmentArt;endFace?:boolean}){
+ const top=start-height,end=start+length
+ return <g data-side-wall-segment={endFace?'far-end-face':'near-occluder'}>
+  <rect x={x} y={top} width={width} height={length} fill={p.cap}/>
+  <path d={`M${x} ${top}v${length}M${x+width} ${top}v${length}`} stroke={p.edge} strokeWidth="1"/>
+  <path d={`M${x+2} ${top}v${length}`} stroke="#d0c6a4" opacity=".5"/>
+  {endFace&&<g><rect x={x} y={end-height} width={width} height={height} fill={p.face}/><svg x={x} y={end-height} width={width} height={height} viewBox="8 16 30 216" preserveAspectRatio="none" overflow="hidden" opacity=".3"><image href={art.photoWall} width="768" height="256" style={{imageRendering:'pixelated'}}/></svg><path d={`M${x} ${end-height}h${width}v${height}h${-width}Z`} fill="none" stroke={p.edge}/><rect x={x} y={end-4} width={width} height="4" fill={p.trim}/></g>}
+ </g>
 }

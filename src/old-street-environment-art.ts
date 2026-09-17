@@ -1,4 +1,11 @@
-import entranceFront from '../doc/entrance-art-20260917/prepared/wood-front-overhead.png'
+import entranceShopClock from '../doc/door-platform-20260918/shop-door-watch-left-v2/cutout.png'
+import entranceShopPhoto from '../doc/door-platform-20260918/shop-door-photo-v1/cutout.png'
+import entranceClockLeaf from '../doc/door-platform-20260918/side-door-face/cutout.png'
+import entrancePlainLeaf from '../doc/door-platform-20260918/side-door-plain/cutout.png'
+import entranceShortPassage from '../doc/door-platform-20260918/short-passage-high-view/cutout.png'
+import entranceHome from '../doc/door-platform-20260918/prepared/home-gate.png'
+import entranceInset from '../doc/door-platform-20260918/prepared/inset.png'
+import entranceFront from '../doc/door-platform-20260918/prepared/open90-correction.png'
 import entranceSide from '../doc/entrance-art-20260917/prepared/side-passage-final.png'
 import entranceGround from '../doc/entrance-art-20260917/prepared/passage-ground.png'
 import roofVariants from '../doc/roof-materials-20260917/candidate.png'
@@ -19,7 +26,7 @@ import wood from '../doc/oldstreet-pixel-study/floor-narrow/candidate-actual.png
 import laundry from '../doc/oldstreet-laundry-candidate/correction/candidate.png'
 import shopWall from '../doc/oldstreet-pixel-study/workshop-wall/candidate.png'
 import shedWall from '../doc/oldstreet-shed-wall/candidate.png'
-export const oldStreetEnvironmentArt={entranceFront,entranceSide,entranceGround,roofVariants,wood,laundry,shopWall,shedWall,shedFloor,yard,streetGround,streetEdges,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
+export const oldStreetEnvironmentArt={entranceShopClock,entranceShopPhoto,entranceClockLeaf,entrancePlainLeaf,entranceShortPassage,entranceHome,entranceInset,entranceFront,entranceSide,entranceGround,roofVariants,wood,laundry,shopWall,shedWall,shedFloor,yard,streetGround,streetEdges,photoWall,debris,shopComposite,photoFloor,stoneStair,cellarFloor,roofFloor,doorWood}
 export type OldStreetEnvironmentArt=typeof oldStreetEnvironmentArt
 export function oldStreetEnvironmentDownloads(pixel:boolean,composite=false,room?:string){
  const needed=room?new Set(oldStreetEnvironmentKeys(room,pixel,composite)):null

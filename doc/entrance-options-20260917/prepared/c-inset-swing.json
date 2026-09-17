@@ -1,0 +1,43 @@
+{
+  "source": "doc/entrance-options-20260917/c-inset-swing/candidate.png",
+  "sourceSha256": "274731b1c36ad6eadd43fe21d81ea40b398b3dd86207786622cfe7be07add826",
+  "sha256": "58d1c676eac7ca2c0cc6327c7d5874ce478e27640a542cecccfc8d61e51bdbc7",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 202,
+        "y": 437
+      },
+      {
+        "x": 182,
+        "y": 437
+      }
+    ],
+    "matteSeeds": []
+  },
+  "metrics": {
+    "removed": 214413,
+    "edgeCorrected": 0,
+    "corePreserved": 152495
+  },
+  "admission": "comparison-only",
+  "operations": [
+    "discard native alpha <=8/255 stray fringe",
+    "nearest-neighbour 2:1 source sampling",
+    "reviewed magenta/violet matte normalization",
+    "connected matte removal",
+    "translation for paired threshold anchors; no rescaling"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "requestId": "454b87fa-2ec2-48ca-9613-9d30b7f804eb",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "prompt": "A precise orthographic sprite sheet for a top-down 2D pixel-art RPG. Two matching simple weathered olive wooden door frames side by side on pure solid magenta. Left door CLOSED, right door OPEN. Canvas 768x512, two cells 384x512. Each frame centered at x192 within its cell, outer width240 height350 from y100 to450. Draw the top horizontal lintel as a RECTANGULAR BEAM: a 240x24 pixel rectangular top face from x72,y100 to x312,y124, plus a rectangular vertical front face from y124 to140. ALL four corners are 90 degrees. TOP and BOTTOM horizontal edges have identical widths. Absolutely NO trapezoid top, NO sloped roof, NO overhanging roof, NO triangular or converging depth edges. There is no vanishing point. Camera parallel projection, facing north, looking down 35 degrees; all x-axis edges horizontal, all north-south depth edges vertical on screen, all upright edges vertical on screen. Two narrow timber jambs extend from y140 to430. The bottom sill also has a perfect RECTANGULAR top face and rectangular front lip; x72 to312, y426 to450; same width front and back. Closed door is a tall rectangle of aged olive wooden planks with black iron handle. Open door right-hinged, projects down-right; draw its silhouette as a PARALLELOGRAM, top edge displacement (54,38), bottom edge SAME displacement (54,38), latch and hinge edges parallel vertical and identical height. Open aperture pure magenta. Thick clean dark pixel edges, medium-coarse pixel texture, subtle woodgrain, chipped paint, warm muted olive timber, dark brown shadows. Real detailed game asset but STRICT geometric outline. Both frames identical, same sill baseline y450. No masonry, no plaster, no surrounding walls, no floor, no characters, no text, no checkerboard, no atmospheric background, no floor shadows."
+}

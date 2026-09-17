@@ -1,0 +1,14 @@
+{
+  "provider": "codex-imagegen",
+  "status": "downloaded",
+  "admission": "comparison-only",
+  "reference": "../c-inset-swing/candidate.png",
+  "purpose": "User-requested 90-degree open leaf, edge-on in cardinal orthographic view.",
+  "asset": {
+    "file": "candidate.png",
+    "sha256": "3a6a8746387a62c122256b48022af8647b93a1f7e0b2747f4fdca3a3223c2ab4",
+    "width": 1536,
+    "height": 1024,
+    "alpha": "native"
+  }
+}

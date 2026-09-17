@@ -1,0 +1,13 @@
+import React,{useState} from 'react'
+import {createRoot} from 'react-dom/client'
+import {Scene,type Side} from './entrance-option-scene'
+import before from '../doc/entrance-options-20260917/prepared/c-inset-swing.png'
+import after from '../doc/entrance-options-20260917/prepared/c-open-90.png'
+function Review(){
+ const[side,setSide]=useState<Side>('N'),[closed,setClosed]=useState(false)
+ return <main><header><p className="small">C 方向 · 开门姿态</p><h1>门扇开到 90°</h1><p>比较斜开与 90° 开门：正交视角下，90° 门扇接近侧视，只露出窄边，给门洞留下更多通行空间。门框、墙体和镜头保持一致。</p><nav><button aria-pressed={side==='N'} onClick={()=>setSide('N')}>正面门</button><button aria-pressed={side==='S'} onClick={()=>setSide('S')}>底端门</button><label><input type="checkbox" checked={closed} onChange={e=>setClosed(e.target.checked)}/>关闭门扇</label></nav></header>
+ <section className="grid">{[{id:'before',scale:.25,leafForeground:{x:180,y:400,width:100,height:110},title:'此前 · 斜开门扇',front:before,note:'门扇已收回洞口，但斜开的面板仍占据一部分可见通道。'},{id:'after',scale:.25,leafForeground:{x:180,y:400,width:100,height:110},title:'新方案 · 90° 开门',front:after,note:'门扇呈窄边，保留木材厚度和把手；不向墙体横向伸出。'}].map(o=><article key={o.id}><h2>{o.title}</h2><Scene option={{...o,side:before}} side={side} walls baseline={false} closed={closed}/><p>{o.note}</p></article>)}</section>
+ <p className="foot">两款均为 Codex 生图参考。本地候选对照，尚未替换游戏默认门。<a href="./_qa-entrance-options.html">返回三个方向对照</a></p>
+ <style>{`*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif}main{max-width:960px;margin:auto;padding:22px}h1{font-size:28px;margin:6px 0 12px}header>p{max-width:730px;color:#bbc4b4;line-height:1.65}.small{font-size:12px;letter-spacing:.1em}nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0}button{min-height:44px;padding:10px 18px;border-radius:8px;border:1px solid #596757;background:#314038;color:#eee5ca;font:inherit;cursor:pointer}button[aria-pressed=true]{background:#d6c899;color:#24342c}nav label{min-height:44px;display:flex;align-items:center;gap:8px;padding:0 8px}input{width:18px;height:18px;accent-color:#d6c899}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{background:#293730;border:1px solid #53604e;border-radius:12px;overflow:hidden}h2{font-size:18px;margin:16px}.scene{display:block;width:100%}article p{font-size:14px;line-height:1.65;color:#c1c7b6;margin:16px;min-height:46px}.foot{font-size:13px;color:#adb8a6;line-height:1.8}a{color:#ded09e}button,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent}@media(max-width:650px){main{padding:16px}.grid{grid-template-columns:1fr}article{width:100%;max-width:440px;margin:auto}.scene{max-height:390px}h1{font-size:25px}}`}</style></main>
+}
+createRoot(document.getElementById('root')!).render(<Review/>);

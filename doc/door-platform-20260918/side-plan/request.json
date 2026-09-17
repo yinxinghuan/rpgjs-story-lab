@@ -1,0 +1,10 @@
+{
+  "requestId": "e0630288-9f0e-4fb9-8e4e-6044bc8ff3d3",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "prompt": "Strict TOP DOWN ORTHOGRAPHIC pixel art game floor asset atlas. Camera directly overhead, absolutely NO front facade, NO horizon, NO perspective, NO vertical standing portal. Solid magenta background. TWO side-by-side384x512cells. Each cell contains a rectangular worn olive wooden threshold PLATFORM flat on the floor, x90to290,y90to422. Detailed old timber planks, scratches, screws, worn gray metal edging. Long axis vertical on image. At top and bottom SHORT horizontal wooden endcaps, flat rectangular tops. LEFT platform has a CLOSED sliding wooden partition viewed FROM DIRECTLY ABOVE: a narrow dark wooden bar 22px wide atx180, running vertically fromy100to412, dividing platform into left andright. RIGHT identical platform has partition RETRACTED into north endcap, so middle ground is completely clear. No arch, no upright front view, no door drawn facing camera. This is a floorplan sprite for a side passage between left andright rooms. Medium-coarse crisp pixel clusters, olive brown muted timber, charcoal outlines, old western town RPG texture, subtle weathering, no words, no extra props, no painted shadow outside platform. Both sprites exactly equal size and alignment."
+}
