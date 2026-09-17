@@ -19,6 +19,8 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     bindOldStreet(s.locale,s).locate(s,h.sceneId);assertOldStreetExpansions(h.expansions);assertOldStreetCampaign(h.campaign)
     if(h.expansions?.[0]?.archiveSource&&JSON.stringify(h.expansions[0].archiveSource)!==JSON.stringify(archivePhotoSource(h.campaign)))throw Error('ARCHIVE_PHOTO_SOURCE_MISMATCH')
     if(s.facts['darkroom-photo-discovery']!==undefined&&(typeof s.facts['darkroom-photo-matched']!=='string'||typeof s.facts['darkroom-photo-discovery']!=='string'||!s.facts['darkroom-photo-discovery'].trim()||s.facts['darkroom-photo-discovery'].length>220))throw Error('PHOTO_DISCOVERY_NOT_OBSERVED')
+    if(s.facts['field-note-finding']!==(h.campaign?.field?.observed?h.campaign.field.content.finding:undefined)||s.facts['field-note-disposition']!==h.campaign?.field?.disposition)throw Error('FIELD_NOTE_STATE_INVALID')
+    if(s.inventory.filter(i=>i.id==='field-note').length!==(h.campaign?.field?.disposition==='take'?1:0)||s.inventory.some(i=>i.id==='field-note'&&i.count!==1))throw Error('FIELD_NOTE_POSSESSION_INVALID')
     if(s.facts['archive-ready']===true&&(!h.campaign?.archive||s.facts['archive-layout']!==h.campaign.archive.content.layout)||h.campaign?.archive&&s.facts['archive-ready']!==true||h.sceneId==='archive'&&!h.campaign?.archive)throw Error('ARCHIVE_NOT_ADMITTED')
     if(h.campaign&&s.facts.departed&&!campaignComplete(h.campaign))throw Error('CAMPAIGN_INCOMPLETE')
     if(s.facts['archive-published']===true&&!h.campaign?.archive?.order)throw Error('ARCHIVE_NOT_RECONSTRUCTED')

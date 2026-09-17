@@ -1,16 +1,18 @@
+import {readFieldContent,type FieldProgress} from './old-street-field-inquiry'
 import {readArchiveContent,archiveOrderMatches,assertArchiveInquiry,type ArchiveProgress} from './old-street-archive'
 import {readInquiryFocus,inquiryQuestion,type InquiryFocus} from './old-street-inquiry'
 /** Journey-local generated content. No executable model rules or media promises. */
 export type TraceRecord={label:string;mark:string;wrapping:string}
 export type TraceContent={title:string;clue:{mark:string;wrapping:string};records:TraceRecord[]}
 export type ParcelContent={title:string;fragment:string;question?:string;inquiry?:InquiryFocus}
-export type CampaignContext={locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
+export type CampaignContext={locale:'zh'|'en';stage:'field';account:string;events:string[]}|{locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
  version:1|2;
  trace?:CampaignInstance<TraceContent>&{selected?:number};
  parcel?:CampaignInstance<ParcelContent>&{disposition?:'take'|'leave'};
  archive?:ArchiveProgress;
+ field?:FieldProgress;
 }
 const object=(raw:unknown,keys:string[])=>{
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).some(k=>!keys.includes(k)))throw Error('CAMPAIGN_CONTENT_INVALID')
@@ -67,7 +69,7 @@ export function campaignRecordMatches(content:TraceContent,index:number){return 
 export function campaignComplete(c:OldStreetCampaign){return c.trace?.observed===true&&c.trace.selected!==undefined&&campaignRecordMatches(c.trace.content,c.trace.selected)&&c.parcel?.observed===true&&['take','leave'].includes(c.parcel.disposition??'')&&(c.version===1||!!c.archive?.order)}
 export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCampaign|undefined{
  if(raw===undefined)return
- const c=object(raw,['version','trace','parcel','archive']);if(c.version!==1&&c.version!==2)throw Error('CAMPAIGN_SAVE_INVALID')
+ const c=object(raw,['version','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2)throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.trace!==undefined){
   const trace=object(c.trace,['id','content','observed','selected']);instance(trace);const content=readTraceContent(trace.content)
   if(trace.selected!==undefined&&(!trace.observed||!campaignRecordMatches(content,trace.selected as number)))throw Error('CAMPAIGN_SAVE_INVALID')
@@ -76,6 +78,10 @@ export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCam
   const trace=c.trace as OldStreetCampaign['trace'],parcel=object(c.parcel,['id','content','observed','disposition']);instance(parcel);readParcelContent(parcel.content)
   if(!trace||trace.selected===undefined)throw Error('CAMPAIGN_SAVE_INVALID')
   if(parcel.disposition!==undefined&&(!parcel.observed||!['take','leave'].includes(parcel.disposition as string)))throw Error('CAMPAIGN_SAVE_INVALID')
+ }
+ if(c.field!==undefined){
+  const f=object(c.field,['id','content','observed','disposition']);instance(f);readFieldContent(f.content)
+  if(!(c.archive as OldStreetCampaign['archive'])?.order||f.disposition!==undefined&&(!f.observed||!['take','leave'].includes(String(f.disposition))))throw Error('CAMPAIGN_SAVE_INVALID')
  }
  if(c.archive!==undefined){
   if(c.version!==2||!(c.parcel as OldStreetCampaign['parcel'])?.observed)throw Error('CAMPAIGN_SAVE_INVALID')

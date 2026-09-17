@@ -24,6 +24,7 @@ export const campaignFixture:OldStreetCampaignGenerator=async(context)=>{
   sources:{index:[{before:'d',after:'b'},{before:'a',after:'c'}],ledger:[{before:'b',after:'a'}]},
   discovery:context.locale==='zh'?'两份记录对上了：邻居先测量损坏处，再裁切替换木板；安装完成后，小桥才重新通行。':'The records agree: neighbors measured the damage before cutting replacement boards. The footbridge reopened after the boards were fitted.',
  }
+ if(context.stage==='field')return {title:'The saved boards',target:'drawer',finding:'The note says the sound boards were kept for small repairs instead of resurfacing the entire bridge. The reopened route kept its uneven patches.'}
  if(context.stage==='trace')return context.locale==='zh'?{
   title:'寄存记录',clue:{mark:'两道刻痕',wrapping:'麻绳'},records:[
    {label:'工坊维修',mark:'两道刻痕',wrapping:'折叠封口'},

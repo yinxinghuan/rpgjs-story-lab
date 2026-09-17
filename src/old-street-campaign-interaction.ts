@@ -1,3 +1,4 @@
+import {fieldChoices,fieldKnowledge} from './old-street-field-inquiry'
 import {archiveReadingChoices,archiveReadingStatus,type ArchiveReadingAction} from './old-street-archive-reading'
 import {campaignCommission} from './old-street-campaign-story'
 import {campaignAnchor} from './old-street-campaign'
@@ -6,12 +7,13 @@ import {originalActionIntentIssues} from './original-action-intent'
 import {archiveEvidence,archiveRackState,archiveRackLabel} from './old-street-archive'
 import {publicRecordAction,publicRecordKnowledge} from './old-street-public-record'
 
-type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive';selection?:number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction}
+type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive'|'field';selection?:'read'|number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction}
 /** Labels describe every visible choice, never which one is correct. The model
  * proposes an ID; the existing campaign authority still evaluates the choice. */
 export function campaignInputActions(h:OldStreetHead,target:string):CampaignAction[]{
  const c=h.campaign,t=(zh:string,en:string)=>h.save.locale==='zh'?zh:en
  if(!c||!h.save.facts['letter-taken'])return []
+ const field=fieldChoices(h,target);if(field.length)return field
  if(h.sceneId==='archive'&&c.archive&&target==='archive-rack'&&archiveRackState(h.save.facts)?.slide)return [{id:'campaign:move-rack',label:archiveRackLabel(h.save.facts,h.save.locale),type:'campaign-decide',stage:'archive',selection:h.save.facts['archive-rack-shifted']===true?'restore':'slide'}]
  if(target==='archive-index'&&archiveRackState(h.save.facts)?.indexBlocked)return []
  if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [...archiveReadingChoices(c.archive,h.save,target,h.save.locale).map(a=>({id:'campaign:'+a.selection,label:a.label,type:'campaign-decide' as const,stage:'archive' as const,selection:a.selection})),{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
@@ -62,5 +64,5 @@ export function campaignInputKnowledge(h:OldStreetHead){
   if(c.archive.order)knowledge.push({id:'learned:archive-discovery',text:c.archive.content.discovery})
  }
  if(c.parcel?.disposition)knowledge.push({id:'learned:campaign-disposition',text:c.parcel.disposition==='take'?t('寄存材料原件已在行囊里，不在架上。','The original archived papers are in your bag, no longer on the shelf.'):t('你已选择把寄存材料原件留在架上，记住内容。','You chose to leave the original archived papers on the shelf and remember their contents.')})
- return [...knowledge,...publicRecordKnowledge(h)]
+ return [...knowledge,...publicRecordKnowledge(h),...fieldKnowledge(h).map(k=>({...k,id:'learned:'+k.id}))]
 }

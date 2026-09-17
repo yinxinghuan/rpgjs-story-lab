@@ -1,12 +1,14 @@
+import {prepareFieldAction} from './old-street-field-actions'
 import {campaignAnchor,campaignRecordMatches,readParcelContent,readTraceContent,type CampaignContext} from '../src/old-street-campaign'
 import type {OldStreetHead} from '../src/old-street-head'
 import {bindOldStreet} from '../src/old-street-space'
 import {LabError} from '../src/journey-runtime'
 import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import {prepareArchiveAction} from './old-street-archive-actions'
-export type CampaignCandidate=(head:OldStreetHead,stage:'trace'|'parcel'|'archive')=>unknown|undefined
+export type CampaignCandidate=(head:OldStreetHead,stage:'trace'|'parcel'|'archive'|'field')=>unknown|undefined
 
 export async function prepareCampaignAction(head:OldStreetHead,body:any,position:OldStreetHead['position'],generate:OldStreetCampaignGenerator|undefined,reserve:()=>boolean,candidate?:CampaignCandidate){
+ if(body.stage==='field')return prepareFieldAction(head,body,position,candidate)
  if(body.stage==='archive')return prepareArchiveAction(head,body,position,candidate)
  const anchor=campaignAnchor[body.stage as keyof typeof campaignAnchor],c=head.campaign
  if(!anchor||!c||head.save.facts['letter-taken']!==true||head.sceneId!==anchor.scene||body.target!==anchor.target||!bindOldStreet(head.save.locale,head.save).canInteract(anchor.target,anchor.scene,position))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)

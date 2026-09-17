@@ -52,6 +52,7 @@ for(const campaignVersion of [1,2] as const)test(`Worker campaign v${campaignVer
  const h=harness(true,undefined,undefined,undefined,async context=>{
   calls++
   if(context.stage==='trace')return new Promise(resolve=>{finish=resolve})
+  if(context.stage==='field')throw Error('UNUSED_FIELD_STAGE')
   assert.deepEqual(context.previous,trace.records[1],'next generation receives the committed selection')
   if(context.stage==='archive'){assert.deepEqual(context.papers,parcel);return archive}
   if(++parcelCalls===1)throw Error('SYNTHETIC_TEMPORARY_FAILURE')

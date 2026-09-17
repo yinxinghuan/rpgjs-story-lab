@@ -1,3 +1,4 @@
+import {readFieldContent,type FieldContent} from '../src/old-street-field-inquiry'
 import type {AuthorityStorage} from './session-authority'
 import type {OldStreetHead} from '../src/old-street-head'
 import {readTraceContent,readParcelContent,type CampaignContext,type TraceContent,type ParcelContent} from '../src/old-street-campaign'
@@ -5,10 +6,12 @@ import type {OldStreetCampaignGenerator} from './old-street-campaign-planner'
 import {LabError} from '../src/journey-runtime'
 import {readArchiveContent,type ArchiveContent} from '../src/old-street-archive'
 import {isPreparedInvestigation,readPreparedInvestigation} from './old-street-investigation-draft'
-type Stage='trace'|'parcel'|'archive'
-export type CampaignJob={stage:Stage;state:'queued'|'planning'|'ready'|'failed';attempt:number;deadline:number;context:CampaignContext;content?:TraceContent|ParcelContent|ArchiveContent}
+export type CampaignStage='trace'|'parcel'|'archive'|'field'
+type Stage=CampaignStage
+export type CampaignJob={stage:Stage;state:'queued'|'planning'|'ready'|'failed';attempt:number;deadline:number;context:CampaignContext;content?:TraceContent|ParcelContent|ArchiveContent|FieldContent}
 export function campaignJobContext(h:OldStreetHead,stage:Stage):CampaignContext{
- if(!h.campaign||!h.save.facts['letter-taken']||!['trace','parcel','archive'].includes(stage))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
+ if(!h.campaign||!h.save.facts['letter-taken']||!['trace','parcel','archive','field'].includes(stage))throw new LabError('CAMPAIGN_ACTION_UNAVAILABLE',409)
+ if(stage==='field'){const a=h.campaign.archive;if(!a?.order)throw new LabError('CAMPAIGN_OBSERVATION_REQUIRED',409);return {stage,locale:h.save.locale,account:a.content.discovery,events:a.order.map(id=>a.content.cards.find(c=>c.id===id)!.label)}}
  if(stage==='trace')return {stage,locale:h.save.locale}
  const trace=h.campaign.trace
  if(trace?.selected===undefined)throw new LabError('CAMPAIGN_TRACE_REQUIRED',409)
@@ -57,7 +60,7 @@ export class OldStreetCampaignJobs{
    const signal=AbortSignal.timeout(22000),raw=await this.produce(context,signal);signal.throwIfAborted()
    const prepared=isPreparedInvestigation(raw)?readPreparedInvestigation(raw):undefined
    if(prepared&&(context.stage!=='parcel'||!context.investigation))throw Error('CAMPAIGN_INVESTIGATION_CONTEXT_INVALID')
-   const content=prepared?prepared.parcel:stage==='trace'?readTraceContent(raw):stage==='parcel'?readParcelContent(raw):readArchiveContent(raw)
+   const content=prepared?prepared.parcel:stage==='trace'?readTraceContent(raw):stage==='parcel'?readParcelContent(raw):stage==='field'?readFieldContent(raw):readArchiveContent(raw)
    // Authority reads may run their own upgrade transaction. Read immediately
    // before this synchronous commit, with no asynchronous gap between them.
    const latest=prepared?this.head(owner,id):undefined

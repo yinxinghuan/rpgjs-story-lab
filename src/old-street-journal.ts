@@ -1,3 +1,4 @@
+import {fieldKnowledge} from './old-street-field-inquiry'
 import {campaignCommission} from './old-street-campaign-story'
 import {oldStreetPropState} from './old-street-prop-state'
 import {campaignComplete,type OldStreetCampaign} from './old-street-campaign'
@@ -19,6 +20,7 @@ export function oldStreetCurrentPurpose(save:StorySave,campaign?:OldStreetCampai
 export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  const t=(zh:string,en:string)=>save.locale==='zh'?zh:en,f=save.facts
  const details:Record<string,string>={
+  'field-note':t('从交叉索引找到的补充便笺原件。','The original supplementary note found through the cross-reference.'),
   'darkroom-print':t('在暗房拼合的旧街照片。','The old street photograph you matched in the darkroom.'),
   lens:t('可以看清细小的刻记。','Useful for examining tiny marks.'),
   trolley:t('从洗衣店借来，用完可以放回原处。','Borrowed from the laundry; return it to its bay when finished.'),
@@ -40,6 +42,7 @@ export function oldStreetJournal(save:StorySave,campaign?:OldStreetCampaign){
  if(campaign?.parcel?.disposition)notes.push({id:'campaign-disposition',title:t('原件去向','The original papers'),text:campaign.parcel.disposition==='take'?t('原件已在行囊里，架上不再留着这份材料。','The original is in your bag, no longer on the shelf.'):t('原件留在资料架上，你记住了内容。','The original remains on the shelf; you remember its contents.')})
  if(campaign?.archive?.order)notes.push({id:'campaign-public-summary',title:t('留下的经过','A record for others'),text:f['archive-published']===true?t('调查摘要已抄进修表铺的公共记录册。原件去向不变，离开前仍可回去撤下。','Your summary is in the watch shop public record book. The original stays where you chose; you can remove the summary before leaving.'):t('摘要没有留在公共记录册。可以回修表铺抄入，也可以只把发现带回家。','No summary remains in the public record book. You may copy it in at the watch shop, or keep the findings for your family.')})
  if(campaign?.archive){for(const source of campaign.archive.examined)notes.push({id:'archive-'+source,title:t(source==='index'?'施工索引':'工作日志',source==='index'?'Work index':'Work log'),text:archiveEvidence(campaign.archive.content,source,save.locale).join(' ')});if(campaign.archive.order)notes.push({id:'archive-reconstructed',title:campaign.archive.content.title,text:campaign.archive.content.discovery})}
+ for(const note of fieldKnowledge({save,campaign}))notes.push({...note,title:t(note.id==='field-lead'?'补充便笺的线索':note.id==='field-finding'?'便笺里的发现':'便笺去向',note.id==='field-lead'?'Follow-up lead':note.id==='field-finding'?'The note’s finding':'Where the note remains')})
  const encounters:Record<string,{character:string;text:string}>={
   'kept-promise':{character:'zhou-watchmaker',text:t('你已把借来的钥匙交还给他。','You returned the key he lent you.')},
   'returned-family-clock':{character:'lan-laundry',text:t('你帮她送回了母亲留下的旧钟。','You brought back the clock that belonged to her mother.')},

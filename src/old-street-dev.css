@@ -89,3 +89,6 @@
 .os-journal__entries{min-height:0;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere}
 
 .os-photo__print{display:block;width:100%;height:auto;object-fit:contain;image-rendering:pixelated;filter:grayscale(1);pointer-events:none}
+
+.os-field-note{position:absolute;z-index:2;width:24px;height:16px;transform:translate(-50%,-50%);background-size:200% 100%;background-position:right center;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}
+.os-field-lead{margin-top:16px;padding-top:12px;border-top:1px solid #a69c88}.os-field-lead button{width:100%}

@@ -1,3 +1,4 @@
+import {fieldChoices,fieldKnowledge} from '../src/old-street-field-inquiry'
 import {evidenceChoices,sharedEvidence,sharedEvidenceKnowledge} from '../src/old-street-shared-evidence'
 import {oldStreetAuthoredTalkReply,oldStreetTalkTopics} from '../src/old-street-conversation'
 import {oldStreetDialogueContext} from '../server/old-street-dialogue'
@@ -56,7 +57,8 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
  let jobs:OldStreetCampaignJobs,calls=0,interpretationCalls=0,photoPlan:ExpansionPlan|undefined
  const planner=createOldStreetCampaignPlanner(async(_system,user)=>{
   calls++;const context=JSON.parse(user)
-  if('candidate' in context||'chronologicalEvents' in context)return {valid:true,issues:[]}
+  if('candidate' in context||'chronologicalEvents' in context||context.context?.stage==='field')return {valid:true,issues:[]}
+  if(context.stage==='field')return {title:'The saved boards',target:readingMode==='table'?'drawer':'viewing-table',finding:'Sound boards were kept for later patching instead of replacing the whole bridge. The reopened route still had uneven sections.'}
   if(context.stage==='trace')return trace
   if(context.stage==='parcel')return parcelDraft
   throw Error('Archive must reuse the prepared episode, not generate another history')
@@ -67,7 +69,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
  const input=(target:string,extra:any)=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.id===target)!.approach,target,...extra})
  const send=async(target:string,extra:any)=>{const b=input(target,extra),r=await s.action('synthetic',h.id,b);h=r.head;return {b,r}}
  const steps=async(route:string[])=>{for(const step of route){const action=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===step)!.actionId;const e=oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;await send(e.id,{type:'action',action})}}
- const prepare=async(stage:'trace'|'parcel'|'archive')=>{jobs.enqueue('synthetic',h.id,stage);await jobs.run('synthetic',h.id,stage)}
+ const prepare=async(stage:'trace'|'parcel'|'archive'|'field')=>{jobs.enqueue('synthetic',h.id,stage);await jobs.run('synthetic',h.id,stage)}
  try{
   await steps(['photo','roof','shed','oldstreet:borrow-key','oldstreet:lift-latch','yard','shop','oldstreet:unlock-letter','oldstreet:take-letter'])
   if(readingMode==='lens')await steps(['oldstreet:move-box','oldstreet:take-lens'])
@@ -134,11 +136,52 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   await steps(['cellar','archive'])
   await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','b','c','d']})),/ORDER_MISMATCH/)
+  assert.throws(()=>jobs.enqueue('synthetic',h.id,'field'),/OBSERVATION_REQUIRED/)
   const completed=await send('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})
   assert.deepEqual(await s.action('synthetic',h.id,completed.b),completed.r)
   assert.equal(campaignComplete(h.campaign!),true);assertOldStreetCampaign(h.campaign)
   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.text===archive.discovery))
-  await steps(['cellar','yard','shop'])
+  if(readingMode!=='direct'){
+   await prepare('field')
+   assert.equal(h.campaign?.field,undefined,'background work does not discover or place a note')
+   const planned=await send('archive-desk',{type:'campaign-plan',stage:'field'})
+   assert.deepEqual(await s.action('synthetic',h.id,planned.b),planned.r)
+   const f=h.campaign!.field!,original=structuredClone(f.content)
+   assert.equal(fieldKnowledge(h).length,1,'a cross-reference does not reveal the note contents')
+   assert.ok(!JSON.stringify(campaignInputKnowledge(h)).includes(f.content.finding))
+   await steps(['cellar','yard','shop'])
+   if(readingMode==='lens')await steps(['street','photo'])
+   else{
+    assert.deepEqual(fieldChoices(h,'drawer'),[],'a closed drawer remains a real obstacle')
+    await assert.rejects(s.action('synthetic',h.id,input('drawer',{type:'campaign-observe',stage:'field'})),/ACTION_UNAVAILABLE/)
+    await steps(['oldstreet:move-box'])
+   }
+   await send(f.content.target,{type:'free-input',text:fieldChoices(h,f.content.target)[0].label,mode:'local'})
+   assert.equal(h.save.facts['field-note-finding'],original.finding)
+   assert.ok(!h.save.inventory.some(i=>i.id==='field-note'),'looking does not take the original')
+   const decision=readingMode==='table'?'take':'leave'
+   const settled=await send(f.content.target,{type:'free-input',text:fieldChoices(h,f.content.target).find(a=>a.selection===decision)!.label,mode:'local'})
+   assert.deepEqual(await s.action('synthetic',h.id,settled.b),settled.r)
+   assert.equal(h.save.inventory.some(i=>i.id==='field-note'),decision==='take')
+   assert.equal(fieldChoices(h,f.content.target).length,0)
+   s=authority();h=s.get('synthetic',h.id)
+   assert.deepEqual(h.campaign!.field!.content,original)
+   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='field-finding'&&n.text===original.finding))
+   if(readingMode==='lens'){
+    await steps(['oldstreet:greet-photographer'])
+    const noteChoice=evidenceChoices(h,'photographer').find(a=>a.kind==='field-note')!
+    const shared=await send('photographer',{type:'free-input',text:noteChoice.label,mode:'local'})
+    assert.deepEqual(await s.action('synthetic',h.id,shared.b),shared.r)
+    assert.equal(sharedEvidence(h.save,'photographer').find(e=>e.kind==='field-note')?.text,original.finding)
+    assert.ok(sharedEvidenceKnowledge(h.save,'photographer').some(k=>k.id==='received:field-note'&&k.text.includes('not read the original')))
+    assert.deepEqual(sharedEvidence(h.save,'watchmaker'),[])
+    s=authority();h=s.get('synthetic',h.id)
+    const recall=oldStreetTalkTopics(h.save,'photographer').find(t=>t.id==='shared-note')!
+    assert.ok(oldStreetAuthoredTalkReply(h.save,'photographer',recall.text)?.includes(original.finding))
+    assert.ok(!h.save.inventory.some(i=>i.id==='field-note'),'sharing a left note does not take it')
+    await steps(['street','shop'])
+   }
+  }else await steps(['cellar','yard','shop'])
   const inventory=structuredClone(h.save.inventory),relationships=structuredClone(h.save.relationships)
   assert.deepEqual(publicRecordKnowledge(h),[],'private discovery is not an NPC public record')
   const published=await send('record-book',{type:'free-input',text:publicRecordAction(false,'en'),mode:'local'})
@@ -223,6 +266,7 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   assert.equal(h.save.finale.ending?.title,'A letter and an answer')
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('public record book')))
-  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,3)
+  s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,readingMode==='direct'?3:5)
+  if(h.campaign?.field)assert.ok(h.save.finale.ending?.preserved.includes(h.campaign.field.content.finding))
  }finally{raw.close()}
 })

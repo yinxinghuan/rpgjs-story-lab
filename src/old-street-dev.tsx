@@ -1,3 +1,4 @@
+import {fieldChoices,fieldSites} from './old-street-field-inquiry'
 import {evidenceChoices} from './old-street-shared-evidence'
 import {archivePaperPose,type ArchiveReadingAction} from './old-street-archive-reading'
 import {campaignOpening} from './old-street-campaign-story'
@@ -406,7 +407,7 @@ export default function OldStreetDev() {
       current.current = next
       await prepareEnvironment.current(nextHead.sceneId)
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
-      current.current = next; setHead(next); position.current = next.position; setSelected(next.scene===h.sceneId&&(result.accepted===false||Boolean(oldStreetPerson(target)))?target:null)
+      current.current = next; setHead(next); position.current = next.position; setSelected(next.scene===h.sceneId&&(result.accepted===false||Boolean(oldStreetPerson(target))||Boolean(nextHead.campaign?.field?.observed&&nextHead.campaign.field.content.target===target&&!nextHead.campaign.field.disposition))?target:null)
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
       const blockedReason=attemptedAction?[...new Set(resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons??[])].join(' '):undefined
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode?oldStreetActionFailureMessage(result.rejectionCode,locale):undefined) ?? '')
@@ -449,11 +450,11 @@ export default function OldStreetDev() {
     setCampaignOpen(null);runtime.current?.pause(false);setBusyActivity('approach');busyRef.current=true;setBusy(true);prepareApproachCancellation()
     if(!runtime.current!.walkTo(entity.approach,()=>{approachCancellation.current=undefined;if(target==='archive-rack'){void execute('',target,undefined,undefined,false,undefined,current.current.save.facts['archive-rack-shifted']===true?'restore':'slide');return}setArchiveOpen(target);setCampaignMessage('');setNotice('');runtime.current!.pause(true);busyRef.current=false;setBusy(false);const source=target==='archive-index'?'index':target==='archive-ledger'?'ledger':undefined;if(source&&serverHead.current?.campaign?.archive?.content.denseSource!==source&&!serverHead.current?.campaign?.archive?.examined.includes(source))void archiveAct('observe',undefined,target)})){approachCancellation.current=undefined;busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
   }
-  async function archiveAct(type:'plan'|'observe'|'decide',order?:ArchiveCardId[],target=archiveOpen,selection?:ArchiveReadingAction){
+  async function archiveAct(type:'plan'|'observe'|'decide',order?:ArchiveCardId[],target=archiveOpen,selection?:ArchiveReadingAction,stage:'archive'|'field'='archive'){
     const h=serverHead.current;if(!h||!target||busyRef.current)return
     setBusyActivity('action');busyRef.current=true;setBusy(true);setCampaignMessage('')
     try{
-      const result=await connection.client.send(h,{type:'campaign-'+type,stage:'archive',target,order,selection,position:{...position.current}})
+      const result=await connection.client.send(h,{type:'campaign-'+type,stage,target,order,selection,position:{...position.current}})
       const updated=result.head as OldStreetHead;serverHead.current=updated
       const next={save:updated.save,scene:updated.sceneId,position:updated.position};current.current=next;setHead(next)
       if(!result.accepted)setCampaignMessage(oldStreetActionFailureMessage(result.rejectionCode??'',locale))
@@ -500,6 +501,9 @@ export default function OldStreetDev() {
   const chosen = entities.find(e => e.id === selected) ?? nearest
   const knownSpeaker=chosen&&oldStreetPerson(chosen.id)&&head.save.characters.some(c=>c.id===oldStreetPerson(chosen.id)?.id)
   const shareChoices=chosen&&serverHead.current?evidenceChoices(serverHead.current,chosen.id):[]
+  const fieldOptions=chosen&&serverHead.current?fieldChoices(serverHead.current,chosen.id):[]
+  const field=serverHead.current?.campaign?.field
+  const fieldProp=field&&fieldSites[field.content.target].room===head.scene&&field.disposition!=='take'&&(field.content.target!=='drawer'||head.save.facts['drawer-open'])?oldStreetProjectedProps(head.save).find(p=>p.id===field.content.target):undefined
   const talkTopics=chosen?oldStreetTalkTopics(head.save,chosen.id):[]
   const campaign=serverHead.current?.campaign
   const campaignTarget=campaign&&head.save.facts['letter-taken']&&chosen?(chosen.id==='record-book'?'trace':chosen.id==='photo-folder'&&campaign.trace?.selected!==undefined?'parcel':null):null
@@ -516,6 +520,7 @@ export default function OldStreetDev() {
   function useNearby(){
     if(!chosen||!chosenAction)return
     setSelected(chosen.id)
+    if(fieldOptions.length){if(fieldOptions[0].selection==='read')sendInput(false,fieldOptions[0].label);return}
     if(chosen.id.startsWith('archive-')){openArchive(chosen.id);return}
     if(campaignTarget){openCampaign(campaignTarget);return}
     if(chosenAction.primary.kind==='action')request(chosenAction.primary.id)
@@ -555,6 +560,7 @@ export default function OldStreetDev() {
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
+      {fieldProp&&<div aria-hidden="true" className="os-field-note" style={{left:`${fieldProp.body.x+fieldProp.body.w*.7}px`,top:`${fieldProp.body.y}px`,backgroundImage:`url(${photoShelfUrl})`}}/>}
       {entities.map(e => {
         const door = oldStreetDoors().find(d => d.id === e.id)
         const title = targetTitle(e)
@@ -571,6 +577,7 @@ export default function OldStreetDev() {
       </div>
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
       {!error&&morePages?<button className="os-dialogue-continue" disabled={busy} onClick={()=>setTurnPage(n=>n+1)}>{text(['继续','Continue'])}</button>:<>
+        {inspectionOpen&&fieldOptions.length>0&&<div className="os-choices">{fieldOptions.map(choice=><button key={choice.id} disabled={!ready||busy||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}
         {inspectionOpen&&secondaryActions.length>0&&<div className="os-choices">{secondaryActions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>}
         {conversationOpen&&shareChoices.length>0&&<div className="os-choices">{shareChoices.map(choice=><button key={choice.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}
         {conversationOpen&&talkTopics.length>0&&<div className="os-choices">{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
@@ -585,13 +592,13 @@ export default function OldStreetDev() {
     </section>
     <footer>
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||(!!campaignOpen||!!archiveOpen)} move={(x,y)=>runtime.current?.move(x,y)}/>
-      <button hidden={conversationOpen&&!(busy&&busyActivity==='approach')} aria-busy={busy} disabled={!ready || (busy&&busyActivity!=='approach') || !chosen || !!outcome || !!error} onPointerDown={busy?stopApproaching:useNearby}>{busy ? busyActivity==='approach'?text(['停下','Stop walking']):busyLabel : chosen?.id==='archive-rack'?archiveRackLabel(head.save.facts,locale):chosen?.id.startsWith('archive-')?text(chosen.id==='archive-desk'?['整理记录','Arrange records']:['查阅记录','Read records']):campaignTarget?text(['查阅材料','Examine papers']):chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
+      <button hidden={conversationOpen&&!(busy&&busyActivity==='approach')} aria-busy={busy} disabled={!ready || (busy&&busyActivity!=='approach') || !chosen || !!outcome || !!error} onPointerDown={busy?stopApproaching:useNearby}>{busy ? busyActivity==='approach'?text(['停下','Stop walking']):busyLabel : fieldOptions.length?(fieldOptions[0].selection==='read'?fieldOptions[0].label:text(['处理便笺','Decide what to do with the note'])):chosen?.id==='archive-rack'?archiveRackLabel(head.save.facts,locale):chosen?.id.startsWith('archive-')?text(chosen.id==='archive-desk'?['整理记录','Arrange records']:['查阅记录','Read records']):campaignTarget?text(['查阅材料','Examine papers']):chosenAction?.primary.kind==='action'?label(chosenAction.primary.id):chosenAction?.primary.kind==='talk'?text(['交谈','Talk']):chosenAction?text(['查看','Examine']):text(['走近物件','Move closer'])}</button>
     </footer>
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
     {lanTrialEnabled&&ready&&head.scene==='laundry'&&<div style={{position:'fixed',right:8,top:410,zIndex:40,background:'#202624',padding:8}}>{(['left','right','up','down'] as const).map((direction,i)=><button key={direction} style={{minHeight:44,minWidth:44}} disabled={busy||!!error||lanTrial.current?.running} onClick={()=>{lanTrial.current?.start(direction);setResidentPosition({...resident.current.position})}}>{text(['试走：'+['左','右','上','下'][i],'Test: '+direction])}</button>)}<output style={{display:'block'}}>{lanTrial.current?.pose} · {lanTrial.current?.distance.toFixed(1)}/24</output></div>}
     {debug&&<details><summary>Renderer diagnostics</summary><pre style={{maxWidth:'90vw',whiteSpace:'pre-wrap'}}>{error?JSON.stringify({error,renderer:diagnostic}):diagnostic}</pre></details>}
     {journeysOpen&&<OldStreetJourneysView createCampaign={import.meta.env.DEV&&debug&&expansionCapabilities.campaign?()=>{void restart(true)}:undefined} soundEnabled={soundEnabled} toggleSound={toggleSound} locale={locale} current={serverHead.current?.id??''} create={()=>{void restart()}} api={connection.api} busy={busy} select={id=>{void selectJourney(id)}} close={()=>{setJourneysOpen(false);runtime.current?.pause(Boolean(error||outcome))}}/>}
-    {archiveOpen&&campaign&&serverHead.current&&<OldStreetArchiveView save={head.save} readingAct={selection=>archiveAct('decide',undefined,archiveOpen,selection)} archive={campaign.archive} target={archiveOpen} question={campaign.parcel?.observed?campaign.parcel.content.question:undefined} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={archiveAct} tryAnother={()=>{const target=archiveOpen;setArchiveOpen(null);setSelected(target);setNotice('');runtime.current?.pause(false);requestAnimationFrame(()=>setInputOpen(true))}} close={()=>{setArchiveOpen(null);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
+    {archiveOpen&&campaign&&serverHead.current&&<OldStreetArchiveView field={campaign.field} fieldAdmit={()=>archiveAct('plan',undefined,'archive-desk',undefined,'field')} save={head.save} readingAct={selection=>archiveAct('decide',undefined,archiveOpen,selection)} archive={campaign.archive} target={archiveOpen} question={campaign.parcel?.observed?campaign.parcel.content.question:undefined} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={archiveAct} tryAnother={()=>{const target=archiveOpen;setArchiveOpen(null);setSelected(target);setNotice('');runtime.current?.pause(false);requestAnimationFrame(()=>setInputOpen(true))}} close={()=>{setArchiveOpen(null);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView campaign={campaign} published={head.save.facts['archive-published']===true} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} archive={campaign.version===2&&campaign.parcel?.observed?()=>openArchive('photo-folder'):undefined} close={()=>{setCampaignOpen(null);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current))}}/>}
     {journalOpen&&<OldStreetJournalView save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}

@@ -1,5 +1,12 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 实地追查便笺（2026-09-17）
+
+`old-street-field-inquiry.ts` 定义 field 内容、地点、可用动作和已知范围；`old-street-field-actions.ts` 在原权威 Session 内验证档案完成、目标接近和抽屉开放，提交观察/去向及库存。field 内容进入 campaign 并持久保存，facts 与 inventory 由 head 校验一致。`campaign-field` 沿用任务队列、失败重试及同一历史上下文；生产开关不变。
+
+`OldStreetFieldLead` 嵌入已有档案桌面板，准备时可关闭继续探索；之后既有附近行动与自由输入共用 read/take/leave 动作。fieldKnowledge 在观察前只提供地点，观察后提供正文；明确分享给居民后才加入该人物知识。地图复用已有纸夹图层，带走隐藏，不改家具碰撞。详见 `field-inquiry-review-20260917.md`。
+
+
 ## 密集档案夹页的替代辨读（2026-09-17）
 
 新 `ArchiveContent.denseSource` 可指定 index 或 ledger，编译/持久读取验证枚举，旧实例没有该字段保持原行为。`archive-dense-source` 是场景投影，与内容严格一致；`archive-reading-position` 为 carried/desk 或省略（原架），head校验行囊 `archive-reading-sheet` 恰与 carried 对应。
