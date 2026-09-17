@@ -20,11 +20,24 @@ test('model content compiles to playable baseline; only visual puzzle awaits its
 })
 
 const archiveSource={archiveId:'archive-source-00001',title:'Bridge repair',events:['The damage was measured','Replacement boards were cut','New boards were fitted','The bridge reopened'],account:'Boards were fitted before the bridge reopened.'}
+const bridgeContent={title:'Bridge boards',discovery:'Pale boards cross the darker planks.',photograph:'A monochrome pixel art footbridge with pale boards among dark planks, no people or text.'}
+const groundedReview={valid:true,issues:[],sourceEvent:'New boards were fitted',pictureDetail:'footbridge with pale boards',subjectMatches:true,materialsCompatible:true,observationOnly:true}
 test('linked photograph carries the confirmed chronology into generation and review, without changing room geometry',async()=>{
  const inputs:any[]=[]
- const plan=await createOldStreetExpansionPlanner(async(_system,user)=>{const data=JSON.parse(user);inputs.push(data);return inputs.length===1?content:{valid:true,issues:[]}})({...intent,archiveSource},'en',new AbortController().signal)
+ const plan=await createOldStreetExpansionPlanner(async(_system,user)=>{const data=JSON.parse(user);inputs.push(data);return inputs.length===1?bridgeContent:groundedReview})({...intent,archiveSource},'en',new AbortController().signal)
  assert.equal(inputs.length,2);assert.deepEqual(inputs[0].archiveSource,archiveSource);assert.deepEqual(inputs[1].archiveSource,archiveSource)
  assert.deepEqual(plan.space, (await createOldStreetExpansionPlanner(async()=>content)(intent,'en',new AbortController().signal)).space)
+})
+test('a positive verdict cannot override a material mismatch or fabricated supporting quotes',async()=>{
+ for(const review of [
+  {...groundedReview,materialsCompatible:false},
+  {...groundedReview,sourceEvent:'The sidewalk tiles were replaced'},
+  {...groundedReview,pictureDetail:'concrete sidewalk tiles'},
+  {valid:true,issues:[]},
+ ]){
+  let calls=0
+  await assert.rejects(createOldStreetExpansionPlanner(async()=>++calls===1?bridgeContent:review)({...intent,archiveSource},'en',new AbortController().signal),/ARCHIVE_PHOTO_REVIEW_REJECTED/)
+ }
 })
 test('review cannot admit a photograph about an unrelated event',async()=>{
  let calls=0

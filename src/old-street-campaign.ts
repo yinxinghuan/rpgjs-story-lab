@@ -38,7 +38,7 @@ export function readTraceContent(raw:unknown):TraceContent{
 }
 /** Model authors vocabulary; the engine constructs the solvable conjunction.
  * The accepted result is stored as ordinary TraceContent, never re-shuffled. */
-export function compileTraceDraft(raw:unknown,variant=Math.floor(Math.random()*6)):TraceContent{
+export function compileTraceDraft(raw:unknown,variant=Math.floor(Math.random()*6),subjectVariant=Math.floor(Math.random()*3)):TraceContent{
  const r=object(raw,['title','marks','wrappings','subjects'])
  const pair=(value:unknown)=>{
   if(!Array.isArray(value)||value.length!==2)throw Error('CAMPAIGN_CONTENT_INVALID')
@@ -46,8 +46,12 @@ export function compileTraceDraft(raw:unknown,variant=Math.floor(Math.random()*6
   if(values[0].normalize('NFKC').toLowerCase()===values[1].normalize('NFKC').toLowerCase())throw Error('CAMPAIGN_CONTENT_INVALID')
   return values
  }
- if(!Array.isArray(r.subjects)||r.subjects.length!==3||!Number.isInteger(variant)||variant<0||variant>5)throw Error('CAMPAIGN_CONTENT_INVALID')
- const marks=pair(r.marks),wrappings=pair(r.wrappings),subjects=r.subjects.map(v=>line(v,70))
+ if(!Array.isArray(r.subjects)||r.subjects.length!==3||!Number.isInteger(variant)||variant<0||variant>5||!Number.isInteger(subjectVariant)||subjectVariant<0||subjectVariant>2)throw Error('CAMPAIGN_CONTENT_INVALID')
+ const marks=pair(r.marks),wrappings=pair(r.wrappings),authored=r.subjects.map(v=>line(v,70))
+ // Pick the investigation subject independently of UI row order. Previously
+ // only the first model-written subject could ever become the actual quest.
+ // The resulting ordinary TraceContent is stored once, never rerolled on read.
+ const subjects=[...authored.slice(subjectVariant),...authored.slice(0,subjectVariant)]
  const records=[{label:subjects[0],mark:marks[0],wrapping:wrappings[0]},{label:subjects[1],mark:marks[0],wrapping:wrappings[1]},{label:subjects[2],mark:marks[1],wrapping:wrappings[0]}]
  const order=[[0,1,2],[0,2,1],[1,0,2],[2,0,1],[1,2,0],[2,1,0]][variant]
  return readTraceContent({title:line(r.title,60,'title'),clue:{mark:marks[0],wrapping:wrappings[0]},records:order.map(i=>records[i])})

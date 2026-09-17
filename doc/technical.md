@@ -1,5 +1,14 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 连续生成的题材与照片核对（2026-09-17）
+
+`compileTraceDraft` 现在分别抽取题材与界面行序，三条模型主题都可能成为实际调查对象；结果仍保存为原 `TraceContent`，旧存档读取不重抽。独立的 `subjectVariant` 只用于可复现测试。
+
+`old-street-expansion-planner.ts` 删除了容易被当成输出照抄的木板例句。`reviewArchivePhotograph` 核对源事件、照片描述摘录、对象/材料与观察陈述；缺少证据、相互矛盾的检查或否定项不准入。仍只调用一次生成及一次复核，不增加媒体次数。它不是语义正确性的证明：真实复测仍出现错误的 observationOnly 判断，详见 `commission-continuity-review-20260917.md`。
+
+`scripts/test-oldstreet-campaign-live.ts --with-photo` 在两条合成链中连接档案与照片规划，每链最多8次请求，共16次；原三阶段模式保留原12次总额度。`_qa/commission-photo-recheck.ts` 以原两份合成档案复核旧错误，再生成新候选，最多6次。报告逐次落盘，不覆盖已有报告；不读取玩家存档、不生图、不发布。
+
+
 ## 完整委托候选 v3（2026-09-17）
 
 `OldStreetCampaign.version=3` 仅经显式 `letter-trail-v3` 新建；本地调试菜单需 campaign/planning/media 能力齐备。v1/v2 不迁移、不加照片门槛；生产 campaign 开关仍关闭。新委托开场和目标在 `old-street-campaign-story.ts` 定义，`campaignPhotoPurpose` 供笔记与准备提交共用。runtime 的 `finish` 只在候选上复制 save 更新 objective，再经过原权威校验，不改准备前的头部。
