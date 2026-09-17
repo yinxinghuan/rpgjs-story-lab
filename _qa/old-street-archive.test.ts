@@ -1,3 +1,4 @@
+import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {archiveLoanAt,archiveLoanLead} from '../src/old-street-archive-loan'
 import {archivePaperPose} from '../src/old-street-archive-reading'
 import {developingTarget} from '../src/old-street-developing-puzzle'
@@ -54,10 +55,10 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
  assert.equal(oldStreetWalkable('archive',{x:plan.props[0].body.x+4,y:plan.props[0].body.y+4},save),false,'furniture blocks passage')
 })
 
-for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async()=>{
+for(const readingMode of ['direct','lens','table','commission','photo-loan','laundry-loan'] as const)test(`campaign ${readingMode}: doors, evidence actions and reconstructed ending persist`,async(t)=>{
  const loanSite=readingMode==='photo-loan'?'photo':readingMode==='laundry-loan'?'laundry':undefined
  const fullCommission=readingMode==='commission'||!!loanSite,direct=readingMode==='direct'||fullCommission
- const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(loanSite?{ledgerSite:loanSite}:{}),...(direct?{}:{denseSource:'index'})}
+ const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',recordAt:'start',events:['Replacement boards were cut','The new boards were fitted','The footbridge reopened'],roomPlan:{indexSide:'left',storageShelves:0,rack:'left'},...(loanSite?{ledgerSite:loanSite}:{}),...(direct&&!loanSite?{}:{denseSource:'index'})}
  const {parcel,archive}=compilePreparedInvestigation(parcelDraft,trace.records[0],'en',42)
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0,interpretationCalls=0,photoPlan:ExpansionPlan|undefined
@@ -71,7 +72,12 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
  })
  const authority=()=>new OldStreetAuthority(db,()=>true,async(text,context)=>{interpretationCalls++;assert.equal(text,'Tell her what I learned from the records');assert.ok(context.actions.some(a=>a.id==='evidence:share-account'));return 'evidence:share-account'},undefined,()=>photoPlan,()=>photoPlan?'synthetic-photo-hash':undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
+ let journeyId=randomUUID()
+ const expectedRoute=loanSite==='photo'?'studio-loan-v1':loanSite==='laundry'?'laundry-loan-v1':'on-site-v1'
+ while(chooseInvestigationRoute(journeyId)!==expectedRoute)journeyId=randomUUID()
+ const uuidMock=t.mock.method(globalThis.crypto,'randomUUID',()=>journeyId)
  let h=s.create('synthetic',randomUUID(),'en',{campaign:fullCommission?'letter-trail-v3':'letter-trail-v2'})
+ uuidMock.mock.restore()
  const input=(target:string,extra:any)=>({action_id:randomUUID(),expected_version:h.version,sceneId:h.sceneId,position:oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.id===target)!.approach,target,...extra})
  const send=async(target:string,extra:any)=>{const b=input(target,extra),r=await s.action('synthetic',h.id,b);h=r.head;return {b,r}}
  const steps=async(route:string[])=>{for(const step of route){const action=step.startsWith('oldstreet:')?step:oldStreetDoors().find(d=>d.room===h.sceneId&&d.destination.room===step)!.actionId;const e=oldStreetSpatialPlan(h.save).entities.find(e=>e.scene===h.sceneId&&e.actions.includes(action))!;await send(e.id,{type:'action',action})}}
@@ -115,7 +121,7 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
   assert.deepEqual(await s.action('synthetic',h.id,shifted.b),shifted.r,'lost response replays without moving twice')
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)
   assert.ok(!JSON.stringify(campaignInputKnowledge(h)).includes(archive.discovery))
-  if(!direct){
+  if(!direct||loanSite){
    await assert.rejects(s.action('synthetic',h.id,input('archive-index',{type:'campaign-observe',stage:'archive'})),/READING_AID_REQUIRED/)
    const initialEvidence=[...h.campaign!.archive!.examined]
    if(readingMode==='lens'){

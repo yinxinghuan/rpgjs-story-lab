@@ -31,6 +31,9 @@ export async function reviewCampaignContent(request:ModelRequest,context:Campaig
  signal.throwIfAborted()
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('CAMPAIGN_REVIEW_INVALID')
  const r=raw as Record<string,unknown>
- if(Object.keys(r).some(k=>k!=='valid'&&k!=='issues')||typeof r.valid!=='boolean'||!Array.isArray(r.issues)||r.issues.length>3||r.issues.some(i=>typeof i!=='string'||!i.trim()||i.length>240)||r.valid!==(r.issues.length===0))throw Error('CAMPAIGN_REVIEW_INVALID')
- return r.issues as string[]
+ if(Object.keys(r).some(k=>k!=='valid'&&k!=='issues')||typeof r.valid!=='boolean'||!Array.isArray(r.issues)||r.issues.length>3||r.issues.some(i=>typeof i!=='string'||!i.trim()||i.length>2000)||r.valid!==(r.issues.length===0))throw Error('CAMPAIGN_REVIEW_INVALID')
+ // Rejection feedback is not game content. A verbose rejection must still
+ // reject the draft and reach the existing single correction attempt.
+ // Approval remains strict: valid:true requires no issues at all.
+ return (r.issues as string[]).map(issue=>issue.trim().slice(0,240))
 }

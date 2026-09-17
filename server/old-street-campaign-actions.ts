@@ -21,7 +21,7 @@ export async function prepareCampaignAction(head:OldStreetHead,body:any,position
   let context:CampaignContext={stage:'trace',locale:save.locale}
   if(body.stage==='parcel'){
    if(campaign.trace?.selected===undefined)throw new LabError('CAMPAIGN_TRACE_REQUIRED',409)
-   context={stage:'parcel',locale:save.locale,previous:structuredClone(campaign.trace.content.records[campaign.trace.selected]),...(campaign.version>=2?{investigation:true as const}:{})}
+   context={stage:'parcel',locale:save.locale,previous:structuredClone(campaign.trace.content.records[campaign.trace.selected]),...(campaign.version>=2?{investigation:true as const}:{}),...(campaign.explorationRoute?{route:campaign.explorationRoute}:{})}
   }
   let raw:unknown
   if(candidate){raw=candidate(head,body.stage);if(raw===undefined)throw new LabError('CAMPAIGN_NOT_PREPARED',409)}

@@ -1,3 +1,4 @@
+import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 import {evidenceChoices} from '../src/old-street-shared-evidence'
 import {prepareEvidenceShare} from './old-street-shared-evidence'
 import {archivePhotoSource,archivePhotoSuggestion} from '../src/old-street-archive-photo'
@@ -66,7 +67,7 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
         if((!campaignGenerator&&!campaignCandidate)||!['letter-trail-v1','letter-trail-v2','letter-trail-v3'].some(campaign=>JSON.stringify(options)===JSON.stringify({campaign})))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
         const name=(options as {campaign:string}).campaign
         if(name==='letter-trail-v3'&&(!expansionPlan||!expansionPhoto))throw new LabError('CAMPAIGN_NOT_AVAILABLE',409)
-        h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1,...(name==='letter-trail-v3'?{photoMethod:'develop-v1' as const}:{})}
+        h.campaign={version:name==='letter-trail-v3'?3:name==='letter-trail-v2'?2:1,...(name==='letter-trail-v3'?{photoMethod:'develop-v1' as const,explorationRoute:chooseInvestigationRoute(id)}:{})}
         if(h.campaign.version!==1)introduceCampaignCommission(h.save,h.campaign.version)
       }
       check(h);return h

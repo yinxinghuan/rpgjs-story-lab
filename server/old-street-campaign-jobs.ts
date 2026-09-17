@@ -1,3 +1,4 @@
+import {assertInvestigationRoute} from '../src/old-street-investigation-route'
 import {readFieldContent,type FieldContent} from '../src/old-street-field-inquiry'
 import type {AuthorityStorage} from './session-authority'
 import type {OldStreetHead} from '../src/old-street-head'
@@ -17,9 +18,9 @@ export function campaignJobContext(h:OldStreetHead,stage:Stage):CampaignContext{
  if(trace?.selected===undefined)throw new LabError('CAMPAIGN_TRACE_REQUIRED',409)
  if(stage==='archive'){
   if(h.campaign.version<2||!h.campaign.parcel?.observed)throw new LabError('CAMPAIGN_PAPERS_REQUIRED',409)
-  return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),papers:structuredClone(h.campaign.parcel.content)}
+  return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),papers:structuredClone(h.campaign.parcel.content),...(h.campaign.explorationRoute?{route:h.campaign.explorationRoute}:{})}
  }
- return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),...(h.campaign.version>=2?{investigation:true as const}:{})}
+ return {stage,locale:h.save.locale,previous:structuredClone(trace.content.records[trace.selected]),...(h.campaign.version>=2?{investigation:true as const}:{}),...(h.campaign.explorationRoute?{route:h.campaign.explorationRoute}:{})}
 }
 /** Sidecar draft only: movement/ordinary actions continue during generation. */
 export class OldStreetCampaignJobs{
@@ -60,6 +61,8 @@ export class OldStreetCampaignJobs{
    const signal=AbortSignal.timeout(22000),raw=await this.produce(context,signal);signal.throwIfAborted()
    const prepared=isPreparedInvestigation(raw)?readPreparedInvestigation(raw):undefined
    if(prepared&&(context.stage!=='parcel'||!context.investigation))throw Error('CAMPAIGN_INVESTIGATION_CONTEXT_INVALID')
+   if(context.stage==='parcel'&&context.route&&prepared)assertInvestigationRoute(prepared.archive,context.route)
+   if(context.stage==='archive'&&context.route)assertInvestigationRoute(readArchiveContent(raw),context.route)
    const content=prepared?prepared.parcel:stage==='trace'?readTraceContent(raw):stage==='parcel'?readParcelContent(raw):stage==='field'?readFieldContent(raw):readArchiveContent(raw)
    // Authority reads may run their own upgrade transaction. Read immediately
    // before this synchronous commit, with no asynchronous gap between them.
@@ -71,7 +74,7 @@ export class OldStreetCampaignJobs{
      if(JSON.stringify(campaignJobContext(latest!,stage))!==JSON.stringify(context)||latest!.campaign?.parcel||this.read(owner,id,'archive'))throw Error('CAMPAIGN_INVESTIGATION_ALREADY_ADMITTED')
      // Commit the pair together; archive access still requires reading the
      // parcel. Preparation does not grant knowledge, open doors or move actors.
-     this.write(owner,id,{stage:'archive',state:'ready',attempt:1,deadline:0,context:{stage:'archive',locale:context.locale,previous:context.previous,papers:prepared.parcel},content:prepared.archive})
+     this.write(owner,id,{stage:'archive',state:'ready',attempt:1,deadline:0,context:{stage:'archive',locale:context.locale,previous:context.previous,papers:prepared.parcel,...(context.route?{route:context.route}:{})},content:prepared.archive})
     }
     this.write(owner,id,{...j,state:'ready',deadline:0,content})
    })

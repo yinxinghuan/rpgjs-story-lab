@@ -1,3 +1,4 @@
+import {investigationRoutePlan,assertInvestigationRoute} from '../src/old-street-investigation-route'
 import {readFieldContent} from '../src/old-street-field-inquiry'
 import type {ModelRequest} from './model'
 import {compileTraceDraft,readParcelContent,readTraceContent,type CampaignContext} from '../src/old-street-campaign'
@@ -27,11 +28,18 @@ export function createOldStreetCampaignPlanner(request:ModelRequest):OldStreetCa
    ? 'Return {title,marks:[string,string],wrappings:[string,string],subjects:[string,string,string]}. Author vocabulary for three anonymous public maintenance packets already stored on the cellar shelf. The engine will assign identifying details, construct a unique matching puzzle and shuffle its rows. marks: exactly TWO short distinct physical ink/edge marks; wrappings: exactly TWO short distinct paper/string wrapping descriptions. Avoid colors essential to solving. subjects: exactly THREE distinct short historical public-work events, each a single completed occurrence in the past tense (for example, Footbridge boards were replaced). Do not mix planning and completion in one label or give a vague topic such as maintenance. No marks, wrapping, sealed family letters, named people, private history, answers or directions. Prefer a 2-5 word title. title max60, each subject max70, each mark/wrapping max60 characters. These details are readable text, not promises of new art.'
    : !context.investigation?'Return {title,fragment}. Describe the exact archived packet selected in previous. A brief anonymous everyday record, title max60 and fragment max420, with one concrete discovery. No unresolved question requiring another room, private identities or completed player actions. The player chooses whether to take the original or leave it.'
    : 'Return {title,recordAt:"start"|"end",events:[string,string,string,string],denseSource:"index"|"ledger",ledgerSite:"archive"|"photo"|"laundry",roomPlan:{indexSide:"left"|"right",storageShelves:0|1|2|3,rack:"none"|"left"|"right"}}. Create ONE complete coherent historical episode, not separate unconnected maintenance facts. previous.label is one already fixed historical event; put it at the start or end using recordAt. events contains exactly FOUR short events in chronological order, including previous.label VERBATIM as the first event when recordAt=start or last event when recordAt=end. Together they form one plausible account; complaints/planning/acquisition must precede the same repair/installation, unless a subsequent defect is explicitly part of this account. Do not put a completed repair before its own motivation and preparations. Each event max70 characters; the event at the opposite endpoint max50. Event labels are standalone past-tense actions, without before/after/following/prior to or relative timing clauses; the game will provide relation evidence separately. Prefer endpoints whose order is worth checking in records, while keeping the history believable. Do not write a fragment or opening synopsis. The engine uses the two actual endpoint entries to make an undated opening clue and question without revealing chronology. title max60, preferably 2-5 words. roomPlan is spatial intent only; do not draw a grid. denseSource selects the one shelf whose small handwritten insert requires either a carried magnifying glass or spreading the insert at the table. Choose index or ledger; this is a physical reading variation, not an extra historical event or reward. ledgerSite determines the CURRENT physical location of the work log: archive keeps it on its usual shelf; photo loans it to the photo studio viewing table; laundry loans it to the laundry counter. Choose one site; the engine places the log there and leaves a loan slip on the archive shelf. This is a current lending arrangement, not a change to historical events. For photo or laundry, denseSource MUST be index (the off-site log is directly readable). This changes the player’s actual route through existing rooms; do not promise a new room or item. The complete sequence is prepared once; players later discover parts at two shelves, arrange event cards, and choose whether to preserve the findings. Do not write new rewards, player actions or extra fields.'
-  const system=common+' '+contract+' If repair is supplied, replace only this unadmitted candidate to resolve its listed issues while keeping the original context unchanged. Return the same requested JSON schema, not an explanation or a patch. Respect every character limit.'
+  const route=context.stage!=='trace'?context.route:undefined
+  const explorationPlan=route?investigationRoutePlan(route):undefined
+  const system=common+' '+contract+' When explorationPlan is supplied, it is the preselected supported physical route. Copy its ledgerSite and any specified denseSource exactly; do not substitute a preferred site. Keep roomPlan for furniture in the archive. The engine schedules the route before story generation. If repair is supplied, replace only this unadmitted candidate to resolve its listed issues while keeping the original context unchanged. Return the same requested JSON schema, not an explanation or a patch. Respect every character limit.'
   const compile=(raw:unknown)=>{
-   if(context.stage==='parcel')return context.investigation?compilePreparedInvestigation(raw,context.previous,context.locale):readParcelContent(raw)
+   if(context.stage==='parcel'){
+    if(!context.investigation)return readParcelContent(raw)
+    const prepared=compilePreparedInvestigation(raw,context.previous,context.locale)
+    if(route)assertInvestigationRoute(prepared.archive,route)
+    return prepared
+   }
    if(context.stage==='trace')return raw&&typeof raw==='object'&&'records' in raw?readTraceContent(raw):compileTraceDraft(raw)
-   if(!context.papers.inquiry)return readArchiveContent(raw)
+   if(!context.papers.inquiry){const content=readArchiveContent(raw);if(route)assertInvestigationRoute(content,route);return content}
    let draft=raw
    if(raw&&typeof raw==='object'&&'roomPlan' in raw){
     const {roomPlan,...fields}=raw as Record<string,unknown>
@@ -40,7 +48,9 @@ export function createOldStreetCampaignPlanner(request:ModelRequest):OldStreetCa
    }
    const content=compileInquiryArchive(draft,context.papers.inquiry,context.locale)
    if(!content.room)throw Error('ARCHIVE_ROOM_REQUIRED')
-   return content
+   const routed=explorationPlan?readArchiveContent({...content,...(explorationPlan.ledgerSite==='archive'?{}:{ledgerSite:explorationPlan.ledgerSite}),...(explorationPlan.denseSource?{denseSource:explorationPlan.denseSource}:{})}):content
+   if(route)assertInvestigationRoute(routed,route)
+   return routed
   }
   const needsReview=context.stage==='archive'||context.stage==='parcel'&&context.investigation
   let repair:{candidate:unknown;issues:string[]}|undefined,lastError:Error|undefined
@@ -52,7 +62,7 @@ export function createOldStreetCampaignPlanner(request:ModelRequest):OldStreetCa
     fixedEvent:context.previous.label,
     task:`Build the historical episode around this exact event: ${JSON.stringify(context.previous.label)}. Keep its object and action unchanged. Write a four-event chronological account including this exact fixed event at the specified endpoint. The game will extract the opening clue; do not supply a synopsis. Do not switch to another repair topic.`,
    }:{}
-   const raw=await request(system,JSON.stringify({...context,...task,...(repair?{repair}:{})}),{signal})
+   const raw=await request(system,JSON.stringify({...context,...task,...(explorationPlan?{explorationPlan}:{}),...(repair?{repair}:{})}),{signal})
    signal.throwIfAborted()
    let content:ReturnType<typeof compile>
    try{content=compile(raw)}catch(error){

@@ -61,6 +61,20 @@ test('aborted review or unavailable provider cannot launch another generation at
  assert.equal(calls,1)
 })
 
+test('verbose rejection still reaches the bounded correction instead of dropping feedback',async()=>{
+ let calls=0
+ const issue='The same trees cannot be planted before acquiring seedlings. '.repeat(7)
+ const result=await createOldStreetCampaignPlanner(async(_system,input)=>{
+  calls++
+  if(calls===1)return bad
+  if(calls===2)return {valid:false,issues:[issue]}
+  if(calls===3){const data=JSON.parse(input);assert.equal(data.repair.issues[0].length,240);return corrected}
+  return {valid:true,issues:[]}
+ })(context,new AbortController().signal) as ArchiveContent
+ assert.equal(calls,4)
+ assert.equal(archiveOrders([...result.sources.index,...result.sources.ledger])[0].at(-1),'b')
+})
+
 test('equivalent generated grid serialization preserves geometry; malformed rows still fail',()=>{
  const rows=compileInquiryArchive(corrected,papers.inquiry!,'en',0)
  const multiline=compileInquiryArchive({...corrected,room:room.join('\n')},papers.inquiry!,'en',0)

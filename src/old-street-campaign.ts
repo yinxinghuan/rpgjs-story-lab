@@ -1,3 +1,4 @@
+import {isInvestigationRoute,assertInvestigationRoute,type InvestigationRoute} from './old-street-investigation-route'
 import type {StorySave} from './vendor/original-train/types'
 import {readFieldContent,type FieldProgress} from './old-street-field-inquiry'
 import {readArchiveContent,archiveOrderMatches,assertArchiveInquiry,type ArchiveProgress} from './old-street-archive'
@@ -6,11 +7,12 @@ import {readInquiryFocus,inquiryQuestion,type InquiryFocus} from './old-street-i
 export type TraceRecord={label:string;mark:string;wrapping:string}
 export type TraceContent={title:string;clue:{mark:string;wrapping:string};records:TraceRecord[]}
 export type ParcelContent={title:string;fragment:string;question?:string;inquiry?:InquiryFocus}
-export type CampaignContext={locale:'zh'|'en';stage:'field';account:string;events:string[]}|{locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent}
+export type CampaignContext={locale:'zh'|'en';stage:'field';account:string;events:string[]}|{locale:'zh'|'en';stage:'trace';previous?:never}|{locale:'zh'|'en';stage:'parcel';previous:TraceRecord;investigation?:true;route?:InvestigationRoute}|{locale:'zh'|'en';stage:'archive';previous:TraceRecord;papers:ParcelContent;route?:InvestigationRoute}
 export type CampaignInstance<T>={id:string;content:T;observed:boolean}
 export type OldStreetCampaign={
  version:1|2|3;
  photoMethod?:'develop-v1';
+ explorationRoute?:InvestigationRoute;
  trace?:CampaignInstance<TraceContent>&{selected?:number};
  parcel?:CampaignInstance<ParcelContent>&{disposition?:'take'|'leave'};
  archive?:ArchiveProgress;
@@ -76,7 +78,8 @@ export function campaignComplete(c:OldStreetCampaign,facts?:StorySave['facts']){
 export function campaignPhotoComplete(c:OldStreetCampaign,facts?:StorySave['facts']){return !!c.archive?.order&&facts?.['campaign-photo-archive']===c.archive.id&&typeof facts['darkroom-photo-matched']==='string'&&typeof facts['darkroom-photo-discovery']==='string'&&['keep','leave'].includes(String(facts['darkroom-photo-choice']))}
 export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCampaign|undefined{
  if(raw===undefined)return
- const c=object(raw,['version','photoMethod','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
+ const c=object(raw,['version','photoMethod','explorationRoute','trace','parcel','archive','field']);if(c.version!==1&&c.version!==2&&c.version!==3)throw Error('CAMPAIGN_SAVE_INVALID')
+ if(c.explorationRoute!==undefined&&(c.version!==3||!isInvestigationRoute(c.explorationRoute)))throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.photoMethod!==undefined&&(c.version!==3||c.photoMethod!=='develop-v1'))throw Error('CAMPAIGN_SAVE_INVALID')
  if(c.trace!==undefined){
   const trace=object(c.trace,['id','content','observed','selected']);instance(trace);const content=readTraceContent(trace.content)
@@ -96,6 +99,7 @@ export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCam
   if((c.version!==2&&c.version!==3)||!(c.parcel as OldStreetCampaign['parcel'])?.observed)throw Error('CAMPAIGN_SAVE_INVALID')
   const a=object(c.archive,['id','content','examined','order']);instance({id:a.id,observed:true})
   const content=readArchiveContent(a.content)
+  if(c.explorationRoute!==undefined)assertInvestigationRoute(content,c.explorationRoute as InvestigationRoute)
   const inquiry=(c.parcel as OldStreetCampaign['parcel'])?.content.inquiry
   if(inquiry)assertArchiveInquiry(content,inquiry)
   if(!Array.isArray(a.examined)||new Set(a.examined).size!==a.examined.length||a.examined.some(v=>v!=='index'&&v!=='ledger'))throw Error('CAMPAIGN_SAVE_INVALID')

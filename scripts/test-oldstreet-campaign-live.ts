@@ -1,3 +1,4 @@
+import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
 /** Bounded content-quality probe. Never reads a player database or credentials.
  * Reports every upstream result, including rejected candidates. Existing output
  * is never overwritten, so resuming a terminal command cannot repeat requests. */
@@ -14,6 +15,7 @@ if(process.env.OLDSTREET_LIVE_TRIAL!=='1')throw Error('EXPLICIT_SYNTHETIC_TRIAL_
 const output=process.argv[2]
 if(!output||existsSync(output))throw Error('NEW_REPORT_PATH_REQUIRED')
 const usedAtStart=Number(process.env.OLDSTREET_MODEL_TEST_USED??0)
+const plannedRoutes=process.argv.includes('--planned-routes')
 const withPhoto=process.argv.includes('--with-photo')
 // The older three-stage probe retains its shared 12-call budget. A complete
 // commission gets two independent 8-call synthetic budgets (trace <=2,
@@ -23,11 +25,12 @@ const budgets=withPhoto?[originalPreflightModels('8')!,originalPreflightModels('
 const usage=()=>({used:budgets.reduce((n,b)=>n+b.usage().used,0),limit:withPhoto?16:12})
 type RequestRecord={system:string;input:unknown;raw?:unknown;error?:string}
 type CaseRecord={chain:number;stage:CampaignContext['stage'];context:CampaignContext;requests:RequestRecord[];raw?:unknown;accepted?:unknown;preparedArchive?:unknown;source?:string;error?:string;elapsedMs?:number;system?:string}
-const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,scope:`Two new English synthetic content chains${withPhoto?' through archive-linked photograph planning':''}, including semantic review and at most one correction per campaign stage. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment. Content acceptance is not a rendered gameplay or length verdict.`,limit:usage().limit,usedAtStart,usage:usage(),cases:[] as CaseRecord[],photos:[] as Array<{chain:number;source:ArchivePhotoSource;requests:RequestRecord[];plan?:unknown;error?:string}>,chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
+const report={startedAt:new Date().toISOString(),finishedAt:null as string|null,scope:`Two new English synthetic content chains${withPhoto?' through archive-linked photograph planning':''}, ${plannedRoutes?'with a stable pre-generation route per synthetic journey, ':''}including semantic review and at most one correction per campaign stage. Existing game-chat endpoint only. No player database, account, credentials, media generation or deployment. Content acceptance is not a rendered gameplay or length verdict.`,limit:usage().limit,usedAtStart,usage:usage(),cases:[] as CaseRecord[],photos:[] as Array<{chain:number;source:ArchivePhotoSource;requests:RequestRecord[];plan?:unknown;error?:string}>,chains:[] as Array<{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}>}
 const persist=()=>{report.usage=usage();writeFileSync(output,JSON.stringify(report,null,2)+'\n')}
 persist()
 try{
  for(let chain=1;chain<=2;chain++){
+  const route=plannedRoutes?chooseInvestigationRoute('synthetic-route-trial-'+chain):undefined
   const models=budgets[withPhoto?chain-1:0]
   const result:{chain:number;complete:boolean;selected?:number;order?:string[];error?:string}={chain,complete:false};report.chains.push(result)
   let preparedArchive:unknown
@@ -55,8 +58,8 @@ try{
    const trace=readTraceContent(await generate({stage:'trace',locale:'en'}))
    const selected=trace.records.findIndex((_,i)=>campaignRecordMatches(trace,i));result.selected=selected
    const previous=trace.records[selected]
-   const papers=readParcelContent(await generate({stage:'parcel',locale:'en',previous,investigation:true}))
-   const archive=readArchiveContent(await generate({stage:'archive',locale:'en',previous,papers}))
+   const papers=readParcelContent(await generate({stage:'parcel',locale:'en',previous,investigation:true,...(route?{route}:{})}))
+   const archive=readArchiveContent(await generate({stage:'archive',locale:'en',previous,papers,...(route?{route}:{})}))
    result.order=archiveOrders([...archive.sources.index,...archive.sources.ledger])[0]
    if(withPhoto){
     const source:ArchivePhotoSource={archiveId:`synthetic-commission-${chain}`,title:archive.title,events:result.order.map(id=>archive.cards.find(card=>card.id===id)!.label),account:archive.discovery}
