@@ -1,3 +1,5 @@
+import {OldStreetConversationChoices} from './old-street-conversation-choices'
+import './old-street-content.css'
 import {OldStreetLeaveView} from './old-street-leave-view'
 import {useOldStreetPreparations} from './use-old-street-preparations'
 import {OldStreetRoofRecovery} from './old-street-roof-recovery-view'
@@ -628,11 +630,10 @@ export default function OldStreetDev() {
         {inspectionOpen&&fieldOptions.length>0&&<p>{serverHead.current&&fieldHandling(serverHead.current)}</p>}
         {inspectionOpen&&fieldOptions.length>0&&<div className="os-choices">{fieldOptions.map(choice=><button key={choice.id} disabled={!ready||busy||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}
         {inspectionOpen&&secondaryActions.length>0&&<div className="os-choices">{secondaryActions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>}
-        {conversationOpen&&shareChoices.length>0&&<div className="os-choices">{shareChoices.map(choice=><button key={choice.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}
-        {conversationOpen&&talkTopics.length>0&&<div className="os-choices">{talkTopics.map(topic=><button key={topic.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(true,topic.text)}>{topic.text}</button>)}</div>}
+        {conversationOpen&&chosen&&<OldStreetConversationChoices key={chosen.id} locale={locale} topics={talkTopics} sharing={shareChoices} disabled={busy||!ready||!!error||!!outcome} onTalk={value=>sendInput(true,value)} onShare={value=>sendInput(false,value)}/>}
         {inspectionOpen&&chosen&&<div className="os-compose">
           <button className="os-compose__toggle" aria-expanded={inputOpen} disabled={busy} onClick={()=>setInputOpen(open=>!open)}>{text(knownSpeaker?['聊点别的…','Say something else…']:['尝试别的办法…','Try something else…'])}</button>
-          {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
+          {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input autoFocus disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
         </div>}
       </>}
       </div>

@@ -1,0 +1,16 @@
+/* Only navigation stays fixed. Goals, preparation and records share one scroll area. */
+.os-map.os-journal > nav { gap:4px; margin:8px 0; }
+.os-map.os-journal > nav button { min-width:0; padding-inline:4px; line-height:1.4; }
+.os-journal .os-journal__entries > h3 { font:600 18px/1.4 Georgia,"Songti SC",serif; margin:8px 0; }
+.os-journal .os-journal__entries > ul { margin-top:0; }
+.os-journal__entries li:has(details) { padding:0; }
+.os-journal__entries summary { min-height:44px; padding:12px 0; font-weight:600; cursor:pointer; }
+.os-journal__entries details p { padding-bottom:12px; }
+.os-journal__entries .os-preparations[open] { max-height:none; overflow:visible; }
+.os-conversation-choices { display:grid; gap:8px; flex:none; }
+.os-dev .os-choice-disclosure { display:flex; justify-content:space-between; align-items:center; gap:8px; width:100%; text-align:left; background:transparent; color:var(--os-paper); border-color:#c9bfad66; }
+.os-choice-disclosure svg { flex:none; }
+.os-choice-disclosure svg[data-open=true] { transform:rotate(90deg); }
+@media(max-height:480px) {
+ .os-actions--composing .os-conversation-choices { display:none; }
+}

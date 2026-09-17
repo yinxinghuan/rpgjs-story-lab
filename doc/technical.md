@@ -1,5 +1,9 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 随身与交谈内容层级（2026-09-17）
+
+`old-street-journal-view.tsx` 增加默认 now 分类，使用同一滚动节点容纳目标/准备或条目，切分类回顶部。记录原数据不变，发现和人物仅在视图以原生details展开。`old-street-conversation-choices.tsx` 分组现有话题与分享，回调传原文本，选中后关闭分组；实例以人物实体id隔离。没有新增行动映射或模型调用。`old-street-content.css` 管理这两类内容的滚动、导航、展开和短屏编辑行为。主交互输入autoFocus只在用户展开时生效。
+
 ## 菜单分区与探索工具（2026-09-17）
 
 `old-street-journeys-view.tsx` 继续复用原旅程读写入口，界面新增 game/journeys 状态。默认 game；结局调用传入 `initialSection='journeys'`。仅 journeys 区请求目录，切区/卸载使旧响应失效；切区滚动归顶，现有重试及原生 dialog 关闭行为保留。关闭不改变旅程，另开仍由既有 create/select 权威流程负责。
