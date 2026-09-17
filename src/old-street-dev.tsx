@@ -1,4 +1,4 @@
-import {fieldChoices,fieldSites} from './old-street-field-inquiry'
+import {fieldChoices,fieldSites,fieldHandling} from './old-street-field-inquiry'
 import {evidenceChoices} from './old-street-shared-evidence'
 import {archivePaperPose,type ArchiveReadingAction} from './old-street-archive-reading'
 import {campaignOpening} from './old-street-campaign-story'
@@ -407,7 +407,7 @@ export default function OldStreetDev() {
       current.current = next
       await prepareEnvironment.current(nextHead.sceneId)
       await runtime.current!.restore(nextHead.position,nextHead.sceneId)
-      current.current = next; setHead(next); position.current = next.position; setSelected(next.scene===h.sceneId&&(result.accepted===false||Boolean(oldStreetPerson(target))||Boolean(nextHead.campaign?.field?.observed&&nextHead.campaign.field.content.target===target&&!nextHead.campaign.field.disposition))?target:null)
+      current.current = next; setHead(next); position.current = next.position; setSelected(next.scene===h.sceneId&&(result.accepted===false||Boolean(oldStreetPerson(target))||fieldChoices(nextHead,target).length>0)?target:null)
       const attemptedAction=id||(input?resolveOldStreetInput(input,locale,oldStreetSpatialPlan(next.save).entities.find(e=>e.id===target)?.actions??[]):undefined)
       const blockedReason=attemptedAction?[...new Set(resolveDomainAction(next.save,cartridge,attemptedAction)?.reasons??[])].join(' '):undefined
       setNotice(result.text ?? (result.rejectionCode==='OLD_STREET_CLOCK_INSPECTION_REQUIRED'?text(['先用放大镜找到并辨认刻记。','Find and identify the mark with the lens first.']):result.rejectionCode==='OLD_STREET_PHOTO_ALIGNMENT_REQUIRED'?text(['边缘还没有接上，再试试另一片或方向。','The edges do not match. Try another piece or orientation.']):result.rejectionCode==='OLD_STREET_ACTION_UNAVAILABLE'?(blockedReason||text(['这一步现在还不能做，看看手边的物品和已发现的线索。','That step is not available yet. Check your items and discoveries.'])):result.rejectionCode==='OLD_STREET_INPUT_UNSUPPORTED'?text(['没有理解这一步。可以选择上面的行动，或换个说法。','I did not understand that action. Choose an action above or rephrase.']):result.rejectionCode?oldStreetActionFailureMessage(result.rejectionCode,locale):undefined) ?? '')
@@ -514,7 +514,7 @@ export default function OldStreetDev() {
   const morePages=turnPage<pages.length-1
   const inspectionOpen=Boolean(selected&&!oldStreetDoors().some(d=>d.id===selected))
   const conversationOpen=Boolean(knownSpeaker&&(inspectionOpen||turn.length||pendingSpeech))
-  const secondaryActions=conversationOpen||campaignTarget?actions:actions.filter(id=>chosenAction?.primary.kind!=='action'||id!==chosenAction.primary.id)
+  const secondaryActions=conversationOpen||campaignTarget||fieldOptions.length>0?actions:actions.filter(id=>chosenAction?.primary.kind!=='action'||id!==chosenAction.primary.id)
   useEffect(()=>setInputOpen(false),[chosen?.id])
   function closeInteraction(){setSelected(null);setNotice('');setInputOpen(false)}
   function useNearby(){
@@ -541,7 +541,7 @@ export default function OldStreetDev() {
     const clockAvailable=entity.id==='drawer'&&oldStreetContextAction(head.save,entity).actions.includes('oldstreet:inspect-clock')
     return clockAvailable?text(['抽屉旁 · 检查钟底','By the drawer · inspect clock']):known?.name??(door?text(oldStreetRooms[door.destination.room]):text(oldStreetPerson(entity.id,head.save)?.appearance??oldStreetPropState(entity.id,head.save)??propNames[entity.id]??[entity.id,entity.id]))
   }
-  const inspectionHint=inspectionOpen&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
+  const inspectionHint=inspectionOpen&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
   const outcome = oldStreetOutcome(head.save)
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
@@ -577,6 +577,7 @@ export default function OldStreetDev() {
       </div>
       {error && ready && <button onClick={() => location.reload()}>{text(['重新连接并恢复', 'Reconnect and recover'])}</button>}
       {!error&&morePages?<button className="os-dialogue-continue" disabled={busy} onClick={()=>setTurnPage(n=>n+1)}>{text(['继续','Continue'])}</button>:<>
+        {inspectionOpen&&fieldOptions.length>0&&<p>{serverHead.current&&fieldHandling(serverHead.current)}</p>}
         {inspectionOpen&&fieldOptions.length>0&&<div className="os-choices">{fieldOptions.map(choice=><button key={choice.id} disabled={!ready||busy||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}
         {inspectionOpen&&secondaryActions.length>0&&<div className="os-choices">{secondaryActions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>}
         {conversationOpen&&shareChoices.length>0&&<div className="os-choices">{shareChoices.map(choice=><button key={choice.id} disabled={busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}

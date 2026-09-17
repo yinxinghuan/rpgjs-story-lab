@@ -1,5 +1,11 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 便笺副本与归还（2026-09-17）
+
+可选 `campaign.field.copy` 存储已观察原件的 title/finding 快照，`field-note-copy` 是独立行囊物品与 fact，不重新生成内容。复制只允许在实际接近照相馆放大台且原件在手（或原本就在台上）时执行；同一原件只做一份副本。原件 take/leave 可在离开前通过 borrow/return 改变，原始所在地不变。沿用原 Session 事务和回执；旧字段缺失时保持兼容，结束旅程不再提供操作。
+
+`fieldChoices` 给附近操作及自由输入同一组动作；抄录不自动归还或完成主线。`fieldHandling` 描述目前原件/副本与下一地点，已存在的放大镜/照片操作仍保留；有可用便笺操作时不显示无关照片夹缺失提示。地图纸层依原件去向，副本进入背包/发现/结局。证据见 `field-copy-review-20260917.md`。
+
 ## 实地追查便笺（2026-09-17）
 
 `old-street-field-inquiry.ts` 定义 field 内容、地点、可用动作和已知范围；`old-street-field-actions.ts` 在原权威 Session 内验证档案完成、目标接近和抽屉开放，提交观察/去向及库存。field 内容进入 campaign 并持久保存，facts 与 inventory 由 head 校验一致。`campaign-field` 沿用任务队列、失败重试及同一历史上下文；生产开关不变。

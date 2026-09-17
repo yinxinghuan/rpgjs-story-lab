@@ -163,10 +163,37 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
    const settled=await send(f.content.target,{type:'free-input',text:fieldChoices(h,f.content.target).find(a=>a.selection===decision)!.label,mode:'local'})
    assert.deepEqual(await s.action('synthetic',h.id,settled.b),settled.r)
    assert.equal(h.save.inventory.some(i=>i.id==='field-note'),decision==='take')
-   assert.equal(fieldChoices(h,f.content.target).length,0)
+   assert.ok(!fieldChoices(h,f.content.target).some(a=>a.selection===decision),'the same decision is not offered twice')
    s=authority();h=s.get('synthetic',h.id)
    assert.deepEqual(h.campaign!.field!.content,original)
    assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='field-finding'&&n.text===original.finding))
+   if(readingMode==='table'){
+    await assert.rejects(s.action('synthetic',h.id,input('drawer',{type:'campaign-decide',stage:'field',selection:'copy'})),/ACTION_UNAVAILABLE/)
+    await steps(['street','photo'])
+   }
+   const copyAction=fieldChoices(h,'viewing-table').find(a=>a.selection==='copy')!
+   assert.ok(copyAction,'the held original or the original on this table can be copied')
+   const copied=await send('viewing-table',{type:'free-input',text:copyAction.label,mode:'local',finding:'a fabricated copy'})
+   assert.deepEqual(h.campaign?.field?.copy,{title:original.title,finding:original.finding})
+   assert.equal(h.save.facts['field-note-copy'],original.finding)
+   assert.equal(h.save.inventory.filter(i=>i.id==='field-note-copy').length,1)
+   assert.equal(h.campaign?.field?.disposition,decision,'copying does not return or take the original')
+   assert.deepEqual(await s.action('synthetic',h.id,copied.b),copied.r)
+   await assert.rejects(s.action('synthetic',h.id,input('viewing-table',{type:'campaign-decide',stage:'field',selection:'copy'})),/ACTION_UNAVAILABLE/)
+   s=authority();h=s.get('synthetic',h.id)
+   assert.equal(h.save.inventory.find(i=>i.id==='field-note-copy')?.count,1)
+   assert.ok(oldStreetJournal(h.save,h.campaign).notes.some(n=>n.id==='field-copy'))
+   if(readingMode==='table'){
+    await assert.rejects(s.action('synthetic',h.id,input('viewing-table',{type:'campaign-decide',stage:'field',selection:'return'})),/ACTION_UNAVAILABLE/)
+    await steps(['street','shop'])
+    const returned=await send('drawer',{type:'free-input',text:fieldChoices(h,'drawer').find(a=>a.selection==='return')!.label,mode:'local'})
+    assert.deepEqual(await s.action('synthetic',h.id,returned.b),returned.r)
+    assert.equal(h.campaign?.field?.disposition,'leave')
+    assert.ok(!h.save.inventory.some(i=>i.id==='field-note'))
+    assert.equal(h.save.inventory.find(i=>i.id==='field-note-copy')?.count,1)
+    s=authority();h=s.get('synthetic',h.id)
+    assert.equal(h.campaign?.field?.disposition,'leave')
+   }
    if(readingMode==='lens'){
     await steps(['oldstreet:greet-photographer'])
     const noteChoice=evidenceChoices(h,'photographer').find(a=>a.kind==='field-note')!
@@ -267,6 +294,6 @@ for(const readingMode of ['direct','lens','table'] as const)test(`campaign ${rea
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('family’s request')))
   assert.ok(h.save.finale.ending?.preserved.some(line=>line.includes('public record book')))
   s=authority();assert.deepEqual(s.get('synthetic',h.id),h);assert.equal(calls,readingMode==='direct'?3:5)
-  if(h.campaign?.field)assert.ok(h.save.finale.ending?.preserved.includes(h.campaign.field.content.finding))
+  if(h.campaign?.field){assert.ok(h.save.finale.ending?.preserved.includes(h.campaign.field.content.finding));assert.ok(h.save.finale.ending?.preserved.some(p=>p.includes('written copy')));assert.ok(h.save.finale.ending?.preserved.some(p=>p.includes('left the supplementary note')))}
  }finally{raw.close()}
 })

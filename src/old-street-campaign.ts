@@ -80,7 +80,8 @@ export function assertOldStreetCampaign(raw:unknown):asserts raw is OldStreetCam
   if(parcel.disposition!==undefined&&(!parcel.observed||!['take','leave'].includes(parcel.disposition as string)))throw Error('CAMPAIGN_SAVE_INVALID')
  }
  if(c.field!==undefined){
-  const f=object(c.field,['id','content','observed','disposition']);instance(f);readFieldContent(f.content)
+  const f=object(c.field,['id','content','observed','disposition','copy']);instance(f);const original=readFieldContent(f.content)
+  if(f.copy!==undefined){const copy=object(f.copy,['title','finding']);if(!f.observed||copy.title!==original.title||copy.finding!==original.finding)throw Error('CAMPAIGN_SAVE_INVALID')}
   if(!(c.archive as OldStreetCampaign['archive'])?.order||f.disposition!==undefined&&(!f.observed||!['take','leave'].includes(String(f.disposition))))throw Error('CAMPAIGN_SAVE_INVALID')
  }
  if(c.archive!==undefined){

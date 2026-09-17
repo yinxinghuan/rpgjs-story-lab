@@ -1,4 +1,4 @@
-import {fieldChoices,fieldKnowledge} from './old-street-field-inquiry'
+import {fieldChoices,fieldKnowledge,type FieldSelection} from './old-street-field-inquiry'
 import {archiveReadingChoices,archiveReadingStatus,type ArchiveReadingAction} from './old-street-archive-reading'
 import {campaignCommission} from './old-street-campaign-story'
 import {campaignAnchor} from './old-street-campaign'
@@ -7,7 +7,7 @@ import {originalActionIntentIssues} from './original-action-intent'
 import {archiveEvidence,archiveRackState,archiveRackLabel} from './old-street-archive'
 import {publicRecordAction,publicRecordKnowledge} from './old-street-public-record'
 
-type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive'|'field';selection?:'read'|number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction}
+type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive'|'field';selection?:FieldSelection|number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'|ArchiveReadingAction}
 /** Labels describe every visible choice, never which one is correct. The model
  * proposes an ID; the existing campaign authority still evaluates the choice. */
 export function campaignInputActions(h:OldStreetHead,target:string):CampaignAction[]{
