@@ -1,0 +1,46 @@
+{
+  "source": "doc/entrance-options-20260917/b-roller-shutter-wide/candidate.png",
+  "sourceSha256": "f0a37279b3fd9e7df8dbd04cddc1c49807261e1133471e5a2732c622f527c25a",
+  "sha256": "9e76649727526a35b5ada0f6a3190368127f0a005bffecdc0d7aa7216919a23d",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 213,
+        "y": 424
+      },
+      {
+        "x": 163,
+        "y": 424
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 530,
+        "y": 270
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 291289,
+    "edgeCorrected": 0,
+    "corePreserved": 96082
+  },
+  "admission": "comparison-only",
+  "operations": [
+    "reviewed magenta/violet matte normalization",
+    "connected matte removal",
+    "translation for paired threshold anchors; no rescaling"
+  ]
+}

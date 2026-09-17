@@ -1,0 +1,13 @@
+{
+  "requestId": "e7026769-c91f-4687-9ddc-b7cf758df5cc",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789658902315580.png"
+  ],
+  "prompt": "Retexture this exact pixel-art overhead sprite sheet. DO NOT RECOMPOSE. DO NOT change camera. DO NOT redraw as front elevation. Replace brown wooden beams and corner caps ONLY with worn GREY CONCRETE and rusted STEEL, flat zinc cap surfaces. Preserve every outline, shape, camera, position and paving. Change the central closed vertical barrier only to muted teal metal with a brass latch. Keep left open and right closed. Pure magenta background. No humans, no new objects. Keep exactly the same shapes as reference. Pixel-art shading, no smooth rendering."
+}

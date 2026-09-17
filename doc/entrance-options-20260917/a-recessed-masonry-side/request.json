@@ -1,0 +1,13 @@
+{
+  "requestId": "0ba0b027-bbb3-4900-b5a0-be66c1e816e0",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789658902315580.png"
+  ],
+  "prompt": "Architectural game sprite edit. Preserve EXACT OVERHEAD CAMERA and the horizontal left-right passage geometry of this reference. Two isolated sprites: LEFT OPEN, RIGHT CLOSED. Keep no humans and keep solid magenta outside. Completely REPLACE the wooden fence-like frame with a BUILDING ENTRANCE: replace the north and south wooden beams and square bolt caps with thick cracked olive plaster WALL PIERS with exposed brick corners and broad stone wall tops. Make each pier part of the vertical wall mass. Cover the far LEFT edge of the passage with a narrow vertical wall-top lintel, an overhead stone cap. The passage mouth on the RIGHT stays open. Floor is shadowed worn stone, less conspicuous than the wall. Closed narrow leaf is dark moss-green timber. The new frame must have mass and recess, integrated in a vertical wall rather than free-standing rods on a floor patch. Open and closed pair have exactly same wall piers, same sill and same position. The door leaf alone changes. Parallel screen-aligned floor plan, rich granular pixel art, muted aged colors. The threshold is horizontal through the opening, NOT a front-facing door. Do NOT redraw the sprites as front elevations. NO two upright decorative columns, NO front door face, NO isometric diamonds. Keep both sprites centred in their original 384x512 cells with magenta gutters. Larger material wear clusters comparable with scene stone paving, no photorealistic detail."
+}

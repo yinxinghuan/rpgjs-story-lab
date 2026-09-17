@@ -1,0 +1,13 @@
+{
+  "requestId": "2692f9f4-07fe-4c10-af4c-e1a6884465d7",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789657740871971.png"
+  ],
+  "prompt": "Correct CAMERA only. Keep these same two aged paneled wooden doorway states and their rich pixel-art detail, but the current view is too FRONT-ON. Repaint them as STEEP OVERHEAD ORTHOGRAPHIC sprites, camera 60 degrees above the ground looking north. The thick lintel must have a BROAD clearly visible TOP wooden surface about60pixels deep extending toward screen top; the vertical door panels must be FORESHORTENED (about250pixels tall rather than300), with a wide stone threshold TOP face about65pixels deep at the bottom. Parallel vertical sides, identical opening width at top and bottom, NO vanishing point, no trapezoid. Keep door assemblies centered x192 and576, top near70, bottom near440. Left door CLOSED; right door OPEN with leaf inward against LEFT jamb and entire aperture pure magenta #ff00ff. The open door leaf also shows its narrow top edge. Thin front lips only, obvious roofless high-angle cutaway architecture. No room, no surrounding wall, no other objects. Match overhead classic RPG furniture perspective rather than a frontal door illustration. Outside AND inside the open aperture solid magenta, no checkers."
+}

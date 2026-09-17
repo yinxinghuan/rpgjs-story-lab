@@ -1,0 +1,13 @@
+{
+  "requestId": "ddd8f4ea-9fb4-428a-8403-301620dbea25",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789658902315580.png"
+  ],
+  "prompt": "Retexture this exact pixel-art overhead sprite sheet. DO NOT RECOMPOSE. DO NOT change camera. DO NOT redraw as front elevation. Replace brown wooden beams and corner caps ONLY with worn SANDSTONE BLOCKS, a little dark moss, fine zinc strip along the north beam. Preserve every outline, shape, camera, position and paving. Change the central closed barrier only to charcoal wood. Keep left open and right closed. Pure magenta background. No humans, no new objects. Keep exactly the same shapes as reference. Pixel-art shading, no smooth rendering."
+}

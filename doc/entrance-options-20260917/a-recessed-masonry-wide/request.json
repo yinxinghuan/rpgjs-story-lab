@@ -1,0 +1,10 @@
+{
+  "requestId": "53d72d48-bc7e-4ab9-a4ef-6568011b9f3b",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "prompt": "Two game sprites on solid magenta. LEFT closed, RIGHT fully open. A WIDE, LOW ordinary doorway for top-down pixel RPG. Strong elevated orthographic camera looking DOWN 55 degrees, parallel axes. Broad visible top of header and threshold, vertical facade compressed. Each doorway outer width300px, height310px, aperture width210px height230px, centered in384x512 cell. Both have exactly same outline and position. thick weathered olive plaster jambs with exposed red brick and a plain green wooden leaf. Door frame is simple and short, no pediment, no ornate columns, not a wardrobe, not a tall skinny door. Right open doorway has clear EMPTY MAGENTA aperture, no leaf across its middle; wooden leaf folded edge-on entirely against jamb, or shutter rolled completely up. Left fully closed, no extra open leaf. Fine coherent pixel-art clusters and weathering, not smooth illustration. Muted olive/grey palette, realistic small wall chips and sill wear. NO wall panel extending above lintel, no huge wall backdrop, no characters, no text, no grid lines, no isometric diamonds, no perspective convergence. These sprites will be INSET within an existing wall. Keep original aspect ratio and short broad appearance."
+}

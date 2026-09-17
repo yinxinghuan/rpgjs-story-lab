@@ -1,0 +1,13 @@
+{
+  "requestId": "8827d6c7-f7c9-44ce-b95d-9a75f1c1408d",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789658120755458.png"
+  ],
+  "prompt": "Edit the two door sprites, maintaining the reference elevated orthographic camera, parallel axes, broad visible top of lintel and broad stone threshold. LEFT CLOSED, RIGHT OPEN. Change from ornate freestanding wooden frames to a modest doorway IN A SHORT WALL SEGMENT. Redesign as old warm olive plaster and exposed brick, small weathered stone sill, plain green timber door. Remove fancy moldings and gold trim. Surround the opening with thick wall returns on left/right, not just slender poles. Keep door opening readable and at least 40 percent of total asset width. Compress vertical door face modestly to strengthen downward viewing angle, keep visible broad horizontal TOP surfaces. Rich cohesive pixel-art weathering; no flat vector shading, no excessive black outlines, no illustrated diagonal perspective. Magenta outside each entrance and magenta through the open door aperture. Same threshold baseline and same surrounding wall geometry in both cells. Two sprites side by side in 768x512, entire asset in each384x512 cell, margins at least30px, no text/no people/no other objects. Reference door open swings inward left, keep that function; shutter option OPEN rolled fully above. PROPORTION IS CRITICAL: previous doorway was too tall and narrow. Make each complete entrance approximately 320px wide and350px tall, with usable empty opening at least185px wide and260px tall. No towering pediment. Upper cap is modest, broad visible top but NOT a giant ornamental hat. In OPEN, tuck timber leaf almost edge-on against inner left return so it does NOT occupy the central passage or pinch walking width. Threshold restrained, wall returns join existing building wall. This is a ordinary human-sized shop door, not a tall ornate wardrobe."
+}

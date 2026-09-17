@@ -1,0 +1,41 @@
+{
+  "source": "doc/entrance-options-20260917/c-covered-vestibule-side/candidate.png",
+  "sourceSha256": "24bb0b3bafc8aec6e2b232a7b318bf528820cd8256ea11fecea11660029cc39a",
+  "sha256": "d4ceaecfe37c97d625c33ef14a0c0c70761f806d7ed73ef0ac83699941a61c91",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 480
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 192,
+        "y": 480
+      },
+      {
+        "x": 192,
+        "y": 480
+      }
+    ],
+    "matteSeeds": []
+  },
+  "metrics": {
+    "removed": 158419,
+    "edgeCorrected": 0,
+    "corePreserved": 228727
+  },
+  "admission": "comparison-only",
+  "operations": [
+    "reviewed magenta/violet matte normalization",
+    "connected matte removal",
+    "translation for paired threshold anchors; no rescaling"
+  ]
+}

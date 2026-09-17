@@ -1,23 +1,19 @@
-import {OldStreetDoorFrame} from './old-street-door-frame'
+import {OldStreetEntranceArt} from './old-street-entrance-art'
+import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
 import {oldStreetDoors} from './old-street-space'
 import {oldStreetCrateSprite as crateArt,oldStreetCrateScale as crateScale} from './old-street-crate-layout'
-import {OldStreetCurtain} from './old-street-curtain'
 import type {OldStreetRoom} from './old-street-cartridge'
 import type {StorySave} from './vendor/original-train/types'
 const elevation:Record<OldStreetRoom,number>={archive:-1,darkroom:0,street:0,shop:0,yard:0,laundry:0,photo:0,cellar:-1,roof:1,shed:0}
 /** Physical variants share the existing endpoints; decoration cannot create a route. */
-export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:{room:OldStreetRoom;facts:StorySave['facts'];cratesImage?:string;stoneImage?:string;woodImage?:string}){
+export function OldStreetDoorways({room,facts,cratesImage,stoneImage,art=oldStreetEnvironmentArt,foreground=false}:{room:OldStreetRoom;facts:StorySave['facts'];cratesImage?:string;stoneImage?:string;art?:OldStreetEnvironmentArt;foreground?:boolean}){
  return <g>{oldStreetDoors().filter(d=>d.room===room&&(!['darkroom-ready','archive-ready'].includes(d.gate??'')||facts[d.gate!])).map(d=>{
   const closed=Boolean(d.gate&&!facts[d.gate]),angle={N:0,E:90,S:180,W:270}[d.side]
   const outdoor=d.id.includes('riverside-stairs'),up=elevation[d.destination.room]>elevation[room]
+  if(foreground)return <OldStreetEntranceArt key={d.id} door={d} closed={closed} art={art} foreground/>
+  if(d.kind!=='stairs')return <OldStreetEntranceArt key={d.id} door={d} closed={closed} art={art}/>
   return <g key={d.id} transform={`translate(${d.position.x} ${d.position.y}) rotate(${angle})`}>
-   {d.kind==='alley'?<g>
-    <path d="M-25 18V-22H25V18" fill="#8e9279"/>
-    <path d="M-24-22V-9M24-22V-9" stroke="#625e4f" strokeWidth="6"/>
-    <path d="M-28-22H-20M20-22H28M-28-11H-21M21-11H28" stroke="#b8b396" strokeWidth="2"/>
-    <path d="M-22-12H22M-22-2H22M-22 8H22M-10-22V-12M9-12V-2M-6-2V8M12 8V18" stroke="#817966" strokeWidth="1" fill="none"/>
-    <path d="M-20 15L-16 11M19 17L16 13M-22 1L-19-2" stroke="#53684a" strokeWidth="2"/>
-   </g>:d.kind==='stairs'?<g>
+   <g>
     <rect x="-24" y="-16" width="48" height="38" fill={outdoor?'#353f40':'#514e43'}/>
     {[0,1,2,3,4].map(i=><g key={i}><rect x="-20" y={-14+i*7} width="40" height="6" fill={outdoor?(up?'#818d89':'#626f6c'):(up?'#b5ac93':'#928971')} opacity={up?.72+i*.055:1-i*.07}/><path d={`M-19 ${-14+i*7}H19`} stroke={outdoor?'#b1b9af':'#d7ceb5'} strokeWidth="1"/></g>)}
     {stoneImage&&!outdoor&&<g>
@@ -28,7 +24,7 @@ export function OldStreetDoorways({room,facts,cratesImage,stoneImage,woodImage}:
     </g>}
     <path d="M-24-16V22M24-16V22" stroke={outdoor?'#525d59':'#726956'} strokeWidth="3"/>
     {outdoor&&<path d="M-27-18V15M27-18V15M-27-18H-23M27-18H23" stroke="#a0a69a" strokeWidth="2" fill="none"/>}
-   </g>:d.id.includes('laundry-back')?<OldStreetCurtain side={d.side}/>:<g transform={`rotate(${-angle}) translate(${-d.position.x} ${-d.position.y})`}><OldStreetDoorFrame door={d} closed={closed} woodImage={woodImage}/></g>}
+   </g>
    {closed&&d.gate==='crates-cleared'&&room==='cellar'&&<g transform={`rotate(${-angle})`}>
     {cratesImage?<image href={cratesImage} x={-crateArt.foot.x*crateScale} y={-crateArt.foot.y*crateScale} width={crateArt.width*crateScale} height={crateArt.height*crateScale} style={{imageRendering:'pixelated'}}/>:<g fill="#80613e" stroke="#453b2b" strokeWidth="2"><rect x="-32" y="-24" width="64" height="24"/><path d="M-30-18H30M-30-10H30M-10-24V0M12-24V0"/></g>}
    </g>}

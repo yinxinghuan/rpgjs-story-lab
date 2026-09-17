@@ -7,7 +7,7 @@
       "family": "metal",
       "label": "旧绿金属板",
       "status": "candidate",
-      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "reason": "按玩家明确反馈将纹理构件显示尺寸加倍：瓦片和排水管不再过小；屋面占地不变，外侧裁切。",
       "source": "../../doc/oldstreet-street-atmosphere/roof-edges/candidate.png",
       "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
       "image": {
@@ -27,7 +27,7 @@
       "fallback": "#59634b",
       "render": {
         "mode": "repeat-y",
-        "worldWidth": 40,
+        "worldWidth": 80,
         "pixelsPerWorldUnit": 2
       },
       "review": "../../doc/roof-materials-20260917/review.md"
@@ -38,7 +38,7 @@
       "family": "slate",
       "label": "蓝灰石板瓦",
       "status": "candidate",
-      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "reason": "按玩家明确反馈将纹理构件显示尺寸加倍：瓦片和排水管不再过小；屋面占地不变，外侧裁切。",
       "source": "../../doc/oldstreet-street-atmosphere/roof-edges/candidate.png",
       "sha256": "f21d9c1d876c695cc99c986ef7d68470898f54aaea26d015b97745c837bd3f1b",
       "image": {
@@ -58,7 +58,7 @@
       "fallback": "#47545a",
       "render": {
         "mode": "repeat-y",
-        "worldWidth": 40,
+        "worldWidth": 80,
         "pixelsPerWorldUnit": 2
       },
       "review": "../../doc/roof-materials-20260917/review.md"
@@ -69,7 +69,7 @@
       "family": "clay",
       "label": "旧陶瓦",
       "status": "candidate",
-      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "reason": "40单位显示宽度被用户否决：瓦片排列过密。96单位仅作尺度校准候选，不进入默认试玩。",
       "source": "../../doc/roof-materials-20260917/candidate.png",
       "sha256": "d74247a1d6719da7e75a074dc95ac9246a6f21c82e6599e57b9e8f4273665e31",
       "image": {
@@ -89,7 +89,7 @@
       "fallback": "#8b674b",
       "render": {
         "mode": "repeat-y",
-        "worldWidth": 40,
+        "worldWidth": 96,
         "pixelsPerWorldUnit": 2
       },
       "review": "../../doc/roof-materials-20260917/review.md"
@@ -100,7 +100,7 @@
       "family": "asphalt",
       "label": "灰沥青瓦",
       "status": "candidate",
-      "reason": "本地场景候选；统一像素密度后待玩家反馈，不作为最终基准。",
+      "reason": "40单位显示宽度被用户否决：瓦片排列过密。96单位仅作尺度校准候选，不进入默认试玩。",
       "source": "../../doc/roof-materials-20260917/candidate.png",
       "sha256": "d74247a1d6719da7e75a074dc95ac9246a6f21c82e6599e57b9e8f4273665e31",
       "image": {
@@ -120,7 +120,7 @@
       "fallback": "#424c4f",
       "render": {
         "mode": "repeat-y",
-        "worldWidth": 40,
+        "worldWidth": 96,
         "pixelsPerWorldUnit": 2
       },
       "review": "../../doc/roof-materials-20260917/review.md"

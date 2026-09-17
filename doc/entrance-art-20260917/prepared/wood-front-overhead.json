@@ -1,0 +1,95 @@
+{
+  "source": "wood-front-overhead/candidate.png",
+  "sourceSha256": "a992f2198f1089ff564811d06ff10255445c0cc85fd66a2beb91dacc534731c0",
+  "sha256": "5dbf77b4a2b450d9d01e9b43693998ab8f1fddaa6f7aac010e541ec825abf246",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 480
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 194,
+        "y": 455
+      },
+      {
+        "x": 188,
+        "y": 455
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 590,
+        "y": 230
+      },
+      {
+        "x": 477,
+        "y": 250
+      },
+      {
+        "x": 478,
+        "y": 187
+      },
+      {
+        "x": 476,
+        "y": 356
+      }
+    ]
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        49,
+        53,
+        340,
+        455
+      ],
+      "sourceAnchor": {
+        "x": 194,
+        "y": 455
+      },
+      "offset": {
+        "x": -2,
+        "y": 25
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        416,
+        53,
+        719,
+        456
+      ],
+      "sourceAnchor": {
+        "x": 188,
+        "y": 455
+      },
+      "offset": {
+        "x": 4,
+        "y": 25
+      }
+    }
+  ],
+  "metrics": {
+    "removed": 212943,
+    "edgeCorrected": 1503,
+    "corePreserved": 172122
+  },
+  "operations": [
+    "reviewed empty-margin removal where present",
+    "connected magenta removal and edge unmix",
+    "translation only for shared front-door foot anchor"
+  ]
+}

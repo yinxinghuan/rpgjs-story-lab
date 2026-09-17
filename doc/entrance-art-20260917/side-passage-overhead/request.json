@@ -1,0 +1,13 @@
+{
+  "requestId": "cd39bf0b-073e-4bc5-8ded-1b7fbad0374f",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789657722601271.png"
+  ],
+  "prompt": "Fix these two sprites into a SIDEWAYS PASSAGE: a person must be able to walk from LEFT to RIGHT horizontally across the middle of each cell. Keep exact top-down pixel art and stone floor. REMOVE both long wooden VERTICAL side rails entirely in both cells (the rails at x58..108 and x270..320, and corresponding rails in the right cell): they incorrectly block horizontal travel. Keep the small squared corner post CAPS. Replace with thick HORIZONTAL wood jamb beams across the full NORTH and SOUTH ends of each sprite, joining corner caps: at y50..115 and y398..465. Between y130 andy380, both WEST and EAST edges must be unobstructed, only exposed stone threshold, no rails, no wall, no posts. LEFT sprite: OPEN, no barrier through the center; the leaf is folded flat along the north beam. RIGHT sprite: CLOSED, retain the vertical narrow door-slab across center x580 y115..399 joining north and south beams, blocking left-right travel. All geometry straight parallel rectangular floor plan, true90degree overhead with no visible upright faces, no isometric angles. Keep rich weathered wood/metal/cobblestone detail, same dimensions, pixel-art shading. Pure solid magenta outside. No text, no numbers, no roof."
+}

@@ -1,0 +1,46 @@
+{
+  "source": "doc/entrance-options-20260917/a-recessed-masonry-wide/candidate.png",
+  "sourceSha256": "c13da44daab7834fa7476bad1d135d783eb54e180afdfd6b4ab7610c8a99f340",
+  "sha256": "153e14c0f7de133dc98839b9c20bf7fb065b6d17f6fa0f2d5498d2fa9499a6d7",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 450
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 222,
+        "y": 434
+      },
+      {
+        "x": 160,
+        "y": 434
+      }
+    ],
+    "matteSeeds": [
+      {
+        "x": 535,
+        "y": 250
+      }
+    ]
+  },
+  "metrics": {
+    "removed": 284146,
+    "edgeCorrected": 0,
+    "corePreserved": 102073
+  },
+  "admission": "comparison-only",
+  "operations": [
+    "reviewed magenta/violet matte normalization",
+    "connected matte removal",
+    "translation for paired threshold anchors; no rescaling"
+  ]
+}

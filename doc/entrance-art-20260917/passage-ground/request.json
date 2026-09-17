@@ -1,0 +1,10 @@
+{
+  "requestId": "64410780-7976-40dc-9d1b-a7ba8f2fb5b4",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "text",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "prompt": "Production sprite art for an old partly abandoned American neighborhood 2D exploration game. Detailed hand-painted PIXEL ART, intentional small stepped pixel clusters, rich worn wood/stone/metal, restrained sage, dusty beige, brown, no photoreal grain and no flat vector look. Camera: parallel orthographic RPG view from steeply ABOVE (about 60 degrees above ground), looking toward screen top; parallel edges, NO vanishing point, NO isometric diamond, no narrowing with distance. Isolated architectural assets on exact SOLID FLAT MAGENTA #ff00ff, no checkerboard, no cast shadows outside the objects, no labels, no numbers, no people. Keep generous margin around every sprite. 768x512 image, two equal384x512 cells. Strictly vertical 90 degree overhead for these ground-level passage assets, NO visible tall wall face. LEFT: a narrow old cobblestone alley threshold running north-south, rectangle about x70..314 y110..420 in the cell, a few irregular worn stone slabs and small moss seams, thick short stone boundary stubs to the left and right, the center is clearly walkable. No arch, no closed door. RIGHT: the same ground footprint but as a laundry side-passage threshold running north-south, cream stone sill and aged wooden side posts with gathered faded green fabric curtains tied back on BOTH sides; fabric folded entirely at margins, central path open. Looking from ABOVE, see gathered cloth folds as thick edge shapes, not front-facing hanging curtains. Detailed surfaces at same pixel grain as retro adventure scenery, muted and old, high readability. Keep central path unobstructed, do not draw doors, do not draw whole rooms or buildings."
+}

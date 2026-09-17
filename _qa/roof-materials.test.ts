@@ -16,10 +16,10 @@ test('roof inventory retains source identity, in-bounds crops and a common effec
   assert.throws(()=>getRoofMaterial(m.id as RoofMaterialId),/NOT_ADMITTED/)
  }
 })
-test('front/back of watch shop share material; courtyard buildings differ and all images preload',()=>{
+test('default play keeps prior roofs and does not preload rejected dense variants',()=>{
  const yard=oldStreetRoofSections('yard','W',48,480),street=oldStreetRoofSections('street','W',32,512)
- assert.equal(yard[1].material,street[0].material);assert.notEqual(yard[0].material,yard[1].material)
- assert.equal(yard[0].y+yard[0].height,yard[1].y);assert.equal(yard[1].y+yard[1].height,528)
- assert.equal(oldStreetRoofSections('yard','E',48,480)[0].material,'roof-asphalt-grey-01')
- assert.ok(oldStreetEnvironmentKeys('yard',true,true).includes('roofVariants'));assert.ok(!oldStreetEnvironmentKeys('street',true,true).includes('roofVariants'))
+ assert.equal(yard[0].material,street[0].material)
+ assert.equal(oldStreetRoofSections('yard','E',48,480)[0].material,'roof-slate-blue-01')
+ assert.ok(!oldStreetEnvironmentKeys('yard',true,true).includes('roofVariants'))
+ for(const room of ['street','yard'])for(const side of ['W','E'] as const)assert.ok(oldStreetRoofSections(room,side,48,480).every(r=>!r.material.includes('clay')&&!r.material.includes('asphalt')))
 })

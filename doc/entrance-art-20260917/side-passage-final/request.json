@@ -1,0 +1,13 @@
+{
+  "requestId": "678daa02-7558-4b02-b313-72ca40e8c164",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "mode": "edit",
+  "size": {
+    "width": 768,
+    "height": 512
+  },
+  "referenceUrls": [
+    "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789658116723936.png"
+  ],
+  "prompt": "Correct this two-cell game asset sheet. It must contain ONLY architecture and floor, NO human, NO character, NO person, NO shadow of a person. Remove the little man in the LEFT cell and replace him with matching ordinary empty stone paving. Both sprites have a NORTH horizontal wooden beam and a SOUTH horizontal wooden beam connecting their square corner posts. Copy the complete top and bottom beams of the LEFT sprite onto the matching positions of the RIGHT sprite so the frames match. Between these north and south beams the passage runs HORIZONTALLY, from the left edge to the right edge. LEFT cell is OPEN: middle area only empty stone floor, no central barrier. RIGHT cell is CLOSED: REMOVE the current HORIZONTAL bar across the middle y250, replace it with ONE VERTICAL narrow wooden door plank at x576, running from y120 to y394, so it blocks horizontal travel. This vertical barrier is seen from directly above, 14px thick and 274px long; brass handle in its middle. NO vertical rails on left/right outer sides, only the central CLOSED gate has a vertical slab. Keep exact overhead view, parallel geometry, rich aged-wood/stone pixel art, plain solid magenta background and no captions. Keep same image size and same two cell positions."
+}

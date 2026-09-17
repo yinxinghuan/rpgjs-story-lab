@@ -1,0 +1,78 @@
+{
+  "source": "side-passage-final/candidate.png",
+  "sourceSha256": "2db5c6ffb518cb911b889ff84602ee6721bb57d14771123d30df7d5ef2aae0aa",
+  "sha256": "417de806837505957fa9dadda2498304ad53f35d0156cfe7ac568549b670af70",
+  "spec": {
+    "columns": 2,
+    "rows": 1,
+    "cellWidth": 384,
+    "cellHeight": 512,
+    "foot": {
+      "x": 192,
+      "y": 480
+    },
+    "kind": "states",
+    "backgroundMode": "magenta",
+    "neutralMin": 240,
+    "chromaMax": 12,
+    "sourceAnchors": [
+      {
+        "x": 192,
+        "y": 480
+      },
+      {
+        "x": 192,
+        "y": 480
+      }
+    ],
+    "matteSeeds": []
+  },
+  "frames": [
+    {
+      "row": 0,
+      "column": 0,
+      "sourceBox": [
+        49,
+        46,
+        334,
+        474
+      ],
+      "sourceAnchor": {
+        "x": 192,
+        "y": 480
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sourceBox": [
+        447,
+        47,
+        723,
+        474
+      ],
+      "sourceAnchor": {
+        "x": 192,
+        "y": 480
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "metrics": {
+    "removed": 201722,
+    "edgeCorrected": 2894,
+    "corePreserved": 185145
+  },
+  "operations": [
+    "reviewed empty-margin removal where present",
+    "connected magenta removal and edge unmix",
+    "translation only for shared front-door foot anchor"
+  ]
+}

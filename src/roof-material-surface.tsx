@@ -1,11 +1,11 @@
 import {useEffect,useState,useId} from 'react'
 import {getRoofMaterial,roofMaterialSampling,type RoofMaterialId} from './material-library/roof-materials'
 const samples=new Map<string,Promise<string>>()
-/** Once per source+material: match effective texel density, retaining world-space tile size. */
+/** Preserve source pixel grain without averaging it away; world-space tile size is independent. */
 function sampleRoof(source:string,id:RoofMaterialId){
  const key=source+'|'+id,existing=samples.get(key);if(existing)return existing
  const pending=new Promise<string>((resolve,reject)=>{
-  const image=new Image();image.onload=()=>{try{const m=getRoofMaterial(id,{allowCandidate:true}),size=roofMaterialSampling(id),canvas=document.createElement('canvas');canvas.width=size.width;canvas.height=size.height;const ctx=canvas.getContext('2d');if(!ctx)throw Error('CANVAS_UNAVAILABLE');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(image,m.crop.x,m.crop.y,m.crop.width,m.crop.height,0,0,size.width,size.height);resolve(canvas.toDataURL('image/png'))}catch(error){reject(error)}};image.onerror=()=>reject(Error('ROOF_TEXTURE_UNAVAILABLE'));image.src=source
+  const image=new Image();image.onload=()=>{try{const m=getRoofMaterial(id,{allowCandidate:true}),size=roofMaterialSampling(id),canvas=document.createElement('canvas');canvas.width=size.width;canvas.height=size.height;const ctx=canvas.getContext('2d');if(!ctx)throw Error('CANVAS_UNAVAILABLE');ctx.imageSmoothingEnabled=false;ctx.drawImage(image,m.crop.x,m.crop.y,m.crop.width,m.crop.height,0,0,size.width,size.height);resolve(canvas.toDataURL('image/png'))}catch(error){reject(error)}};image.onerror=()=>reject(Error('ROOF_TEXTURE_UNAVAILABLE'));image.src=source
  });samples.set(key,pending);if(samples.size>16)samples.delete(samples.keys().next().value!);pending.catch(()=>samples.delete(key));return pending
 }
 export function RoofMaterialSurface({material,source,x,y,width,height,side}:{material:RoofMaterialId;source?:string;x:number;y:number;width:number;height:number;side:'W'|'E'}){
