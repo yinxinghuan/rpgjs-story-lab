@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {archiveRoomLayout,readArchiveRoom} from '../src/old-street-archive-room'
 import {archiveLayoutFromFacts,archiveEventSlots} from '../src/old-street-archive'
-import {oldStreetSpatialPlan,oldStreetPath,oldStreetWalkable} from '../src/old-street-space'
+import {oldStreetSpatialPlan,oldStreetPath,oldStreetWalkable,bindOldStreet} from '../src/old-street-space'
 import {createOldStreetCampaignPlanner} from '../server/old-street-campaign-planner'
 import {compileLinkedParcel} from '../src/old-street-campaign'
 export const roomA=['I...L','.....','.SS..','.....','...S.','.Tt..','.....','.....','.....']
@@ -48,5 +48,26 @@ test('unreachable evidence and malformed furniture cannot open a generated room;
  assert.throws(()=>readArchiveRoom(roomA.map(r=>r.replace('L','I'))),/INVALID/)
  assert.equal(archiveLayoutFromFacts({'archive-layout':'west-index'}).props[0].body.x,112)
  assert.equal(archiveLayoutFromFacts({'archive-layout':'east-index'}).props[0].body.x,224)
- assert.equal(archiveEventSlots().length,9,'all possible renderer slots exist before generation')
+ assert.equal(archiveEventSlots().length,10,'all possible renderer slots exist before generation')
+})
+
+test('moving a rack opens the actual index approach, changes collision and preserves a reversible walking route',()=>{
+ for(const pair of ['.mM..','..Mm.']){
+  const room=['..I..',pair,'.....','....L','.....','.Tt..','.....','.....','.....']
+  const facts={'archive-ready':true,'archive-room':JSON.stringify(readArchiveRoom(room))}
+  const before=archiveRoomLayout(room),after=archiveRoomLayout(room,true)
+  const index=before.props.find(p=>p.id==='archive-index')!,rack=before.props.find(p=>p.id==='archive-rack')!,parked=after.props.find(p=>p.id==='archive-rack')!
+  assert.equal(oldStreetWalkable('archive',index.approach,{facts}),false)
+  assert.equal(oldStreetSpatialPlan({facts}).entities.some(p=>p.id==='archive-index'),false)
+  assert.ok(bindOldStreet('en',{facts}).canInteract('archive-rack','archive',rack.approach))
+  const moved={...facts,'archive-rack-shifted':true}
+  assert.equal(oldStreetWalkable('archive',index.approach,{facts:moved}),true)
+  assert.equal(oldStreetWalkable('archive',parked.body,{facts:moved}),false)
+  assert.ok(bindOldStreet('en',{facts:moved}).canInteract('archive-index','archive',index.approach))
+  assert.ok(oldStreetPath('archive',rack.approach,index.approach,{facts:moved}).length)
+  assert.ok(oldStreetPath('archive',index.approach,parked.approach,{facts:moved}).length)
+  assert.ok(oldStreetPath('archive',parked.approach,before.arrival,{facts}).length,'restoring the rack cannot strand its operator')
+ }
+ assert.throws(()=>readArchiveRoom(['..I..','..M..','..m..','....L','.....','.Tt..','.....','.....','.....']),/INVALID/,'parking is horizontal and adjacent')
+ assert.throws(()=>readArchiveRoom(['I....','..Mm.','.....','....L','.....','.Tt..','.....','.....','.....']),/NOT_BLOCKING/,'rack must create real access work')
 })

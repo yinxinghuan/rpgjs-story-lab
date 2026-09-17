@@ -1,0 +1,55 @@
+{
+  "system": "Design a small overhead archive room for an exploration game. Return only JSON {room}. room is a generated physical floor plan: exactly 9 row strings, each exactly 5 characters. Use . for clear floor, S for a full-cell storage shelf (0-6 total), exactly one I for the index shelf, exactly one L for the log shelf, and exactly one adjacent Tt pair for the two-cell sorting table. Place I, L and Tt away from each other, each with an entirely empty row immediately BELOW it for standing, except for the optional movable rack described next. The player enters from below row 9. Leave a connected empty walking route from the bottom to the row below each I, L and Tt. Do not form a solid wall or seal off a shelf. Vary the positions and walking routes across journeys; no new exits. Optionally add exactly one M movable rack and one m empty parking cell immediately left or right of M on the same row. M must be directly below I so it blocks access to that index. After moving M into m, all three sources/table must be reachable. Leave the entire row BELOW M/m clear so the player can operate the rack from either position. Never place another object in m or add multiple movable racks.",
+  "startedAt": "2026-09-17T00:32:20.205Z",
+  "finishedAt": "2026-09-17T00:32:23.410Z",
+  "usage": {
+    "used": 2,
+    "limit": 2
+  },
+  "cases": [
+    {
+      "input": "Include the optional M rack directly below I, with its m parking space on the LEFT. Include one or two S storage shelves. Make both rack operating positions reachable from the bottom entrance, and all evidence reachable after sliding it.",
+      "raw": {
+        "room": [
+          ".....",
+          "..L..",
+          ".....",
+          "..Tt.",
+          ".....",
+          ".....",
+          ".I...",
+          "mM...",
+          "....."
+        ]
+      },
+      "room": [
+        ".....",
+        "..L..",
+        ".....",
+        "..Tt.",
+        ".....",
+        ".....",
+        ".I...",
+        "mM...",
+        "....."
+      ]
+    },
+    {
+      "input": "Include the optional M rack directly below I, with its m parking space on the RIGHT. Give the log and table different positions from the first room. Include one or two S storage shelves. Make both rack operating positions reachable from the bottom entrance, and all evidence reachable after sliding it.",
+      "raw": {
+        "room": [
+          ".....",
+          "..S..",
+          "I...L",
+          ".....",
+          "M.mTt",
+          ".....",
+          "..S..",
+          ".....",
+          "....."
+        ]
+      },
+      "error": "ARCHIVE_ROOM_INVALID"
+    }
+  ]
+}

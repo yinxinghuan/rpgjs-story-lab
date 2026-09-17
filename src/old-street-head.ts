@@ -1,3 +1,4 @@
+import {archiveRackState} from './old-street-archive'
 import type {StorySave} from './vendor/original-train/types'
 import {LabError} from './journey-runtime'
 import {assertOldStreetExpansions,type OldStreetExpansionRequest} from './old-street-expansion'
@@ -18,5 +19,6 @@ export function assertOldStreetHead(value:unknown): asserts value is OldStreetHe
     if(h.campaign&&s.facts.departed&&!campaignComplete(h.campaign))throw Error('CAMPAIGN_INCOMPLETE')
     if(s.facts['archive-published']===true&&!h.campaign?.archive?.order)throw Error('ARCHIVE_NOT_RECONSTRUCTED')
     if(s.facts['archive-room']!==undefined&&s.facts['archive-room']!==JSON.stringify(h.campaign?.archive?.content.room)||h.campaign?.archive?.content.room&&s.facts['archive-room']!==JSON.stringify(h.campaign.archive.content.room))throw Error('ARCHIVE_ROOM_MISMATCH')
+    if(s.facts['archive-rack-shifted']!==undefined&&(typeof s.facts['archive-rack-shifted']!=='boolean'||!h.campaign?.archive||!archiveRackState(s.facts)?.slide))throw Error('ARCHIVE_RACK_STATE_INVALID')
   } catch {throw new LabError('OLD_STREET_SAVE_UNSUPPORTED',409)}
 }

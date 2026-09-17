@@ -7,6 +7,7 @@ export function oldStreetPropState(id: string, save: Pick<StorySave, 'facts'>): 
   const f = save.facts
   if(id.startsWith('archive-storage-'))return ['固定储物架 · 需要绕行','Fixed storage shelf · walk around it']
   switch (id) {
+    case 'archive-rack':return f['archive-rack-shifted']===true?['移到一旁的储物架','Storage rack moved aside']:['挡住索引的储物架','Storage rack blocking the index']
     case 'record-book': {
       if(f['archive-published']===true)return ['记录册 · 调查摘要','Record book · investigation summary']
       const pose=oldStreetRecordBookPose(save)

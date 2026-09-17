@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {DatabaseSync} from 'node:sqlite'
 import {randomUUID} from 'node:crypto'
-import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent,compileInquiryArchive} from '../src/old-street-archive'
+import {archiveEvidence,archiveLayout,archiveOrders,archiveOrderMatches,readArchiveContent,compileInquiryArchive,archiveRackLabel} from '../src/old-street-archive'
 import {assertOldStreetCampaign,campaignComplete,compileLinkedParcel} from '../src/old-street-campaign'
 import {oldStreetSpatialPlan,oldStreetDoors,oldStreetPath,oldStreetWalkable} from '../src/old-street-space'
 import {OldStreetAuthority,type OldStreetHead} from '../server/old-street-runtime'
@@ -45,7 +45,7 @@ for(const layout of ['west-index','east-index'] as const)test(`archive ${layout}
 
 test('new campaign enters its generated archive through the real door, gathers evidence and persists the reconstructed ending',async()=>{
  const parcelDraft={title:'The footbridge note',fragment:'The undated note mentions bridge repairs and the reopening.',otherEvent:'The footbridge reopened'}
- const parcel=compileLinkedParcel(parcelDraft,trace.records[0],'en'),archiveDraft={title:'The footbridge work',layout:'west-index',room:['I...L','.....','.SS..','.....','...S.','.Tt..','.....','.....','.....'],middleEvents:['Replacement boards were cut','The new boards were fitted'],earlier:'first'}
+ const parcel=compileLinkedParcel(parcelDraft,trace.records[0],'en'),archiveDraft={title:'The footbridge work',layout:'west-index',room:['..I..','.mM..','.....','....L','.....','.Tt..','.....','.....','.....'],middleEvents:['Replacement boards were cut','The new boards were fitted'],earlier:'first'}
  const archive=compileInquiryArchive(archiveDraft,parcel.inquiry!,'en')
  const raw=new DatabaseSync(':memory:'),db:AuthorityStorage={all:(s,...b)=>raw.prepare(s).all(...b) as any,run:(s,...b)=>{raw.prepare(s).run(...b)},transaction:f=>{raw.exec('BEGIN IMMEDIATE');try{const r=f();raw.exec('COMMIT');return r}catch(e){raw.exec('ROLLBACK');throw e}}}
  let jobs:OldStreetCampaignJobs,calls=0
@@ -81,10 +81,20 @@ test('new campaign enters its generated archive through the real door, gathers e
   assert.equal(h.save.facts['archive-room'],JSON.stringify(archiveDraft.room))
   s=authority();assert.deepEqual(await s.action('synthetic',h.id,admitted.b),admitted.r)
   await steps(['archive'])
+  assert.ok(!oldStreetSpatialPlan(h.save).entities.some(e=>e.id==='archive-index'),'blocked source is not an available remote read')
+  const shifted=await send('archive-rack',{type:'free-input',text:archiveRackLabel(h.save.facts,'en'),mode:'local'})
+  assert.equal(h.save.facts['archive-rack-shifted'],true)
+  assert.equal(h.save.facts['archive-reconstructed'],undefined,'moving furniture is not solving the investigation')
+  assert.equal(h.save.blocks.at(-1)?.data?.archiveReconstructed,0,'ending cannot cite a movement as the reconstruction')
+  assert.deepEqual(await s.action('synthetic',h.id,shifted.b),shifted.r,'lost response replays without moving twice')
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','c','d','b']})),/EVIDENCE_REQUIRED/)
   assert.ok(!JSON.stringify(campaignInputKnowledge(h)).includes(archive.discovery))
   await send('archive-index',{type:'free-input',text:'Examine the work index',mode:'local'})
   assert.equal(campaignInputKnowledge(h).filter(k=>k.id.startsWith('learned:archive-')).length,1)
+  await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'restore'})
+  assert.equal(h.save.facts['archive-rack-shifted'],false)
+  assert.deepEqual(h.campaign?.archive?.examined,['index'],'putting it back never erases learned evidence')
+  await send('archive-rack',{type:'campaign-decide',stage:'archive',selection:'slide'})
   await steps(['cellar','archive'])
   await send('archive-ledger',{type:'campaign-observe',stage:'archive'})
   await assert.rejects(s.action('synthetic',h.id,input('archive-desk',{type:'campaign-decide',stage:'archive',order:['a','b','c','d']})),/ORDER_MISMATCH/)

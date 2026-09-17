@@ -69,8 +69,8 @@ export function archiveEvidence(content:ArchiveContent,source:ArchiveSource,loca
 }
 /** Stable threshold, generated furniture or either legacy arrangement. The same bodies
  * and approaches are consumed by collision, rendering and action validation. */
-export function archiveLayout(layout:ArchiveContent['layout'],room?:unknown){
- if(room!==undefined)return archiveRoomLayout(room)
+export function archiveLayout(layout:ArchiveContent['layout'],room?:unknown,shifted=false){
+ if(room!==undefined)return archiveRoomLayout(room,shifted)
  const indexX=layout==='west-index'?112:224,ledgerX=layout==='west-index'?224:112
  const shelf=(id:string,x:number,y:number)=>({id,room:'archive' as const,body:{x,y,w:40,h:28},position:{x:x+20,y:y+28},approach:{x:x+12,y:y+44},actions:[] as string[]})
  return {
@@ -79,10 +79,18 @@ export function archiveLayout(layout:ArchiveContent['layout'],room?:unknown){
  }
 }
 export function archiveLayoutFromFacts(facts:Record<string,unknown>){
- return archiveLayout(facts['archive-layout']==='east-index'?'east-index':'west-index',typeof facts['archive-room']==='string'?JSON.parse(facts['archive-room']):undefined)
+ return archiveLayout(facts['archive-layout']==='east-index'?'east-index':'west-index',typeof facts['archive-room']==='string'?JSON.parse(facts['archive-room']):undefined,facts['archive-rack-shifted']===true)
+}
+export function archiveRackState(facts:Record<string,unknown>){return typeof facts['archive-room']==='string'?archiveRoomLayout(JSON.parse(facts['archive-room']),facts['archive-rack-shifted']===true):undefined}
+export function archiveRackLabel(facts:Record<string,unknown>,locale:'zh'|'en'){
+ const slide=archiveRackState(facts)?.slide
+ if(!slide)return ''
+ if(facts['archive-rack-shifted']===true)return locale==='zh'?'移回储物架':'Slide the rack back'
+ const left=slide.to.x<slide.from.x
+ return locale==='zh'?`向${left?'左':'右'}移开储物架`:`Slide the rack ${left?'left':'right'}`
 }
 /** RPG-JS registers events before generation finishes. Bind stable slots now;
  * onInit places/hides them using the admitted room, never the placeholders. */
 export function archiveEventSlots(){
- return [...archiveLayout('west-index').props,...Array.from({length:6},(_,i)=>({id:`archive-storage-${i}`,room:'archive' as const,body:{x:92,y:96,w:40,h:40},position:{x:112,y:136},approach:{x:104,y:140},actions:[] as string[]}))]
+ return [...archiveLayout('west-index').props,...[...Array.from({length:6},(_,i)=>`archive-storage-${i}`),'archive-rack'].map(id=>({id,room:'archive' as const,body:{x:92,y:96,w:40,h:40},position:{x:112,y:136},approach:{x:104,y:140},actions:[] as string[]}))]
 }

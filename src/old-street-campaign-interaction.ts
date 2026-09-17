@@ -2,15 +2,17 @@ import {campaignCommission} from './old-street-campaign-story'
 import {campaignAnchor} from './old-street-campaign'
 import type {OldStreetHead} from './old-street-head'
 import {originalActionIntentIssues} from './original-action-intent'
-import {archiveEvidence} from './old-street-archive'
+import {archiveEvidence,archiveRackState,archiveRackLabel} from './old-street-archive'
 import {publicRecordAction,publicRecordKnowledge} from './old-street-public-record'
 
-type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive';selection?:number|'take'|'leave'|'share'|'withdraw'}
+type CampaignAction={id:string;label:string;type:'campaign-read'|'campaign-decide'|'campaign-observe';stage:'trace'|'parcel'|'archive';selection?:number|'take'|'leave'|'share'|'withdraw'|'slide'|'restore'}
 /** Labels describe every visible choice, never which one is correct. The model
  * proposes an ID; the existing campaign authority still evaluates the choice. */
 export function campaignInputActions(h:OldStreetHead,target:string):CampaignAction[]{
  const c=h.campaign,t=(zh:string,en:string)=>h.save.locale==='zh'?zh:en
  if(!c||!h.save.facts['letter-taken'])return []
+ if(h.sceneId==='archive'&&c.archive&&target==='archive-rack'&&archiveRackState(h.save.facts)?.slide)return [{id:'campaign:move-rack',label:archiveRackLabel(h.save.facts,h.save.locale),type:'campaign-decide',stage:'archive',selection:h.save.facts['archive-rack-shifted']===true?'restore':'slide'}]
+ if(target==='archive-index'&&archiveRackState(h.save.facts)?.indexBlocked)return []
  if(c.archive&&h.sceneId==='archive'&&['archive-index','archive-ledger','archive-desk'].includes(target))return [{id:'campaign:examine-'+target,label:t(target==='archive-desk'?'整理记录卡':target==='archive-index'?'查阅施工索引':'查阅工作日志',target==='archive-desk'?'Arrange the event cards':target==='archive-index'?'Examine the work index':'Examine the work log'),type:'campaign-observe',stage:'archive'}]
  if(h.sceneId===campaignAnchor.trace.scene&&target===campaignAnchor.trace.target)return [
   ...(c.archive?.order?[{id:h.save.facts['archive-published']===true?'campaign:withdraw-summary':'campaign:share-summary',label:publicRecordAction(h.save.facts['archive-published']===true,h.save.locale),type:'campaign-decide' as const,stage:'trace' as const,selection:h.save.facts['archive-published']===true?'withdraw' as const:'share' as const}]:[]),

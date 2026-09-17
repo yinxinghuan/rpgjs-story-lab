@@ -22,6 +22,7 @@ export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
 export function oldStreetActionFailureMessage(code:string,locale:'zh'|'en'){
  const text=(zh:string,en:string)=>locale==='zh'?zh:en
  if(code==='NARRATION_RATE_LIMIT')return text('先歇一会儿再聊吧。现在仍可走动或选择行动。','Try chatting again shortly. You can still walk around or choose an action.')
+ if(code==='CAMPAIGN_RACK_SPACE_REQUIRED')return text('先退到储物架前方，再把它移开。','Step in front of the rack before sliding it.')
  if(code==='CAMPAIGN_ARCHIVE_ORDER_MISMATCH')return text('这个顺序与记录不一致。对照已查到的线索，再调整一下。','That order contradicts the records. Compare the evidence and rearrange the cards.')
  if(code==='CAMPAIGN_ARCHIVE_EVIDENCE_REQUIRED')return text('两处资料架的线索还没有查齐，可以先过去看看。','You still need evidence from both shelves. Examine them first.')
  if(code==='CAMPAIGN_PAPERS_REQUIRED')return text('先阅读地下室里找到的材料。','Read the papers on the cellar shelf first.')

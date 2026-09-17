@@ -29,5 +29,11 @@ try{
   jobs.enqueue(owner,h.id,'parcel');await jobs.run(owner,h.id,'parcel')
   await send('photo-folder',{type:'campaign-read',stage:'parcel'});await send('photo-folder',{type:'campaign-decide',stage:'parcel',selection:'leave'})
  }
+ // Optional room checkpoint uses ordinary admission and door actions. This
+ // prepares a distinct sample, not browser movement evidence for its arrival.
+ if(process.argv.includes('--enter-archive')&&!h.campaign?.archive){
+  jobs.enqueue(owner,h.id,'archive');await jobs.run(owner,h.id,'archive')
+  await send('photo-folder',{type:'campaign-plan',stage:'archive'});await steps(['archive'])
+ }
  console.log(JSON.stringify({scene:h.sceneId,version:h.version,campaignVersion:h.campaign?.version,archiveAdmitted:!!h.campaign?.archive,remoteCalls:0}))
 }finally{raw.close()}
