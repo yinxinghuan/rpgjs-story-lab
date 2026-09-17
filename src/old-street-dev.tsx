@@ -1,3 +1,4 @@
+import {OldStreetRoomWalls,OldStreetRoomForeground} from './old-street-room-walls-view'
 import {OldStreetObjectPreview} from './old-street-object-preview'
 import {needsRecoveredNegative,negativeSourceReady} from './old-street-negative-source'
 import {archiveRackDescription} from './old-street-archive'
@@ -633,13 +634,14 @@ export default function OldStreetDev() {
       closeInteraction()
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        {pixelShop&&head.scene==='street'&&<OldStreetBuildingEdges image={environmentArt.streetEdges}/>}<OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetRoofRecovery room={head.scene} save={head.save} wood={environmentArt.wood} cabinet={pixelPropsUrl}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt} stoneImage={pixelShop?environmentArt.stoneStair:undefined} woodImage={pixelShop?environmentArt.doorWood:undefined}/>
+        {pixelShop&&head.scene==='street'&&<OldStreetBuildingEdges image={environmentArt.streetEdges}/>}<OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetRoomWalls room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} compositeShop={compositeShop}/><OldStreetRoofRecovery room={head.scene} save={head.save} wood={environmentArt.wood} cabinet={pixelPropsUrl}/><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt} stoneImage={pixelShop?environmentArt.stoneStair:undefined} woodImage={pixelShop?environmentArt.doorWood:undefined}/>
         {head.scene==='darkroom'&&<image href={photoTableUrl} x="136" y="104" width="112" height="112"/>}
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!(head.scene==='shed'&&roofSpareVisible(head.save)&&b.x===roofSpareBoard.x&&b.y===roofSpareBoard.y)&&!(head.scene==='roof'&&head.save.facts['roof-recovery']&&[...roofRecoveryObstacles(head.save),...oldStreetProjectedProps(head.save).filter(p=>p.id.startsWith('roof-')).map(p=>p.body)].some(r=>r.x===b.x&&r.y===b.y&&r.w===b.w&&r.h===b.h))&&!oldStreetFurniture.some(p=>p.room===head.scene&&b.x===p.body.x&&b.y===p.body.y)&&!(head.scene==='darkroom'&&b.x===136)&&!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&(renderedProps.includes(p.id)||p.id.startsWith('archive-'))&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
+      <svg className="os-room-foreground" viewBox="0 0 384 576" aria-hidden="true"><OldStreetRoomForeground room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt}/></svg>
       {displayBook&&<div aria-hidden="true" className="os-displayed-photo" style={{left:`${(displayBook.body.x+displayBook.body.w*.75)/384*100}%`,top:`${(displayBook.body.y-6)/576*100}%`}}>{displayedPhoto&&<img src={displayedPhoto} alt="" draggable={false}/>}</div>}
       {fieldProp&&<div aria-hidden="true" className="os-field-note" style={{left:`${fieldProp.body.x+fieldProp.body.w*.7}px`,top:`${fieldProp.body.y}px`,backgroundImage:`url(${photoShelfUrl})`}}/>}
       {entities.map(e => {

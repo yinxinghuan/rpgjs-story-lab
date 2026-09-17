@@ -1,8 +1,4 @@
-import {oldStreetShopWallRegions} from './old-street-shop-environment-layout'
-import {OldStreetPhotoEnvironment} from './old-street-photo-environment'
 import {oldStreetWoodTile} from './old-street-floor-material'
-import {OldStreetShedEnvironment} from './old-street-shed-environment'
-import {OldStreetShopEnvironment} from './old-street-shop-environment'
 import {oldStreetEnvironmentArt,type OldStreetEnvironmentArt} from './old-street-environment-art'
 import {oldStreetFloors} from './old-street-space'
 import type {OldStreetRoom} from './old-street-cartridge'
@@ -21,9 +17,6 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="104 320 560 736" preserveAspectRatio="none" overflow="hidden">
       <image href={art.shopComposite} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
     </svg>
-    {oldStreetShopWallRegions().map((r,i)=><svg key={i} x={r.x} y={r.y} width={r.width} height={r.height} viewBox={`${i===0?90:474} 28 ${i===0?184:215} ${(i===0?184:215)*r.height/r.width}`} preserveAspectRatio="none" overflow="hidden">
-      <image href={art.shopComposite} width="768" height="1152" style={{imageRendering:'pixelated'}}/>
-    </svg>)}
   </g>
   // This candidate has ~16 actual plank columns, not the requested 32.
   // Tile at half-room width: ~7 world units per plank, independent of camera zoom.
@@ -32,7 +25,6 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill="#806142" stroke="#463d31" strokeWidth="2"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#a08866"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="url(#os-narrow-wood)"/>
-    {pixelShop&&room==='shop'&&<OldStreetShopEnvironment image={art.shopWall}/>}
   </g>
   // The source's thin facade/border is excluded: only flat paving, light and
   // litter enter the walkable area. Runtime entrances retain their real slots.
@@ -61,7 +53,6 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
   if(room==='shed'&&pixelShop)return <g>
     <rect x={floor.x-4} y={floor.y-4} width={floor.w+8} height={floor.h+8} fill="#77715c"/>
     <image href={art.shedFloor} x={floor.x} y={floor.y} width={floor.w} height={floor.h} preserveAspectRatio="none" style={{imageRendering:'pixelated'}}/>
-    <OldStreetShedEnvironment image={art.shedWall}/>
   </g>
   if(room==='cellar'&&pixelShop)return <g>
     <rect x={floor.x-4} y={floor.y-4} width={floor.w+8} height={floor.h+8} fill="#656452"/>
@@ -74,10 +65,9 @@ export function OldStreetFloor({room, pixelShop=false, compositeShop=false, art=
     <svg x={floor.x} y={floor.y} width={floor.w} height={floor.h} viewBox="0 180 640 844" preserveAspectRatio="none" overflow="hidden">
       <image href={art.photoFloor} width="640" height="1024" style={{imageRendering:'pixelated'}}/>
     </svg>
-    <OldStreetPhotoEnvironment image={art.photoWall}/>
   </g>
   const surface = room==='laundry'?surfaces[room]:null
-  if (!surface) return <g><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/>{pixelShop&&room==='shed'&&<OldStreetShedEnvironment image={art.shedWall}/>} {pixelShop&&room==='photo'&&<OldStreetPhotoEnvironment image={art.photoWall}/>}</g>
+  if (!surface) return <g><rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill="#c2bbab" stroke="#81786c" strokeWidth="6"/></g>
   return <g>
     <rect x={floor.x-8} y={floor.y-8} width={floor.w+16} height={floor.h+16} fill={surface.wall} stroke="#463d31" strokeWidth="2"/>
     <rect x={floor.x} y={floor.y} width={floor.w} height={floor.h} fill={surface.floor}/>

@@ -1,7 +1,5 @@
-import {oldStreetDoors,oldStreetFloors} from './old-street-space'
-/** The generated gap is discarded; the real stairs own the opening. */
+import {oldStreetRoomWalls,roomWallSize} from './old-street-room-walls'
 export function oldStreetPhotoWallRegions(){
- const floor=oldStreetFloors.photo,door=oldStreetDoors().find(d=>d.room==='photo'&&d.side==='N')!
- return [{x:floor.x,y:floor.y-64,width:door.position.x-24-floor.x,height:64,crop:'0 0 274 256'},
- {x:door.position.x+24,y:floor.y-64,width:floor.x+floor.w-door.position.x-24,height:64,crop:'494 0 274 256'}]
+ const {floor,north}=oldStreetRoomWalls('photo',{})!
+ return north.map((r,i)=>({x:r.start,y:floor.y-roomWallSize.back,width:r.length,height:roomWallSize.back,crop:['0 0 274 256','494 0 274 256'][i]}))
 }

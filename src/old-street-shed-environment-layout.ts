@@ -1,7 +1,5 @@
-import {oldStreetDoors,oldStreetFloors} from './old-street-space'
-/** The source's magenta gap is deliberately unused: real stairs define clearance. */
+import {oldStreetRoomWalls,roomWallSize} from './old-street-room-walls'
 export function oldStreetShedWallRegions(){
- const floor=oldStreetFloors.shed,stairs=oldStreetDoors().find(d=>d.room==='shed'&&d.side==='N'&&d.kind==='stairs')!
- return [{x:floor.x,y:floor.y-64,width:stairs.position.x-24-floor.x,height:64,crop:{x:0,y:0,width:320,height:256}},
- {x:stairs.position.x+24,y:floor.y-64,width:floor.x+floor.w-stairs.position.x-24,height:64,crop:{x:448,y:0,width:320,height:256}}]
+ const {floor,north}=oldStreetRoomWalls('shed',{})!
+ return north.map((r,i)=>({x:r.start,y:floor.y-roomWallSize.back,width:r.length,height:roomWallSize.back,crop:{x:i===0?0:448,y:0,width:r.length*4,height:256}}))
 }
