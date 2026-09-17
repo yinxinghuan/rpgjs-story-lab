@@ -44,11 +44,12 @@ test('new investigation asks a concrete question; older complete paper instances
  const planner=createOldStreetCampaignPlanner(async system=>{prompt=system;return old})
  const signal=new AbortController().signal
  assert.deepEqual(await planner({stage:'parcel',locale:'en',previous},signal),old)
- await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/INVESTIGATION_INVALID/)
- assert.match(prompt,/ONE complete coherent historical episode/)
- const draft={...old,recordAt:'end',events:['The damage was surveyed','Materials were ordered','The delivery arrived'],roomPlan:{indexSide:'left',storageShelves:1,rack:'none'}}
+ await assert.rejects(planner({stage:'parcel',locale:'en',previous,investigation:true},signal),/PHOTO_INQUIRY_INVALID/)
+ const draft={title:'A street view',photoLabel:'Path study',roomPlan:{indexSide:'left',storageShelves:1,rack:'none'}}
  const accepted=createOldStreetCampaignPlanner(async(_system,user)=>'chronologicalEvents' in JSON.parse(user)?{valid:true,issues:[]}:draft)
  const bundle=readPreparedInvestigation(await accepted({stage:'parcel',locale:'en',previous,investigation:true},signal))
- assert.deepEqual(bundle.parcel,compilePreparedInvestigation(draft,previous,'en',42).parcel)
+ assert.equal(bundle.parcel.inquiry?.first,previous.label)
+ assert.equal(bundle.parcel.inquiry?.second,'Photo “Path study” was taken')
+ assert.ok(bundle.archive.photoTiming)
  assert.ok(bundle.archive.room)
 })

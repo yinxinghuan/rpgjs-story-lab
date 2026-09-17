@@ -5,7 +5,7 @@ import {archiveRoomLayout,readArchiveRoom} from './old-street-archive-room'
 export const archiveCardIds=['a','b','c','d'] as const
 export type ArchiveCardId=typeof archiveCardIds[number]
 export type ArchiveRelation={before:ArchiveCardId;after:ArchiveCardId}
-export type ArchiveContent={title:string;layout:'west-index'|'east-index';room?:string[];denseSource?:'index'|'ledger';ledgerSite?:'photo'|'laundry';cards:Array<{id:ArchiveCardId;label:string}>;sources:{index:ArchiveRelation[];ledger:ArchiveRelation[]};discovery:string}
+export type ArchiveContent={title:string;photoTiming?:'before-work'|'after-work';layout:'west-index'|'east-index';room?:string[];denseSource?:'index'|'ledger';ledgerSite?:'photo'|'laundry';cards:Array<{id:ArchiveCardId;label:string}>;sources:{index:ArchiveRelation[];ledger:ArchiveRelation[]};discovery:string}
 export type ArchiveSource=keyof ArchiveContent['sources']
 export type ArchiveProgress={id:string;content:ArchiveContent;examined:ArchiveSource[];order?:ArchiveCardId[]}
 const card=(id:unknown):id is ArchiveCardId=>archiveCardIds.includes(id as ArchiveCardId)
@@ -23,7 +23,7 @@ export function archiveOrders(relations:readonly ArchiveRelation[]){
  return permutations(archiveCardIds).filter(order=>relations.every(r=>order.indexOf(r.before)<order.indexOf(r.after)))
 }
 export function readArchiveContent(raw:unknown):ArchiveContent{
- const r=object(raw,['title','layout','room','denseSource','ledgerSite','cards','sources','discovery']),sources=object(r.sources,['index','ledger'])
+ const r=object(raw,['title','photoTiming','layout','room','denseSource','ledgerSite','cards','sources','discovery']),sources=object(r.sources,['index','ledger'])
  if(!['west-index','east-index'].includes(String(r.layout))||!Array.isArray(r.cards)||r.cards.length!==4)throw Error('ARCHIVE_CONTENT_INVALID')
  const cards=r.cards.map(value=>{const c=object(value,['id','label']);if(!card(c.id))throw Error('ARCHIVE_CONTENT_INVALID');return {id:c.id,label:line(c.label,90)}})
  if(new Set(cards.map(c=>c.id)).size!==4||new Set(cards.map(c=>c.label.normalize('NFKC').toLowerCase())).size!==4)throw Error('ARCHIVE_CONTENT_INVALID')
@@ -39,6 +39,12 @@ export function readArchiveContent(raw:unknown):ArchiveContent{
  const all=[...content.sources.index,...content.sources.ledger]
  if(all.length!==3||new Set(all.map(r=>r.before+':'+r.after)).size!==3||archiveOrders(all).length!==1)throw Error('ARCHIVE_ORDER_AMBIGUOUS')
  if(archiveOrders(content.sources.index).length<=1||archiveOrders(content.sources.ledger).length<=1)throw Error('ARCHIVE_EVIDENCE_REDUNDANT')
+ if(r.photoTiming!==undefined){
+  if(!['before-work','after-work'].includes(String(r.photoTiming)))throw Error('ARCHIVE_PHOTO_TIMING_INVALID')
+  const order=archiveOrders(all)[0]
+  if((r.photoTiming==='before-work')!==(order.indexOf('b')<order.indexOf('a')))throw Error('ARCHIVE_PHOTO_TIMING_MISMATCH')
+  content.photoTiming=r.photoTiming as ArchiveContent['photoTiming']
+ }
  return content
 }
 export function archiveOrderMatches(content:ArchiveContent,value:unknown):value is ArchiveCardId[]{

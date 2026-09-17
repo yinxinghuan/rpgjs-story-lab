@@ -74,7 +74,7 @@ for(const readingMode of ['direct','lens','table','commission','photo-loan','lau
   if(context.stage==='trace')return trace
   if(context.stage==='parcel')return parcelDraft
   throw Error('Archive must reuse the prepared episode, not generate another history')
- })
+ },{recordDrivenInquiry:true})
  const authority=()=>new OldStreetAuthority(db,()=>true,async(text,context)=>{interpretationCalls++;assert.equal(text,'Tell her what I learned from the records');assert.ok(context.actions.some(a=>a.id==='evidence:share-account'));return 'evidence:share-account'},undefined,()=>photoPlan,()=>photoPlan?'synthetic-photo-hash':undefined,undefined,undefined,(h,stage)=>jobs.candidateFor(h,stage))
  let s=authority();jobs=new OldStreetCampaignJobs(db,(o,id)=>s.get(o,id),planner)
  let journeyId=randomUUID()

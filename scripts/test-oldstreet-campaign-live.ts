@@ -9,7 +9,7 @@ import {originalPreflightModels} from '../server/original-preflight-model'
 import {campaignRecordMatches,readTraceContent,readParcelContent,type CampaignContext} from '../src/old-street-campaign'
 import {readArchiveContent,archiveOrders} from '../src/old-street-archive'
 import {createOldStreetExpansionPlanner} from '../server/old-street-expansion-planner'
-import {assertArchivePhotoSource,archivePhotoSuggestion,type ArchivePhotoSource} from '../src/old-street-archive-photo'
+import {assertArchivePhotoSource,archivePhotoSource,archivePhotoSuggestion,type ArchivePhotoSource} from '../src/old-street-archive-photo'
 
 if(process.env.OLDSTREET_LIVE_TRIAL!=='1')throw Error('EXPLICIT_SYNTHETIC_TRIAL_REQUIRED')
 const output=process.argv[2]
@@ -63,7 +63,7 @@ try{
    const archive=readArchiveContent(await generate({stage:'archive',locale:'en',previous,papers,...(route?{route}:{})}))
    result.order=archiveOrders([...archive.sources.index,...archive.sources.ledger])[0]
    if(withPhoto){
-    const source:ArchivePhotoSource={archiveId:`synthetic-commission-${chain}`,title:archive.title,events:result.order.map(id=>archive.cards.find(card=>card.id===id)!.label),account:archive.discovery}
+    const source=archivePhotoSource({version:3,archive:{id:`synthetic-commission-${chain}`,content:archive,examined:['index','ledger'],order:result.order as typeof archive.cards[number]['id'][]}})!
     assertArchivePhotoSource(source)
     const photo:{chain:number;source:ArchivePhotoSource;requests:RequestRecord[];plan?:unknown;error?:string}={chain,source,requests:[]};report.photos.push(photo);persist()
     try{photo.plan=await createOldStreetExpansionPlanner(async(system,user,options)=>{

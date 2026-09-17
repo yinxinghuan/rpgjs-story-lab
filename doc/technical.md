@@ -1,8 +1,16 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 结构化照片时机调查（2026-09-17）
+
+`server/old-street-photo-inquiry.ts`负责新`investigation`材料：程序选择照片在固定维修前／后的时序，模型只返回`title/photoLabel/roomPlan`，通过已有编译器产生材料和配套档案。默认campaign planner调用本模块；显式`recordDrivenInquiry`仍用于旧离线实验。已存在的候选和已准入档案不重写。候选错误最多修正一次，运输失败不重试。
+
+`ArchiveContent.photoTiming`可选，读取时必须与唯一证据序列中的固定事件a／照片事件b一致。`archivePhotoSource`只从已排序档案导出可选`capture`；扩展生成和审查使用同一时机，审查增加`compatibleCapture`，明确false不通过格式修正洗成true。旧档无字段时维持原合同。
+
+16项定向检查、实际SQLite候选恢复、完整构建通过；两组真实合成链8次请求完成，均为before-work。细节瑕疵与验证范围见`photo-timing-inquiry-review-20260917.md`；本轮不宣称PNG或实际整条地图复验，未发线上。
+
 ## 调查生成实验隔离与错误反馈（2026-09-17）
 
-`createOldStreetCampaignPlanner`可选的`recordDrivenInquiry`仅由合成试验脚本`--record-driven`传入；生产与本地游戏调用均保持默认，现有已跑通生成合同不变。候选要求三条其他事件由引擎插入固定事件，并增加非显然端点的复核；22次真实请求显示仍有重复、长度与语义误判，因此未准入默认。详见`record-driven-inquiry-review-20260917.md`。
+这是前一轮历史记录；默认生成后续由上方结构化调查替代。`createOldStreetCampaignPlanner`可选的`recordDrivenInquiry`仅由合成试验脚本`--record-driven`及历史夹具测试传入。候选要求三条其他事件由引擎插入固定事件，并增加非显然端点的复核；22次真实请求显示仍有重复、长度与语义误判，因此该实验未准入默认。详见`record-driven-inquiry-review-20260917.md`。
 
 `compilePreparedInvestigation`在固定事件位置／重复错误中提供具体数组位置与事件；`compileLinkedParcel`的长度错误命名`otherEvent`。只改纠错反馈，不修补或重排候选，不改变合法存档格式。12项定向检查通过。
 

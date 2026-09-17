@@ -33,7 +33,7 @@ test('model correction keeps the same planned route, and rejects two incompatibl
   const data=JSON.parse(input);requests.push(data)
   if(!data.stage)return {valid:true,issues:[]}
   return {...draft,ledgerSite:data.repair?'photo':'archive'}
- })
+ },{recordDrivenInquiry:true})
  const prepared=readPreparedInvestigation(await planner(context,AbortSignal.timeout(5000)))
  assert.equal(prepared.archive.ledgerSite,'photo')
  const authors=requests.filter(r=>r.stage)
@@ -42,7 +42,7 @@ test('model correction keeps the same planned route, and rejects two incompatibl
  assert.deepEqual(authors[0].explorationPlan,authors[1].explorationPlan)
  assert.match(authors[1].repair.issues[0],/ROUTE_MISMATCH/)
  let calls=0
- await assert.rejects(createOldStreetCampaignPlanner(async()=>{calls++;return {...draft,ledgerSite:'archive'}})(context,AbortSignal.timeout(5000)),/ROUTE_MISMATCH/)
+ await assert.rejects(createOldStreetCampaignPlanner(async()=>{calls++;return {...draft,ledgerSite:'archive'}},{recordDrivenInquiry:true})(context,AbortSignal.timeout(5000)),/ROUTE_MISMATCH/)
  assert.equal(calls,2)
 })
 
