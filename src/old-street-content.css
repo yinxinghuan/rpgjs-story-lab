@@ -52,3 +52,9 @@
 @media(max-width:360px){.os-journal__thumb{width:56px;height:64px}.os-journal__item,.os-journal__collection summary{gap:10px}.os-journal__overview{gap:6px}}
 .os-journal p.os-journal__media-status{font:13px/1.5 system-ui;color:#5a6453;margin:8px 0}
 .os-dev .os-journal__media-retry{min-height:44px;width:100%;margin:4px 0 8px;background:transparent;border:1px solid #bcb29f;color:#354b3d;font:14px/1.4 system-ui;padding:8px}
+/* Read photographs in-place; retain the bag's scroll and close controls. */
+.os-journal .os-journal__photo-details{margin-top:8px}
+.os-journal .os-journal__photo-details>summary{min-height:44px;padding:8px 0;justify-content:space-between;font:600 16px/1.4 system-ui;color:#354b3d}
+.os-journal__photo-details>img{display:block;width:100%;max-height:40dvh;object-fit:contain;image-rendering:pixelated;margin:0 0 12px;pointer-events:none}
+.os-journal .os-journal__photo-details>p{margin:8px 0;padding:0;font:16px/1.5 system-ui;overflow-wrap:anywhere}
+.os-journal .os-journal__photo-details>button{min-height:44px;padding:8px 12px;background:transparent;color:#354b3d;border:1px solid #bcb29f}

@@ -28,6 +28,7 @@ export function OldStreetArchiveView({save,readingAct,archive,field,fieldAdmit,t
  return <dialog ref={root} className="os-map os-campaign" aria-labelledby="os-archive-title" onCancel={e=>{e.preventDefault();if(!busy)close()}}>
   <header><h2 id="os-archive-title">{t('原始记录','Source records')}</h2><button disabled={busy} onClick={close}>{t('收起','Close')}</button></header>
   <div ref={bodyRef} className="os-campaign__body">
+   {target==='archive-desk'&&save.inventory.some(i=>i.id==='darkroom-print'&&i.count>0)&&<p className="os-campaign__clue">{t('这里是整理原始记录的桌子。要留下背包里的旧街照片，请到修表铺的公共记录册旁。','This table is for sorting source records. To display the street photograph in your bag, visit the public record book in the watch shop.')}</p>}
    {readingStatus&&<p className="os-campaign__clue">{readingStatus}</p>}
    {archive&&<h3 className="os-campaign__document-title">{archive.content.title}</h3>}
    {question&&!archive?.order&&<p className="os-campaign__clue">{question}</p>}

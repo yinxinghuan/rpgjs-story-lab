@@ -619,7 +619,7 @@ export default function OldStreetDev() {
   const inspectionHint=inspectionOpen&&chosen?.id==='archive-rack'?archiveRackDescription(head.save.facts,locale):inspectionOpen&&!loanTarget&&!expansionTarget&&fieldOptions.length===0&&!campaignTarget&&!chosen?.id.startsWith('archive-')&&chosenAction?.primary.kind==='inspect'?chosenAction.reason:''
   const nearbyDarkroom=head.scene==='darkroom'&&bindOldStreet(locale,head.save).canInteract('developing-bench',head.scene,feet)
   const showExpansionPhoto=expansionCapabilities.media&&head.scene==='darkroom'
-  const displayedPhoto=useCommittedStreetPhoto(connection.api,serverHead.current?.id,head.save.facts['darkroom-photo-matched'],journalOpen||(head.scene==='shop'&&photoDisplayed(head.save)))
+  const displayedPhoto=useCommittedStreetPhoto(connection.api,serverHead.current?.id,head.save.facts['darkroom-photo-matched'],journalOpen||campaignOpen==='trace'||(head.scene==='shop'&&photoDisplayed(head.save)))
   const displayBook=head.scene==='shop'&&photoDisplayed(head.save)?oldStreetProjectedProps(head.save).find(p=>p.id==='record-book'):undefined
   const {preparations,announcement}=useOldStreetPreparations(serverHead.current,expansionCapabilities,connection.api,`${head.scene}:${serverHead.current?.version}:${selected}:${campaignOpen}:${archiveOpen}:${journalOpen}`)
   const outcome = oldStreetOutcome(head.save)

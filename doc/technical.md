@@ -2657,3 +2657,9 @@ CUA在localhost:5463既有合成旅程实测：390×844、320×568人物和地�
 `old-street-side-passage.tsx`使用平台完整cutout与alpha bounds定位；不裁去门框伪造合格图。门板依人物脚点在背景/前景间切换，近侧墙最后遮挡。过门石明度/饱和度由side-door-catalog.threshold.tone统一控制。
 `door-generation-recipe.ts`保存detached-shop-leaf-v2：无框参考图+结构锁定+自然营业细节+原生左右铰链；实际本轮用于watch/photo平台产图。`prepare-side-door-leaves.ts`只去洋红背景及测alpha边界。语义几何仍由视觉检查准入；尚未实现动态门素材自动审美审核，不能把这套prompt当作无人审核的质量保证。
 本轮18项空间/门素材/墙体检查通过；真实RPG-JS检查页中向门板持续移动650ms，角色停在碰撞边界。发布测试1130项中1129通过，唯一失败为旧环境依赖清单预期；按当前实际可见依赖更新该测试后2项定向复验通过。构建与Worker启动检查通过。证据`_qa/ui/door-release-20260918/platform-layout-street-collision.png`。
+
+### 照片交互修正（2026-09-18）
+新增 `old-street-photo-details.tsx` 只读查看组件，消费 `useCommittedStreetPhoto` 已校验哈希的原图与权威发现。旧照片夹仅在 `photos-matched` 后展示完整图。放置规则及服务端库存不变：UI 显示 `archive-published` 前置条件，不自动提交摘要。
+
+### 公共记录册分区（2026-09-18）
+`old-street-record-desk.tsx` 从现有 campaign 与 StorySave 投射“查找材料 / 留下记录”两种用途。只读状态不建第二份库存；所有选择仍回传原 `campaignAct`，由服务器校验。照片沿用 `useCommittedStreetPhoto` 的旅程文件及哈希验证，打开记录册即可加载持有/展出的照片。`old-street-campaign-view.tsx` 保留生成、恢复、提交反馈与寄存材料流程。记录正文按需展开，照片位置和撤下后果就近展示。

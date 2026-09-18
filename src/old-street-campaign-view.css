@@ -10,3 +10,21 @@
 .os-campaign summary{min-height:44px;padding:12px 0;box-sizing:border-box;cursor:pointer}
 
 .os-campaign__record-actions{display:grid;gap:8px;margin:12px 0}.os-campaign__record-actions:empty{display:none}.os-dev .os-campaign__record-actions button{width:100%;max-width:none;min-height:44px;text-align:left;overflow-wrap:normal}
+/* Two purposes, one record book: find source papers / leave findings. */
+.os-record-desk__intro{margin:0 0 12px}
+.os-record-desk__nav{position:sticky;top:0;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 0;background:#ede7d9;border-bottom:1px solid #a69c88}
+.os-dev .os-record-desk__nav button{min-height:44px;min-width:0;white-space:normal;font:600 16px/1.4 system-ui;padding:8px}
+.os-dev .os-record-desk__nav button[aria-pressed=true]{background:#354f43;color:#fff;border-color:#354f43}
+.os-record-desk h3{font:600 18px/1.4 system-ui;margin:12px 0 4px}
+.os-record-desk__entry{padding:12px 0 16px;border-bottom:1px solid #bcb29f}
+.os-record-desk__entry-heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.os-record-desk__entry-heading h3{margin:0}
+.os-record-desk__status{font:600 14px/1.5 system-ui;color:#3d5947;margin:12px 0 4px}
+.os-record-desk__entry-heading .os-record-desk__status{margin:0}
+.os-record-desk__muted{color:#595b50;font:16px/1.5 system-ui}
+.os-dev .os-record-desk__entry>button{width:100%;max-width:none;min-height:44px;padding:10px 12px;font:600 16px/1.4 system-ui}
+.os-dev .os-record-desk button.os-record-desk__primary{background:#354f43;color:#fff;border-color:#354f43}
+.os-record-desk__slip{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#dcd4c2;border:1px solid #a69c88;padding:12px;margin:12px 0}
+.os-record-desk__slip dt{font:14px/1.5 system-ui;color:#505647}.os-record-desk__slip dd{margin:4px 0 0;font-weight:600}
+.os-record-desk .os-record-photo-preview{max-height:20dvh;margin:12px auto}
+.os-record-desk summary{font-weight:600}.os-record-desk button:focus-visible{outline:2px solid #354f43;outline-offset:2px}
