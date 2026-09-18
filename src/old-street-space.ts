@@ -88,38 +88,43 @@ export const oldStreetProps = [
   {...prop('street-exit', 'street', .5, 1, ['leave']),approach:{x:192,y:496}},
 ]
 const intersects = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
-export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates=false) {
+type CrateLayout = false | true | 'thresholds-4'
+export function oldStreetProjectedProps(save: Pick<StorySave, 'facts'>, residents: Record<string, SpatialPoint> = {},legacyCrates:CrateLayout=false) {
   const archive=save.facts['archive-ready']===true?archiveLayoutFromFacts(save.facts).props:[]
   return [...oldStreetProps,...archive,...(save.facts['roof-recovery']===true?roofRecoveryProps:[])].map(original => {
     const p=save.facts['roof-recovery']===true&&['developing-bench','photographer','watchmaker'].includes(original.id)?{...original,actions:[...original.actions,original.id==='watchmaker'?'oldstreet:take-roof-plank':original.id==='developing-bench'?'oldstreet:read-photo-index':'oldstreet:return-roof-negative']}:original
     const resident=residents[p.id]
     if(p.id==='roof-planks'&&!roofStockVisible(save))return {...p,position:{x:296,y:400},approach:{x:252,y:400},body:{x:276,y:378,w:40,h:30}}
     if(resident&&['watchmaker','laundry-owner','photographer'].includes(p.id)){const dx=resident.x-p.position.x,dy=resident.y-p.position.y;return {...p,position:{...resident},approach:{x:p.approach.x+dx,y:p.approach.y+dy},body:{...p.body,x:p.body.x+dx,y:p.body.y+dy}}}
-    if(p.id==='crates'&&legacyCrates){
+    if(p.id==='crates'&&legacyCrates===true){
       const old=prop('crates','yard',.3,.13,['clear-crates'])
       if(save.facts['crates-cleared']!==true)return old
       const body={...old.body,x:oldStreetFloors.yard.x+32,y:oldStreetFloors.yard.y+220}
       return {...old,body,position:{x:body.x+12,y:body.y+12},approach:{x:body.x+12,y:body.y+40}}
     }
+    if(p.id==='crates'&&legacyCrates==='thresholds-4'&&save.facts['crates-cleared']===true){
+      const body={...p.body,x:oldStreetFloors.yard.x+4,y:oldStreetFloors.yard.y+220}
+      return {...p,body,position:{x:body.x+body.w/2,y:body.y+body.h},approach:{x:body.x+body.w+8,y:body.y+8}}
+    }
     if (p.id !== 'crates' || save.facts['crates-cleared'] !== true) return p
-    const body = {...p.body, x: oldStreetFloors.yard.x + 4, y: oldStreetFloors.yard.y + 220}
+    // Keep the cleared pile on open paving in the southeast of the yard. The
+    // old west-wall spot made its sprite overlap the shop-back doorway.
+    const body = {...p.body, x: oldStreetFloors.yard.x + 192, y: oldStreetFloors.yard.y + 336}
     const position = {x: body.x + body.w/2, y: body.y + body.h}
-    // The opened shop-back leaf occupies the south edge of this storage spot.
-    // Inspect the relocated crates from the aisle on their east side instead.
-    return {...p, body, position, approach: {x: body.x+body.w+8, y: body.y+8}}
+    return {...p, body, position, approach: {x: body.x-16, y: body.y+8}}
   })
 }
-export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates=false): Rect[] {
+export function oldStreetObstacleBodies(room: OldStreetRoom, save: Pick<StorySave, 'facts'>, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates:CrateLayout=false): Rect[] {
   // Resident choreography is local. The authority validates permanent geometry
   // and the bounded authored interaction area, never a stale NPC home hitbox.
   // The live client supplies the actual resident positions for solid collision.
-  const closedStairs=room==='cellar'&&!legacyCrates&&!save.facts['crates-cleared']?oldStreetDoors().filter(d=>d.room===room&&d.gate==='crates-cleared').map(d=>({x:d.position.x-oldStreetCrateFootprint.width/2,y:d.position.y-oldStreetCrateFootprint.depth,w:oldStreetCrateFootprint.width,h:oldStreetCrateFootprint.depth})):[]
+  const closedStairs=room==='cellar'&&legacyCrates!==true&&!save.facts['crates-cleared']?oldStreetDoors().filter(d=>d.room===room&&d.gate==='crates-cleared').map(d=>({x:d.position.x-oldStreetCrateFootprint.width/2,y:d.position.y-oldStreetCrateFootprint.depth,w:oldStreetCrateFootprint.width,h:oldStreetCrateFootprint.depth})):[]
   return [...(room==='shed'&&roofSpareVisible(save)?[{...roofSpareBoard}]:[]),...(room==='roof'?roofRecoveryObstacles(save):[]),...closedStairs,...oldStreetFurniture.filter(p=>includeFurniture&&p.room===room).map(p=>({...p.body})),...oldStreetProjectedProps(save,residents,legacyCrates).filter(p => p.room === room && p.id !== ignoreResident && p.id !== 'street-exit' && (p.id!=='watchmaker'||!!residents?.watchmaker)
     && (p.id!=='laundry-owner'||!usesCurrentLaundryCast(save)||!!residents?.['laundry-owner'])
     && (p.id!=='photographer'||!usesCurrentPhotographerCast(save)||!!residents?.photographer)
     && !(p.id === 'trolley' && save.facts['trolley-borrowed'] === true)).map(p => ({...p.body}))]
 }
-export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates=false) {
+export function oldStreetWalkable(room: string, p: SpatialPoint, save: Pick<StorySave, 'facts'>, body = oldStreetBody, residents?:Record<string, SpatialPoint>,includeFurniture=true,ignoreResident?:'watchmaker'|'laundry-owner'|'photographer',legacyCrates:CrateLayout=false) {
   const r = oldStreetFloors[room as OldStreetRoom]
   if (!r || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return false
   const feet = {...p, ...body}
@@ -141,7 +146,7 @@ export const oldStreetPath = (room: string, start: SpatialPoint, end: SpatialPoi
 export function oldStreetSpatialPlan(save: Pick<StorySave, 'facts'> = {facts: {}}): SpatialBindingDefinition {
   const doors = oldStreetDoors()
   const latch = doors.find(d => d.gate === 'yard-unlatched' && d.room === 'shed')!
-  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-thresholds-4', interactionDistance: oldStreetInteractionDistance,
+  return {version: 1, cartridgeId: oldStreetCartridge('zh').id, mapVersion: 'oldstreet-thresholds-5', interactionDistance: oldStreetInteractionDistance,
     scenes: (Object.keys(oldStreetFloors) as OldStreetRoom[]).map(id => ({id, spawn:id==='archive'?archiveLayout('west-index').arrival:pointIn(id, .5, .52)})),
     entities: [
       ...doors.map(d => ({id: d.id, scene: d.room, position: d.position, approach: d.approach, states: ['open', 'closed'], actions: [d.actionId, ...(d === latch ? [oldStreetActionId('lift-latch')] : [])]})),

@@ -26,14 +26,14 @@ test('crate barrier spans the steps, touches the wall and clearing opens the sam
  assert.equal(oldStreetWalkable('yard',moved.body,save),false)
 })
 
-test('old journey in former gap moves safely without losing story or clear-state',()=>{
+test('old journey at the relocated storage spot moves safely without losing story or clear-state',()=>{
  const runtime=oldStreetRuntime(()=>true)
  for(const cleared of [false,true]){
   const save=createInitialSave(oldStreetCartridge('zh'))
   save.map.forEach(n=>{n.current=n.id==='yard'})
   save.facts['crates-cleared']=cleared
   save.inventory.push({id:'trolley',label:'借来的推车',count:1})
-  const before:OldStreetHead={id:'synthetic-crate-migration',version:9,mapVersion:'oldstreet-furniture-3',sceneId:'yard',position:cleared?{x:60,y:268}:{x:136,y:48},save}
+  const before:OldStreetHead={id:'synthetic-crate-migration',version:9,mapVersion:cleared?'oldstreet-thresholds-4':'oldstreet-furniture-3',sceneId:'yard',position:cleared?{x:248,y:392}:{x:136,y:48},save}
   assertOldStreetHead(before)
   assert.equal(oldStreetWalkable('yard',before.position,save),false)
   const next=runtime.upgrade!(before)
