@@ -1,3 +1,5 @@
+import {OldStreetMaterialButton} from './old-street-material-reader'
+import {EvidenceSteps,EvidenceTimeline} from './old-street-evidence-board'
 import {useState} from 'react'
 import type {StorySave} from './vendor/original-train/types'
 import type {OldStreetCampaign} from './old-street-campaign'
@@ -14,6 +16,7 @@ export function OldStreetRecordDesk({campaign,save,photoImage,published,locale,b
    <button aria-pressed={section==='find'} onClick={()=>setSection('find')}>{t('查找材料','Find papers')}</button>
    <button aria-pressed={section==='leave'} onClick={()=>setSection('leave')}>{t('留下记录','Leave a record')}</button>
   </nav>
+  <EvidenceSteps locale={locale} labels={[t('匹配材料','Match papers'),t('查清经过','Investigate'),t('留下记录（可选）','Record (optional)')]} done={published?3:ready?2:trace.selected!==undefined?1:0}/>
   {section==='find'?<section>
    {trace.selected!==undefined?<>
     <p className="os-record-desk__status">{t('已找到对应记录','Matching record found')}</p>
@@ -32,14 +35,16 @@ export function OldStreetRecordDesk({campaign,save,photoImage,published,locale,b
   </section>:<>
    <section className="os-record-desk__entry">
     <div className="os-record-desk__entry-heading"><h3>{t('调查经过','Your findings')}</h3><span className="os-record-desk__status">{t(published?'已写入':'尚未写入',published?'Recorded':'Not recorded')}</span></div>
-    <details><summary>{t(published?'查看已留下的经过':'查看将留下的经过','Read the account')}</summary><p>{campaign.archive!.content.discovery}</p></details>
+    <div className="os-record-summary"><span>{campaign.archive!.content.title}</span><p>{campaign.archive!.content.discovery}</p></div>
+    <details><summary>{t('回看已核实的事件顺序','Review confirmed event order')}</summary><EvidenceTimeline archive={campaign.archive!} order={campaign.archive!.order!} locale={locale}/></details>
     <p>{published?t('经过已留在这里，线索仍保存在背包中。','The account is recorded here. Your clues remain in Backpack.'):t('把查清的经过抄一份留在册里。不会公开密封信，也不改变材料原件的去向。','Leave a written account here. Your letter and original papers stay where they are.')}</p>
     {published&&displayed&&<p className="os-record-desk__muted">{t('撤下经过时，旁边的照片也会收回背包。','Removing the account also returns the photograph to your bag.')}</p>}
     <button className={!published?'os-record-desk__primary':undefined} disabled={busy} onClick={()=>void act(published?'withdraw':'share')}>{t(published?'撤下调查经过':'写入调查经过',published?'Remove the account':'Record my findings')}</button>
    </section>
    <section className="os-record-desk__entry">
     <div className="os-record-desk__entry-heading"><h3>{t('相关照片','Related photograph')}</h3><span className="os-record-desk__status">{t(displayed?'已放在册旁':carried?'在背包中':left?'留在暗房':'尚未带来',displayed?'Beside the book':carried?'In your bag':left?'In the darkroom':'Not brought here')}</span></div>
-    {(displayed||carried)&&photoImage&&<img className="os-record-photo-preview" src={photoImage} alt={t('本次旅程的旧街照片','This journey’s street photograph')} draggable={false}/>}
+    <div className="os-record-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 4h18v16H3zM6 15l4-5 4 5 3-3 3 5M15 8h1"/></svg><div><span>{t('照片现在在哪里','Where the photograph is')}</span><strong>{t(displayed?'修表铺 · 记录册旁':carried?'你的背包':left?'照相馆 · 暗房':'还没有带到这里',displayed?'Watch shop · beside the book':carried?'Your backpack':left?'Studio · darkroom':'Not brought here yet')}</strong></div></div>
+    {(displayed||carried)&&photoImage&&<OldStreetMaterialButton title={t('本次旅程的旧街照片','This journey’s street photograph')} locale={locale} image={photoImage} thumbnail/>}
     <p>{displayed?t('照片已留在册旁，背包中不再携带。随时可以取回。','The photograph is beside the book, no longer in your bag. You can take it back.'):carried?t('把背包里的照片放在记录旁，和经过一起保存。之后可以取回。','Place the photograph beside your account. You can take it back later.'):left?t('你把照片留在了暗房；这里还没有照片。','You left the photograph in the darkroom. There is no photograph here yet.'):t('在照相馆完成相关旧照，并选择带走后，可以放在这里。','Complete the related photograph at the studio and choose to take it with you. Then you can place it here.')}</p>
     {(displayed||canPlace)&&<>
      {!published&&<p id="os-photo-placement-requirement" className="os-record-desk__muted">{t('先完成上面的“写入调查经过”，再放照片。','Choose “Record my findings” above before placing the photograph.')}</p>}
@@ -52,9 +57,13 @@ export function OldStreetRecordDesk({campaign,save,photoImage,published,locale,b
 }
 
 function RecordMatches({trace,locale,busy,act}:{trace:NonNullable<OldStreetCampaign['trace']>;locale:'zh'|'en';busy:boolean;act:(selection:number|string)=>Promise<void>}){
- const t=(zh:string,en:string)=>locale==='zh'?zh:en
- return <>
-  <dl className="os-record-desk__slip"><div><dt>{t('寄存条 · 标记','Slip · mark')}</dt><dd>{trace.content.clue.mark}</dd></div><div><dt>{t('寄存条 · 包扎','Slip · wrapping')}</dt><dd>{trace.content.clue.wrapping}</dd></div></dl>
-  <div className="os-campaign__records">{trace.content.records.map((r,index)=><button key={index} disabled={busy||trace.selected!==undefined} onClick={()=>void act(index)} aria-pressed={trace.selected===index}><strong>{r.label}</strong><span>{t('标记：','Mark: ')}{r.mark}</span><span>{t('包扎：','Wrapping: ')}{r.wrapping}</span></button>)}</div>
- </>
+ const text=(zh:string,en:string)=>locale==='zh'?zh:en
+ const [candidate,setCandidate]=useState(trace.selected??0),record=trace.content.records[candidate]
+ return <section className="os-record-compare" aria-label={text('寄存条与记录对比','Compare slip and records')}>
+  <div className="os-record-compare__tabs" aria-label={text('选择要比较的记录','Choose a record to compare')}>{trace.content.records.map((r,index)=><button key={index} disabled={busy} aria-pressed={candidate===index} onClick={()=>setCandidate(index)}>{text('记录','Record ')} {index+1}</button>)}</div>
+  <h4>{record.label}</h4>
+  <table className="os-record-compare__table"><caption className="os-evidence-help">{text('逐项核对：两项都相同，才是要找的材料。','Compare both details. Both must match to identify the papers.')}</caption><colgroup><col/><col/><col/></colgroup><thead><tr><th scope="col">{text('特征','Detail')}</th><th scope="col">{text('你的寄存条','Your slip')}</th><th scope="col">{text('所选记录','Selected record')}</th></tr></thead><tbody>{(['mark','wrapping'] as const).map(key=><tr key={key}><th scope="row">{text(key==='mark'?'标记':'包扎',key==='mark'?'Mark':'Wrapping')}</th><td>{trace.content.clue[key]}</td><td>{record[key]}</td></tr>)}</tbody></table>
+  <div className="os-record-compare__read"><OldStreetMaterialButton title={text('你的寄存条','Your filing slip')} locale={locale} label={text('展开寄存条','Read filing slip')} paragraphs={[text('标记：','Mark: ')+trace.content.clue.mark,text('包扎：','Wrapping: ')+trace.content.clue.wrapping]}/><OldStreetMaterialButton title={record.label} locale={locale} label={text('展开所选记录','Read selected record')} paragraphs={[text('标记：','Mark: ')+record.mark,text('包扎：','Wrapping: ')+record.wrapping]}/></div>
+  {trace.selected===undefined?<button className="os-record-compare__confirm" disabled={busy} onClick={()=>void act(candidate)}>{busy?text('正在核对…','Checking…'):text('确认这条记录','Confirm this record')}</button>:<p className="os-record-desk__status">{candidate===trace.selected?text('这条记录已确认，两项特征吻合。','Confirmed: both details match.'):text('这是另一条记录，已确认的材料没有改变。','This is another record; your confirmed papers are unchanged.')}</p>}
+ </section>
 }

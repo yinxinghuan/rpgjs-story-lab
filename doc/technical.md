@@ -2677,3 +2677,8 @@ Vite `gameReleasePlugin` 对 src/public/server、入口、依赖清单和 Worker
 验证：4 项检测器测试覆盖同版、新版二次确认、离线/404/非法响应、并发及销毁、刷新 URL 参数保留；本地合成页面使用真实 hook 请求 `_qa/release.json`，实测更换版本后等待 busy 结束、提示不可 Escape 关闭、按钮带新版参数刷新。小屏布局截图见 `_qa/ui/release-notice-20260918/`。测试页面不进入正式构建。
 
 本轮地图与更新检测合并发布；正式部署结果以 `doc/map-update-release-20260918.json` 的提交、双站实际 bundle 与发布清单核验为准。
+
+
+### 2026-09-18 档案与背包界面、资料阅读
+`old-street-evidence-board.tsx/css` 在已查阅资料中展示事件先后关系与四槽排列；档案桌和背包共用权威 `ArchiveCardId` 与既有调查结果。`old-street-record-desk.tsx` 将寄存条与候选记录按标记、包扎并列比较，确认按钮才提交既有动作；结论、时间线和照片所在位置分开展示。`old-street-material-reader.tsx/css` 以只读原生 dialog 放大照片或文字，经 portal 放入 body，关闭仅退出阅读器，保留外层选择与排序。图片失败可重试。接入背包照片、档案摘录、寄存材料及公共记录册；未查阅资料仍不显示内容。
+验证边界：本地组件评审页使用合成状态；390×844 照片放大与横向滚动、320×568 中英文文本阅读及返回保留外层状态已在浏览器检查。真实 iPhone 手势、平台内完整旅程和新玩家理解仍待试玩。
