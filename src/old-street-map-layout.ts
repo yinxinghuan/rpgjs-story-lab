@@ -19,3 +19,17 @@ export function oldStreetLocalMap(room:OldStreetRoom,known:ReadonlySet<OldStreet
  }
  return exits
 }
+
+/** Stable district schematic. Floors/stairs are connections, not a claim of one continuous floor plan.
+ * Exact first-exit directions always come from oldStreetDoors in the route panel. */
+export const OLD_STREET_ATLAS:Record<OldStreetRoom,readonly [number,number]>={
+ archive:[55,48],cellar:[170,48],shed:[285,48],
+ laundry:[55,158],yard:[170,158],roof:[285,158],
+ shop:[55,268],photo:[285,268],street:[170,390],darkroom:[285,390],
+}
+
+// Grow the atlas extent when a place is appended; never compress existing spacing.
+export const OLD_STREET_ATLAS_BOUNDS={
+ width:Math.max(...Object.values(OLD_STREET_ATLAS).map(p=>p[0]))+55,
+ height:Math.max(...Object.values(OLD_STREET_ATLAS).map(p=>p[1]))+50,
+}

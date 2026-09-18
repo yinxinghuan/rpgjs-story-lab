@@ -1,3 +1,4 @@
+import {useGameRelease,GameReleaseNotice} from './game-release-notice'
 import {OldStreetRoomWalls,OldStreetRoomForeground} from './old-street-room-walls-view'
 import {OldStreetObjectPreview} from './old-street-object-preview'
 import {needsRecoveredNegative,negativeSourceReady} from './old-street-negative-source'
@@ -202,7 +203,10 @@ export default function OldStreetDev() {
   const overview=debug&&new URLSearchParams(location.search).get('camera')==='overview'
   const camera=oldStreetCamera(viewport,feet,overview)
   useEffect(()=>{const node=world.current;if(!node)return;const observer=new ResizeObserver(([entry])=>{setViewport({width:entry.contentRect.width,height:entry.contentRect.height}) });observer.observe(node);return()=>observer.disconnect()},[])
-  const modalOpen=journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||expansionPhotoOpen||!!campaignOpen||!!archiveOpen||leaving
+  const newRelease=useGameRelease()
+  const updateRequired=!!newRelease&&!busy&&(ready||!!error)
+  useEffect(()=>{if(updateRequired)runtime.current?.pause(true)},[updateRequired])
+  const modalOpen=updateRequired||journalOpen||mapOpen||journeysOpen||clockOpen||photoOpen||expansionPhotoOpen||!!campaignOpen||!!archiveOpen||leaving
   modalControls.current=modalOpen
   residentControls.current={paused:busy||!!error||modalOpen||!!head.save.facts.departed,selected:selected==='watchmaker',laundrySelected:selected==='laundry-owner',photographerSelected:selected==='photographer'}
   const [diagnostic, setDiagnostic] = useState('')
@@ -696,6 +700,7 @@ export default function OldStreetDev() {
     {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView nextPurpose={campaign.version===3?oldStreetCurrentPurpose(head.save,campaign):undefined} campaign={campaign} save={head.save} photoImage={displayedPhoto} published={head.save.facts['archive-published']===true} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} archive={campaign.version>=2&&campaign.parcel?.observed?()=>openArchive('photo-folder'):undefined} close={()=>{setCampaignOpen(null);closeInteraction()}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);closeInteraction()}}/>}
     {journalOpen&&<OldStreetJournalView api={connection.api} sessionId={serverHead.current?.id} photoImage={displayedPhoto} preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
+    {updateRequired&&<GameReleaseNotice version={newRelease!} locale={locale}/>}
     {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);closeInteraction()}}/>}
     {leaving&&<OldStreetLeaveView locale={locale} borrowed={borrowedItems.map(i=>i.label)} close={()=>setLeaving(false)} confirm={()=>{setLeaving(false);request('oldstreet:leave',true)}}/>}
