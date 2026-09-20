@@ -2682,3 +2682,16 @@ Vite `gameReleasePlugin` 对 src/public/server、入口、依赖清单和 Worker
 ### 2026-09-18 档案与背包界面、资料阅读
 `old-street-evidence-board.tsx/css` 在已查阅资料中展示事件先后关系与四槽排列；档案桌和背包共用权威 `ArchiveCardId` 与既有调查结果。`old-street-record-desk.tsx` 将寄存条与候选记录按标记、包扎并列比较，确认按钮才提交既有动作；结论、时间线和照片所在位置分开展示。`old-street-material-reader.tsx/css` 以只读原生 dialog 放大照片或文字，经 portal 放入 body，关闭仅退出阅读器，保留外层选择与排序。图片失败可重试。接入背包照片、档案摘录、寄存材料及公共记录册；未查阅资料仍不显示内容。
 验证边界：本地组件评审页使用合成状态；390×844 照片放大与横向滚动、320×568 中英文文本阅读及返回保留外层状态已在浏览器检查。真实 iPhone 手势、平台内完整旅程和新玩家理解仍待试玩。
+
+## 2026-09-21：体验补齐与渐进暗房（本地，未发布）
+
+- 对话历史：`old-street-conversation-history.tsx/css` 调用 `oldStreetConversationHistory`，按稳定对话 ID 配对、去重并排除当前回复，最多四轮完整问答。只读现有权威 `save.blocks`，不另造存档或后台。默认折叠，人物变化重新挂载。
+- 声音层：`old-street-audio-layers.ts` 管理平台生成的 60 秒音乐和 24 秒河岸声。首个 pointer/keyboard gesture 解锁；静音和 visibility 统一控制；河声仅在 shed 播放。音乐音量 0.32、河声 0.55，原有距离脚步保持。素材及来源/哈希/响度在 `doc/audio-20260921/`。浏览器循环播放，无交叉淡化；完整验听、接缝和实体手机尚未通过。
+- 房间媒体：`old-street-room-media.ts` 固定暗房地板与工作台两槽；`server/old-street-room-media.ts` 使用 Worker SQLite 持久化请求、任务、租约及 PNG 分片。`room-art` POST 幂等建立或恢复缺项，GET 列表；`room-art-file?asset=...` 是原 capability 下的私有文件接口。`ready` 仅表示原始文件可下载，客户端仍需自动准入。终态新任务重试必须显式指定槽，最多两次；不确定失败继续原 request/task，120 秒租约防止同时重生。
+- `use-old-street-room-media.ts` 仅在暗房激活后启动，独立下载两槽，核对字节数/SHA256，再用 `prepareRoomImage` 验证 512×512、地板不透明率、家具轮廓/边界/比例。工作台只去洋红背景、不变形；单件通过即显示，失败保留固定占位。离开/换旅程后晚到结果不能覆盖当前视图，输出 URL 会释放。媒体不写剧情 head，不改碰撞和出入口。
+- 回退：景物菜单可以使用原有地板/工作台，选择存于 session-scoped `alteruLocalStorage` 的 `oldstreet-room-look:<journey>`。只影响当前旅程的显示。重新载入景物重试下载/准入，不会自动付费重生成已经终态的素材。
+- 入口：正式 Worker 和 `?session=worker` 预览提供 `roomMedia:true`。旧的直连本地开发路由没有这项能力，保留原有画面，不把无媒体服务伪装成正在加载。
+- 验证：`_qa/old-street-room-media.test.ts` 覆盖独立完成、租约、任务恢复、失败隔离、私有 HTTP 文件及固定 world；对话/音频另有单测。`_qa/progressive-room-review.tsx` 使用真实 RPG renderer、正式 hook/组件及本次生成 PNG，但 API 是隔离 fixture；20 组中英/两尺寸/五状态的证据在 `_qa/ui/progressive-room-20260921/`，包含移动、当前对话排除、媒体播放和回退选择刷新保留。不能替代正式平台端到端、完整 HUD 或实体手机验收。
+- 账号：记录同事确认 guest-shell 注入 `window.telegramId` 可信。当前游戏后台仍靠匿名 capability 确认访问权；尚无从 Worker 请求验证平台身份的已核实合同，因此未直接把客户端 ID 当作读写他人旅程的授权。不上报私有凭据到平台存档列表，不宣称账号恢复完成。
+
+能力档案为 `doc/experience-capabilities.json`，区分已实现、待验听、待身份接入与未核验项；50 分钟只是原 45–60 分钟设计目标的代表值。门制作/验收与运行时自动准入选择同步进入 `build-spatial-story-game` 技能包。

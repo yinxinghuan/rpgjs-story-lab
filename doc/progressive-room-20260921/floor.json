@@ -1,0 +1,23 @@
+{
+  "requestId": "f2fbaae8-9c49-4e57-83e1-d88e99c2ab90",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "prompt": "One seamless worn dark photographic studio floor material, orthographic directly overhead, subdued gray brown stone, restrained painterly pixel clusters matching a nostalgic 2D exploration RPG. Entire square filled by flat floor texture. No walls, furniture, objects, doors, lettering, perspective convergence, borders or shadows from unseen objects.",
+  "taskId": "mt_08ce71c2fd1405c4d3554c42c5581c9e",
+  "task": {
+    "task_id": "mt_08ce71c2fd1405c4d3554c42c5581c9e",
+    "request_id": "f2fbaae8-9c49-4e57-83e1-d88e99c2ab90",
+    "type": "image",
+    "status": "succeeded",
+    "created_at": 1789928362493,
+    "updated_at": 1789928364423,
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789928364365787.png",
+      "width": 512,
+      "height": 512,
+      "format": "png"
+    },
+    "timing_ms": 787
+  },
+  "sha256": "66e3809f2932114438b76f87e150c4a8eaa89546917946f87d721a9537a63890"
+}

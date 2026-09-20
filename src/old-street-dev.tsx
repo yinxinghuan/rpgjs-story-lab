@@ -6,6 +6,13 @@ import {archiveRackDescription} from './old-street-archive'
 import {stableInteraction} from './nearby-interaction'
 import {oldStreetInteractionDistance} from './old-street-space'
 import {OldStreetConversationChoices} from './old-street-conversation-choices'
+import {OldStreetConversationHistory} from './old-street-conversation-history'
+import {OldStreetAudioLayers} from './old-street-audio-layers'
+import streetMusic from '../doc/audio-20260921/old-street-music.mp3'
+import riverAmbience from '../doc/audio-20260921/river-ambience.mp3'
+import {useOldStreetRoomMedia} from './use-old-street-room-media'
+import {DarkroomFloor,DarkroomBench,DarkroomMediaStatus} from './old-street-progressive-room'
+import './old-street-progressive-room.css'
 import './old-street-content.css'
 import {useCommittedStreetPhoto} from './use-committed-street-photo'
 import {photoDisplayed} from './old-street-photo-display'
@@ -119,16 +126,18 @@ export default function OldStreetDev() {
   const locale = head.save.locale
   const cartridge = useMemo(() => oldStreetCartridge(locale), [locale])
   const text = (pair: readonly [string, string]) => pair[locale === 'zh' ? 0 : 1]
-  const audio=useRef<OldStreetAudio>(),footsteps=useRef(new StreetFootsteps())
+  const audio=useRef<OldStreetAudio>(),footsteps=useRef(new StreetFootsteps()),audioLayers=useRef<OldStreetAudioLayers>()
   const [soundEnabled,setSoundEnabled]=useState(()=>{try{return window.alteruLocalStorage.getItem('oldstreet-sound')!=='off'}catch{return true}})
   const soundPreference=useRef(soundEnabled);soundPreference.current=soundEnabled
   useEffect(()=>{
     const sound=new OldStreetAudio();sound.setEnabled(soundEnabled);audio.current=sound
-    const unlock=()=>sound.unlock(),quiet=()=>{if(document.hidden)sound.setEnabled(false);else sound.setEnabled(soundPreference.current)}
+    const layers=new OldStreetAudioLayers(streetMusic,riverAmbience);layers.setEnabled(soundEnabled);layers.setVisible(!document.hidden);layers.setScene(head.scene);audioLayers.current=layers
+    const unlock=()=>{if(!document.hidden){sound.unlock();layers.unlock()}},quiet=()=>{layers.setVisible(!document.hidden);if(document.hidden)sound.setEnabled(false);else sound.setEnabled(soundPreference.current)}
     window.addEventListener('pointerdown',unlock);window.addEventListener('keydown',unlock);document.addEventListener('visibilitychange',quiet)
-    return()=>{window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);document.removeEventListener('visibilitychange',quiet);sound.dispose()}
+    return()=>{window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);document.removeEventListener('visibilitychange',quiet);sound.dispose();layers.dispose()}
   },[])
-  const toggleSound=()=>setSoundEnabled(value=>{audio.current?.setEnabled(!value);if(!value)audio.current?.unlock();try{window.alteruLocalStorage.setItem('oldstreet-sound',value?'off':'on')}catch{};return !value})
+  useEffect(()=>{audioLayers.current?.setScene(head.scene)},[head.scene])
+  const toggleSound=()=>setSoundEnabled(value=>{audio.current?.setEnabled(!value);audioLayers.current?.setEnabled(!value);if(!value){audio.current?.unlock();audioLayers.current?.unlock()}try{window.alteruLocalStorage.setItem('oldstreet-sound',value?'off':'on')}catch{};return !value})
   const debug = new URLSearchParams(location.search).get('debug') === '1'
   const lanTrialKind=new URLSearchParams(location.search).get('npc_gait_trial')||''
   const lanTrialEnabled=import.meta.env.DEV&&import.meta.env.MODE==='oldstreet-dev'&&debug&&['lan-left','lan-four','lan-platform'].includes(lanTrialKind)
@@ -136,13 +145,15 @@ export default function OldStreetDev() {
   const workerPreview = import.meta.env.MODE !== 'oldstreet-dev' || new URLSearchParams(location.search).get('session') === 'worker'
   const [connection] = useState(() => (workerPreview?oldStreetSessionHttp:oldStreetSession)(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
   const serverHead = useRef<OldStreetHead>()
-  const [expansionCapabilities,setExpansionCapabilities]=useState({planning:false,media:false,campaign:false})
+  const [expansionCapabilities,setExpansionCapabilities]=useState({planning:false,media:false,campaign:false,roomMedia:false})
   const expansionJourney=serverHead.current?.id
   useEffect(()=>{
-    let active=true;setExpansionCapabilities({planning:false,media:false,campaign:false})
-    if(expansionJourney)void connection.api('/sessions/'+expansionJourney+'/expansion-capabilities').then(c=>{if(active)setExpansionCapabilities({planning:c.planning===true,media:c.media===true,campaign:c.campaign===true})}).catch(()=>{})
+    let active=true;setExpansionCapabilities({planning:false,media:false,campaign:false,roomMedia:false})
+    if(expansionJourney)void connection.api('/sessions/'+expansionJourney+'/expansion-capabilities').then(c=>{if(active)setExpansionCapabilities({planning:c.planning===true,media:c.media===true,campaign:c.campaign===true,roomMedia:c.roomMedia===true})}).catch(()=>{})
     return()=>{active=false}
   },[connection,expansionJourney])
+  const roomMedia=useOldStreetRoomMedia(connection.api,expansionJourney,head.scene==='darkroom'&&expansionCapabilities.roomMedia)
+  const progressiveRoom=head.scene==='darkroom'&&expansionCapabilities.roomMedia&&!roomMedia.fallback
   const current = useRef(head); current.current = head
   const position = useRef(head.position)
   const runtime = useRef<RpgRendererRuntime>()
@@ -638,8 +649,8 @@ export default function OldStreetDev() {
       closeInteraction()
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
-        {pixelShop&&<OldStreetBuildingEdges room={head.scene}/>}<OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt} stoneImage={pixelShop?environmentArt.stoneStair:undefined} art={environmentArt}/><OldStreetRoomWalls room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} compositeShop={compositeShop} actor={feet} locale={locale}/><OldStreetRoofRecovery room={head.scene} save={head.save} wood={environmentArt.wood} cabinet={pixelPropsUrl}/>
-        {head.scene==='darkroom'&&<image href={photoTableUrl} x="136" y="104" width="112" height="112"/>}
+        {pixelShop&&<OldStreetBuildingEdges room={head.scene}/>}<OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{progressiveRoom&&<DarkroomFloor image={roomMedia.images.floor}/>} {pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt} stoneImage={pixelShop?environmentArt.stoneStair:undefined} art={environmentArt}/><OldStreetRoomWalls room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} compositeShop={compositeShop} actor={feet} locale={locale}/><OldStreetRoofRecovery room={head.scene} save={head.save} wood={environmentArt.wood} cabinet={pixelPropsUrl}/>
+        {head.scene==='darkroom'&&(progressiveRoom?<DarkroomBench image={roomMedia.images.bench}/>:<image href={photoTableUrl} x="136" y="104" width="112" height="112"/>)}
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!(head.scene==='shed'&&roofSpareVisible(head.save)&&b.x===roofSpareBoard.x&&b.y===roofSpareBoard.y)&&!(head.scene==='roof'&&head.save.facts['roof-recovery']&&[...roofRecoveryObstacles(head.save),...oldStreetProjectedProps(head.save).filter(p=>p.id.startsWith('roof-')).map(p=>p.body)].some(r=>r.x===b.x&&r.y===b.y&&r.w===b.w&&r.h===b.h))&&!oldStreetFurniture.some(p=>p.room===head.scene&&b.x===p.body.x&&b.y===p.body.y)&&!(head.scene==='darkroom'&&b.x===136)&&!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&(renderedProps.includes(p.id)||p.id.startsWith('archive-'))&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
@@ -656,6 +667,7 @@ export default function OldStreetDev() {
       })}
     </div>
     </div>
+    {progressiveRoom&&ready&&!selected&&!modalOpen&&<DarkroomMediaStatus complete={!!roomMedia.images.floor&&!!roomMedia.images.bench} failed={roomMedia.failed} locale={locale} useBaseline={roomMedia.useBaseline} retry={roomMedia.retry}/>}
     <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')+(inputOpen?' os-actions--composing':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!ready||(!selected&&!openingOpen&&!error)||!!archiveOpen||!!campaignOpen||clockOpen||photoOpen}>
       <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong>{!error&&<button disabled={busy} onClick={closeInteraction}>{text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])}</button>}</div>
       <div className="os-actions__content">
@@ -680,6 +692,7 @@ export default function OldStreetDev() {
           <button className="os-compose__toggle" aria-expanded={inputOpen} disabled={busy} onClick={()=>setInputOpen(open=>!open)}>{text(knownSpeaker?['聊点别的…','Say something else…']:['尝试别的办法…','Try something else…'])}</button>
           {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input autoFocus disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
         </div>}
+        {conversationOpen&&chosen&&!busy&&<OldStreetConversationHistory key={(serverHead.current?.id??'')+':'+chosen.id} save={head.save} speakerId={oldStreetPerson(chosen.id)!.id} current={turn}/>}
       </>)}
       </div>
       </div>

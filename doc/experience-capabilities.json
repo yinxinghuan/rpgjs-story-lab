@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "releaseTarget": "playable",
+  "gameProfile": {
+    "sessionShape": "chapter",
+    "expectedMinutes": 50,
+    "crossSessionContinuity": true,
+    "crossDevice": false,
+    "directMovement": true,
+    "physicalNpc": true,
+    "conversation": true,
+    "inventory": true,
+    "compareBranches": true,
+    "sharedDevice": true,
+    "creativeSilence": false
+  },
+  "modes": {"journeys": "multiple", "persistence": "local-session", "conversation": "hybrid"},
+  "capabilities": {
+    "opening": {"state": "implemented", "evidence": ["_qa/old-street-campaign-entry.test.ts"]},
+    "exploration": {"state": "implemented", "evidence": ["_qa/old-street-space.test.ts", "_qa/old-street-routes.test.ts"]},
+    "loadingRecovery": {"state": "implemented", "evidence": ["_qa/old-street-expansion-recovery.test.ts", "_qa/old-street-local-recovery.test.ts"]},
+    "audioLayers": {"state": "planned", "evidence": ["_qa/old-street-audio-layers.test.ts", "doc/audio-20260921/provenance.json"], "note": "播放层已实现，完整验听、循环接缝和真机未验收。"},
+    "persistence": {"state": "implemented", "evidence": ["_qa/old-street-worker.test.ts", "_qa/old-street-identity-continuity.test.ts"]},
+    "closure": {"state": "implemented", "evidence": ["_qa/old-street-ending.test.ts", "_qa/old-street-ending-reel.test.ts"]},
+    "npcWorldLife": {"state": "implemented", "evidence": ["_qa/old-street-resident-motion.test.ts"]},
+    "stagedConversation": {"state": "implemented", "evidence": ["_qa/old-street-dialogue-pages.test.ts"]},
+    "conversationHistory": {"state": "implemented", "evidence": ["_qa/old-street-conversation-history.test.ts", "_qa/ui/progressive-room-20260921/report.json"]},
+    "inventoryVisuals": {"state": "planned", "evidence": [], "note": "已有物件图和资料查看器；全量物品图像识别层尚未在本次核验，不冒称完成。"},
+    "distanceFootsteps": {"state": "implemented", "evidence": ["_qa/old-street-audio.test.ts"]},
+    "generatedConversationBoundary": {"state": "implemented", "evidence": ["_qa/old-street-dialogue.test.ts", "_qa/old-street-scene-knowledge.test.ts"]},
+    "generatedConversationFallback": {"state": "implemented", "evidence": ["_qa/old-street-dialogue.test.ts"]},
+    "progressiveRoom": {"state": "implemented", "evidence": ["_qa/old-street-room-media.test.ts", "_qa/ui/progressive-room-20260921/report.json"], "note": "暗房地板与工作台试点；自动准入，非任意房间生成或人工美术签收，线上端到端待验。"},
+    "accountRecovery": {"state": "planned", "evidence": [], "note": "同事确认 guest-shell 注入 telegramId 可信；尚未确认游戏 Worker 如何验证请求确由该身份发起。现有匿名 capability 保留。"}
+  },
+  "decisions": {
+    "duration": "50 是 45–60 分钟设计区间的代表值，不是已验证游戏时长。",
+    "journeys": "多旅程可重开和比较分支，各旅程权威状态、媒体与本地回退选择隔离。",
+    "persistence": "此枚举描述身份连续性限于当前浏览器。实际剧情权威与媒体在 Worker/DO 持久化，不是仅本地存档；不宣称已有账号跨设备恢复。",
+    "conversation": "混合生成与作者保底，人物与剧情权限由权威 reducer 限定。",
+    "progressiveRoom": "用户明确选择自动检查后显示、保留回退。检查来源身份、SHA256、尺寸、透明度、轮廓边界与宽高比；生成不改变出口、碰撞、位置和谜题。",
+    "release": "本次功能为本地实现与隔离 renderer 验证，未发布，非 high-fidelity 或实体手机验收。"
+  }
+}

@@ -19,6 +19,19 @@ export function oldStreetConversation(save:StorySave,speakerId:string){
  }
  return [...pairs.values()].filter((p):p is {input:string;reply:string}=>!!p.input&&!!p.reply).slice(-4)
 }
+/** Read-only view of committed pairs; omit the entire currently displayed exchange. */
+export function oldStreetConversationHistory(save:StorySave,speakerId:string,current:StoryBlock[]=[]){
+ const excluded=new Set(current.map(b=>b.data?.oldStreetConversationId).filter(v=>typeof v==='string'))
+ const pairs=new Map<string,{id:string;input?:string;reply?:string}>()
+ for(const b of save.blocks){const d=b.data,id=d?.oldStreetConversationId
+  if(b.kind!=='dialogue'||d?.oldStreetSpeakerId!==speakerId||typeof id!=='string'||excluded.has(id))continue
+  const pair=pairs.get(id)??{id}
+  if(d.oldStreetRole==='player')pair.input=b.text
+  if(d.oldStreetRole==='reply')pair.reply=b.text
+  pairs.set(id,pair)
+ }
+ return [...pairs.values()].filter((p):p is {id:string;input:string;reply:string}=>!!p.input&&!!p.reply).slice(-4)
+}
 export function oldStreetTalkTopics(save:StorySave,entity:string){
  const p=oldStreetPerson(entity),zh=save.locale==='zh',f=save.facts
  if(!p||!save.characters.some(c=>c.id===p.id))return []

@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-21",
+  "service": "https://game.aiwaves.tech/alteru-media/api",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "status": "generated-preview-pending-listening",
+  "tracks": [
+    {
+      "file": "old-street-music.mp3",
+      "kind": "music",
+      "requestId": "5592e214-c029-4971-a31d-d3470d854835",
+      "taskId": "mt_db8bd20e167f88f578fcf0c912e3273e",
+      "url": "https://cdn.aiwaves.tech/prodsv/telegram/audio/music/20260921/d80bbed793e4471b80061b72746a0f17.mp3",
+      "sha256": "6777d18ce4061fd43f73beb93711063b77b50ba8ec9ca734dbf03bb07316bd85",
+      "prompt": "Quiet background music for a walkable old neighborhood mystery, warm restrained nostalgia, sparse felt piano and soft bowed strings, 68 BPM, low energy with spacious pauses for reading dialogue, consistent gentle texture, subtle opening and soft ending, instrumental only, no vocals, no drums, no dramatic climax.",
+      "durationSeconds": 60,
+      "bytes": 779618,
+      "integratedLUFS": -20.65,
+      "truePeakDBTP": -3.54,
+      "volume": 0.32
+    },
+    {
+      "file": "river-ambience.mp3",
+      "kind": "sfx",
+      "requestId": "aaf581e3-8eaf-48b9-b193-03638f01bedd",
+      "taskId": "mt_a78b1e6951c2699af2ed2775f5f2124c",
+      "url": "https://cdn.aiwaves.tech/prodsv/telegram/audio/sfx/20260921/9f82649b2a55456e958cd60bdaf8e15f.mp3",
+      "sha256": "b518ae830e5033ffd1ebaa25008df39962f87a7fc814f6ddf388cef446eb590d",
+      "prompt": "Gentle continuous river water lapping against an old stone embankment, listener standing several meters away on a quiet neighborhood riverside path, soft wide natural ambient perspective, calm even texture, no voices, no footsteps, no birds, no traffic, no music, no melody, no sudden splashes, suitable for quiet reading.",
+      "durationSeconds": 24,
+      "bytes": 451506,
+      "integratedLUFS": -29.35,
+      "truePeakDBTP": -9.14,
+      "volume": 0.55
+    }
+  ],
+  "verification": {
+    "fullDecode": "passed: ffmpeg",
+    "gestureMuteSceneAndVisibility": "unit tests + Chromium playback passed",
+    "completeListening": "pending",
+    "seamlessLoop": "not claimed; browser loop, no crossfade",
+    "physicalPhone": "pending"
+  }
+}

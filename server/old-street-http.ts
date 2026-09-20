@@ -7,6 +7,7 @@ import type {OldStreetAuthority} from './old-street-runtime'
 import type {OldStreetExpansionJobs} from './old-street-expansion-jobs'
 import type {OldStreetCampaignJobs} from './old-street-campaign-jobs'
 import type {OldStreetExpansionMedia,ExpansionPhotoProducer} from './old-street-expansion-media'
+import type {RoomArtRuntime} from './old-street-room-media'
 
 export function oldStreetCampaignOperation(method:string,owner:string,id:string,stage:'trace'|'parcel'|'archive'|'field',jobs:OldStreetCampaignJobs|undefined,body:unknown,background:(p:Promise<unknown>)=>void){
  if(!jobs)throw new LabError('CAMPAIGN_NOT_AVAILABLE',503)
@@ -43,7 +44,7 @@ export function oldStreetExpansionOperation(method:string,owner:string,id:string
 
 export const oldStreetJson=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
 /** Owner is supplied exclusively by the Worker's capability boundary. */
-export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void},campaign?:{jobs:OldStreetCampaignJobs;background:(p:Promise<unknown>)=>void},journalArt?:JournalArtRuntime){
+export async function handleOldStreetSession(request:Request,owner:string,authority:OldStreetAuthority,readBody:(request:Request)=>Promise<any>,expansion?:{jobs:OldStreetExpansionJobs;media:OldStreetExpansionMedia;produce:ExpansionPhotoProducer;background:(p:Promise<unknown>)=>void},campaign?:{jobs:OldStreetCampaignJobs;background:(p:Promise<unknown>)=>void},journalArt?:JournalArtRuntime,roomArt?:RoomArtRuntime){
  try{
   if(request.headers.get(OLD_STREET_RUNTIME_HEADER)!==OLD_STREET_RUNTIME_CONTRACT)throw new LabError('RUNTIME_VERSION_MISMATCH',409)
   const url=new URL(request.url),path=url.pathname.slice(OLD_STREET_API_PATH.length)
@@ -56,14 +57,28 @@ export async function handleOldStreetSession(request:Request,owner:string,author
    }
    throw new LabError('METHOD_NOT_ALLOWED',405)
   }
-  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(journal-art|journal-art-file|actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive|campaign-field))?$/.exec(path)
+  const m=/^\/sessions\/([a-zA-Z0-9-]{16,80})(?:\/(room-art|room-art-file|journal-art|journal-art-file|actions|position|events|expansion|expansion-photo|expansion-photo-file|expansion-capabilities|campaign-trace|campaign-parcel|campaign-archive|campaign-field))?$/.exec(path)
   if(!m)throw new LabError('NOT_FOUND',404)
+  if(m[2]==='room-art'){
+   if(!roomArt)throw new LabError('ROOM_ART_NOT_AVAILABLE',503)
+   if(request.method==='GET')return oldStreetJson({jobs:roomArt.media.list(owner,m[1])})
+   if(request.method!=='POST')throw new LabError('METHOD_NOT_ALLOWED',405)
+   const b=await readBody(request)
+   if(!b||typeof b!=='object'||Array.isArray(b)||Object.keys(b).some(k=>k!=='retryId')||b.retryId!==undefined&&(typeof b.retryId!=='string'||!['floor','bench'].includes(b.retryId)))throw new LabError('INVALID_ROOM_ART_REQUEST')
+   const jobs=roomArt.media.sync(owner,m[1],b.retryId)
+   roomArt.background(roomArt.media.run(owner,m[1],roomArt.produce))
+   return oldStreetJson({jobs})
+  }
+  if(m[2]==='room-art-file'&&request.method==='GET'){
+   if(!roomArt)throw new LabError('ROOM_ART_NOT_AVAILABLE',503)
+   return new Response(new Uint8Array(await roomArt.media.file(owner,m[1],url.searchParams.get('asset')??'')),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
+  }
   if(m[2]==='journal-art')return oldStreetJson(journalArtOperation(request.method,owner,m[1],request.method==='POST'?await readBody(request):undefined,journalArt))
   if(m[2]==='journal-art-file'&&request.method==='GET'){
    if(!journalArt)throw new LabError('ART_NOT_AVAILABLE',503)
    return new Response(new Uint8Array(await journalArt.media.file(owner,m[1],url.searchParams.get('asset')??'')),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT,[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT}})
   }
-  if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion,campaign:!!campaign})}
+  if(m[2]==='expansion-capabilities'&&request.method==='GET'){authority.get(owner,m[1]);return oldStreetJson({planning:!!expansion,media:!!expansion,campaign:!!campaign,roomMedia:!!roomArt})}
   if(m[2]==='campaign-trace'||m[2]==='campaign-parcel'||m[2]==='campaign-archive'||m[2]==='campaign-field')return oldStreetJson(oldStreetCampaignOperation(request.method,owner,m[1],m[2]==='campaign-trace'?'trace':m[2]==='campaign-parcel'?'parcel':m[2]==='campaign-field'?'field':'archive',campaign?.jobs,request.method==='POST'?await readBody(request):undefined,campaign?.background??(()=>{})))
   if(m[2]==='expansion-photo'){
    if(!expansion)throw new LabError('EXPANSION_MEDIA_NOT_READY',503)

@@ -1,0 +1,6 @@
+.os-room-progress{position:absolute;top:76px;left:12px;right:12px;z-index:6;pointer-events:none;font:14px/1.5 system-ui;color:var(--os-paper,#eee4cc);display:flex;flex-direction:column;align-items:flex-end}
+.os-room-progress details{pointer-events:auto;max-width:100%;background:#20352bf2;border:1px solid #9aaa94;border-radius:4px}
+.os-room-progress summary{min-height:44px;padding:10px 12px;box-sizing:border-box;cursor:pointer}
+.os-room-progress details>div{display:flex;flex-wrap:wrap;gap:4px;padding:4px 8px;max-width:270px}
+.os-room-progress p{margin:0 0 4px;max-width:26em;background:#20352be8;padding:6px 10px;border-radius:4px}
+.os-room-progress button{pointer-events:auto;min-height:44px;max-width:100%;margin:0 8px 4px 0;padding:8px 12px;border:1px solid #9aaa94;border-radius:4px;background:#20352b;color:var(--os-paper,#eee4cc);font:14px/1.4 system-ui;touch-action:manipulation}

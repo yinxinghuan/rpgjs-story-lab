@@ -1,0 +1,23 @@
+{
+  "requestId": "2b483939-370a-4358-95b7-a59d2bd18622",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "prompt": "One complete freestanding vintage photographic developing workbench, shallow elevated orthographic front view for a 2D top-down exploration RPG. Large readable rectangular wooden tabletop, short dark cabinet base, shallow top depth, muted weathered brown and olive, detailed but calm painted pixel clusters. Parallel edges, no vanishing point. Width about twice total visible height. Entire object isolated centered on flat pure magenta #ff00ff with generous margin. No floor, wall, people, text, extra objects, checkerboard or cast shadow outside the object.",
+  "taskId": "mt_3cf8a98c3d8e3dbdcab5f8b41ae01017",
+  "task": {
+    "task_id": "mt_3cf8a98c3d8e3dbdcab5f8b41ae01017",
+    "request_id": "2b483939-370a-4358-95b7-a59d2bd18622",
+    "type": "image",
+    "status": "succeeded",
+    "created_at": 1789928362443,
+    "updated_at": 1789928364142,
+    "media": {
+      "type": "image",
+      "url": "https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789928363918604.png",
+      "width": 512,
+      "height": 512,
+      "format": "png"
+    },
+    "timing_ms": 663
+  },
+  "sha256": "e67f55d06eb9f25a5164c7679ffc8749d52123b3c11e0e6708c3d4528859b2c3"
+}

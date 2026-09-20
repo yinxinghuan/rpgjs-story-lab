@@ -237,7 +237,7 @@ test('Worker expansion routes share the journey capability and retain generated 
   await send({type:'action',action:door.actionId,target:door.id,position:entity.approach})
   await send({type:'expansion-request',template:'photo-darkroom-v1',text:'查看暗房'})
   const root='/sessions/'+head.id
-  assert.deepEqual(await (await handler(request(root+'/expansion-capabilities',token),h.env)).json(),{planning:true,media:true,campaign:false})
+  assert.deepEqual(await (await handler(request(root+'/expansion-capabilities',token),h.env)).json(),{planning:true,media:true,campaign:false,roomMedia:true})
   assert.equal((await handler(request(root+'/expansion',token,{}),h.env)).status,200);await h.drain()
   await send({type:'expansion-activate'})
   assert.equal((await handler(request(root+'/expansion-photo',token,{}),h.env)).status,200);await h.drain()
@@ -255,7 +255,7 @@ test('Worker preview advertises released expansion providers without making a ge
  try{
   const head=await (await handler(request('/sessions',token,{enrollment_id:randomUUID(),locale:'zh'}),h.env)).json() as OldStreetHead
   const r=await handler(request('/sessions/'+head.id+'/expansion-capabilities',token),h.env)
-  assert.equal(r.status,200);assert.deepEqual(await r.json(),{planning:true,media:true,campaign:false})
+  assert.equal(r.status,200);assert.deepEqual(await r.json(),{planning:true,media:true,campaign:false,roomMedia:true})
   assert.equal((await handler(request('/sessions/'+head.id,token),h.env)).status,200)
  }finally{h.close()}
 })
