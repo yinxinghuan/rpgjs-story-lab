@@ -41,7 +41,7 @@ test('compiled Worker and default client enroll the full trail without changing 
   assert.equal(fresh.campaign?.photoSource,'roof-negative-v1')
   assert.equal(fresh.save.finale?.status==='complete',false)
   const caps=await connection().api('/sessions/'+fresh.id+'/expansion-capabilities')
-  assert.deepEqual(caps,{planning:true,media:true,campaign:true})
+  assert.deepEqual(caps,{planning:true,media:true,campaign:true,roomMedia:true})
   restart()
   assert.deepEqual(await connection().client.enroll('zh',false,options),fresh)
   assert.deepEqual(await connection().api('/sessions/'+old.id),old)
