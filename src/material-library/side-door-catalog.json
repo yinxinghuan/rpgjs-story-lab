@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "projection": "orthographic-front-leaf-20260918",
+  "version": 2,
+  "projection": "native-elevated-orthographic-20260921",
   "threshold": {
     "id": "short-passage-high-view",
     "asset": "../../doc/door-platform-20260918/short-passage-high-view/cutout.png",
@@ -18,7 +18,10 @@
     },
     "groundSpan": 251,
     "worldSpan": 56,
-    "tone": { "brightness": 0.82, "saturation": 0.88 },
+    "tone": {
+      "brightness": 0.82,
+      "saturation": 0.88
+    },
     "nearJamb": {
       "x": 349,
       "y": 313,
@@ -29,22 +32,22 @@
   "leaves": {
     "clock": {
       "provider": "alteru-media",
-      "taskId": "mt_f29fd11deee0b54cb8ca55a00815ba85",
-      "sourceSha256": "7a0b38eba7e999cdacd67fec8fd97a7b99085cbd18cf030edee64cfd92b56ca0",
-      "sha256": "2e8bdb0d5ac9f3021ed6f48da54fb939d14e085666a96ae274e7790249e34bef",
-      "operation": "magenta matte removal only",
-      "removed": 111584,
-      "width": 512,
+      "taskId": "mt_e53b861546c4f369ad59a48185981522",
+      "sourceSha256": "36e85931c6dc05355d7abdb6da1d30b2061830b8e677a87c9cbe922613a0399f",
+      "sha256": "bf1fcf0dc8b705d51e776cb24f4b9db0ab1e55cb1d698b3d34f0364b04a0d1f9",
+      "operation": "magenta matte removal only; native aspect ratio and thickness preserved",
+      "removed": 406940,
+      "width": 768,
       "height": 768,
       "bounds": {
-        "x": 44,
-        "y": 47,
-        "width": 419,
-        "height": 678
+        "x": 204,
+        "y": 132,
+        "width": 364,
+        "height": 508
       },
       "id": "clock",
-      "status": "admitted-with-runtime-thickness",
-      "asset": "../../doc/door-platform-20260918/side-door-face/cutout.png",
+      "status": "admitted-native-thickness",
+      "asset": "../../doc/door-projection-20260920/clock/cutout.png",
       "assetKey": "entranceClockLeaf",
       "hinge": "right",
       "lettering": false,
@@ -54,22 +57,22 @@
     },
     "plain": {
       "provider": "alteru-media",
-      "taskId": "mt_1c41763e8234e51915ed5e2cf6c0c2e0",
-      "sourceSha256": "563177251001fa4eecfb34d9b1e19989ee364d21f110d178b7638158e73daf30",
-      "sha256": "da0d44cce601029c85b4beaa6fa036dde6c84c885f739b826c5ae7db4072b3cb",
-      "operation": "magenta matte removal only",
-      "removed": 162265,
-      "width": 512,
+      "taskId": "mt_bbf55654288e898f207a0fe7ed4a1904",
+      "sourceSha256": "1b83c9af11b9c8eff1a64b6841523477c1ba0c6d2d0787971d72081a9316a075",
+      "sha256": "4ab6a6249c57b4a192d1bb59429dd318c10bb1c60ecbf5605b11ce500fec8d21",
+      "operation": "magenta matte removal only; native aspect ratio and thickness preserved",
+      "removed": 414195,
+      "width": 768,
       "height": 768,
       "bounds": {
-        "x": 78,
-        "y": 56,
+        "x": 209,
+        "y": 137,
         "width": 360,
-        "height": 658
+        "height": 496
       },
       "id": "plain",
-      "status": "admitted-with-runtime-thickness",
-      "asset": "../../doc/door-platform-20260918/side-door-plain/cutout.png",
+      "status": "admitted-native-thickness",
+      "asset": "../../doc/door-projection-20260920/plain/cutout.png",
       "assetKey": "entrancePlainLeaf",
       "hinge": "right",
       "lettering": false,
@@ -79,22 +82,22 @@
     },
     "shop-clock": {
       "provider": "alteru-media",
-      "taskId": "mt_0fba98b81f7096d80251b69461c4adaf",
-      "sourceSha256": "e08f1e5a607d948e3d07a8700d9dc2d13101414711b488e7fb94a28e765a1fea",
-      "sha256": "723531104f7a8ee639174476dcb02317994dccef40b5b26d3b1db6b6db4f3bf4",
-      "operation": "magenta matte removal only",
-      "removed": 163427,
-      "width": 512,
+      "taskId": "mt_c7645338d9b0147e3c28b34dda12f8e0",
+      "sourceSha256": "f8d13a9a149368a9a91bf418d6c9fe0dd6f1807943d3d6f24caca5d3af8e7894",
+      "sha256": "8812acd53d5f35b849b1f123500867183fc81912ffe40f319649d081139d5af7",
+      "operation": "magenta matte removal only; native aspect ratio and thickness preserved",
+      "removed": 408760,
+      "width": 768,
       "height": 768,
       "bounds": {
-        "x": 72,
-        "y": 54,
-        "width": 357,
-        "height": 662
+        "x": 198,
+        "y": 133,
+        "width": 365,
+        "height": 508
       },
       "id": "shop-clock",
-      "status": "admitted-with-runtime-thickness",
-      "asset": "../../doc/door-platform-20260918/shop-door-watch-left-v2/cutout.png",
+      "status": "admitted-native-thickness",
+      "asset": "../../doc/door-projection-20260920/shop-clock-left/cutout.png",
       "assetKey": "entranceShopClock",
       "hinge": "left",
       "lettering": true,
@@ -104,22 +107,22 @@
     },
     "shop-photo": {
       "provider": "alteru-media",
-      "taskId": "mt_3d8dd79039ba5b1d34184fd33ae5a824",
-      "sourceSha256": "50cee57fdd8ffd9582ac6b539f21a97d554c56c1b20139571867ca5678e1f113",
-      "sha256": "f3f7eddd068c06370352b82ab2ede30eba1edc1813cf1d4b33047e0d97f71270",
-      "operation": "magenta matte removal only",
-      "removed": 156876,
-      "width": 512,
+      "taskId": "mt_6ddeb704e421283e4707a48354f13d27",
+      "sourceSha256": "4036514bef92535159663c5800d54a0be64dc619c8f7b30d86397e6a8f141382",
+      "sha256": "4b71c7605880f4851cecf516aa74a438fdf8aebc94932a4e5876b0760bb671be",
+      "operation": "magenta matte removal only; native aspect ratio and thickness preserved",
+      "removed": 406680,
+      "width": 768,
       "height": 768,
       "bounds": {
-        "x": 76,
-        "y": 53,
+        "x": 202,
+        "y": 133,
         "width": 365,
-        "height": 663
+        "height": 511
       },
       "id": "shop-photo",
-      "status": "admitted-with-runtime-thickness",
-      "asset": "../../doc/door-platform-20260918/shop-door-photo-v1/cutout.png",
+      "status": "admitted-native-thickness",
+      "asset": "../../doc/door-projection-20260920/platform-reference-2/cutout.png",
       "assetKey": "entranceShopPhoto",
       "hinge": "right",
       "lettering": true,
@@ -128,9 +131,5 @@
       "outline": "#4d3830"
     }
   },
-  "slab": {
-    "topDepth": 5,
-    "edgeWidth": 1.5
-  },
-  "note": "All complete leaf pixels are preserved: matte removal + automatic alpha bounds only. No semantic crop. Prompt uses one frame-free reference; scene owns thickness and doorway. Business lettering uses native left/right hinge assets, never a mirrored label. User accepted natural shop styling on 2026-09-18."
+  "note": "Platform-generated complete door slabs include their own top and edge thickness. Only magenta matte removal; uniform render scaling preserves native projection. Native left-hinge watch-shop lettering never mirrors. Requests, raw PNGs and task hashes retained under doc/door-projection-20260920."
 }

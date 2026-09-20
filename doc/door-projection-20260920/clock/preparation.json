@@ -1,0 +1,16 @@
+{
+  "provider": "alteru-media",
+  "taskId": "mt_e53b861546c4f369ad59a48185981522",
+  "sourceSha256": "36e85931c6dc05355d7abdb6da1d30b2061830b8e677a87c9cbe922613a0399f",
+  "sha256": "bf1fcf0dc8b705d51e776cb24f4b9db0ab1e55cb1d698b3d34f0364b04a0d1f9",
+  "operation": "magenta matte removal only; native aspect ratio and thickness preserved",
+  "removed": 406940,
+  "width": 768,
+  "height": 768,
+  "bounds": {
+    "x": 204,
+    "y": 132,
+    "width": 364,
+    "height": 508
+  }
+}

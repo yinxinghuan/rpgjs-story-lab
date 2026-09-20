@@ -1,0 +1,8 @@
+{
+  "mode": "edit",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "d2a7c972-8db4-4c2d-ac7c-10e3950c4493",
+  "referenceUrls": ["https://cdn.aiwaves.tech/prod/telegram/avatar/1368312864/1789920080906674.png"],
+  "size": {"width": 768, "height": 768},
+  "prompt": "Correct ONLY the hardware positions on this exact door sprite. MOVE BOTH brass hinge barrels from the RIGHT edge to the LEFT edge. MOVE the brass knob and lock plate from the LEFT stile to the RIGHT stile. Left edge = hinges ONLY; right stile = handle ONLY. Remove the old hardware completely. KEEP the WATCH REPAIR letters and paper notice readable in their current orientation; do NOT mirror or reverse the whole image. All other pixels/design stay consistent: same blue-teal door, silhouette, projected height and width, thin painted top thickness, orthographic projection, pixel art, dark glass and magenta background. One complete movable slab with no fixed jamb, walls or extra objects. The critical acceptance test is hinges visibly protrude at the FAR LEFT while the knob is on the RIGHT."
+}

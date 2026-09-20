@@ -1,0 +1,13 @@
+{
+  "mode": "edit",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "15272c3f-7b7d-45c3-8f52-1ce439513713",
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789919905487-l3q6vbm67io.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 768
+  },
+  "prompt": "Use this reference as a STRICT silhouette, proportion, camera and pixel-art reference. Repaint ONE complete detached movable door leaf in this new design: An old watch repair shop: muted blue-teal worn wood, dusty dark upper glass with small cream WATCH REPAIR lettering and a little paper hours notice. Remove all PHOTO STUDIO words and photographs. Hinges on the LEFT edge and handle on the RIGHT. Lettering reads normally, never mirrored. Preserve the reference's subtly elevated ORTHOGRAPHIC view, perfectly parallel vertical sides, horizontal rails, thin visible top thickness and narrow edge thickness painted into the actual slab. Projected face about 1.40 times as tall as wide, same as reference. Keep modest thin top edge, not an overhanging lintel. Repaint hardware from the same elevated viewpoint. Same restrained crisp detailed pixel clusters, patina and natural muted materials. NO fixed architectural frame, walls, ground, shadows, second door or extra objects. Complete centered leaf with generous margins. Uniform pure magenta #FF00FF background outside the object. All geometry including thickness must exist in generated pixels: game only scales uniformly, never squashes, and adds no top/side geometry."
+}

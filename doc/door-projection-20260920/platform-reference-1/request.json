@@ -1,0 +1,13 @@
+{
+  "mode": "edit",
+  "sessionId": "cb90357b-fe01-48ab-b14b-0620eb0d556e",
+  "requestId": "afd00177-a9eb-467b-a355-6ca20e7d87d2",
+  "referenceUrls": [
+    "https://images.aiwaves.tech/uploads/1789919905487-l3q6vbm67io.png"
+  ],
+  "size": {
+    "width": 768,
+    "height": 768
+  },
+  "prompt": "Use this reference as the strict game asset design and camera reference. Generate ONE isolated complete movable PHOTO STUDIO door leaf with the SAME proportions, red-brown worn wood, dusty glass, cream lettering, tiny taped photographs, left brass handle and right hinges. Preserve its subtly elevated orthographic viewpoint, PARALLEL vertical sides, horizontal rails, narrow visible TOP THICKNESS belonging to the slab and tiny hinge upper surfaces. The projected door face is about 1.40 times as tall as wide. Do not revert to a tall front-elevation door. Draw the depth natively into the asset; the game adds NO artificial top or side thickness and applies NO vertical squashing. Same restrained detailed pixel-art texture as reference, no overhanging lintel, no fixed architectural frame, no walls, floor, ground shadow or extra objects. Center the whole leaf with generous margin, pure uniform magenta #FF00FF outside the leaf for transparency cleanup. Never put magenta on the object. Keep all hardware visible, one door only."
+}

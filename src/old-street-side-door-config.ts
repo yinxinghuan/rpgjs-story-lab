@@ -15,10 +15,13 @@ export const sideDoorStyles:Record<string,SideDoorStyle>={
 }
 export function sideDoorStyle(door:Pick<SideDoor,'id'>){const key=door.id.split(':')[1],style=sideDoorStyles[key];if(!style)throw Error('SIDE_DOOR_STYLE_MISSING:'+key);return style}
 export function isSidePassage(door:Pick<SideDoor,'kind'|'side'>){return door.kind!=='stairs'&&(door.side==='W'||door.side==='E')}
-/** Leaf spans the 56-world-unit opening, with 4 units clearance per end. */
+/**
+ * Leaf spans the 56-world-unit opening, with 4 units clearance per end.
+ * Rendered height comes from each generated slab's native aspect ratio.
+ */
 export function sideLeafPlacement(d:SideDoor){
  const style=sideDoorStyle(d),towardRoom=style.opensInto===d.room,direction=(d.side==='W'?1:-1)*(towardRoom?1:-1)
- return {style,towardRoom,direction,x:d.position.x+(d.side==='W'?-4:4),y:d.position.y+(style.hinge==='south'?28:-28),width:48,height:88}
+ return {style,towardRoom,direction,x:d.position.x+(d.side==='W'?-4:4),y:d.position.y+(style.hinge==='south'?28:-28),width:48}
 }
 
 export function openSideLeafBody(d:SideDoor,facts:StorySave['facts']){

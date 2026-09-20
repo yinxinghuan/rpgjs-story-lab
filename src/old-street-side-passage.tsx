@@ -11,11 +11,11 @@ export function OldStreetSidePassage({door,art,foreground=false}:{door:SideDoor;
 
  </g>
 }
-/** Complete uncropped panel; top/edge are scene geometry. Text-bearing leaves never mirror. */
+/** Complete native-projection slab, including its painted thickness. Text-bearing leaves never mirror. */
 export function OldStreetSideDoorLeaf({door,art,closed,foreground=false,actor}:{door:SideDoor;art:OldStreetEnvironmentArt;closed:boolean;foreground?:boolean;actor?:{x:number;y:number};locale?:'zh'|'en'}){
  const p=sideLeafPlacement(door),inFront=!actor||actor.y+26<=p.y+1
  if(p.style.leaf==='none'||foreground!==inFront)return null
- const material=sideMaterials.leaves[p.style.leaf],slab=sideMaterials.slab,b=material.bounds
+ const material=sideMaterials.leaves[p.style.leaf],b=material.bounds
  const scale=p.width/b.width,width=p.width,height=b.height*scale
  if(closed)return <g data-side-door-leaf="closed-edge" data-door-id={door.id}>
   <rect x={p.x-2} y={door.position.y-28-height} width="4" height={56+height} fill={material.edge} stroke={material.outline} strokeWidth=".7"/>
@@ -26,9 +26,7 @@ export function OldStreetSideDoorLeaf({door,art,closed,foreground=false,actor}:{
  const mirror=(p.direction>0)!==(material.hinge==='left')
  // Fallback to the admitted threshold if a future recipe lacks its matching lettering orientation.
  if(mirror&&material.lettering)return null
- return <g data-side-door-leaf="open-face" data-door-id={door.id} data-opens-into={p.style.opensInto} data-door-recipe="detached-shop-leaf-v2" transform={`translate(${p.x} ${p.y})`}>
-  <rect data-door-thickness="top" x={left} y={-height-slab.topDepth} width={width} height={slab.topDepth} fill={material.top} stroke={material.outline} strokeWidth=".7"/>
-  <rect data-door-thickness="edge" x={p.direction>0?-slab.edgeWidth:0} y={-height-slab.topDepth} width={slab.edgeWidth} height={height+slab.topDepth} fill={material.edge}/>
+ return <g data-side-door-leaf="open-face" data-door-id={door.id} data-opens-into={p.style.opensInto} data-door-recipe="native-projection-slab-v3" transform={`translate(${p.x} ${p.y})`}>
   <g transform={`translate(${left} ${-height})`}><g transform={mirror?`translate(${width} 0) scale(-1 1)`:undefined}>
    <image data-door-leaf-image="complete-panel" href={art[material.assetKey as keyof OldStreetEnvironmentArt]} x={-b.x*scale} y={-b.y*scale} width={material.width*scale} height={material.height*scale} style={{imageRendering:'pixelated'}}/>
   </g></g>

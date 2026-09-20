@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "requestSha256": "f8dde7a735d8f558654813c6ef278830ca7534d2ed4c6fa7f192b983999210df",
+  "requestId": "1e630bd1-0a0c-4b4e-a843-dc98895f463b",
+  "status": "failed",
+  "startedAt": "2026-09-20T14:52:20.011Z",
+  "attempts": 1,
+  "error": "INTERNAL_ERROR",
+  "retryable": false,
+  "elapsedMs": 3304,
+  "httpStatus": 502,
+  "errorMessage": "Upstream returned invalid JSON"
+}
