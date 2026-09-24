@@ -4,8 +4,10 @@ import {downloadSpatialArt} from '../src/spatial-art-download'
 test('independent image downloads begin together and progress counts actual completed responses',async()=>{
  const started:string[]=[],release:Record<string,()=>void>={},progress:number[]=[]
  const fetchImpl=(async(url:string)=>{started.push(url);await new Promise<void>(resolve=>{release[url]=resolve});return new Response(new Blob([url]))}) as typeof fetch
- const work=downloadSpatialArt([{id:'a',url:'a'},{id:'b',url:'b'}],{fetchImpl,progress:n=>progress.push(n)})
- assert.deepEqual(started,['a','b']);assert.deepEqual(progress,[0]);release.b();await new Promise(resolve=>setTimeout(resolve,0));assert.deepEqual(progress,[0,1]);release.a()
+ let firstCompleted!:()=>void
+ const firstCompletion=new Promise<void>(resolve=>{firstCompleted=resolve})
+ const work=downloadSpatialArt([{id:'a',url:'a'},{id:'b',url:'b'}],{fetchImpl,progress:n=>{progress.push(n);if(n===1)firstCompleted()}})
+ assert.deepEqual(started,['a','b']);assert.deepEqual(progress,[0]);release.b();await firstCompletion;assert.deepEqual(progress,[0,1]);release.a()
  const urls=await work;try{assert.deepEqual(progress,[0,1,2]);assert.equal(await (await fetch(urls.a)).text(),'a');assert.equal(await (await fetch(urls.b)).text(),'b')}finally{Object.values(urls).forEach(url=>URL.revokeObjectURL(url))}
 })
 test('a failed image aborts outstanding downloads without returning a partial asset set',async()=>{
