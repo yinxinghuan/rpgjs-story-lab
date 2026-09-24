@@ -1,4 +1,5 @@
-import {evidenceRecallTopics} from './old-street-shared-evidence'
+import {availableTopics,type FlowExchange} from './conversation-flow'
+import {evidenceRecallTopics,sharedEvidence} from './old-street-shared-evidence'
 import {oldStreetLetterGuidance} from './old-street-letter-guidance'
 import type {StorySave,StoryBlock} from './vendor/original-train/types'
 import {oldStreetPerson} from './old-street-characters'
@@ -30,9 +31,9 @@ export function oldStreetConversationHistory(save:StorySave,speakerId:string,cur
   if(d.oldStreetRole==='reply')pair.reply=b.text
   pairs.set(id,pair)
  }
- return [...pairs.values()].filter((p):p is {id:string;input:string;reply:string}=>!!p.input&&!!p.reply).slice(-4)
+ return [...pairs.values()].filter((p):p is {id:string;input:string;reply:string}=>!!p.input&&!!p.reply)
 }
-export function oldStreetTalkTopics(save:StorySave,entity:string){
+function oldStreetTopicCatalog(save:StorySave,entity:string){
  const p=oldStreetPerson(entity),zh=save.locale==='zh',f=save.facts
  if(!p||!save.characters.some(c=>c.id===p.id))return []
  const topic=(id:string,z:string,e:string,zr:string,er:string)=>({id,text:zh?z:e,reply:zh?zr:er})
@@ -57,6 +58,30 @@ export function oldStreetTalkTopics(save:StorySave,entity:string){
   :null
  return [route,personal,...(afterHelp?[afterHelp]:[]),...evidenceRecallTopics(save,entity)]
 }
+const followups:Record<string,[string,string,string,string,string][]>= {
+ 'watchmaker':[
+ ['clock','为什么修好了还留在你这里？','Why keep it here after repairing it?','“修好只是我的部分。送回去，让它重新走在主人家里，这件事才算完。”','“Repairing it is my part. It is not finished until it is ticking in its owner’s home.”'],
+ ['clock-follow','对你来说，钟最重要的是什么？','What matters most to you about a clock?','“不是它能卖多少钱。有人每天听惯了它，突然不响，就会觉得屋里少了一个人。”','“Not its price. Someone is used to hearing it every day. When it goes quiet, the room can feel like someone has left.”']],
+ 'laundry-owner':[
+ ['clock','你最想念它的声音，还是它的来历？','Do you miss its sound or its history most?','“声音让我想起来历。东西不必一直讲故事，只要还在，就能让人记得。”','“The sound brings back its history. An object need not tell its story all day. Its presence can be enough.”'],
+ ['clock-follow','如果别人想记录这个故事呢？','What if someone wants to record that story?','“先问我想留下哪一部分。有些事情能分享，有些事情我只想自己记着。”','“Ask which part I want to preserve. Some things can be shared. Others I want to keep to myself.”']],
+ 'photographer':[
+ ['photos','照片里最容易被忽略的是什么？','What is easiest to overlook in a photograph?','“边上的人，和没有入镜的事。别只看正中间，也别以为一张照片能说明全部。”','“People at the edge, and what happened outside the frame. Look beyond the center; one image is not the whole story.”'],
+ ['photos-follow','那该怎样留下它们的故事？','How should their stories be preserved?','“把知道的和猜的分开。再问照片的主人愿不愿意让别人看见。”','“Separate what you know from what you infer. Then ask whether the owner wants others to see it.”']]
+}
+export function oldStreetTalkTopics(save:StorySave,entity:string){
+ const person=oldStreetPerson(entity);if(!person)return []
+ const catalog=(locale:'zh'|'en')=>{
+  const base=oldStreetTopicCatalog({...save,locale},entity);if(!base.length)return []
+  return [...base,...(followups[entity]??[]).map(([parent,z,e,zr,er])=>({id:parent+'-follow',text:locale==='zh'?z:e,reply:locale==='zh'?zr:er,after:parent}))]
+ }
+ const variants=(id:string)=>id==='shared-photo'?(sharedEvidence(save,entity).some(e=>e.kind==='photo-shown')?'shown':'described'):id==='clock'?(save.facts['clock-returned']?'returned':save.facts['clock-taken']?'carried':'waiting'):id==='photos'?(save.facts['photos-returned']?'returned':save.facts['photos-taken']?'carried':'missing'):'base'
+ const zh=catalog('zh'),en=catalog('en'),nodes=catalog(save.locale).map((t,i)=>({...t,key:t.id+'@'+variants(t.id),utility:['letter','steps','roof'].includes(t.id),after:'after' in t?t.after+'@'+variants(t.after as string):undefined,aliases:[{question:zh[i].text,reply:zh[i].reply},{question:en[i].text,reply:en[i].reply}]}))
+ const pairs=new Map<string,Partial<FlowExchange>>()
+ for(const b of save.blocks){const d=b.data;if(d?.oldStreetSpeakerId!==person.id||typeof d.oldStreetConversationId!=='string')continue
+  const pair=pairs.get(d.oldStreetConversationId)??{};if(d.oldStreetRole==='player')pair.question=b.text;if(d.oldStreetRole==='reply'){pair.reply=b.text;if(typeof d.topicKey==='string')pair.topicKey=d.topicKey}pairs.set(d.oldStreetConversationId,pair)}
+ return availableTopics(nodes,[...pairs.values()].filter((p):p is FlowExchange=>!!p.question&&!!p.reply))
+}
 const memory=/(?:记得|回忆|我刚才说)|\b(?:remember|recall)\b/i
 export function oldStreetAuthoredTalkReply(save:StorySave,entity:string,input:string):string|null{
  const p=oldStreetPerson(entity),zh=save.locale==='zh'
@@ -70,6 +95,7 @@ export function oldStreetAuthoredTalkReply(save:StorySave,entity:string,input:st
 export function oldStreetTalkReply(save:StorySave,entity:string,input:string){return oldStreetAuthoredTalkReply(save,entity,input)??(save.locale==='zh'?'这件事我不清楚。你可以问问我这里的路，或者手边的东西。':'I do not know about that. You can ask me about the way around here or the things nearby.')}
 export function oldStreetTalkBlocks(save:StorySave,entity:string,id:string,input:string,reply:string):StoryBlock[]{
  const p=oldStreetPerson(entity)!,person=save.characters.find(c=>c.id===p.id)!
- const data={oldStreetSpeakerId:p.id,oldStreetConversationId:id}
+ const topicKey=oldStreetTalkTopics(save,entity).find(t=>t.text===input&&t.reply===reply)?.key
+ const data={oldStreetSpeakerId:p.id,oldStreetConversationId:id,...(topicKey?{topicKey}:{})}
  return [{id:id+':player',kind:'dialogue',speaker:save.locale==='zh'?'你':'You',text:input,data:{...data,oldStreetRole:'player'}},{id:id+':reply',kind:'dialogue',speaker:person.name,text:reply,data:{...data,oldStreetRole:'reply'}}]
 }
