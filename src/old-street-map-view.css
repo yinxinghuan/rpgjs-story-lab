@@ -97,3 +97,5 @@
 .os-atlas__viewport{cursor:grab}
 @media(max-height:650px){.os-dev .os-atlas__place{min-height:76px;padding:10px 6px;font-size:16px}.os-atlas__place>svg{display:block}}
 .os-dev .os-atlas__place{width:132px}
+
+.os-atlas__world{will-change:transform;transition:none}.os-map-travel{display:block;width:100%;min-height:48px!important;background:#345949!important;color:#fff4db!important;border:2px solid #ad9366!important;margin-bottom:8px;font-weight:700}.os-map-travel:disabled{opacity:.55}.os-atlas .os-neighbourhood__directions{max-height:34dvh}.os-atlas .os-neighbourhood__directions details{max-height:100px;overflow:auto}

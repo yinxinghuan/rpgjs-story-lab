@@ -2695,3 +2695,8 @@ Vite `gameReleasePlugin` 对 src/public/server、入口、依赖清单和 Worker
 - 账号：记录同事确认 guest-shell 注入 `window.telegramId` 可信。当前游戏后台仍靠匿名 capability 确认访问权；尚无从 Worker 请求验证平台身份的已核实合同，因此未直接把客户端 ID 当作读写他人旅程的授权。不上报私有凭据到平台存档列表，不宣称账号恢复完成。
 
 能力档案为 `doc/experience-capabilities.json`，区分已实现、待验听、待身份接入与未核验项；50 分钟只是原 45–60 分钟设计目标的代表值。门制作/验收与运行时自动准入选择同步进入 `build-spatial-story-game` 技能包。
+
+
+## 2026-09-26 地图导航改造
+地图手势使用 `src/map-gesture.ts` 的纯模型与 `src/use-map-gesture.ts` 的 React 适配器。拖动只更新 RAF transform，结束时同步按钮缩放状态；支持累计阈值、双指切单指、取消、重新挂载和 resize。快捷前往通过现有旅程权威入口提交，沿已知且畅通的真实门路径检查，不绕过剧情条件。
+本轮回归 1145 项通过，构建通过。快捷前往后刷新位置保持；重复请求与陈旧版本有机械测试。手机尺寸浏览器检查与真实 iPhone 双指/持续拖动性能不是同一种证据，后者待试玩。

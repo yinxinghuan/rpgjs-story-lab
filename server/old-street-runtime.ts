@@ -1,3 +1,5 @@
+import {oldStreetKnownRoute} from '../src/old-street-map'
+import {oldStreetRooms,type OldStreetRoom} from '../src/old-street-cartridge'
 import {needsRecoveredNegative,negativeSourceReady} from '../src/old-street-negative-source'
 import {roofRecoveryForJourney} from '../src/old-street-roof-recovery'
 import {chooseInvestigationRoute} from '../src/old-street-investigation-route'
@@ -85,10 +87,24 @@ export function oldStreetRuntime(admit:OldStreetGate=unavailable,interpreter?:Or
       if(h.version!==body.expected_version)throw new LabError('VERSION_CONFLICT',409)
       if(h.save.facts.departed)throw new LabError('OLD_STREET_JOURNEY_COMPLETE',409)
       if(body.sceneId!==h.sceneId)throw new LabError('OFF_SCENE_ENTITY')
-      if(!['action','free-input','dialogue','expansion-request','expansion-activate','expansion-photo-match','expansion-photo-decision','campaign-plan','campaign-read','campaign-observe','campaign-decide'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
+      if(!['map-travel','action','free-input','dialogue','expansion-request','expansion-activate','expansion-photo-match','expansion-photo-decision','campaign-plan','campaign-read','campaign-observe','campaign-decide'].includes(body.type))throw new LabError('INVALID_ACTION_TYPE')
       if(body.type==='action'&&typeof body.action!=='string')throw new LabError('INVALID_ACTION_TYPE')
       if(body.mode!==undefined&&!['local','live'].includes(body.mode))throw new LabError('INVALID_NARRATION_MODE')
       const pos=position(h,body.position),binding=bindOldStreet(h.save.locale,h.save)
+      if(body.type==='map-travel'){
+        if(typeof body.destination!=='string'||!Object.hasOwn(oldStreetRooms,body.destination))throw new LabError('OLD_STREET_MAP_ROUTE_UNAVAILABLE',409)
+        const route=oldStreetKnownRoute(h.save,h.sceneId as OldStreetRoom,body.destination as OldStreetRoom)
+        if(!route||route.length<2)throw new LabError('OLD_STREET_MAP_ROUTE_UNAVAILABLE',409)
+        let next=structuredClone(h)
+        for(const to of route.slice(1)){
+          const previous=next,door=oldStreetDoors().find(d=>d.room===previous.sceneId&&d.destination.room===to)
+          if(!door)throw new LabError('OLD_STREET_MAP_ROUTE_UNAVAILABLE',409)
+          const travel=prepareDoorTravel(previous.save,oldStreetCartridge(previous.save.locale),bindOldStreet(previous.save.locale,previous.save),{scene:previous.sceneId,target:door.id,position:door.approach,actionId:door.actionId})
+          next={...previous,version:h.version+1,save:travel.save,sceneId:travel.scene,position:travel.position}
+          finish(next,previous,door.actionId)
+        }
+        return {head:next,kind:'map-travel',accepted:true,source:'author',text:h.save.locale==='zh'?'已抵达。':'Arrived.'}
+      }
       if(body.type.startsWith('campaign-')){
         const result=await prepareCampaignAction(h,body,pos,campaignGenerator,reserveNarration,campaignCandidate)
         finish(result.head,h);return result

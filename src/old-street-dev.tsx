@@ -426,6 +426,21 @@ export default function OldStreetDev() {
     }catch(e){if(connection.client.hasPending())setError(e instanceof Error?e.message:'SESSION_REQUEST_FAILED');throw e}
     finally{busyRef.current=false;setBusy(false);runtime.current?.pause(connection.client.hasPending())}
   }
+  async function mapTravelTo(destination:OldStreetRoom){
+    if(busyRef.current||!serverHead.current||!runtime.current)return
+    busyRef.current=true;setBusy(true);setBusyActivity('area');setNotice('');runtime.current.pause(true)
+    try{
+      const result=await connection.client.send(serverHead.current,{type:'map-travel',destination,position:{...position.current}})
+      const nextHead=result.head as OldStreetHead
+      serverHead.current=nextHead
+      const next={save:nextHead.save,scene:nextHead.sceneId,position:nextHead.position}
+      await prepareEnvironment.current(nextHead.sceneId);await runtime.current.restore(nextHead.position,nextHead.sceneId)
+      current.current=next;setHead(next);position.current=next.position;setSelected(null)
+      if(result.accepted){setMapOpen(false);runtime.current.pause(false)}
+      else setNotice(text(['当前没有可用路线，请重新选择。','No open route is available. Choose again.']))
+    }catch(e){setMapOpen(false);setError(String(e));runtime.current.pause(true)}
+    finally{busyRef.current=false;setBusy(false)}
+  }
   async function execute(id: string, target: string, input?:string, photoMatch?:unknown, dialogue=false,clockInspection?:unknown,campaignMove?:'slide'|'restore') {
     approachCancellation.current=undefined
     setBusyActivity(dialogue?'reply':'action')
@@ -714,7 +729,7 @@ export default function OldStreetDev() {
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);closeInteraction()}}/>}
     {journalOpen&&<OldStreetJournalView api={connection.api} sessionId={serverHead.current?.id} photoImage={displayedPhoto} preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {updateRequired&&<GameReleaseNotice version={newRelease!} locale={locale}/>}
-    {mapOpen&&<OldStreetMapView save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
+    {mapOpen&&<OldStreetMapView onTravel={mapTravelTo} busy={busy} error={notice} save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);closeInteraction()}}/>}
     {leaving&&<OldStreetLeaveView locale={locale} borrowed={borrowedItems.map(i=>i.label)} close={()=>setLeaving(false)} confirm={()=>{setLeaving(false);request('oldstreet:leave',true)}}/>}
     {outcome && <OldStreetEndingView key={serverHead.current?.id} sessionId={serverHead.current?.id} api={connection.api} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)} onReplay={()=>audio.current?.play('ending')}/>}
