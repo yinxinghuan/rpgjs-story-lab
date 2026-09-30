@@ -7,10 +7,11 @@ import {PreflightStorage} from '../server/preflight-storage'
 import {oldStreetSessionHttp} from '../src/old-street-session'
 import {oldStreetNewJourneyOptions} from '../src/old-street-runtime-contract'
 
-// Deliberately load the same opaque bundled module as the deployed Worker.
-// Run after build:worker; no model/media network requests are permitted here.
-test('compiled Worker and default client enroll the full trail without changing older or pending journeys',async()=>{
+// Retained legacy DO regression, not evidence for the shared PG deployment.
+// Public entry is covered separately by old-street-upstream.test.ts.
+test('compiled legacy DO adapter and client preserve full-trail enrollment and receipts',async()=>{
  const worker=await import('data:text/javascript;base64,'+Buffer.from(readFileSync('worker/index.js')).toString('base64'))
+ const legacy=worker.createHandler(true,true,true,()=>true,()=>true,true,true,true,true)
  const dir=mkdtempSync(join(tmpdir(),'campaign-release-')),db=new PreflightStorage(dir),objects=new Map<string,any>()
  let modelCalls=0,dropEnrollment=false
  const env={CARRIAGE_JOURNEYS:{idFromName:(id:string)=>id,get:(id:string)=>({fetch:(request:Request)=>{
@@ -22,7 +23,7 @@ test('compiled Worker and default client enroll the full trail without changing 
  const storage:Storage={get length(){return values.size},key:i=>[...values.keys()][i]??null,getItem:k=>values.get(k)??null,setItem:(k,v)=>{values.set(k,String(v))},removeItem:k=>{values.delete(k)},clear:()=>values.clear()}
  const request:typeof fetch=async(input,init)=>{
   const path=String(input).replace('/release-test','')
-  const response=await worker.handleApi(new Request('https://worker.invalid'+path,init),env)
+  const response=await legacy(new Request('https://worker.invalid'+path,init),env)
   if(dropEnrollment&&path.endsWith('/sessions')&&init?.method==='POST'){dropEnrollment=false;throw Error('SYNTHETIC_LOST_ENROLLMENT_RESPONSE')}
   return response
  }

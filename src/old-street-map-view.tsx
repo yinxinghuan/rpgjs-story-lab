@@ -21,7 +21,7 @@ const marks:Record<OldStreetRoom,string>={
 function Landmark({room}:{room:OldStreetRoom}){return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={marks[room]}/></svg>}
 function Passage({kind,locked=false}:{kind:string;locked?:boolean}){return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={locked?'M7 10V7A5 5 0 0 1 17 7V10M5 10H19V21H5ZM12 14V17':kind==='stairs'?'M3 21H8V16H13V11H18V6H21':kind==='door'?'M6 21V3H18V21M3 21H21M14 12H14.1':'M3 12H21M16 7L21 12L16 17'}/></svg>}
 
-export function OldStreetMapView({save,room,locale,onClose,onTravel,busy=false,error=''}:{onTravel?:(room:OldStreetRoom)=>void;busy?:boolean;error?:string;save:StorySave;room:OldStreetRoom;locale:Locale;onClose:()=>void}){
+export function OldStreetMapView({save,room,locale,onClose,onTravel,busy=false,error='',annex}:{annex?:{label:string;inside:boolean};onTravel?:(room:OldStreetRoom)=>void;busy?:boolean;error?:string;save:StorySave;room:OldStreetRoom;locale:Locale;onClose:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,label=(id:OldStreetRoom)=>oldStreetRooms[id][locale==='zh'?0:1]
  const [destination,setDestination]=useState(room),dialog=useRef<HTMLDialogElement>(null)
  const atlas=OLD_STREET_ATLAS_BOUNDS,worldWidth=atlas.width*1.53,worldHeight=atlas.height*1.5
@@ -40,7 +40,8 @@ export function OldStreetMapView({save,room,locale,onClose,onTravel,busy=false,e
  }
  return <dialog className="os-map os-neighbourhood os-atlas" ref={dialog} aria-labelledby="os-map-title" onCancel={e=>{e.preventDefault();close()}}>
   <header><div><h2 id="os-map-title">{t('地图','Map')}</h2></div><button onClick={close} autoFocus aria-label={t('收起地图','Close map')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M6 6L18 18M6 18L18 6"/></svg></button></header>
-  <div className="os-neighbourhood__location"><span className="os-neighbourhood__pin" aria-hidden="true"/><span>{t('你在这里','YOU ARE HERE')}</span><strong>{label(room)}</strong></div>
+  <div className="os-neighbourhood__location"><span className="os-neighbourhood__pin" aria-hidden="true"/><span>{t('你在这里','YOU ARE HERE')}</span><strong>{annex?.inside?annex.label:label(room)}</strong></div>
+  {annex&&<p className="os-atlas__hint">{annex.label} · {annex.inside?t('从工坊出口返回修表铺后，可沿原路线继续。','Leave through the workshop exit to return to the watch shop and continue.'):t('从修表铺后方入口进入。','Enter from the passage at the back of the watch shop.')}</p>}
   <div className="os-atlas__tools" aria-label={t('地图操作','Map controls')}>
    <button onClick={g.reset}>{t('全图','Fit map')}</button><button onClick={locate}>{t('定位','Locate me')}</button>
    <span className="os-atlas__zoom"><button aria-label={t('缩小地图','Zoom out')} disabled={g.zoom<=g.minZoom()+.01} onClick={()=>g.scale(g.zoom-.25)}>−</button><button aria-label={t('放大地图','Zoom in')} disabled={g.zoom>=3} onClick={()=>g.scale(g.zoom+.25)}>+</button></span>

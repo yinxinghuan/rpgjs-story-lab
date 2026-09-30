@@ -41,7 +41,7 @@ export const ONLINE_NARRATION_AVAILABLE=true
 // User approved this bounded new-journey capability trial on 2026-09-10.
 export const PRODUCTION_WRITES_ENABLED=true
 interface Namespace{ idFromName(name:string):unknown;get(id:unknown):{fetch(request:Request):Promise<Response>} }
-interface Environment{CARRIAGE_JOURNEYS?:Namespace}
+interface Environment extends OldStreetUpstreamEnv{CARRIAGE_JOURNEYS?:Namespace}
 const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store',[RUNTIME_HEADER]:RUNTIME_CONTRACT}})
 async function body(request:Request,limit=6000){
  const reader=request.body?.getReader();if(!reader)return {}
@@ -88,7 +88,9 @@ export function createHandler(writesEnabled:boolean,imageEnabled=JOURNAL_IMAGE_R
  }catch(e){return reply({error:e instanceof LabError?e.code:'SERVICE_UNAVAILABLE'},e instanceof LabError?e.status:503)}
 }}
 // Both stories retain their own owner keys inside the existing namespace.
-export const handleApi=createHandler(PRODUCTION_WRITES_ENABLED,JOURNAL_IMAGE_RELEASED,ORIGINAL_STORY_RELEASED,()=>ORIGINAL_STORY_RELEASED,()=>ORIGINAL_STORY_RELEASED,true,ORIGINAL_STORY_RELEASED)
+import {oldStreetUpstream,type OldStreetUpstreamEnv} from './oldstreet-upstream'
+const legacyHandler=createHandler(PRODUCTION_WRITES_ENABLED,JOURNAL_IMAGE_RELEASED,ORIGINAL_STORY_RELEASED,()=>ORIGINAL_STORY_RELEASED,()=>ORIGINAL_STORY_RELEASED,true,ORIGINAL_STORY_RELEASED)
+export const handleApi=(request:Request,env:Environment)=>new URL(request.url).pathname.startsWith(OLD_STREET_API_PATH+'/')?oldStreetUpstream(request,env):legacyHandler(request,env)
 interface DurableContext{waitUntil?:(promise:Promise<unknown>)=>void;storage:{sql:{exec(query:string,...bindings:any[]):{toArray():any[]}};transactionSync<T>(work:()=>T):T}}
 export class CarriageJourneyAuthority{
  private authority:ProductionAuthority

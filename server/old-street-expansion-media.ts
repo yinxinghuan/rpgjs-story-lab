@@ -7,10 +7,11 @@ import {allowedImageUrl,inspectSizedPng} from './journal-image'
 import {generateImageMedia,waitForMediaTask,MediaServiceError} from '../src/vendor/media/client'
 
 const size={width:768,height:576} as const
+export const expansionPhotoPrompt=(photograph:string)=>('PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a strictly monochrome palette of black, charcoal, neutral gray and white. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject: '+photograph.split(/(?<=[.!?])\s+/).filter(sentence=>!/puzzle|two-half|halves|panels|divider/i.test(sentence)).join(' ').replace(/a black and white photograph showing/ig,'').replace(/photograph/ig,'illustration')+' One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No color, no tinted highlights. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.')
 type Asset={sha256:string;bytes:number;width:number;height:number}
 const inspectPhoto=(bytes:Uint8Array)=>inspectSizedPng(bytes,size)
 export type ExpansionPhotoJob={id:string;requestId:string;prompt:string;attempt:number;state:'preparing'|'failed'|'candidate';recoverable:boolean;nextAt:number;lease?:string;leaseUntil:number;taskId?:string;asset?:Asset;error?:'PHOTO_UNAVAILABLE'|'PHOTO_INVALID'}
-export type ExpansionPhotoProducer=(job:ExpansionPhotoJob,onTask:(id:string)=>void)=>Promise<Uint8Array>
+export type ExpansionPhotoProducer=(job:ExpansionPhotoJob,onTask:(id:string)=>void|Promise<void>)=>Promise<Uint8Array>
 /** A photo belongs to the saved expansion intent, not to the player's current room. */
 export class OldStreetExpansionMedia{
  constructor(private db:AuthorityStorage,private head:(owner:string,id:string)=>OldStreetHead,private plan:(head:OldStreetHead)=>ExpansionPlan|undefined,private now=Date.now){
@@ -34,7 +35,7 @@ export class OldStreetExpansionMedia{
    const p=this.plan(h)
    if(!p||p.requestId!==id||!h.save.facts['darkroom-ready']||h.save.facts.departed)throw new LabError('PHOTO_NOT_ELIGIBLE',409)
    if(old){this.db.run('INSERT INTO oldstreet_expansion_media_history VALUES(?,?,?,?,?)',owner,journey,id,old.attempt,JSON.stringify(old));this.db.run('INSERT INTO oldstreet_expansion_media_history_parts SELECT owner,journey,id,?,part,data FROM oldstreet_expansion_media_parts WHERE owner=? AND journey=? AND id=?',old.attempt,owner,journey,id)}
-   this.put(owner,journey,{id,requestId:crypto.randomUUID(),prompt:('PIXEL ART GAME ILLUSTRATION. Draw an old street as hand-placed 2D RPG pixel art, using crisp square pixel clusters, stepped silhouette edges, simplified textured surfaces and a strictly monochrome palette of black, charcoal, neutral gray and white. Work visually at 256 by 192 logical pixels enlarged exactly threefold; preserve detailed readable buildings without photographic microtexture. This is an illustrated collectible inside a pixel-art game, not a camera photograph. Scene subject: '+p.content.photograph.split(/(?<=[.!?])\s+/).filter(sentence=>!/puzzle|two-half|halves|panels|divider/i.test(sentence)).join(' ').replace(/a black and white photograph showing/ig,'').replace(/photograph/ig,'illustration')+' One uninterrupted landscape composition with asymmetrical buildings. Slight fading at the edges only. No color, no tinted highlights. No film grain, photographic noise, realistic rendering, airbrush gradients, sepia filter, borders, writing or dividing lines.'),attempt:(old?.attempt??0)+1,state:'preparing',recoverable:true,nextAt:0,leaseUntil:0})
+   this.put(owner,journey,{id,requestId:crypto.randomUUID(),prompt:expansionPhotoPrompt(p.content.photograph),attempt:(old?.attempt??0)+1,state:'preparing',recoverable:true,nextAt:0,leaseUntil:0})
   })
   return this.get(owner,journey)
  }
@@ -70,7 +71,7 @@ export const imageMediaProducer=(size:{width:number;height:number},request:typeo
  const signal=AbortSignal.timeout(90000)
  const options={signal,pollIntervalMs:8000,fetchImpl:async(input:RequestInfo|URL,init?:RequestInit)=>{
   const r=await request(input,init)
-  if(r.ok){const t=await r.clone().json();if(t.request_id!==job.requestId||job.taskId&&t.task_id!==job.taskId)throw Error('PHOTO_INVALID');onTask(t.task_id)}
+  if(r.ok){const t=await r.clone().json();if(t.request_id!==job.requestId||job.taskId&&t.task_id!==job.taskId)throw Error('PHOTO_INVALID');await onTask(t.task_id)}
   return r
  }}
  const task=job.taskId?await waitForMediaTask(job.taskId,options):await generateImageMedia({sessionId:GAME_ID,requestId:job.requestId,mode:'text',prompt:job.prompt,size},options)

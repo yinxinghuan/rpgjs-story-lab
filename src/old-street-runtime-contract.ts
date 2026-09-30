@@ -1,6 +1,6 @@
 export const OLD_STREET_API_PATH = '/api/oldstreet'
 export const OLD_STREET_RUNTIME_HEADER = 'X-Oldstreet-Runtime'
-export const OLD_STREET_RUNTIME_CONTRACT = 'oldstreet-session-1.map-2'
+export const OLD_STREET_RUNTIME_CONTRACT = 'oldstreet-session-1.map-2.workshop-1'
 // Remains closed until the actual presentation and production journey are admitted.
 export const OLD_STREET_RELEASED = false
 
@@ -12,7 +12,7 @@ export const OLD_STREET_EXPANSION_RELEASED = true
 export const OLD_STREET_CAMPAIGN_RELEASED = true
 // Preview capability, not complete-game or verified-account admission.
 export const OLD_STREET_NARRATION_PREVIEW = true
-export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-preview-full-trail-20260917'
+export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-shared-workshop-20261001'
 /** Only new enrollments use this policy; saved/pending journeys retain their rules. */
 export function oldStreetNewJourneyOptions(mode:string,dev:boolean,preview:string|undefined){
  const cloud=OLD_STREET_CAMPAIGN_RELEASED&&['cloud','cloud-preflight'].includes(mode)

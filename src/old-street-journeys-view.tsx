@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react'
 import './old-street-menu.css'
 import {oldStreetRooms,type OldStreetRoom} from './old-street-cartridge'
-type Row={id:string;scene:OldStreetRoom;updated:number;complete:boolean}
+type Row={supplementaryLabel?:string;id:string;scene:OldStreetRoom;updated:number;complete:boolean}
 export function OldStreetJourneysView({locale,current,api,busy,select,create,close,soundEnabled,toggleSound,createCampaign,initialSection='game'}:{initialSection?:'game'|'journeys';createCampaign?:()=>void;soundEnabled?:boolean;toggleSound?:()=>void;locale:'zh'|'en';current:string;api:(path:string)=>Promise<any>;busy:boolean;select:(id:string)=>void;create:()=>void;close:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,dialog=useRef<HTMLDialogElement>(null)
  const [section,setSection]=useState<'game'|'journeys'>(initialSection),body=useRef<HTMLDivElement>(null)
@@ -18,7 +18,7 @@ export function OldStreetJourneysView({locale,current,api,busy,select,create,clo
   </nav>
   <div className="os-journeys__body" ref={body}>
   {section==='journeys'?<>
-  {loading?<p role="status">{t('正在读取存档……','Loading saves…')}</p>:failed?<><p role="alert">{t('暂时无法读取存档，当前进度不受影响。','Could not load saves. Your current progress is unchanged.')}</p><button onClick={()=>setAttempt(n=>n+1)}>{t('重试','Retry')}</button></>:rows.length?<ul>{rows.map(row=><li key={row.id}><button disabled={busy||row.id===current} onClick={()=>select(row.id)}><strong>{oldStreetRooms[row.scene][locale==='zh'?0:1]}</strong><span>{row.id===current?t('当前存档','Current save'):row.complete?t('已完成','Completed'):t('继续探索','Continue exploring')}</span><small>{new Date(row.updated).toLocaleString(locale==='zh'?'zh-CN':'en-US')}</small></button></li>)}</ul>:<p>{t('还没有其他存档。','No other saves yet.')}</p>}
+  {loading?<p role="status">{t('正在读取存档……','Loading saves…')}</p>:failed?<><p role="alert">{t('暂时无法读取存档，当前进度不受影响。','Could not load saves. Your current progress is unchanged.')}</p><button onClick={()=>setAttempt(n=>n+1)}>{t('重试','Retry')}</button></>:rows.length?<ul>{rows.map(row=><li key={row.id}><button disabled={busy||row.id===current} onClick={()=>select(row.id)}><strong>{row.supplementaryLabel??oldStreetRooms[row.scene][locale==='zh'?0:1]}</strong><span>{row.id===current?t('当前存档','Current save'):row.complete?t('已完成','Completed'):t('继续探索','Continue exploring')}</span><small>{new Date(row.updated).toLocaleString(locale==='zh'?'zh-CN':'en-US')}</small></button></li>)}</ul>:<p>{t('还没有其他存档。','No other saves yet.')}</p>}
   </>:<>
   {toggleSound&&<button aria-pressed={soundEnabled} onClick={toggleSound}>{soundEnabled?t('声音：开','Sound: on'):t('声音：关','Sound: off')}</button>}
   <details><summary>{t('操作方法','Controls')}</summary><p>{t('点击地面、拖动左下摇杆，或用方向键/WASD行走。点击物件只会走近；按右下按钮查看、交谈或通过出入口。','Tap the ground, use the lower-left stick, or move with arrow keys/WASD. Tapping an object walks closer; the lower-right button examines, talks or enters.')}</p><p>{t('预设选项可以直接执行；也可以展开自由输入。收起或走开后回到探索，目标和线索可以在“背包”中查看。','Choose a suggested action or expand the text input. Close the panel or walk away to explore. Your objective and clues are in Backpack.')}</p></details>

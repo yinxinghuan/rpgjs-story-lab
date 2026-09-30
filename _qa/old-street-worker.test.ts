@@ -135,7 +135,7 @@ test('oldstreet Worker stays release-gated and rejects untrusted identity and ru
  try{
   const enroll={enrollment_id:randomUUID(),locale:'zh'}
   assert.equal((await createHandler(true,false,false,()=>false,()=>false,false,false,false,false)(request('/sessions',token,enroll),h.env)).status,404)
-  const health=await (await handleApi(request('/health',token),h.env)).json() as any
+  const health=await (await handler(request('/health',token),h.env)).json() as any
   assert.equal(health.preview,true);assert.equal(health.production,false)
   assert.equal((await handler(request('/sessions','',enroll),h.env)).status,401)
   const outdated=request('/sessions',token,enroll);outdated.headers.delete(header)
@@ -197,10 +197,10 @@ test('cloud client restores an ambiguous action using the same capability and re
   const recovered=await client.recover()
   const current=await client.enroll('zh')
   assert.equal(current.sceneId,'shop');assert.equal(current.version,1)
-  const events=await (await handler(request('/sessions/'+head.id+'/events',values.get('oldstreet-story-1:capability')!),h.env)).json()
+  const events=await (await handler(request('/sessions/'+head.id+'/events',values.get('oldstreet-shared-workshop-1:capability')!),h.env)).json()
   assert.equal(events.events.length,1)
   assert.equal(resumed.id,head.id)
-  assert.ok([...values.keys()].every(k=>k.startsWith('oldstreet-story-1:')))
+  assert.ok([...values.keys()].every(k=>k.startsWith('oldstreet-shared-workshop-1:')))
  }finally{h.close()}
 })
 

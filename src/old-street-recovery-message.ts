@@ -1,3 +1,4 @@
+import {oldStreetAiNotice} from './old-street-ai-notice'
 /** Player guidance never echoes transport bodies, URLs or implementation codes. */
 export function oldStreetRecoveryCode(error:string){
  const known=['CLOUD_HEALTH_TIMEOUT','CLOUD_READ_TIMEOUT','CLOUD_WRITE_TIMEOUT','AUTH_REQUIRED','AUTHORITY_UNAVAILABLE','SERVICE_UNAVAILABLE','NOT_FOUND','SESSION_NOT_FOUND','SESSION_RESPONSE_MISMATCH','SESSION_RESPONSE_REGRESSED','INVALID_CLOUD_IDENTITY','OLD_STREET_SAVE_UNSUPPORTED','RUNTIME_VERSION_MISMATCH','STARTUP_TIMEOUT','ART_IMAGE_TIMEOUT','ART_IMAGE_DECODE_FAILED','SESSION_SELECTION_CHANGED','VERSION_CONFLICT','INVALID_PENDING','NETWORK_ERROR','UNAUTHORIZED','FORBIDDEN']
@@ -20,6 +21,7 @@ export function oldStreetRecoveryMessage(error:string,locale:'zh'|'en'){
 
 /** A confirmed refusal has no pending outcome; the player can continue in place. */
 export function oldStreetActionFailureMessage(code:string,locale:'zh'|'en'){
+ const ai=oldStreetAiNotice(code,locale);if(ai)return ai
  const text=(zh:string,en:string)=>locale==='zh'?zh:en
  if(code==='OLD_STREET_NEGATIVE_REQUIRED')return text('先按档案线索取回屋顶柜子的底片，再来冲印。','Recover the negative from the roof cabinet before preparing the print.')
  if(code==='OLD_STREET_TARGET_TOO_FAR')return text('走近照相馆的放大台，再准备冲印。','Move closer to the studio viewing table to prepare the print.')

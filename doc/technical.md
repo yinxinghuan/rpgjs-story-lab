@@ -1,5 +1,11 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 共享权威与修缮工坊（2026-10-01）
+
+旧街新增`old-street-workshop*`：持久采纳信封、原renderer动态TMX、空间投影与双语补充笔记。原始剧情/模型/媒体合同经冻结源码适配到`dynamic-rpg-kit/integrations/old-street`，通用代码来自RPG技能快照2026-10-01.2。服务端一个PG旅程事务保存原作状态、规则绑定与回执；异步任务/媒体sidecar不改剧情版本，随采纳事务复制。边界与验收见[修缮工坊接入记录](restoration-workshop-integration.md)。
+
+`worker/oldstreet-upstream.ts`只代理当前GAME_ID的旧街API，哈希匿名capability，校验运行协议、Origin和有效期。环境绑定通过仓库外发布目录提供，缺配置拒绝；不包含密钥。原车厢/编辑器DO保留，不作为新版旧街第二写入路径。Pages只镜像前端。扩展玩法改游戏adapter；通用存储改技能快照并复验；部署与费用配置不放进浏览器。
+
 ## 街区导览视图（2026-09-17）
 
 `old-street-map-view.tsx/css` 复用 `oldStreetKnownMap/oldStreetKnownRoute`，不改路由、到访状态或可通行规则。固定示意节点布局按实际已知节点包围盒裁切；读回当前位置，开图时只滚动图内区域让当前节点可见。地图容器与路线摘要分别滚动，窄屏保留关闭和当前地点，短横屏两栏。选定路径编号、道路高亮、锁标记由同一权威连接投影；每段指引通过 `oldStreetDoors()` 读取真实场景出口，显示场景上/下/左/右与门/楼梯/通路类型。选图不执行转场或更改存档。密集布局夹具为 `_qa/neighbourhood-map-review.html/tsx`，不进入 Vite 发布入口。

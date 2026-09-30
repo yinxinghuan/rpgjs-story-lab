@@ -85,7 +85,11 @@ import {oldStreetPerson,usesCurrentLaundryCast,usesCurrentPhotographerCast,oldSt
 import {laundryActorUrl,laundryActorSheet} from './old-street-laundry-art'
 import {photographerActorUrl,photographerActorSheet} from './old-street-photographer-art'
 import {oldStreetSession,oldStreetSessionHttp} from './old-street-session'
-import type {OldStreetHead} from './old-street-head'
+import {inWorkshop,workshopWalkable,checkpointPresentation,type OldStreetPresentationHead as OldStreetHead,type WorkshopEntity} from './old-street-workshop'
+import {withWorkshopRenderer} from './old-street-workshop-renderer'
+import {OldStreetWorkshopFloor} from './old-street-workshop-view'
+import {OldStreetWorkshopPanel} from './old-street-workshop-panel'
+import {createWorkshopClient} from './old-street-workshop-client'
 import {loadSpatialArtTexture} from './spatial-art-texture'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createRpgRenderer, type RpgRendererRuntime} from './rpg-renderer'
@@ -145,6 +149,7 @@ export default function OldStreetDev() {
   const workerPreview = import.meta.env.MODE !== 'oldstreet-dev' || new URLSearchParams(location.search).get('session') === 'worker'
   const [connection] = useState(() => (workerPreview?oldStreetSessionHttp:oldStreetSession)(window.alteruLocalStorage, async(name, work) => navigator.locks.request(name, work)))
   const serverHead = useRef<OldStreetHead>()
+  const [workshopClient]=useState(()=>createWorkshopClient(window.alteruLocalStorage,connection.api,connection.client,async(name,work)=>navigator.locks.request(name,work)))
   const [expansionCapabilities,setExpansionCapabilities]=useState({planning:false,media:false,campaign:false,roomMedia:false})
   const expansionJourney=serverHead.current?.id
   useEffect(()=>{
@@ -164,7 +169,7 @@ export default function OldStreetDev() {
   const [,setResidentPosition]=useState({...resident.current.position})
   const residentControls=useRef({paused:true,selected:false,laundrySelected:false,photographerSelected:false})
   const residentPositions=()=>({watchmaker:resident.current.position,...(lanTrial.current?{'laundry-owner':lanTrial.current.position}:laundryResident.current?{'laundry-owner':laundryResident.current.position}:{}),...(photographerResident.current?{photographer:photographerResident.current.position}:{})})
-  const localWalkable=(p:{x:number;y:number},room:string)=>oldStreetWalkable(room,p,current.current.save,oldStreetBody,residentPositions())
+  const localWalkable=(p:{x:number;y:number},room:string)=>inWorkshop(serverHead.current,room)?workshopWalkable(p):oldStreetWalkable(room,p,current.current.save,oldStreetBody,residentPositions())
   const npcEvents=useRef<Record<string,RpgPlayer>>({})
   const archivePaperEvents=useRef<Record<string,RpgPlayer>>({})
   const archiveRackEvent=useRef<RpgPlayer>()
@@ -246,13 +251,16 @@ export default function OldStreetDev() {
       const pendingInteraction=connection.client.pending().filter(p=>p.id===restored.id).at(-1)
       const recovered = await connection.client.recover()
       if (recovered) restored = recovered.head
+      const recoveredAdoption=await workshopClient.recover()
+      if(recoveredAdoption)restored=recoveredAdoption
       if (!mounted||!boot.pending()) return
       serverHead.current = restored
       const restoredView = {save:restored.save,scene:restored.sceneId,position:restored.position}
       current.current = restoredView; setHead(restoredView); position.current = restored.position; setFeet(restored.position)
       resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(restored.save).find(p=>p.id==='watchmaker')!.position,restored.position)
-      setOpeningOpen(restored.version===0)
-      setNotice(restored.version===0?campaignOpening(restored.save,oldStreetCartridge(restored.save.locale).opening.blocks[0].text):(restored.save.locale==='zh'?'已恢复旅程。':'Journey restored.'))
+      const newOpening=restored.version===0&&!restored.restoration?.room
+      setOpeningOpen(newOpening)
+      setNotice(newOpening?campaignOpening(restored.save,oldStreetCartridge(restored.save.locale).opening.blocks[0].text):(restored.save.locale==='zh'?'已恢复旅程。':'Journey restored.'))
       if(recovered?.rejectionCode){
         setNotice(oldStreetActionFailureMessage(recovered.rejectionCode,restored.save.locale))
         const body=pendingInteraction?.body
@@ -264,7 +272,7 @@ export default function OldStreetDev() {
       if(trialModule)lanTrial.current=new trialModule.LanVideoTrial(oldStreetProjectedProps(restored.save).find(p=>p.id==='laundry-owner')!.position)
       const currentLaundry=usesCurrentLaundryCast(restored.save),currentPhotographer=usesCurrentPhotographerCast(restored.save)
       const npcArt=actorArt.balanced.mechanic
-      const initialEnvironment=oldStreetEnvironmentDownloads(pixelShop,compositeShop,restored.sceneId)
+      const initialEnvironment=oldStreetEnvironmentDownloads(pixelShop,compositeShop,inWorkshop(restored)?'archive':restored.sceneId)
       const sources=[...initialEnvironment,{id:'shedBench',url:shedBenchUrl},{id:'hero',url:new URL(hero.path,document.baseURI).href},{id:'watchmaker',url:new URL(npcArt.path,document.baseURI).href},{id:'lan',url:trialModule?.atlasUrl??(currentLaundry?laundryActorUrl:lanStandingUrl)},{id:'xu',url:currentPhotographer?photographerActorUrl:xuStandingUrl},{id:'drawer',url:pixelShop?pixelDrawerUrl:drawerStatesUrl},{id:'trolley',url:trolleyUrl},...(pixelShop?[{id:'props',url:pixelPropsUrl},{id:'recordPhoto',url:oldStreetPhotoPuzzle.image},{id:'photoShelf',url:photoShelfUrl},{id:'photoTable',url:photoTableUrl},{id:'mantelClock',url:mantelClockUrl},{id:'crates',url:cratesUrl}]:[])]
       const urls=await downloadSpatialArt(sources,{signal:downloads.signal,progress:(done,total)=>{if(mounted)setLoading({stage:'art',done,total})}})
       shedBenchBlob=urls.shedBench;cratesBlob=urls.crates;mantelClockBlob=urls.mantelClock;photoTableBlob=urls.photoTable;photoShelfBlob=urls.photoShelf;heroBlob=urls.hero;watchmakerBlob=urls.watchmaker;lanBlob=urls.lan;xuBlob=urls.xu;drawerBlob=urls.drawer;trolleyBlob=urls.trolley;pixelPropsBlob=urls.props;recordPhotoBlob=urls.recordPhoto
@@ -280,7 +288,7 @@ export default function OldStreetDev() {
       const loadedEnvironment=new Set(initialEnvironment.map(e=>e.id))
       const pendingEnvironment=new Map<string,Promise<void>>()
       prepareEnvironment.current=async room=>{
-        const missing=oldStreetEnvironmentDownloads(pixelShop,compositeShop,room).filter(e=>!loadedEnvironment.has(e.id))
+        const missing=oldStreetEnvironmentDownloads(pixelShop,compositeShop,inWorkshop(serverHead.current,room)?'archive':room).filter(e=>!loadedEnvironment.has(e.id))
         if(missing.length){setBusyActivity('area');setNotice(current.current.save.locale==='zh'?'正在展开前方的场景…':'Preparing the next area…')}
         await Promise.all(missing.map(entry=>{
           const existing=pendingEnvironment.get(entry.id);if(existing)return existing
@@ -301,7 +309,7 @@ export default function OldStreetDev() {
       const preview=await decodeSpatialArt(heroBlob!,{signal:downloads.signal})
       if(mounted&&boot.pending())setLoading({stage:'map',done:sources.length,total:sources.length})
       if (!mounted||!boot.pending()) return
-      createRpgRenderer({host: document.getElementById('rpg')!, width: 384, height: 576, controlsBlocked:()=>modalControls.current,
+      createRpgRenderer(withWorkshopRenderer({host: document.getElementById('rpg')!, width: 384, height: 576, controlsBlocked:()=>modalControls.current,
         sceneIds: plan.scenes.map(s => s.id), mapIds: Object.fromEntries(plan.scenes.map(s => [s.id, `oldstreet-${s.id}`])),
         initialScene: restored.sceneId, initialPosition: restored.position, heroGraphic: 'hero', heroBody:oldStreetBody, strideLength:oldStreetStride,
         spritesheets: [...(photoShelfBlob?[archiveLoanPaperSheet(photoShelfBlob)]:[]),...(photoTableBlob&&photoShelfBlob?archiveFurnitureSheets(photoTableBlob,photoShelfBlob):[]),oldStreetFurnitureSheet(shedBenchBlob),actorSheet('hero', preview.src, hero.width, hero.height, hero.baselines, oldStreetHeroScale, hero.centers, {x:oldStreetBody.w/2,y:oldStreetBody.h}),actorSheet('oldstreet-watchmaker',watchmakerBlob,npcArt.width,npcArt.height,npcArt.baselines,.22,npcArt.centers,{x:16,y:28}),(trialModule?trialModule.sheet(lanBlob!):currentLaundry?laundryActorSheet(lanBlob!):standingActorSheet('oldstreet-lan',lanBlob,256,352,{x:128,y:328},.22,{x:16,y:28})),(currentPhotographer?photographerActorSheet(xuBlob!):standingActorSheet('oldstreet-xu',xuBlob,256,352,{x:128,y:328},.22,{x:16,y:28})),...(pixelShop?oldStreetPixelLayeredSheets(drawerBlob,'drawer'):[oldStreetDrawerSheet(drawerBlob)]),oldStreetTrolleySheet(trolleyBlob),...(cratesBlob?[oldStreetCratesSheet(cratesBlob)]:[]),...(mantelClockBlob&&photoShelfBlob?oldStreetClockDisplaySheets(photoShelfBlob,mantelClockBlob):[]),...(photoTableBlob&&photoShelfBlob?oldStreetPhotoTableSheets(photoTableBlob,photoShelfBlob):[]),...(photoShelfBlob?oldStreetPhotoShelfSheets(photoShelfBlob):[]),...(pixelPropsBlob&&recordPhotoBlob&&mantelClockBlob?[...oldStreetPixelLayeredSheets(pixelPropsBlob,'letter-compartment'),...oldStreetRecordBookSheets(pixelPropsBlob,recordPhotoBlob,mantelClockBlob,photoShelfBlob)]:[])], mapEvents: room => {photographerResident.current=currentPhotographer?new OldStreetResidentMotion(oldStreetProjectedProps(current.current.save).find(p=>p.id==='photographer')!.position,current.current.position,'x',24):undefined;laundryResident.current=currentLaundry&&!trialModule?new OldStreetResidentMotion(oldStreetProjectedProps(current.current.save).find(p=>p.id==='laundry-owner')!.position,current.current.position,'y',9):undefined;resident.current=new OldStreetResidentMotion(oldStreetProjectedProps(current.current.save).find(p=>p.id==='watchmaker')!.position,current.current.position);setResidentPosition({...resident.current.position});npcEvents.current={};roofNegativeEvent.current=undefined;archivePaperEvents.current={};archiveRackEvent.current=undefined;trolleyEvent.current=undefined;drawerEvent.current=undefined;compartmentEvent.current=undefined;photoShelfEvent.current=undefined;photoTableEvent.current=undefined;clockDisplayEvent.current=undefined;cratesEvent.current=undefined;recordBookEvent.current=undefined;return (room==='archive'?archiveEventSlots():oldStreetProjectedProps(current.current.save,residentPositions())).filter(p=>p.room===room&&(renderedProps.includes(p.id)||p.id.startsWith('archive-'))).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){if(p.id.startsWith('archive-')){const placed=oldStreetProjectedProps(current.current.save).find(prop=>prop.id===p.id);if(placed)void this.teleport({x:placed.body.x,y:placed.body.y})}this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic((p.id==='archive-rack'||p.id.startsWith('archive-storage-'))?['oldstreet-'+p.id]:p.id.startsWith('archive-')?['oldstreet-'+p.id,'oldstreet-'+p.id+'-papers']:p.id==='record-book'?['oldstreet-record-book','oldstreet-record-photo','oldstreet-record-clock',...(photoShelfBlob?['oldstreet-record-summary']:[])]:p.id==='crates'?'oldstreet-crates':p.id==='clock-display'?['oldstreet-clock-counter','oldstreet-returned-clock',...(current.current.save.facts['archive-ledger-site']==='laundry'?['oldstreet-loaned-log']:[])]:p.id==='viewing-table'?['oldstreet-viewing-table','oldstreet-returned-photos',...(current.current.save.facts['archive-ledger-site']==='photo'?['oldstreet-loaned-log']:[])]:p.id==='photo-folder'?['oldstreet-photo-folder-shelf','oldstreet-photo-folder-top','oldstreet-archived-papers']:pixelShop&&['drawer','letter-compartment'].includes(p.id)?['oldstreet-'+p.id+'-top','oldstreet-'+p.id+'-front']:['letter-compartment','record-book'].includes(p.id)?'oldstreet-'+p.id:p.id==='drawer'?'oldstreet-drawer':p.id==='watchmaker'?'oldstreet-watchmaker':p.id==='trolley'?'oldstreet-trolley':p.id==='photographer'?'oldstreet-xu':'oldstreet-lan');this.animationName.set((p.id==='archive-rack'||p.id.startsWith('archive-storage-'))&&!oldStreetProjectedProps(current.current.save).some(prop=>prop.id===p.id)?'hidden':p.id==='record-book'?oldStreetRecordBookPose(current.current.save):p.id==='clock-display'?oldStreetClockDisplayPose(current.current.save):p.id==='viewing-table'?oldStreetPhotoTablePose(current.current.save):p.id==='photo-folder'?oldStreetPhotoShelfPose(current.current.save,serverHead.current?.campaign):p.id==='letter-compartment'?oldStreetCompartmentPose(current.current.save):p.id==='drawer'?oldStreetDrawerPose(current.current.save):p.id==='trolley'?oldStreetTrolleyPose(current.current.save):'stand');this.direction.set(Direction.Down);if(['archive-index','archive-ledger','archive-desk'].includes(p.id)){archivePaperEvents.current[p.id]=this;this.animationName.set(archivePaperPose(p.id,current.current.save.facts))}if(p.id==='archive-rack')archiveRackEvent.current=this;else if(p.id==='crates')cratesEvent.current=this;else if(p.id==='clock-display')clockDisplayEvent.current=this;else if(p.id==='viewing-table')photoTableEvent.current=this;else if(p.id==='photo-folder')photoShelfEvent.current=this;else if(p.id==='letter-compartment')compartmentEvent.current=this;else if(p.id==='record-book')recordBookEvent.current=this;else if(p.id==='drawer')drawerEvent.current=this;else if(p.id==='trolley')trolleyEvent.current=this;else if(['watchmaker','laundry-owner','photographer'].includes(p.id))npcEvents.current[p.id]=this;this.syncChanges()}}})).concat(room==='photo'&&pixelShop&&current.current.save.facts['roof-recovery']?[{id:'oldstreet-roof-negative',x:oldStreetProjectedProps(current.current.save).find(p=>p.id==='viewing-table')!.body.x,y:oldStreetProjectedProps(current.current.save).find(p=>p.id==='viewing-table')!.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(32,28);this.through=true;this.animationFixed=true;this.setGraphic('oldstreet-returned-negative');this.animationName.set(current.current.save.facts['roof-negative-returned']?'returned':'stand');roofNegativeEvent.current=this;this.syncChanges()}}}]:[]).concat(oldStreetFurniture.filter(p=>p.room===room).map(p=>({id:'oldstreet-'+p.id,x:p.body.x,y:p.body.y,event:{onInit(this:RpgPlayer){this.setHitbox(p.body.w,p.body.h);this.through=true;this.animationFixed=true;this.setGraphic('oldstreet-'+p.id);this.animationName.set('stand');this.direction.set(Direction.Down);this.syncChanges()}}})))},
@@ -351,7 +359,7 @@ export default function OldStreetDev() {
           runtime.current = r; r.pause(Boolean(restored.save.facts.departed)); if (mounted) setReady(true)
         },
         onFailure: code => {if(boot.pending())boot.fail(code);else if(mounted)setError(code)},
-      })
+      },()=>serverHead.current))
     } catch (e) {boot.fail(String(e))}})()
     return () => {mounted = false; environmentBlobs.forEach(url=>URL.revokeObjectURL(url)); boot.cancel(); downloads.abort(); runtime.current?.destroy(); if(recordPhotoBlob) URL.revokeObjectURL(recordPhotoBlob);if(mantelClockBlob) URL.revokeObjectURL(mantelClockBlob);if(photoTableBlob) URL.revokeObjectURL(photoTableBlob); if(photoShelfBlob) URL.revokeObjectURL(photoShelfBlob)
       if(shedBenchBlob)URL.revokeObjectURL(shedBenchBlob);if(cratesBlob)URL.revokeObjectURL(cratesBlob);if (heroBlob) URL.revokeObjectURL(heroBlob);if(watchmakerBlob)URL.revokeObjectURL(watchmakerBlob);if(lanBlob)URL.revokeObjectURL(lanBlob);if(xuBlob)URL.revokeObjectURL(xuBlob);if(drawerBlob)URL.revokeObjectURL(drawerBlob);if(pixelPropsBlob)URL.revokeObjectURL(pixelPropsBlob);if(trolleyBlob)URL.revokeObjectURL(trolleyBlob)}
@@ -359,12 +367,12 @@ export default function OldStreetDev() {
   useEffect(() => {
     const timer = setInterval(() => {
       const h = serverHead.current
-      if (!h || !ready || busyRef.current || error || h.save.facts.departed || connection.client.hasPending()) return
+      if (!h || !ready || busyRef.current || error || h.save.facts.departed || connection.client.hasPending() || workshopClient.pending()) return
       const p = {...position.current}
       if(p.x===h.position.x&&p.y===h.position.y)return
       void navigator.locks.request('oldstreet-checkpoint', async () => {
         if (busyRef.current || serverHead.current !== h) return
-        try {const saved=await connection.api('/sessions/'+h.id+'/position',{sceneId:h.sceneId,expected_version:h.version,position:p});if(serverHead.current===h)serverHead.current={...h,position:saved.position}}
+        try {const saved=await connection.api('/sessions/'+h.id+'/position',{sceneId:h.sceneId,expected_version:h.version,position:p});if(serverHead.current===h)serverHead.current=checkpointPresentation(h,saved.position)}
         catch (e) {if ((e as Error).message !== 'STALE_POSITION') {setError(String(e)); runtime.current?.pause(true)}}
       })
     }, 1000)
@@ -376,6 +384,7 @@ export default function OldStreetDev() {
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
       const h=await connection.client.selectSession(id)
+      if(h.restoration?.room?.id!==serverHead.current?.restoration?.room?.id){location.reload();return}
       // The atlas is chosen at renderer boot. A journey with another cast
       // must rebuild it instead of keeping the previous journey's texture.
       if(oldStreetCastArtVersion(h.save)!==oldStreetCastArtVersion(current.current.save)||h.save.facts['archive-layout']!==current.current.save.facts['archive-layout']||h.save.facts['archive-room']!==current.current.save.facts['archive-room']){location.reload();return}
@@ -393,6 +402,7 @@ export default function OldStreetDev() {
     busyRef.current=true;setBusy(true);runtime.current!.pause(true)
     try{
       const h=await connection.client.enroll(locale,true,campaign?{campaign:'letter-trail-v4'}:newJourneyOptions)
+      if(h.restoration?.room?.id!==serverHead.current?.restoration?.room?.id){location.reload();return}
       if(oldStreetCastArtVersion(h.save)!==oldStreetCastArtVersion(current.current.save)||h.save.facts['archive-layout']!==current.current.save.facts['archive-layout']||h.save.facts['archive-room']!==current.current.save.facts['archive-room']){location.reload();return}
       serverHead.current=h
       const next={save:h.save,scene:h.sceneId,position:h.position}
@@ -561,7 +571,7 @@ export default function OldStreetDev() {
     if(!runtime.current!.walkTo(chosen.approach,()=>{void execute('',target,input,undefined,dialogue)})){approachCancellation.current=undefined;setPendingSpeech(null);busyRef.current=false;setBusy(false);setNotice(text(['这里暂时走不过去。','There is no clear path.']))}
     else setTyped('')
   }
-  function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e})}
+  function liveEntities(){const props=oldStreetProjectedProps(current.current.save,residentPositions());return oldStreetSpatialPlan(current.current.save).entities.map(e=>{const p=props.find(p=>p.id===e.id);return p?{...e,position:p.position,approach:p.approach}:e}).concat((serverHead.current?.restoration?.entities??[]).map(e=>({...e,states:['initial','changed'],actions:[]})))}
   const entities = liveEntities().filter(e => e.scene === head.scene && (!e.id.includes('studio-darkroom')||head.save.facts['darkroom-ready'])&&(!e.id.includes('cellar-archive')||head.save.facts['archive-ready']))
   const nearbyFocus=useRef<{scene:string;previous?:string;preferred?:string}>({scene:head.scene})
   if(nearbyFocus.current.scene!==head.scene)nearbyFocus.current={scene:head.scene}
@@ -620,6 +630,8 @@ export default function OldStreetDev() {
   },[notice,selected,openingOpen,error])
   function useNearby(){
     if(selected){closeInteraction();return}
+    const workshop=serverHead.current?.restoration?.entities.find(e=>e.id===chosen?.id)
+    if(workshop){void inspectWorkshop(workshop);return}
     if(!chosen||!chosenAction||!ready||busyRef.current||error||outcome)return
     setOpeningOpen(false);setNotice('');setTurn([]);setInputOpen(false)
     runtime.current?.pause(true);runtime.current?.pause(false)
@@ -637,6 +649,8 @@ export default function OldStreetDev() {
     return door ? text(oldStreetRooms[door.destination.room]) : text(actionNames[id.replace('oldstreet:', '')] ?? [id, id])
   }
   function targetTitle(entity:typeof entities[number]){
+    const workshop=serverHead.current?.restoration?.entities.find(e=>e.id===entity.id)
+    if(workshop)return workshop.label
     const campaignTitle=serverHead.current&&campaignPropTitle(serverHead.current,entity.id)
     if(campaignTitle)return text(campaignTitle)
     if(entity.id==='archive-rack')return text(oldStreetPropState(entity.id,head.save)!)
@@ -653,9 +667,33 @@ export default function OldStreetDev() {
   const displayBook=head.scene==='shop'&&photoDisplayed(head.save)?oldStreetProjectedProps(head.save).find(p=>p.id==='record-book'):undefined
   const {preparations,announcement}=useOldStreetPreparations(serverHead.current,expansionCapabilities,connection.api,`${head.scene}:${serverHead.current?.version}:${selected}:${campaignOpen}:${archiveOpen}:${journalOpen}`)
   const outcome = oldStreetOutcome(head.save)
+  const workshopInside=inWorkshop(serverHead.current,head.scene)
+  async function inspectWorkshop(entity:WorkshopEntity){
+    const h=serverHead.current
+    if(!h||!ready||busyRef.current||error||outcome)return
+    if(!entity.available){setSelected(entity.id);setNotice(h.restoration?.notes.find(n=>n.id===entity.action)?.text??text(['先查看旧招牌，再对照工单。','Examine the old sign before comparing the work order.']));return}
+    busyRef.current=true;setBusy(true);setBusyActivity('action');runtime.current?.pause(true)
+    try{
+      await navigator.locks.request('oldstreet-checkpoint',()=>connection.api('/sessions/'+h.id+'/position',{sceneId:h.sceneId,expected_version:h.version,position:{...position.current}}))
+      const result=await connection.client.send(h,{type:'dynamic',rule_id:entity.action,target:entity.id}),n=result.head as OldStreetHead
+      serverHead.current=n;const next={save:n.save,scene:n.sceneId,position:n.position};current.current=next
+      await prepareEnvironment.current(n.sceneId);await runtime.current!.restore(n.position,n.sceneId)
+      setHead(next);position.current=n.position;setFeet(n.position);setSelected(n.sceneId===h.sceneId?entity.id:null);setOpeningOpen(false)
+      setNotice(result.text??(inWorkshop(n)?n.restoration!.room!.detail:text(['已返回修表铺。','Returned to the watch shop.'])))
+      if(result.accepted&&n.version>h.version)audio.current?.play('handle')
+      runtime.current?.pause(Boolean(n.save.facts.departed))
+    }catch(e){setError(String(e));runtime.current?.pause(true)}finally{busyRef.current=false;setBusy(false)}
+  }
+  async function adoptWorkshop(hash:string){
+    const h=serverHead.current;if(!h)throw Error('NOT_READY')
+    busyRef.current=true;runtime.current?.pause(true)
+    await navigator.locks.request('oldstreet-checkpoint',async()=>{})
+    await workshopClient.adopt(h,hash)
+    location.reload()
+  }
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
   return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
-    <header><h1>{text(oldStreetRooms[head.scene as OldStreetRoom])}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button aria-label={text(['地图','Map'])} ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setMapOpen(true)}}><OldStreetToolIcon kind="map"/><span>{text(['地图','Map'])}</span></button><button aria-label={text(['背包','Backpack'])} ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJournalOpen(true)}}><OldStreetToolIcon kind="items"/><span>{text(['背包','Backpack'])}</span></button><button aria-label={text(['菜单','Menu'])} disabled={!ready||busy||!!error} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJourneysOpen(true)}}><OldStreetToolIcon kind="journeys"/><span>{text(['菜单','Menu'])}</span></button></nav></header>
+    <header><h1>{(workshopInside?serverHead.current!.restoration!.room!.label:text(oldStreetRooms[head.scene as OldStreetRoom]))}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button aria-label={text(['地图','Map'])} ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setMapOpen(true)}}><OldStreetToolIcon kind="map"/><span>{text(['地图','Map'])}</span></button><button aria-label={text(['背包','Backpack'])} ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJournalOpen(true)}}><OldStreetToolIcon kind="items"/><span>{text(['背包','Backpack'])}</span></button><button aria-label={text(['菜单','Menu'])} disabled={!ready||busy||!!error} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJourneysOpen(true)}}><OldStreetToolIcon kind="journeys"/><span>{text(['菜单','Menu'])}</span></button></nav></header>
     <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || modalOpen) return
       nearbyFocus.current.preferred=undefined
@@ -664,14 +702,16 @@ export default function OldStreetDev() {
       closeInteraction()
     }}>
       <svg className="os-layout" viewBox="0 0 384 576" aria-hidden="true">
+        {workshopInside?<OldStreetWorkshopFloor wood={environmentArt.wood}/>:<>
         {pixelShop&&<OldStreetBuildingEdges room={head.scene}/>}<OldStreetFloor room={head.scene as OldStreetRoom} pixelShop={pixelShop} compositeShop={compositeShop} art={environmentArt}/>{progressiveRoom&&<DarkroomFloor image={roomMedia.images.floor}/>} {pixelShop&&<OldStreetGroundDetail room={head.scene as OldStreetRoom} image={environmentArt.debris}/>}<OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} cratesImage={doorCratesArt} stoneImage={pixelShop?environmentArt.stoneStair:undefined} art={environmentArt}/><OldStreetRoomWalls room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} compositeShop={compositeShop} actor={feet} locale={locale}/><OldStreetRoofRecovery room={head.scene} save={head.save} wood={environmentArt.wood} cabinet={pixelPropsUrl}/>
         {head.scene==='darkroom'&&(progressiveRoom?<DarkroomBench image={roomMedia.images.bench}/>:<image href={photoTableUrl} x="136" y="104" width="112" height="112"/>)}
         {head.scene==='laundry'&&(()=>{const p=oldStreetProjectedProps(head.save).find(p=>p.id==='trolley')!;return <rect x={p.body.x-3} y={p.body.y-3} width={p.body.w+6} height={p.body.h+6} fill='none' stroke='#8d7853' strokeDasharray='4 3' strokeWidth='1'/>})()}
         {oldStreetObstacleBodies(head.scene as OldStreetRoom, head.save).filter(b=>!(head.scene==='shed'&&roofSpareVisible(head.save)&&b.x===roofSpareBoard.x&&b.y===roofSpareBoard.y)&&!(head.scene==='roof'&&head.save.facts['roof-recovery']&&[...roofRecoveryObstacles(head.save),...oldStreetProjectedProps(head.save).filter(p=>p.id.startsWith('roof-')).map(p=>p.body)].some(r=>r.x===b.x&&r.y===b.y&&r.w===b.w&&r.h===b.h))&&!oldStreetFurniture.some(p=>p.room===head.scene&&b.x===p.body.x&&b.y===p.body.y)&&!(head.scene==='darkroom'&&b.x===136)&&!oldStreetProjectedProps(head.save).some(p=>p.room===head.scene&&(renderedProps.includes(p.id)||p.id.startsWith('archive-'))&&b.x===p.body.x&&b.y===p.body.y)).map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill="#70665b" stroke="#443e36"/>)}
+        </>}
         {destination && <circle cx={destination.x + oldStreetBody.w/2} cy={destination.y + oldStreetBody.h} r="5" fill="none" stroke="#345c4e" strokeWidth="2"/>}
       </svg>
       <div id="rpg"/>
-      <svg className="os-room-foreground" viewBox="0 0 384 576" aria-hidden="true"><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} foreground/><OldStreetRoomForeground room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} actor={feet} locale={locale}/>{pixelShop&&<OldStreetEntranceEaves room={head.scene} image={environmentArt.streetEdges} variants={environmentArt.roofVariants}/>}</svg>
+      <svg className="os-room-foreground" viewBox="0 0 384 576" aria-hidden="true">{!workshopInside&&<><OldStreetDoorways room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} foreground/><OldStreetRoomForeground room={head.scene as OldStreetRoom} facts={head.save.facts} art={environmentArt} actor={feet} locale={locale}/>{pixelShop&&<OldStreetEntranceEaves room={head.scene} image={environmentArt.streetEdges} variants={environmentArt.roofVariants}/>}</>}</svg>
       {displayBook&&<div aria-hidden="true" className="os-displayed-photo" style={{left:`${(displayBook.body.x+displayBook.body.w*.75)/384*100}%`,top:`${(displayBook.body.y-6)/576*100}%`}}>{displayedPhoto&&<img src={displayedPhoto} alt="" draggable={false}/>}</div>}
       {fieldProp&&<div aria-hidden="true" className="os-field-note" style={{left:`${fieldProp.body.x+fieldProp.body.w*.7}px`,top:`${fieldProp.body.y}px`,backgroundImage:`url(${photoShelfUrl})`}}/>}
       {entities.map(e => {
@@ -703,7 +743,7 @@ export default function OldStreetDev() {
         {inspectionOpen&&fieldOptions.length>0&&<div className="os-choices">{fieldOptions.map(choice=><button key={choice.id} disabled={!ready||busy||!!error||!!outcome} onClick={()=>sendInput(false,choice.label)}>{choice.label}</button>)}</div>}
         {inspectionOpen&&secondaryActions.length>0&&<div className="os-choices">{secondaryActions.map(id => <button key={id} disabled={!ready || busy || !!outcome || !!error} onClick={() => request(id)}>{label(id)}</button>)}</div>}
         {conversationOpen&&chosen&&<OldStreetConversationChoices key={chosen.id} locale={locale} topics={talkTopics} sharing={shareChoices} disabled={busy||!ready||!!error||!!outcome} onTalk={value=>sendInput(true,value)} onShare={value=>sendInput(false,value)}/>}
-        {inspectionOpen&&chosen&&<div className="os-compose">
+        {inspectionOpen&&chosen&&!serverHead.current?.restoration?.entities.some(e=>e.id===chosen.id)&&<div className="os-compose">
           <button className="os-compose__toggle" aria-expanded={inputOpen} disabled={busy} onClick={()=>setInputOpen(open=>!open)}>{text(knownSpeaker?['聊点别的…','Say something else…']:['尝试别的办法…','Try something else…'])}</button>
           {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input autoFocus disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
         </div>}
@@ -717,7 +757,7 @@ export default function OldStreetDev() {
       <OldStreetJoystick label={text(['移动摇杆','Movement joystick'])} disabled={!ready||busy||leaving||!!error||!!outcome||modalOpen} move={(x,y)=>runtime.current?.move(x,y)}/>
       <button className="os-primary" data-idle={!chosen&&!selected&&!busy?true:undefined} aria-busy={busy} disabled={!ready||(busy&&busyActivity!=='approach')||(!chosen&&!selected)||!!outcome||!!error} onPointerDown={busy?stopApproaching:useNearby} onClick={e=>{if(e.detail===0)(busy?stopApproaching:useNearby)()}}>
         <span className="os-primary__target">{chosen?targetTitle(chosen):text(['附近没有物件','Nothing nearby'])}</span>
-        <strong>{busy?busyActivity==='approach'?text(['停下','Stop walking']):busyLabel:selected?text(['继续探索','Explore']):chosen&&oldStreetDoors().some(d=>d.id===chosen.id)?text(['前往','Enter']):chosen?.id==='street-exit'?text(['回家','Go home']):chosen&&oldStreetPerson(chosen.id)?text(['交谈','Talk']):chosen?text(['查看','Examine']):text(['走近后互动','Move closer'])}</strong>
+        <strong>{busy?busyActivity==='approach'?text(['停下','Stop walking']):busyLabel:selected?text(['继续探索','Explore']):chosen?.id==='workshop-entry'?text(['进入','Enter']):chosen?.id==='workshop-exit'?text(['返回','Return']):chosen&&oldStreetDoors().some(d=>d.id===chosen.id)?text(['前往','Enter']):chosen?.id==='street-exit'?text(['回家','Go home']):chosen&&oldStreetPerson(chosen.id)?text(['交谈','Talk']):chosen?text(['查看','Examine']):text(['走近后互动','Move closer'])}</strong>
       </button>
     </footer>
     {!ready&&<OldStreetLoading locale={locale} {...loading} failed={Boolean(error)} failureMessage={error?oldStreetRecoveryMessage(error,locale):undefined} failureCode={error?oldStreetRecoveryCode(error):undefined} onRetry={()=>location.reload()}/>}
@@ -727,9 +767,9 @@ export default function OldStreetDev() {
     {archiveOpen&&campaign&&serverHead.current&&<OldStreetArchiveView nextPurpose={campaign.version===3&&campaign.archive?.order?oldStreetCurrentPurpose(head.save,campaign):undefined} field={campaign.field} fieldAdmit={()=>archiveAct('plan',undefined,'archive-desk',undefined,'field')} save={head.save} readingAct={selection=>archiveAct('decide',undefined,archiveOpen,selection)} archive={campaign.archive} target={archiveOpen} question={campaign.parcel?.observed?campaign.parcel.content.question:undefined} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={archiveAct} tryAnother={()=>{const target=archiveOpen;setArchiveOpen(null);setSelected(target);setNotice('');runtime.current?.pause(false);requestAnimationFrame(()=>setInputOpen(true))}} close={()=>{setArchiveOpen(null);closeInteraction()}}/>}
     {campaignOpen&&campaign&&serverHead.current&&<OldStreetCampaignView nextPurpose={campaign.version===3?oldStreetCurrentPurpose(head.save,campaign):undefined} campaign={campaign} save={head.save} photoImage={displayedPhoto} published={head.save.facts['archive-published']===true} stage={campaignOpen} locale={locale} sessionId={serverHead.current.id} api={connection.api} busy={busy} feedback={campaignMessage} act={campaignAct} archive={campaign.version>=2&&campaign.parcel?.observed?()=>openArchive('photo-folder'):undefined} close={()=>{setCampaignOpen(null);closeInteraction()}}/>}
     {clockOpen&&<OldStreetClockView locale={locale} busy={busy} feedback={clockMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:inspect-clock','drawer',undefined,undefined,false,proof)}} close={()=>{setClockOpen(false);closeInteraction()}}/>}
-    {journalOpen&&<OldStreetJournalView api={connection.api} sessionId={serverHead.current?.id} photoImage={displayedPhoto} preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
+    {journalOpen&&<OldStreetJournalView supplementaryNotes={serverHead.current?.restoration?.notes} workshop={serverHead.current?.restoration?.canPropose?<OldStreetWorkshopPanel head={serverHead.current} status={()=>workshopClient.status(serverHead.current!.id)} propose={()=>workshopClient.propose(serverHead.current!)} adopt={adoptWorkshop} disabled={!ready||busy||!!error||!!outcome} onBusy={value=>{busyRef.current=value;setBusy(value);runtime.current?.pause(value||modalControls.current)}}/>:undefined} api={connection.api} sessionId={serverHead.current?.id} photoImage={displayedPhoto} preparations={preparations} save={head.save} campaign={campaign} onClose={()=>{setJournalOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));journalButton.current?.focus()}}/>}
     {updateRequired&&<GameReleaseNotice version={newRelease!} locale={locale}/>}
-    {mapOpen&&<OldStreetMapView onTravel={mapTravelTo} busy={busy} error={notice} save={head.save} room={head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
+    {mapOpen&&<OldStreetMapView annex={serverHead.current?.restoration?.room?{label:serverHead.current.restoration.room.label,inside:workshopInside}:undefined} onTravel={workshopInside?undefined:mapTravelTo} busy={busy} error={notice} save={head.save} room={workshopInside?'shop':head.scene as OldStreetRoom} locale={locale} onClose={()=>{setMapOpen(false);runtime.current?.pause(Boolean(error||outcome||busyRef.current));mapButton.current?.focus()}}/>}
     {photoOpen && <OldStreetPhotoView locale={locale} busy={busy} feedback={photoMessage} submit={proof=>{busyRef.current=true;setBusy(true);void execute('oldstreet:match-photos','viewing-table',undefined,proof)}} close={()=>{setPhotoOpen(false);closeInteraction()}}/>}
     {leaving&&<OldStreetLeaveView locale={locale} borrowed={borrowedItems.map(i=>i.label)} close={()=>setLeaving(false)} confirm={()=>{setLeaving(false);request('oldstreet:leave',true)}}/>}
     {outcome && <OldStreetEndingView key={serverHead.current?.id} sessionId={serverHead.current?.id} api={connection.api} save={head.save} busy={busy||!ready} onRestart={()=>{void restart()}} onJourneys={()=>setJourneysOpen(true)} onReplay={()=>audio.current?.play('ending')}/>}
