@@ -8,6 +8,10 @@ test('shared Old Street edge preserves capability identity and PNG; fails closed
  const a=await oldStreetUpstream(request({'X-Rpg-Owner':'forged'}),env);assert.equal(a.status,200);assert.equal(a.headers.get('Content-Type'),'image/png');assert.match(seen[0].init.headers.get('X-Rpg-Owner'),/^[a-f0-9]{64}$/);assert.equal(seen[0].init.headers.get('Authorization'),null);assert.equal(seen[0].url,env.OLDSTREET_UPSTREAM_ORIGIN+'/'+GAME_ID+'/oldstreet/sessions');
  assert.equal((await oldStreetUpstream(request(),{...env,OLDSTREET_GAME_ID:'other'})).status,503);
  assert.equal((await oldStreetUpstream(request(),{...env,OLDSTREET_EXPIRES_AT:'1'})).status,410);
+ const budgetOnly={...env,OLDSTREET_EXPIRES_AT:'none',OLDSTREET_TIME_POLICY:'user-approved-budget-only-20261001'};
+ assert.equal((await oldStreetUpstream(request(),budgetOnly)).status,200);
+ assert.equal((await oldStreetUpstream(request({Authorization:'Bearer wrong'}),budgetOnly)).status,401);
+ for(const override of [{OLDSTREET_TIME_POLICY:undefined},{OLDSTREET_TIME_POLICY:'unknown'},{OLDSTREET_EXPIRES_AT:'1'}])assert.equal((await oldStreetUpstream(request(),{...budgetOnly,...override})).status,503);
  assert.equal((await oldStreetUpstream(request({Origin:'https://other.invalid'}),env)).status,403);
  assert.equal((await oldStreetUpstream(request({Authorization:'Bearer wrong'}),env)).status,401);
  assert.equal((await oldStreetUpstream(request({'Content-Type':'application/json'},'POST','{}'),env)).status,403);
@@ -21,4 +25,6 @@ test('compiled production Worker routes Old Street only to configured shared ups
  let calls=0;t.mock.method(globalThis,'fetch',async()=>{calls++;return Response.json({ok:true,runtimeContract:OLD_STREET_RUNTIME_CONTRACT})})
  const response=await worker.handleApi(request,{OLDSTREET_GAME_ID:GAME_ID,OLDSTREET_UPSTREAM_ORIGIN:'https://upstream.invalid',OLDSTREET_EDGE_TOKEN:'a'.repeat(64),OLDSTREET_EXPIRES_AT:String(Date.now()+60000),CARRIAGE_JOURNEYS:{idFromName(){throw Error('LEGACY_MUST_NOT_BE_USED')}}})
  assert.equal(response.status,200);assert.equal(calls,1);assert.equal((await response.json()).runtimeContract,OLD_STREET_RUNTIME_CONTRACT)
+ const noDeadline=await worker.handleApi(request,{OLDSTREET_GAME_ID:GAME_ID,OLDSTREET_UPSTREAM_ORIGIN:'https://upstream.invalid',OLDSTREET_EDGE_TOKEN:'a'.repeat(64),OLDSTREET_EXPIRES_AT:'none',OLDSTREET_TIME_POLICY:'user-approved-budget-only-20261001',CARRIAGE_JOURNEYS:{idFromName(){throw Error('LEGACY_MUST_NOT_BE_USED')}}});
+ assert.equal(noDeadline.status,200);assert.equal(calls,2);
 })

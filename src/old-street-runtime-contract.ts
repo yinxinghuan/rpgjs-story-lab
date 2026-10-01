@@ -12,7 +12,7 @@ export const OLD_STREET_EXPANSION_RELEASED = true
 export const OLD_STREET_CAMPAIGN_RELEASED = true
 // Preview capability, not complete-game or verified-account admission.
 export const OLD_STREET_NARRATION_PREVIEW = true
-export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-shared-workshop-20261001'
+export const OLD_STREET_PREVIEW_VERSION = 'oldstreet-budget-only-20261001'
 /** Only new enrollments use this policy; saved/pending journeys retain their rules. */
 export function oldStreetNewJourneyOptions(mode:string,dev:boolean,preview:string|undefined){
  const cloud=OLD_STREET_CAMPAIGN_RELEASED&&['cloud','cloud-preflight'].includes(mode)

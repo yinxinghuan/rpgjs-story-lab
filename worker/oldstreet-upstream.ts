@@ -1,15 +1,17 @@
 import {GAME_ID} from '../src/game-id'
 import {OLD_STREET_API_PATH,OLD_STREET_RUNTIME_HEADER,OLD_STREET_RUNTIME_CONTRACT} from '../src/old-street-runtime-contract'
 import {RUNTIME_HEADER,RUNTIME_CONTRACT} from '../src/runtime-contract'
-export type OldStreetUpstreamEnv={OLDSTREET_GAME_ID?:string;OLDSTREET_UPSTREAM_ORIGIN?:string;OLDSTREET_EDGE_TOKEN?:string;OLDSTREET_EXPIRES_AT?:string}
+export type OldStreetUpstreamEnv={OLDSTREET_GAME_ID?:string;OLDSTREET_UPSTREAM_ORIGIN?:string;OLDSTREET_EDGE_TOKEN?:string;OLDSTREET_EXPIRES_AT?:string;OLDSTREET_TIME_POLICY?:string}
 /** Authenticated edge only; never bundle secrets or forward a browser owner.
  * A Remix UUID requires its own registered upstream world and private bindings. */
 export async function oldStreetUpstream(request:Request,env:OldStreetUpstreamEnv){
  const headers={'Cache-Control':'no-store',[OLD_STREET_RUNTIME_HEADER]:OLD_STREET_RUNTIME_CONTRACT,'X-Content-Type-Options':'nosniff'}
  const fail=(error:string,status:number)=>Response.json({error},{status,headers})
  const expires=Number(env.OLDSTREET_EXPIRES_AT),origin=env.OLDSTREET_UPSTREAM_ORIGIN,secret=env.OLDSTREET_EDGE_TOKEN
- if(env.OLDSTREET_GAME_ID!==GAME_ID||!/^https:\/\/[a-z0-9.-]+$/.test(origin??'')||!/^\w{64}$/.test(secret??'')||!Number.isSafeInteger(expires))return fail('OLDSTREET_DEPLOYMENT_UNCONFIGURED',503)
- if(Date.now()>=expires)return fail('PLAY_WINDOW_CLOSED',410)
+ const budgetOnly=env.OLDSTREET_TIME_POLICY==='user-approved-budget-only-20261001'&&env.OLDSTREET_EXPIRES_AT==='none'
+ const timed=env.OLDSTREET_TIME_POLICY===undefined&&Number.isSafeInteger(expires)
+ if(env.OLDSTREET_GAME_ID!==GAME_ID||!/^https:\/\/[a-z0-9.-]+$/.test(origin??'')||!/^\w{64}$/.test(secret??'')||!budgetOnly&&!timed)return fail('OLDSTREET_DEPLOYMENT_UNCONFIGURED',503)
+ if(!budgetOnly&&Date.now()>=expires)return fail('PLAY_WINDOW_CLOSED',410)
  const url=new URL(request.url),path=url.pathname
  if(!path.startsWith(OLD_STREET_API_PATH+'/')||/[\\%#]/.test(path+url.search))return fail('NOT_FOUND',404)
  if(!['GET','POST'].includes(request.method))return fail('METHOD_NOT_ALLOWED',405)
