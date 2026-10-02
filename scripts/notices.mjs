@@ -13,5 +13,8 @@ for(const [dir,meta] of Object.entries(lock.packages)){
  else if(existsSync(join('public/licenses',p.name.replaceAll('/','__')+'.txt')))out+=readFileSync(join('public/licenses',p.name.replaceAll('/','__')+'.txt'),'utf8')+'\n'
  else missing.push(p.name)
 }
+// Keep the UI font licenses and Fusion's upstream notices in the distributed
+// notice file too. Do not replace this project's existing dependency notices.
+if(existsSync('public/fonts/LICENSES.txt'))out+='\n====================\nOld Street UI fonts (unmodified)\n'+readFileSync('public/fonts/LICENSES.txt','utf8')+'\n'
 writeFileSync('public/THIRD_PARTY_NOTICES.txt',out)
 console.log(JSON.stringify({missing,bytes:out.length}))

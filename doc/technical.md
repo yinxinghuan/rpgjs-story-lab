@@ -1,5 +1,13 @@
 # 技术文档 · 车厢云端试运行与浏览器镜像
 
+## 旧街 Harbor 像素 UI 本地候选（2026-10-02）
+
+`old-street-dev.tsx` 最后加载 `old-street-pixel-theme.css`，根节点设置 `lang` 和 `data-spatial-ui-theme="oldstreet-harbor-pixel"`。主题复用 Harbor 正式 UI e77275c 的纸面、方角边框、像素字形与操作反馈，保留旧街配色和世界美术；不修改故事、规则、地图碰撞、请求、账号或存档格式。对话顶栏的探索返回使用同一 SVG 家族的 44×44 关闭按钮，保留双语 accessible name/title；首次开始仍显示文字按钮。
+
+字体在 `public/fonts/`：未修改的 Fusion Pixel proportional zh_hans 与 Jersey15，字体完整许可证在 `LICENSES.txt` 和 `THIRD_PARTY_NOTICES.txt`。`scripts/notices.mjs` 后续重建 notices 时保留字体许可。正文 16px/1.75；英文主标题使用 Jersey15；中文正文与标题使用 Fusion Pixel。读材料 dialog 是 body portal，主题必须直接覆盖 `.os-material-reader`，不只覆盖根节点后代；超长材料标题自身滚动，正文单独滚动。
+
+本地预览在 `http://127.0.0.1:55689/`，Vite `--mode oldstreet-dev`。本轮 `OLDSTREET_DEV_DATA` 指向独立临时目录，`OLDSTREET_MODEL_TEST_BUDGET=0`，不消耗线上模型、不改真实玩家旅程。`_qa/oldstreet-pixel-ui.html/tsx` 是仅 DEV 的压力夹具；`_qa/oldstreet-pixel-ui.browser.mjs` 区分真实入口/菜单/地图/走位转场和合成对白、历史、长材料等布局。证据与边界见 `qa/oldstreet-pixel-ui-20261002.md`。这是本地候选，未提交、未发布，不能据此宣称动态后台、自由 AI 回答或完整剧情已复验。
+
 ## 共享权威与修缮工坊（2026-10-01）
 
 旧街新增`old-street-workshop*`：持久采纳信封、原renderer动态TMX、空间投影与双语补充笔记。原始剧情/模型/媒体合同经冻结源码适配到`dynamic-rpg-kit/integrations/old-street`，通用代码来自RPG技能快照2026-10-01.2。服务端一个PG旅程事务保存原作状态、规则绑定与回执；异步任务/媒体sidecar不改剧情版本，随采纳事务复制。边界与验收见[修缮工坊接入记录](restoration-workshop-integration.md)。

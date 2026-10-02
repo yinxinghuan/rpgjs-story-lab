@@ -107,6 +107,7 @@ import {createInitialSave} from './vendor/original-train/engine/reducer'
 import {resolveDomainAction} from './vendor/original-train/engine/domainRules'
 import './old-street-dev.css'
 import './old-street-interface.css'
+import './old-street-pixel-theme.css'
 
 import type {LanVideoTrial} from './dev/lan-video-trial'
 
@@ -692,7 +693,7 @@ export default function OldStreetDev() {
     location.reload()
   }
   const borrowedItems=head.save.inventory.filter(i=>i.count>0&&['letter-key','trolley','clock','photos'].includes(i.id))
-  return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} data-release={OLD_STREET_PREVIEW_VERSION}>
+  return <main className={"os-dev os-dev--immersive"+(overview?" os-dev--overview":"")} lang={locale} data-spatial-ui-theme="oldstreet-harbor-pixel" data-release={OLD_STREET_PREVIEW_VERSION}>
     <header><h1>{(workshopInside?serverHead.current!.restoration!.room!.label:text(oldStreetRooms[head.scene as OldStreetRoom]))}<span className="os-preview-label">{text(['试玩','Preview'])}</span></h1><nav className="os-tools"><button aria-label={text(['地图','Map'])} ref={mapButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setMapOpen(true)}}><OldStreetToolIcon kind="map"/><span>{text(['地图','Map'])}</span></button><button aria-label={text(['背包','Backpack'])} ref={journalButton} disabled={!ready||busy||!!error||!!outcome} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJournalOpen(true)}}><OldStreetToolIcon kind="items"/><span>{text(['背包','Backpack'])}</span></button><button aria-label={text(['菜单','Menu'])} disabled={!ready||busy||!!error} onClick={()=>{closeInteraction();runtime.current?.pause(true);setJourneysOpen(true)}}><OldStreetToolIcon kind="journeys"/><span>{text(['菜单','Menu'])}</span></button></nav></header>
     <div className="os-world" ref={world}><div className="os-stage" style={{width:camera.width,height:camera.height,transform:`translate(${camera.x}px,${camera.y}px)`}} ref={stage} onPointerDown={e => {
       if ((e.target as HTMLElement).closest('button') || !ready || busyRef.current || leaving || error || outcome || modalOpen) return
@@ -724,7 +725,7 @@ export default function OldStreetDev() {
     </div>
     {progressiveRoom&&ready&&!selected&&!modalOpen&&<DarkroomMediaStatus complete={!!roomMedia.images.floor&&!!roomMedia.images.bench} failed={roomMedia.failed} locale={locale} useBaseline={roomMedia.useBaseline} retry={roomMedia.retry}/>}
     <section className={'os-actions'+(conversationOpen?' os-actions--conversation':'')+(inputOpen?' os-actions--composing':'')} ref={actionPanel} aria-label={text(conversationOpen?['交谈','Conversation']:['当前行动','Current actions'])} hidden={!ready||(!selected&&!openingOpen&&!error)||!!archiveOpen||!!campaignOpen||clockOpen||photoOpen}>
-      <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong>{!error&&<button disabled={busy} onClick={closeInteraction}>{text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])}</button>}</div>
+      <div className="os-actions__heading"><strong>{error?text(['恢复连接','Reconnect']):openingOpen?text(['这次委托','Your errand']):chosen?targetTitle(chosen):text(['互动','Interaction'])}</strong>{!error&&<button className={openingOpen?undefined:'os-actions__close'} aria-label={text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])} title={text(openingOpen?['开始探索','Start exploring']:['继续探索','Back to exploring'])} disabled={busy} onClick={closeInteraction}>{openingOpen?text(['开始探索','Start exploring']):<OldStreetToolIcon kind="close"/>}</button>}</div>
       <div className="os-actions__content">
       <div className="os-actions__body">
         {pixelShop&&selected&&!error&&!inputOpen&&<OldStreetObjectPreview key={selected} target={selected} save={head.save} drawer={pixelDrawerUrl} cabinet={pixelPropsUrl}/>}

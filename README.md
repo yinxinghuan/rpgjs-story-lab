@@ -2,6 +2,8 @@
 
 基于 [RPG-JS](https://github.com/RSamaium/RPG-JS)，作者 Samuel Ronce，MIT 许可证；保留的依赖许可证见 `public/THIRD_PARTY_NOTICES.txt`。内部叙事核心来自 AlterU stateful-story-template，固定版本见 `src/vendor/story/ENGINE_SOURCE.json`。场景和角色素材为本实验制作，未采用 starter 游戏美术。
 
+像素界面字体：[Fusion Pixel](https://github.com/TakWolf/fusion-pixel-font)（TakWolf 等）与 [Jersey15](https://github.com/scfried/soft-type-jersey)（Sarah Cadigan-Fried），均为 SIL OFL 1.1，字形未经修改；完整版权、许可与上游署名随 `public/fonts/LICENSES.txt` 和 `public/THIRD_PARTY_NOTICES.txt` 分发。
+
 **[云端试运行入口](https://game.aiwaves.tech/cb90357b-fe01-48ab-b14b-0620eb0d556e/)** · [前端镜像与旧手机存档](https://yinxinghuan.github.io/rpgjs-story-lab/)
 
 在旧街取回家人的信，追查寄存记录，通过档案线索找到屋顶底片，再到照相馆冲印，带着发现回家。新旅程包含平台生成的调查材料和照片，旧旅程按原规则继续。点地面行走或拖动左下摇杆，走近物件后点右下行动按钮；人物有预设话题，也可输入自己的行动。重要物件可主动近看，显影时调整调焦和曝光。声音与旅程管理位于菜单，旧列车保留在旧版参考入口，原存档不混用。

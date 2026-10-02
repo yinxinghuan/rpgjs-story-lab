@@ -6,7 +6,7 @@ type Material={title:string;locale:'zh'|'en';paragraphs?:string[];image?:string}
 export function OldStreetMaterialReader({title,locale,paragraphs=[],image,onClose}:Material&{onClose:()=>void}){
  const t=(zh:string,en:string)=>locale==='zh'?zh:en,dialog=useRef<HTMLDialogElement>(null),titleId=useId(),[zoom,setZoom]=useState(1),[failed,setFailed]=useState(false),[retry,setRetry]=useState(0)
  useEffect(()=>{const node=dialog.current;node?.showModal();return()=>node?.close()},[])
- return createPortal(<dialog ref={dialog} className={'os-material-reader'+(!image?' os-material-reader--text':'')} aria-labelledby={titleId} onCancel={e=>{e.preventDefault();e.stopPropagation();onClose()}}>
+ return createPortal(<dialog ref={dialog} lang={locale} className={'os-material-reader'+(!image?' os-material-reader--text':'')} aria-labelledby={titleId} onCancel={e=>{e.preventDefault();e.stopPropagation();onClose()}}>
   <header><h2 id={titleId}>{title}</h2><button type="button" autoFocus onClick={onClose}>{t('返回','Back')}</button></header>
   <div className="os-material-reader__tools" aria-label={t('调整阅读大小','Reading size')}><button type="button" disabled={zoom===1} aria-label={t('缩小','Zoom out')} onClick={()=>setZoom(n=>Math.max(1,n-.5))}>−</button><output aria-live="polite">{Math.round(zoom*100)}%</output><button type="button" disabled={zoom===(image?3:2)} aria-label={t('放大','Zoom in')} onClick={()=>setZoom(n=>Math.min(image?3:2,n+.5))}>+</button><button type="button" disabled={zoom===1} onClick={()=>setZoom(1)}>{t('还原','Reset')}</button></div>
   {image&&<div className="os-material-reader__image" tabIndex={0} aria-label={t('照片，放大后可上下左右滚动查看','Photograph. Scroll in any direction after zooming.')}>
