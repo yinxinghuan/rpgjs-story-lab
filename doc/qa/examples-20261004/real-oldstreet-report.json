@@ -1,0 +1,26 @@
+[
+  {
+    "locale": "en",
+    "width": 390,
+    "height": 844,
+    "realRenderer": true,
+    "realParent": true,
+    "localAuthority": true,
+    "modelsEnabled": false,
+    "exampleActions": 0,
+    "closeReturnDraft": true,
+    "reloadDraft": true
+  },
+  {
+    "locale": "zh",
+    "width": 320,
+    "height": 568,
+    "realRenderer": true,
+    "realParent": true,
+    "localAuthority": true,
+    "modelsEnabled": false,
+    "exampleActions": 0,
+    "closeReturnDraft": true,
+    "reloadDraft": true
+  }
+]

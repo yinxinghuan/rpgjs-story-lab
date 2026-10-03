@@ -1,0 +1,16 @@
+import React,{useState} from 'react';import {createRoot} from 'react-dom/client';
+import {ExampleAssist} from '../src/ExampleAssist';
+import {oldStreetExamples,oldStreetRoomExamples} from '../src/question-examples';
+import {OldStreetExpansionView} from '../src/old-street-expansion-view';
+import {createInitialSave} from '../src/vendor/original-train/engine/reducer';
+import {oldStreetCartridge} from '../src/old-street-cartridge';
+import {oldStreetCharacterDefinitions} from '../src/old-street-characters';
+import '../src/old-street-dev.css';import '../src/old-street-interface.css';import '../src/old-street-content.css';import '../src/old-street-pixel-theme.css';
+if(!import.meta.env.DEV)throw Error('QA_ONLY');
+function Fixture(){const locale=new URLSearchParams(location.search).get('locale')==='zh'?'zh':'en',t=(z:string,e:string)=>locale==='zh'?z:e;
+const [open,setOpen]=useState(true),[draft,setDraft]=useState(sessionStorage.getItem('qa-old-draft')??''),[completed,setCompleted]=useState(false),[target,setTarget]=useState('watchmaker'),[disabled,setDisabled]=useState(false);
+const save=createInitialSave(oldStreetCartridge(locale));save.characters=oldStreetCharacterDefinitions(locale).map(c=>({...c,status:'known',origin:'cartridge',updatedAtScene:0}));if(completed)save.facts['clock-returned']=true;
+const examples=oldStreetExamples(save,target,'synthetic-qa','抽屉 / Drawer');
+(window as any).__qaActions??=[];const change=(v:string)=>{setDraft(v);sessionStorage.setItem('qa-old-draft',v)};
+return <main className="os-dev os-dev--immersive"><header><h1>{t('旧街 · 例句合成测试','Old Street · synthetic examples')}</h1></header><div style={{position:'absolute',top:90,display:'flex',gap:8,flexWrap:'wrap'}}><button onClick={()=>setOpen(!open)}>{t('关闭或重开','Close or reopen')}</button><button onClick={()=>setCompleted(!completed)}>{t('更改已完成事实','Change completed facts')}</button><button onClick={()=>setTarget(target==='watchmaker'?'drawer':'watchmaker')}>{t('换个目标','Change target')}</button><button onClick={()=>setDisabled(!disabled)}>{t('切换等待状态','Toggle waiting')}</button></div>{open&&<section className="os-actions os-actions--conversation os-actions--composing"><div className="os-actions__heading"><strong>{t('可编辑例句','Editable examples')}</strong></div><div className="os-actions__content"><div className="os-compose"><form onSubmit={e=>{e.preventDefault();(window as any).__qaActions.push(draft)}}><label htmlFor="os-free-message">{t('交谈内容','Message')}</label><input id="os-free-message" disabled={disabled} value={draft} maxLength={500} onChange={e=>change(e.target.value)}/><button type="submit" disabled={disabled||!draft.trim()}>{t('交谈','Talk')}</button><ExampleAssist key={examples.key} candidates={examples.candidates} value={draft} onChange={change} inputId="os-free-message" locale={locale} disabled={disabled}/></form></div><OldStreetExpansionView sessionId="synthetic-qa-room" locale={locale} requested={false} disabled={disabled} api={async()=>{(window as any).__qaActions.push('room-request');return{job:null}}} submit={async text=>{(window as any).__qaActions.push(text)}} activate={async()=>{}}/></div></section>}</main>}
+createRoot(document.getElementById('root')!).render(<Fixture/>);

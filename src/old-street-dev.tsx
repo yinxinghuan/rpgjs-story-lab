@@ -1,3 +1,6 @@
+import {ExampleAssist} from './ExampleAssist'
+import {readFreeInputDrafts,saveFreeInputDrafts} from './free-input-drafts'
+import {oldStreetExamples} from './question-examples'
 import {useGameRelease,GameReleaseNotice} from './game-release-notice'
 import {OldStreetRoomWalls,OldStreetRoomForeground} from './old-street-room-walls-view'
 import {OldStreetObjectPreview} from './old-street-object-preview'
@@ -210,7 +213,10 @@ export default function OldStreetDev() {
   const modalControls=useRef(false)
   const [photoOpen,setPhotoOpen]=useState(false),[photoMessage,setPhotoMessage]=useState('')
   useEffect(()=>{if(error){setPhotoOpen(false);setClockOpen(false);setCampaignOpen(null);setArchiveOpen(null);runtime.current?.pause(true)}},[error])
-  const [typed, setTyped] = useState('')
+  const [typed, setTypedState] = useState('')
+  // Local per-session/scene/target drafts; authority still owns pending intents.
+  const freeDrafts=useRef(readFreeInputDrafts(window.alteruSessionStorage)),freeDraftScope=useRef('')
+  function setTyped(value:string){setTypedState(value);if(freeDraftScope.current){freeDrafts.current[freeDraftScope.current]=value;try{saveFreeInputDrafts(window.alteruSessionStorage,freeDrafts.current)}catch{/* In-memory draft still works if browser storage is unavailable. */}}}
   const [inputOpen,setInputOpen]=useState(false)
   const [selected, setSelected] = useState<string | null>(null), [leaving, setLeaving] = useState(false)
   useEffect(()=>{actionPanel.current?.querySelectorAll('.os-actions__content,.os-actions__body,.os-actions__options').forEach(content=>{content.scrollTop=0})},[turn,turnPage,notice,error,selected])
@@ -266,7 +272,7 @@ export default function OldStreetDev() {
         setNotice(oldStreetActionFailureMessage(recovered.rejectionCode,restored.save.locale))
         const body=pendingInteraction?.body
         if(body&&['free-input','dialogue'].includes(body.type)&&typeof body.text==='string'&&body.sceneId===restored.sceneId){
-          setTyped(body.text);setSelected(body.target)
+          freeDrafts.current[restored.id+':'+restored.sceneId+':'+body.target]=body.text;setTypedState(body.text);setSelected(body.target)
         }
       }else if(recovered)setTurn(oldStreetRecoveredTurn(pendingInteraction,restored,recovered.accepted===true))
       const trialModule=lanTrialEnabled?(lanTrialKind==='lan-platform'?await import('./dev/laundry-platform-trial'):await import('./dev/lan-video-trial')):null
@@ -581,6 +587,8 @@ export default function OldStreetDev() {
   if(nearbyFocus.current.previous===nearbyFocus.current.preferred&&nearest?.id!==nearbyFocus.current.preferred)nearbyFocus.current.preferred=undefined
   nearbyFocus.current.previous=nearest?.id
   const chosen = entities.find(e => e.id === selected) ?? nearest
+  const inputScope=(serverHead.current?.id??'local')+':'+head.scene+':'+(chosen?.id??'');freeDraftScope.current=inputScope
+  const examples=oldStreetExamples(head.save,chosen?.id,serverHead.current?.id??'local',chosen?targetTitle(chosen):'')
   const knownSpeaker=chosen&&oldStreetPerson(chosen.id)&&head.save.characters.some(c=>c.id===oldStreetPerson(chosen.id)?.id)
   const shareChoices=chosen&&serverHead.current?evidenceChoices(serverHead.current,chosen.id):[]
   const fieldOptions=chosen&&serverHead.current?fieldChoices(serverHead.current,chosen.id):[]
@@ -613,7 +621,7 @@ export default function OldStreetDev() {
     for(const region of panel?.querySelectorAll('.os-actions__content,.os-actions__body')??[])region.scrollTop=0
   },[replyKey,busy])
   const secondaryActions=chosen?.id==='developing-bench'&&expansionCapabilities.media?[]:actions
-  useEffect(()=>{setInputOpen(false);setTyped('')},[chosen?.id])
+  useEffect(()=>{setInputOpen(false);setTypedState(freeDrafts.current[inputScope]??'')},[inputScope])
   function closeInteraction(){
     setSelected(null);setOpeningOpen(false);setNotice('');setTurn([]);setInputOpen(false);setExpansionPhotoRequest(0)
     runtime.current?.pause(Boolean(error||outcome||busyRef.current))
@@ -746,7 +754,7 @@ export default function OldStreetDev() {
         {conversationOpen&&chosen&&<OldStreetConversationChoices key={chosen.id} locale={locale} topics={talkTopics} sharing={shareChoices} disabled={busy||!ready||!!error||!!outcome} onTalk={value=>sendInput(true,value)} onShare={value=>sendInput(false,value)}/>}
         {inspectionOpen&&chosen&&!serverHead.current?.restoration?.entities.some(e=>e.id===chosen.id)&&<div className="os-compose">
           <button className="os-compose__toggle" aria-expanded={inputOpen} disabled={busy} onClick={()=>setInputOpen(open=>!open)}>{text(knownSpeaker?['聊点别的…','Say something else…']:['尝试别的办法…','Try something else…'])}</button>
-          {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input autoFocus disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}</form>}
+          {inputOpen&&<form onSubmit={e=>{e.preventDefault();sendInput(Boolean(knownSpeaker))}}><input id="os-free-message" autoFocus disabled={!ready||busy||!!error||!!outcome} aria-label={text(knownSpeaker?['交谈内容','Message']:['输入行动','Describe an action'])} maxLength={500} value={typed} onChange={e=>setTyped(e.target.value)} placeholder={text(knownSpeaker?['想聊些什么？','What would you like to say?']:['也可以尝试别的办法','Try another approach'])}/><button disabled={!typed.trim()||busy||!ready||!!error||!!outcome}>{text(knownSpeaker?['交谈','Talk']:['发送','Send'])}</button>{knownSpeaker&&<button type="button" disabled={!typed.trim()||busy||!ready||!!error||!!outcome} onClick={()=>sendInput(false)}>{text(['作为行动','Act'])}</button>}<ExampleAssist key={examples.key} candidates={examples.candidates} value={typed} onChange={setTyped} inputId="os-free-message" locale={locale} disabled={!ready||busy||!!error||!!outcome||awaitingChoices}/></form>}
         </div>}
         {conversationOpen&&chosen&&!busy&&<OldStreetConversationHistory key={(serverHead.current?.id??'')+':'+chosen.id} save={head.save} speakerId={oldStreetPerson(chosen.id)!.id} current={turn}/>}
       </>)}

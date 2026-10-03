@@ -1,0 +1,13 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {createInitialSave} from '../src/vendor/original-train/engine/reducer';
+import {oldStreetCartridge} from '../src/old-street-cartridge';
+import {oldStreetCharacterDefinitions} from '../src/old-street-characters';
+import {oldStreetExamples,oldStreetRoomExamples} from '../src/question-examples';
+for(const locale of ['zh','en'] as const){
+ const make=()=>{const s=createInitialSave(oldStreetCartridge(locale));s.characters.push(...oldStreetCharacterDefinitions(locale).map(c=>({...c,status:'known' as const,origin:'cartridge' as const,updatedAtScene:0})));return s};
+ test('examples: known cast has short distinct editable questions '+locale,()=>{for(const target of ['watchmaker','laundry-owner','photographer']){const s=make(),r=oldStreetExamples(s,target,'qa','');assert.equal(new Set(r.candidates.map(c=>c.text)).size,2);for(const c of r.candidates)assert.ok(c.text.length<500);}});
+ test('examples: delivered clock wins without optional conversation or item '+locale,()=>{const s=make();s.facts['clock-returned']=true;s.inventory=[];for(const target of ['watchmaker','laundry-owner']){const r=oldStreetExamples(s,target,'qa','');assert.match(r.candidates[0].text,/送还|送回|returned|back/);assert.doesNotMatch(r.candidates[0].text,/去取|go.*collect|take.*back/);}});
+ test('examples: completed crates and photographs win '+locale,()=>{const s=make();s.facts['crates-cleared']=true;assert.match(oldStreetExamples(s,'laundry-owner','qa','').candidates[0].text,/已经搬开|are cleared/);s.facts['photos-returned']=true;assert.match(oldStreetExamples(s,'photographer','qa','').candidates[0].text,/已经送回|are back/);});
+ test('examples: no undiscovered object or generated clue '+locale,()=>{const s=make();s.characters=[];const r=oldStreetExamples(s,undefined,'qa','');assert.doesNotMatch(JSON.stringify(r.candidates),/钟|信|clock|letter|sleeve/);const room=oldStreetRoomExamples('qa',locale,'SECRET_CONTENT_MUST_NOT_APPEAR');assert.doesNotMatch(JSON.stringify(room.candidates),/SECRET_CONTENT/);});
+ test('examples: context, session and locale reset without mutating state '+locale,()=>{const s=make(),snapshot=JSON.stringify(s),a=oldStreetExamples(s,'watchmaker','qa','');assert.equal(snapshot,JSON.stringify(s));assert.equal(a.key,oldStreetExamples(s,'watchmaker','qa','').key);s.facts['clock-returned']=true;assert.notEqual(a.key,oldStreetExamples(s,'watchmaker','qa','').key);assert.notEqual(a.key,oldStreetExamples(s,'watchmaker','other','').key);s.locale=locale==='zh'?'en':'zh';assert.notEqual(a.key,oldStreetExamples(s,'watchmaker','qa','').key);});
+}
